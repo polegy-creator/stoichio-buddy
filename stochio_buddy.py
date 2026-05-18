@@ -29,6 +29,8 @@ from stoich_engine import compute_recipe
 
 st.set_page_config(page_title="Stoichio Buddy", page_icon=":material/science:", layout="wide")
 
+DATA_CACHE_TTL_SECONDS = 20
+
 
 def apply_theme(mode):
     if mode == "Dark":
@@ -393,9 +395,30 @@ def apply_theme(mode):
     st.markdown(css, unsafe_allow_html=True)
 
 
-def load_app_state():
-    st.session_state.db = load_powders()
-    st.session_state.inventory = load_inventory()
+@st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
+def cached_load_powders(storage_status):
+    return load_powders()
+
+
+@st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
+def cached_load_inventory(storage_status):
+    return load_inventory()
+
+
+@st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
+def cached_load_history(storage_status):
+    return load_history()
+
+
+def clear_data_cache():
+    cached_load_powders.clear()
+    cached_load_inventory.clear()
+    cached_load_history.clear()
+
+
+def load_app_state(storage_status):
+    st.session_state.db = cached_load_powders(storage_status)
+    st.session_state.inventory = cached_load_inventory(storage_status)
     return st.session_state.db, st.session_state.inventory
 
 
@@ -538,8 +561,8 @@ def configure_app_storage():
 
 
 storage_status = configure_app_storage()
-db, inventory = load_app_state()
-history = load_history()
+db, inventory = load_app_state(storage_status)
+history = cached_load_history(storage_status)
 storage_status = storage_label()
 storage_problem = storage_error()
 
@@ -560,6 +583,9 @@ with st.sidebar:
 
     st.caption("Selected powders are always controlled by the user. The app never searches or swaps precursors automatically.")
     st.caption(f"Storage: {storage_status}")
+    if st.button("Refresh Shared Data", width="stretch"):
+        clear_data_cache()
+        st.rerun()
     if storage_problem:
         st.warning("Shared storage is not connected. The app is using local JSON files for now.")
     if unknown_stock:
@@ -653,7 +679,7 @@ if page == "Calculate":
                         + ", ".join(result["ignored_elements"])
                     )
 
-                current_inventory = load_inventory()
+                current_inventory = inventory
                 in_stock, stock_messages = check_stock(current_inventory, recipe_masses)
                 if stock_messages:
                     st.warning("Inventory warning: " + "; ".join(stock_messages))
@@ -662,6 +688,7 @@ if page == "Calculate":
                 if deduct_inventory:
                     if in_stock:
                         st.session_state.inventory = consume_stock(current_inventory, recipe_masses)
+                        clear_data_cache()
                         inventory_deducted = True
                         st.success("Inventory deducted.")
                     else:
@@ -675,6 +702,7 @@ if page == "Calculate":
                     warning=result.get("warning"),
                     inventory_deducted=inventory_deducted,
                 )
+                cached_load_history.clear()
 
 
 elif page == "Powders & Inventory":
@@ -706,8 +734,7 @@ elif page == "Powders & Inventory":
                 powder_name, powders = add_powder(new_formula)
                 if new_grams > 0:
                     set_inventory_quantity(powder_name, new_grams)
-                st.session_state.db = powders
-                st.session_state.inventory = load_inventory()
+                clear_data_cache()
                 if new_grams > 0:
                     st.success(f"Added {powder_name} with {new_grams:g} g in inventory.")
                 else:
@@ -728,8 +755,8 @@ elif page == "Powders & Inventory":
             try:
                 if not powder:
                     raise ValueError("Choose a powder")
-                updated_inventory = set_inventory_quantity(powder, grams)
-                st.session_state.inventory = updated_inventory
+                set_inventory_quantity(powder, grams)
+                clear_data_cache()
                 st.success(f"Updated {normalize_formula(powder)} to {grams:g} g.")
                 st.rerun()
             except ValueError as exc:
@@ -750,8 +777,8 @@ elif page == "Powders & Inventory":
             try:
                 if not powder_to_delete:
                     raise ValueError("Choose a powder")
-                st.session_state.db = delete_powder(powder_to_delete, remove_inventory=remove_deleted_stock)
-                st.session_state.inventory = load_inventory()
+                delete_powder(powder_to_delete, remove_inventory=remove_deleted_stock)
+                clear_data_cache()
                 st.success(f"Deleted {powder_to_delete}.")
                 st.rerun()
             except ValueError as exc:
@@ -813,6 +840,7 @@ elif page == "History":
                     st.error("Choose a target first.")
                 else:
                     removed_count, _ = clear_history_for_target(target_to_clear)
+                    cached_load_history.clear()
                     st.success(f"Removed {removed_count} recipe(s) for {target_to_clear}.")
                     st.rerun()
 
