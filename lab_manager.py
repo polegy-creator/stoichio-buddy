@@ -137,9 +137,13 @@ class AppsScriptStore:
         try:
             payload = response.json()
         except ValueError as exc:
+            response_text = response.text.replace("\n", " ").strip()
+            if len(response_text) > 280:
+                response_text = response_text[:280] + "..."
             raise RuntimeError(
                 "Apps Script did not return JSON. Make sure you copied the Web App URL "
-                "ending in /exec, not the script editor URL."
+                "ending in /exec, not the script editor URL. "
+                f"HTTP {response.status_code} response started with: {response_text}"
             ) from exc
 
         if not payload.get("ok"):
