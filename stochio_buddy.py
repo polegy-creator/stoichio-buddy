@@ -21,6 +21,7 @@ from lab_manager import (
     load_powders,
     log_synthesis,
     set_inventory_quantity,
+    storage_error,
     storage_label,
 )
 from stoich_engine import compute_recipe
@@ -539,6 +540,8 @@ def configure_app_storage():
 storage_status = configure_app_storage()
 db, inventory = load_app_state()
 history = load_history()
+storage_status = storage_label()
+storage_problem = storage_error()
 
 with st.sidebar:
     st.markdown("### Stoichio Buddy")
@@ -557,6 +560,8 @@ with st.sidebar:
 
     st.caption("Selected powders are always controlled by the user. The app never searches or swaps precursors automatically.")
     st.caption(f"Storage: {storage_status}")
+    if storage_problem:
+        st.warning("Shared storage is not connected. The app is using local JSON files for now.")
     if unknown_stock:
         st.warning("Inventory has entries that are not in the powder database: " + ", ".join(unknown_stock))
 
@@ -568,6 +573,12 @@ st.markdown(
     '<div class="app-subtitle">Cation-first precursor mass calculator with powder inventory and recipe history.</div>',
     unsafe_allow_html=True,
 )
+
+if storage_problem:
+    st.warning(
+        "Google Sheets storage did not connect. Check the Apps Script web app URL, deployment access, "
+        f"and token. Details: {storage_problem}"
+    )
 
 
 if page == "Calculate":

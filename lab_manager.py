@@ -21,6 +21,7 @@ SHEET_TABS = {
 
 _storage_backend = None
 _storage_label = "Local JSON files"
+_storage_error = None
 
 # =========================
 # NORMALIZATION
@@ -121,8 +122,26 @@ class AppsScriptStore:
             },
             timeout=30,
         )
-        response.raise_for_status()
-        payload = response.json()
+
+        if response.status_code >= 400:
+            response_text = response.text.replace("\n", " ").strip()
+            if len(response_text) > 280:
+                response_text = response_text[:280] + "..."
+            raise RuntimeError(
+                f"Apps Script returned HTTP {response.status_code}. "
+                "Check that the web app URL ends in /exec, the deployment access is "
+                "'Anyone with the link', and the script is deployed as 'Execute as me'. "
+                f"Response: {response_text}"
+            )
+
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise RuntimeError(
+                "Apps Script did not return JSON. Make sure you copied the Web App URL "
+                "ending in /exec, not the script editor URL."
+            ) from exc
+
         if not payload.get("ok"):
             raise RuntimeError(payload.get("error", "Apps Script storage request failed"))
         return payload.get("data")
@@ -136,12 +155,13 @@ class AppsScriptStore:
 
 
 def configure_google_sheets(credentials_info, spreadsheet_id=None, spreadsheet_name=None):
-    global _storage_backend, _storage_label
+    global _storage_backend, _storage_label, _storage_error
     _storage_backend = GoogleSheetsStore(
         credentials_info=credentials_info,
         spreadsheet_id=spreadsheet_id,
         spreadsheet_name=spreadsheet_name,
     )
+    _storage_error = None
     if spreadsheet_id:
         _storage_label = "Google Sheets"
     else:
@@ -149,13 +169,25 @@ def configure_google_sheets(credentials_info, spreadsheet_id=None, spreadsheet_n
 
 
 def configure_apps_script(web_app_url, token):
-    global _storage_backend, _storage_label
+    global _storage_backend, _storage_label, _storage_error
     _storage_backend = AppsScriptStore(web_app_url=web_app_url, token=token)
     _storage_label = "Google Sheets via Apps Script"
+    _storage_error = None
+
+
+def disable_shared_storage(exc):
+    global _storage_backend, _storage_label, _storage_error
+    _storage_backend = None
+    _storage_label = "Local JSON files (shared storage unavailable)"
+    _storage_error = str(exc)
 
 
 def storage_label():
     return _storage_label
+
+
+def storage_error():
+    return _storage_error
 
 
 def load_json_file(path, default):
@@ -185,20 +217,31 @@ def load_json(path, default):
     if _storage_backend is None:
         return load_json_file(path, default)
 
-    data = _storage_backend.load(path, None)
+    try:
+        data = _storage_backend.load(path, None)
+    except Exception as exc:
+        disable_shared_storage(exc)
+        return load_json_file(path, default)
+
     if data is not None:
         return data
 
     seed_data = load_json_file(path, default)
     if seed_data is not None:
-        _storage_backend.save(path, seed_data)
+        try:
+            _storage_backend.save(path, seed_data)
+        except Exception as exc:
+            disable_shared_storage(exc)
     return seed_data
 
 
 def save_json(path, data):
     if _storage_backend is not None:
-        _storage_backend.save(path, data)
-        return
+        try:
+            _storage_backend.save(path, data)
+            return
+        except Exception as exc:
+            disable_shared_storage(exc)
     save_json_file(path, data)
 
 
