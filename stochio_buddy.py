@@ -525,7 +525,23 @@ def display_dataframe(df, theme_mode, **kwargs):
     )
 
 
+def truthy_secret(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
 def configure_app_storage():
+    try:
+        shared_storage_enabled = truthy_secret(st.secrets.get("enable_shared_storage", False))
+    except (FileNotFoundError, KeyError, AttributeError):
+        shared_storage_enabled = False
+
+    if not shared_storage_enabled:
+        return "Local JSON files"
+
     try:
         apps_script_url = st.secrets.get("apps_script_url")
         apps_script_token = st.secrets.get("apps_script_token")
@@ -583,7 +599,7 @@ with st.sidebar:
 
     st.caption("Selected powders are always controlled by the user. The app never searches or swaps precursors automatically.")
     st.caption(f"Storage: {storage_status}")
-    if st.button("Refresh Shared Data", width="stretch"):
+    if st.button("Refresh Data", width="stretch"):
         clear_data_cache()
         st.rerun()
     if storage_problem:

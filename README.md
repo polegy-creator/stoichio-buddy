@@ -27,6 +27,8 @@ streamlit run stochio_buddy.py --server.address 0.0.0.0
 
 People on the same network can open the Network URL printed by Streamlit.
 
+This is the recommended setup for a fast lab tool: one lab computer runs the app, and everyone on the same network opens that computer's Streamlit URL. Data stays in the local JSON files on that computer.
+
 ## Deploy for everyone
 
 The simplest free hosted path is Streamlit Community Cloud plus Google Sheets for shared lab data:
@@ -36,7 +38,7 @@ The simplest free hosted path is Streamlit Community Cloud plus Google Sheets fo
 3. Set the main file to `stochio_buddy.py`.
 4. Add Google Sheets secrets if you want shared persistent powder, inventory, and history data.
 
-If Google Sheets secrets are not configured, the app uses the local JSON files. This is good for local testing, but local writes on Streamlit Community Cloud are not reliable after app restarts.
+Shared Google Sheets storage is disabled by default because it is much slower than local JSON. If Google Sheets is not explicitly enabled, the app uses local JSON files. This is good for local/offline use, but local writes on Streamlit Community Cloud are not reliable after app restarts.
 
 ## Google Sheets shared storage, no Google Cloud
 
@@ -114,6 +116,7 @@ function doPost(event) {
 10. In Streamlit Community Cloud, open app settings and paste secrets:
 
 ```toml
+enable_shared_storage = true
 apps_script_url = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
 apps_script_token = "the-same-long-random-password"
 ```
@@ -139,6 +142,7 @@ https://docs.google.com/spreadsheets/d/SHEET_ID_IS_HERE/edit
 8. In Streamlit Community Cloud, open the app settings and paste secrets in this format:
 
 ```toml
+enable_shared_storage = true
 google_sheet_id = "paste-your-google-sheet-id-here"
 google_sheet_name = "Stoichio Buddy Data"
 
