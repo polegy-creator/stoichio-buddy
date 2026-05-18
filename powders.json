@@ -1,0 +1,16 @@
+{
+    "Fe2O3": {
+        "molar_mass": 159.687,
+        "elements": {
+            "Fe": 2.0,
+            "O": 3.0
+        }
+    },
+    "TiO2": {
+        "molar_mass": 79.865,
+        "elements": {
+            "Ti": 1.0,
+            "O": 2.0
+        }
+    }
+}
