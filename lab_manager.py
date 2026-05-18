@@ -2,6 +2,7 @@ import json
 import os
 import datetime
 import tempfile
+import re
 
 from formula_parser import molar_mass, normalize_formula, parse_formula
 
@@ -137,9 +138,7 @@ class AppsScriptStore:
         try:
             payload = response.json()
         except ValueError as exc:
-            response_text = response.text.replace("\n", " ").strip()
-            if len(response_text) > 280:
-                response_text = response_text[:280] + "..."
+            response_text = self._summarize_non_json_response(response.text)
             raise RuntimeError(
                 "Apps Script did not return JSON. Make sure you copied the Web App URL "
                 "ending in /exec, not the script editor URL. "
@@ -149,6 +148,22 @@ class AppsScriptStore:
         if not payload.get("ok"):
             raise RuntimeError(payload.get("error", "Apps Script storage request failed"))
         return payload.get("data")
+
+    @staticmethod
+    def _summarize_non_json_response(text):
+        message_match = re.search(
+            r'<div[^>]*class="errorMessage"[^>]*>(.*?)</div>',
+            text,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+        if message_match:
+            text = message_match.group(1)
+
+        text = re.sub(r"<[^>]+>", " ", text)
+        text = re.sub(r"\s+", " ", text).strip()
+        if len(text) > 900:
+            text = text[:900] + "..."
+        return text
 
     def load(self, path, default):
         data = self._request("load", path)
