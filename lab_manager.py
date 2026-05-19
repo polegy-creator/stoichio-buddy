@@ -13,11 +13,13 @@ from formula_parser import molar_mass, normalize_formula, parse_formula
 POWDERS_FILE = "powders.json"
 INVENTORY_FILE = "inventory.json"
 HISTORY_FILE = "history.json"
+MATERIAL_DENSITIES_FILE = "material_densities.json"
 
 SHEET_TABS = {
     POWDERS_FILE: "powders",
     INVENTORY_FILE: "inventory",
     HISTORY_FILE: "history",
+    MATERIAL_DENSITIES_FILE: "material_densities",
 }
 
 _storage_backend = None
@@ -335,6 +337,90 @@ def delete_powder(powder, remove_inventory=True):
         save_inventory(inventory)
 
     return powders
+
+
+# =========================
+# MATERIAL DENSITY DATABASE
+# =========================
+
+def normalize_density_record(formula, record):
+    key = normalize_formula(formula)
+    normalized = {
+        "formula": key,
+        "unit_cell_volume_A3": None,
+        "z": None,
+        "theoretical_density_g_cm3": None,
+        "density_source": record.get("density_source", "manual"),
+        "source": str(record.get("source", "")).strip(),
+        "notes": str(record.get("notes", "")).strip(),
+    }
+
+    volume = record.get("unit_cell_volume_A3")
+    if volume not in (None, ""):
+        normalized["unit_cell_volume_A3"] = float(volume)
+
+    z = record.get("z")
+    if z not in (None, ""):
+        normalized["z"] = float(z)
+
+    density = record.get("theoretical_density_g_cm3")
+    if density not in (None, ""):
+        normalized["theoretical_density_g_cm3"] = float(density)
+
+    return normalized
+
+
+def load_material_densities():
+    raw_records = load_json(MATERIAL_DENSITIES_FILE, {})
+    records = {}
+
+    for formula, record in raw_records.items():
+        key = normalize_formula(formula)
+        records[key] = normalize_density_record(key, record)
+
+    if records != raw_records:
+        save_material_densities(records)
+    return records
+
+
+def save_material_densities(records):
+    save_json(MATERIAL_DENSITIES_FILE, records)
+
+
+def upsert_material_density(
+    formula,
+    theoretical_density=None,
+    unit_cell_volume=None,
+    z=None,
+    density_source="manual",
+    source="",
+    notes="",
+):
+    records = load_material_densities()
+    key = normalize_formula(formula)
+    record = {
+        "formula": key,
+        "unit_cell_volume_A3": unit_cell_volume,
+        "z": z,
+        "theoretical_density_g_cm3": theoretical_density,
+        "density_source": density_source,
+        "source": source,
+        "notes": notes,
+    }
+    records[key] = normalize_density_record(key, record)
+    save_material_densities(records)
+    return key, records
+
+
+def delete_material_density(formula):
+    records = load_material_densities()
+    key = normalize_formula(formula)
+    if key not in records:
+        raise ValueError(f"Material density not found: {key}")
+    records.pop(key)
+    save_material_densities(records)
+    return records
+
 
 # =========================
 # INVENTORY SYSTEM

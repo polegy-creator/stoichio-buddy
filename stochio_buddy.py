@@ -7,6 +7,13 @@ from io import StringIO
 import pandas as pd
 import streamlit as st
 
+from density_engine import (
+    DEFAULT_DIE_DIAMETER_MM,
+    measured_density,
+    relative_density_percent,
+    target_mass_from_height,
+    theoretical_density_from_cell,
+)
 from formula_parser import normalize_formula
 from lab_manager import (
     add_powder,
@@ -15,14 +22,17 @@ from lab_manager import (
     configure_apps_script,
     configure_google_sheets,
     consume_stock,
+    delete_material_density,
     delete_powder,
     load_history,
     load_inventory,
+    load_material_densities,
     load_powders,
     log_synthesis,
     set_inventory_quantity,
     storage_error,
     storage_label,
+    upsert_material_density,
 )
 from stoich_engine import compute_recipe
 
@@ -410,10 +420,16 @@ def cached_load_history(storage_status):
     return load_history()
 
 
+@st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
+def cached_load_material_densities(storage_status):
+    return load_material_densities()
+
+
 def clear_data_cache():
     cached_load_powders.clear()
     cached_load_inventory.clear()
     cached_load_history.clear()
+    cached_load_material_densities.clear()
 
 
 def load_app_state(storage_status):
@@ -457,6 +473,93 @@ def inventory_dataframe(inventory):
             for powder, grams in inventory.items()
         ]
     )
+
+
+def material_density_dataframe(records):
+    columns = [
+        "Target",
+        "Theoretical density (g/cm3)",
+        "Unit cell volume (A3)",
+        "Z",
+        "Density source",
+        "Reference",
+        "Notes",
+    ]
+    rows = []
+    for formula, record in records.items():
+        rows.append(
+            {
+                "Target": formula,
+                "Theoretical density (g/cm3)": (
+                    round(record["theoretical_density_g_cm3"], 4)
+                    if record.get("theoretical_density_g_cm3") is not None
+                    else ""
+                ),
+                "Unit cell volume (A3)": (
+                    round(record["unit_cell_volume_A3"], 4)
+                    if record.get("unit_cell_volume_A3") is not None
+                    else ""
+                ),
+                "Z": record.get("z") if record.get("z") is not None else "",
+                "Density source": record.get("density_source", ""),
+                "Reference": record.get("source", ""),
+                "Notes": record.get("notes", ""),
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)
+
+
+def lookup_known_density(target, material_densities):
+    if not target:
+        return None, None, "Enter a target formula first"
+
+    try:
+        key = normalize_formula(target)
+    except ValueError as exc:
+        return None, None, str(exc)
+
+    record = material_densities.get(key)
+    if not record:
+        return key, None, f"No saved density for {key}"
+
+    density = record.get("theoretical_density_g_cm3")
+    if density is None or density <= 0:
+        return key, None, f"Saved density for {key} is missing"
+
+    return key, float(density), None
+
+
+def density_source_control(target, material_densities, key_prefix):
+    source_mode = st.radio(
+        "Theoretical density source",
+        ["Known material density", "Manual density"],
+        horizontal=True,
+        key=f"{key_prefix}_density_source",
+    )
+
+    if source_mode == "Known material density":
+        normalized_target, density, error = lookup_known_density(target, material_densities)
+        if density is not None:
+            record = material_densities[normalized_target]
+            st.success(f"Using {normalized_target}: {density:.4f} g/cm3")
+            if record.get("source") or record.get("density_source"):
+                st.caption(
+                    "Source: "
+                    + (record.get("source") or record.get("density_source") or "saved material density")
+                )
+        else:
+            st.warning(error)
+        return density, source_mode
+
+    density = st.number_input(
+        "Manual theoretical density (g/cm3)",
+        min_value=0.0,
+        value=0.0,
+        step=0.01,
+        format="%.5f",
+        key=f"{key_prefix}_manual_density",
+    )
+    return density if density > 0 else None, source_mode
 
 
 def unknown_inventory_items(inventory, db):
@@ -579,6 +682,7 @@ def configure_app_storage():
 storage_status = configure_app_storage()
 db, inventory = load_app_state(storage_status)
 history = cached_load_history(storage_status)
+material_densities = cached_load_material_densities(storage_status)
 storage_status = storage_label()
 storage_problem = storage_error()
 
@@ -587,7 +691,7 @@ with st.sidebar:
     theme_mode = st.radio("Appearance", ["Dark", "Light"], horizontal=True, key="theme_mode")
     page = st.radio(
         "Navigation",
-        ["Calculate", "Powders & Inventory", "History"],
+        ["Calculate", "Powders & Inventory", "Material Density", "Pellet Density", "History"],
         label_visibility="collapsed",
     )
 
@@ -595,6 +699,7 @@ with st.sidebar:
     st.metric("Powders", len(db))
     unknown_stock = unknown_inventory_items(inventory, db)
     st.metric("Inventory items", len(inventory))
+    st.metric("Material densities", len(material_densities))
     st.metric("Saved recipes", len(history))
 
     st.caption("Selected powders are always controlled by the user. The app never searches or swaps precursors automatically.")
@@ -633,14 +738,57 @@ if page == "Calculate":
             placeholder="Fe1.98Ti0.02O3",
             help="Simple formulas with decimal stoichiometry are supported.",
         )
-        mass = st.number_input(
-            "Target formula mass (g)",
-            min_value=0.0,
-            value=15.6,
-            step=0.1,
-            format="%.4f",
-            help="This is the intended formula batch basis. Total precursor powder can be higher.",
+        amount_mode = st.radio(
+            "Target amount mode",
+            ["Target mass", "Pellet height"],
+            horizontal=True,
+            help="Use pellet height to calculate target mass from theoretical density and a 25.05 mm die.",
         )
+
+        target_mass = None
+        planning_volume = None
+        theoretical_density_used = None
+        planning_height = None
+        planning_error = None
+
+        if amount_mode == "Target mass":
+            target_mass = st.number_input(
+                "Target formula mass (g)",
+                min_value=0.0,
+                value=15.6,
+                step=0.1,
+                format="%.4f",
+                help="This is the intended formula batch basis. Total precursor powder can be higher.",
+            )
+        else:
+            st.caption(f"Fixed die diameter: {DEFAULT_DIE_DIAMETER_MM:.2f} mm")
+            planning_height = st.number_input(
+                "Desired target height (mm)",
+                min_value=0.0,
+                value=1.0,
+                step=0.1,
+                format="%.4f",
+            )
+            theoretical_density_used, _ = density_source_control(
+                target,
+                material_densities,
+                key_prefix="recipe_height",
+            )
+            if theoretical_density_used is not None and planning_height > 0:
+                try:
+                    target_mass, planning_volume = target_mass_from_height(
+                        theoretical_density_used,
+                        planning_height,
+                        DEFAULT_DIE_DIAMETER_MM,
+                    )
+                    st.info(
+                        f"Calculated target mass: {target_mass:.4f} g "
+                        f"from {planning_volume:.4f} cm3."
+                    )
+                except ValueError as exc:
+                    planning_error = str(exc)
+                    st.error(planning_error)
+
         selected = st.multiselect(
             "Selected powders",
             list(db.keys()),
@@ -658,67 +806,79 @@ if page == "Calculate":
             if db:
                 display_dataframe(database_dataframe(db), theme_mode, width="stretch", hide_index=True)
         else:
-            result = compute_recipe(target, mass, db, selected)
-
-            if result is None or result.get("recipe") is None:
-                st.error(result.get("warning", "No valid solution found") if result else "No valid solution found")
+            if target_mass is None or target_mass <= 0:
+                st.error("Enter a valid target mass, or a valid height and theoretical density.")
+            elif planning_error:
+                st.error(planning_error)
             else:
-                recipe_masses = result["recipe"]
-                recipe_df = recipe_dataframe(recipe_masses)
-                total_powder = sum(recipe_masses.values())
+                result = compute_recipe(target, target_mass, db, selected)
 
-                metric_cols = st.columns(3)
-                metric_cols[0].metric("Target basis (g)", round(mass, 3))
-                metric_cols[1].metric("Precursor powder (g)", round(total_powder, 3))
-                metric_cols[2].metric("Powders used", len(recipe_masses))
-
-                display_dataframe(recipe_df, theme_mode, width="stretch", hide_index=True)
-                st.download_button(
-                    "Download Recipe CSV",
-                    data=csv_bytes(recipe_df),
-                    file_name="stoichio_recipe.csv",
-                    mime="text/csv",
-                    width="stretch",
-                )
-
-                if result.get("warning"):
-                    st.warning(result["warning"])
-                    st.caption(f"Residual: {result['residual']:.6g}")
+                if result is None or result.get("recipe") is None:
+                    st.error(result.get("warning", "No valid solution found") if result else "No valid solution found")
                 else:
-                    st.success("Exact cation-balance solution computed.")
+                    recipe_masses = result["recipe"]
+                    recipe_df = recipe_dataframe(recipe_masses)
+                    total_powder = sum(recipe_masses.values())
 
-                if result.get("ignored_elements"):
-                    st.caption(
-                        "Solve basis: "
-                        + result.get("basis", "element balance")
-                        + "; ignored in balance: "
-                        + ", ".join(result["ignored_elements"])
+                    metric_cols = st.columns(3)
+                    metric_cols[0].metric("Target basis (g)", round(target_mass, 3))
+                    metric_cols[1].metric("Precursor powder (g)", round(total_powder, 3))
+                    metric_cols[2].metric("Powders used", len(recipe_masses))
+
+                    if amount_mode == "Pellet height":
+                        detail_cols = st.columns(3)
+                        detail_cols[0].metric("Die diameter (mm)", round(DEFAULT_DIE_DIAMETER_MM, 3))
+                        detail_cols[1].metric("Desired height (mm)", round(planning_height, 3))
+                        detail_cols[2].metric("Theoretical density", round(theoretical_density_used, 4))
+                        st.caption(f"Calculated planning volume: {planning_volume:.6f} cm3")
+
+                    display_dataframe(recipe_df, theme_mode, width="stretch", hide_index=True)
+                    st.download_button(
+                        "Download Recipe CSV",
+                        data=csv_bytes(recipe_df),
+                        file_name="stoichio_recipe.csv",
+                        mime="text/csv",
+                        width="stretch",
                     )
 
-                current_inventory = inventory
-                in_stock, stock_messages = check_stock(current_inventory, recipe_masses)
-                if stock_messages:
-                    st.warning("Inventory warning: " + "; ".join(stock_messages))
-
-                inventory_deducted = False
-                if deduct_inventory:
-                    if in_stock:
-                        st.session_state.inventory = consume_stock(current_inventory, recipe_masses)
-                        clear_data_cache()
-                        inventory_deducted = True
-                        st.success("Inventory deducted.")
+                    if result.get("warning"):
+                        st.warning(result["warning"])
+                        st.caption(f"Residual: {result['residual']:.6g}")
                     else:
-                        st.warning("Inventory was not deducted because stock is insufficient.")
+                        st.success("Exact cation-balance solution computed.")
 
-                log_synthesis(
-                    normalize_formula(target),
-                    mass,
-                    recipe_masses,
-                    selected_powders=selected,
-                    warning=result.get("warning"),
-                    inventory_deducted=inventory_deducted,
-                )
-                cached_load_history.clear()
+                    if result.get("ignored_elements"):
+                        st.caption(
+                            "Solve basis: "
+                            + result.get("basis", "element balance")
+                            + "; ignored in balance: "
+                            + ", ".join(result["ignored_elements"])
+                        )
+
+                    current_inventory = inventory
+                    in_stock, stock_messages = check_stock(current_inventory, recipe_masses)
+                    if stock_messages:
+                        st.warning("Inventory warning: " + "; ".join(stock_messages))
+
+                    inventory_deducted = False
+                    if deduct_inventory:
+                        if in_stock:
+                            st.session_state.inventory = consume_stock(current_inventory, recipe_masses)
+                            clear_data_cache()
+                            inventory_deducted = True
+                            st.success("Inventory deducted.")
+                        else:
+                            st.warning("Inventory was not deducted because stock is insufficient.")
+
+                    log_synthesis(
+                        normalize_formula(target),
+                        target_mass,
+                        recipe_masses,
+                        selected_powders=selected,
+                        warning=result.get("warning"),
+                        inventory_deducted=inventory_deducted,
+                    )
+                    cached_load_history.clear()
 
 
 elif page == "Powders & Inventory":
@@ -831,6 +991,195 @@ elif page == "Powders & Inventory":
             )
         else:
             st.info("Inventory is empty.")
+
+
+elif page == "Material Density":
+    st.subheader("Material density database")
+    st.caption("Known target densities are used for pellet-height planning and post-sintering relative density.")
+
+    entry_col, table_col = st.columns([0.95, 1.05], gap="large")
+
+    with entry_col:
+        st.markdown("#### Add or update target")
+        density_formula = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
+        density_entry_mode = st.radio(
+            "Density entry mode",
+            ["Calculate from unit cell", "Manual theoretical density"],
+            horizontal=True,
+        )
+
+        unit_cell_volume = None
+        z_value = None
+        theoretical_density = None
+        density_source = "manual"
+
+        if density_entry_mode == "Calculate from unit cell":
+            unit_cell_volume = st.number_input(
+                "Unit cell volume (A3)",
+                min_value=0.0,
+                value=0.0,
+                step=1.0,
+                format="%.6f",
+                help="Use Angstrom cubed. The app converts A3 to cm3.",
+            )
+            z_value = st.number_input(
+                "Z, formula units per unit cell",
+                min_value=0.0,
+                value=1.0,
+                step=1.0,
+                format="%.6f",
+            )
+            if density_formula and unit_cell_volume > 0 and z_value > 0:
+                try:
+                    theoretical_density = theoretical_density_from_cell(
+                        density_formula,
+                        unit_cell_volume,
+                        z_value,
+                    )
+                    st.info(f"Calculated theoretical density: {theoretical_density:.5f} g/cm3")
+                    density_source = "unit cell"
+                except ValueError as exc:
+                    st.warning(str(exc))
+        else:
+            theoretical_density = st.number_input(
+                "Manual theoretical density (g/cm3)",
+                min_value=0.0,
+                value=0.0,
+                step=0.01,
+                format="%.6f",
+            )
+            density_source = "manual"
+
+        reference = st.text_input("Source / reference", placeholder="XRD refinement, paper, manual")
+        notes = st.text_area("Notes", height=90)
+
+        save_density = st.button("Save Material Density", type="primary", width="stretch")
+        if save_density:
+            try:
+                if not density_formula:
+                    raise ValueError("Enter a target formula")
+                if theoretical_density is None or theoretical_density <= 0:
+                    raise ValueError("Enter enough density information")
+                upsert_material_density(
+                    density_formula,
+                    theoretical_density=theoretical_density,
+                    unit_cell_volume=unit_cell_volume if unit_cell_volume and unit_cell_volume > 0 else None,
+                    z=z_value if z_value and z_value > 0 else None,
+                    density_source=density_source,
+                    source=reference,
+                    notes=notes,
+                )
+                clear_data_cache()
+                st.success(f"Saved density for {normalize_formula(density_formula)}.")
+                st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
+
+        st.divider()
+        st.markdown("#### Delete target density")
+        density_delete_target = st.selectbox(
+            "Density record to delete",
+            [""] + list(material_densities.keys()),
+            format_func=lambda value: value or "Choose target",
+        )
+        if st.button("Delete Density Record", width="stretch"):
+            try:
+                if not density_delete_target:
+                    raise ValueError("Choose a target")
+                delete_material_density(density_delete_target)
+                clear_data_cache()
+                st.success(f"Deleted density for {density_delete_target}.")
+                st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
+
+    with table_col:
+        st.markdown("#### Known densities")
+        density_df = material_density_dataframe(material_densities)
+        if density_df.empty:
+            st.info("No material densities saved yet.")
+        else:
+            display_dataframe(density_df, theme_mode, width="stretch", hide_index=True)
+            st.download_button(
+                "Download Material Density CSV",
+                data=csv_bytes(density_df),
+                file_name="material_densities.csv",
+                mime="text/csv",
+                width="stretch",
+            )
+
+
+elif page == "Pellet Density":
+    st.subheader("Post-sintering relative density")
+    st.caption("Use the final measured pellet dimensions after sintering, not the 25.05 mm die diameter.")
+
+    density_left, density_right = st.columns([0.95, 1.05], gap="large")
+
+    with density_left:
+        pellet_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
+        sintered_diameter = st.number_input(
+            "Measured final diameter (mm)",
+            min_value=0.0,
+            value=0.0,
+            step=0.1,
+            format="%.4f",
+        )
+        sintered_height = st.number_input(
+            "Measured final height (mm)",
+            min_value=0.0,
+            value=0.0,
+            step=0.1,
+            format="%.4f",
+        )
+        sintered_mass = st.number_input(
+            "Measured final mass (g)",
+            min_value=0.0,
+            value=0.0,
+            step=0.01,
+            format="%.6f",
+        )
+        relative_theoretical_density, _ = density_source_control(
+            pellet_target,
+            material_densities,
+            key_prefix="relative_density",
+        )
+        calculate_density = st.button("Calculate Relative Density", type="primary", width="stretch")
+
+    with density_right:
+        st.markdown("#### Result")
+        if not calculate_density:
+            st.info("Enter final sintered dimensions, final mass, and a theoretical density.")
+        else:
+            try:
+                if relative_theoretical_density is None:
+                    raise ValueError("Choose a saved density or enter a manual theoretical density")
+                pellet_measured_density, final_volume = measured_density(
+                    sintered_mass,
+                    sintered_diameter,
+                    sintered_height,
+                )
+                relative_percent = relative_density_percent(
+                    pellet_measured_density,
+                    relative_theoretical_density,
+                )
+                deficit_percent = 100.0 - relative_percent
+
+                metric_cols = st.columns(3)
+                metric_cols[0].metric("Measured density", round(pellet_measured_density, 4))
+                metric_cols[1].metric("Theoretical density", round(relative_theoretical_density, 4))
+                metric_cols[2].metric("Relative density", f"{relative_percent:.2f}%")
+
+                detail_cols = st.columns(3)
+                detail_cols[0].metric("Final volume (cm3)", round(final_volume, 5))
+                detail_cols[1].metric("Density deficit", f"{deficit_percent:.2f}%")
+                detail_cols[2].metric("Final mass (g)", round(sintered_mass, 5))
+
+                if relative_percent > 100:
+                    st.warning("Relative density is above 100%. Check dimensions, mass, or theoretical density.")
+                else:
+                    st.success("Relative density calculated.")
+            except ValueError as exc:
+                st.error(str(exc))
 
 
 elif page == "History":

@@ -9,6 +9,9 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Add a powder and its starting inventory in one workflow
 - Update inventory quantities
 - Delete powders added by mistake
+- Save theoretical densities for target materials
+- Calculate precursor masses from a desired target height with a 25.05 mm die
+- Calculate post-sintering relative density from final pellet dimensions and mass
 - Recipe history grouped by target formula
 - CSV export for recipes, powders, inventory, and history
 
@@ -169,4 +172,5 @@ There is also a template at `.streamlit/secrets.example.toml`. Do not commit a r
 - `atomic_masses.json`: atomic masses used for molar mass calculation
 - `powders.json`: powder formulas and element compositions
 - `inventory.json`: available grams by powder
+- `material_densities.json`: target material theoretical densities and unit cell data
 - `history.json`: saved recipe calculations
