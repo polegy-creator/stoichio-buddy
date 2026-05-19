@@ -552,7 +552,7 @@ def lookup_known_density(target, material_densities):
 def density_source_control(target, material_densities, key_prefix):
     source_mode = st.radio(
         "Theoretical density source",
-        ["Known material density", "Manual density"],
+        ["Known material density", "Use another density record", "Manual density"],
         horizontal=True,
         key=f"{key_prefix}_density_source",
     )
@@ -570,6 +570,53 @@ def density_source_control(target, material_densities, key_prefix):
         else:
             st.warning(error)
         return density, source_mode
+
+    if source_mode == "Use another density record":
+        source_target = st.selectbox(
+            "Density record to use",
+            [""] + list(material_densities.keys()),
+            format_func=lambda value: value or "Choose saved material",
+            key=f"{key_prefix}_density_record",
+        )
+        if not source_target:
+            st.warning("Choose a saved material density record")
+            return None, source_mode
+
+        try:
+            normalized_target = normalize_formula(target)
+        except ValueError as exc:
+            st.warning(str(exc))
+            return None, source_mode
+
+        source_record = material_densities[source_target]
+        volume = source_record.get("unit_cell_volume_A3")
+        z_value = source_record.get("z")
+        if volume and z_value:
+            try:
+                density = theoretical_density_from_cell(normalized_target, volume, z_value)
+                st.success(
+                    f"Using {source_target} unit cell for {normalized_target}: "
+                    f"{density:.4f} g/cm3"
+                )
+                st.caption(
+                    f"Recalculated from V={volume:g} A3 and Z={z_value:g}; "
+                    "molar mass comes from the current target formula."
+                )
+                return density, source_mode
+            except ValueError as exc:
+                st.warning(str(exc))
+                return None, source_mode
+
+        density = source_record.get("theoretical_density_g_cm3")
+        if density:
+            st.warning(
+                f"{source_target} has no saved unit cell volume and Z. "
+                "Using its stored density directly."
+            )
+            return float(density), source_mode
+
+        st.warning(f"{source_target} has no usable density data")
+        return None, source_mode
 
     density = st.number_input(
         "Manual theoretical density (g/cm3)",
@@ -712,6 +759,15 @@ def display_dataframe(df, theme_mode, **kwargs):
         + "</table></div>",
         unsafe_allow_html=True,
     )
+
+
+def recipe_input_signature(target, target_mass, selected, amount_mode):
+    return {
+        "target": str(target).strip(),
+        "target_mass": round(float(target_mass), 8) if target_mass is not None else None,
+        "selected": tuple(selected),
+        "amount_mode": amount_mode,
+    }
 
 
 def truthy_secret(value):
@@ -880,24 +936,53 @@ if page == "Calculate":
             list(db.keys()),
             help="Only these powders will be used in the calculation.",
         )
-        deduct_inventory = st.checkbox("Deduct from inventory after solving")
+        deduct_inventory = st.checkbox("Deduct inventory when saving recipe")
 
         solve = st.button("Calculate Recipe", type="primary", width="stretch")
+        current_signature = recipe_input_signature(target, target_mass, selected, amount_mode)
+
+        if solve:
+            if target_mass is None or target_mass <= 0:
+                st.session_state.last_recipe_result = {
+                    "error": "Enter a valid target mass, or a valid height and theoretical density.",
+                    "signature": current_signature,
+                }
+            elif planning_error:
+                st.session_state.last_recipe_result = {
+                    "error": planning_error,
+                    "signature": current_signature,
+                }
+            else:
+                result = compute_recipe(target, target_mass, db, selected)
+                st.session_state.last_recipe_result = {
+                    "result": result,
+                    "target": target,
+                    "target_mass": target_mass,
+                    "selected": selected,
+                    "amount_mode": amount_mode,
+                    "planning_height": planning_height,
+                    "planning_volume": planning_volume,
+                    "theoretical_density": theoretical_density_used,
+                    "signature": current_signature,
+                }
+                st.session_state.last_recipe_saved = False
 
     with right:
         st.subheader("Result")
+        save_message = st.session_state.pop("recipe_save_message", None)
+        if save_message:
+            st.success(save_message)
 
-        if not solve:
+        last_recipe = st.session_state.get("last_recipe_result")
+        if not last_recipe:
             st.info("Enter a target formula, mass, and selected powders, then calculate.")
             if db:
                 display_dataframe(database_dataframe(db), theme_mode, width="stretch", hide_index=True)
         else:
-            if target_mass is None or target_mass <= 0:
-                st.error("Enter a valid target mass, or a valid height and theoretical density.")
-            elif planning_error:
-                st.error(planning_error)
+            if last_recipe.get("error"):
+                st.error(last_recipe["error"])
             else:
-                result = compute_recipe(target, target_mass, db, selected)
+                result = last_recipe["result"]
 
                 if result is None or result.get("recipe") is None:
                     st.error(result.get("warning", "No valid solution found") if result else "No valid solution found")
@@ -905,18 +990,19 @@ if page == "Calculate":
                     recipe_masses = result["recipe"]
                     recipe_df = recipe_dataframe(recipe_masses)
                     total_powder = sum(recipe_masses.values())
+                    displayed_target_mass = last_recipe["target_mass"]
 
                     metric_cols = st.columns(3)
-                    metric_cols[0].metric("Target basis (g)", round(target_mass, 3))
+                    metric_cols[0].metric("Target basis (g)", round(displayed_target_mass, 3))
                     metric_cols[1].metric("Precursor powder (g)", round(total_powder, 3))
                     metric_cols[2].metric("Powders used", len(recipe_masses))
 
-                    if amount_mode == "Pellet height":
+                    if last_recipe["amount_mode"] == "Pellet height":
                         detail_cols = st.columns(3)
                         detail_cols[0].metric("Die diameter (mm)", round(DEFAULT_DIE_DIAMETER_MM, 3))
-                        detail_cols[1].metric("Desired height (mm)", round(planning_height, 3))
-                        detail_cols[2].metric("Theoretical density", round(theoretical_density_used, 4))
-                        st.caption(f"Calculated planning volume: {planning_volume:.6f} cm3")
+                        detail_cols[1].metric("Desired height (mm)", round(last_recipe["planning_height"], 3))
+                        detail_cols[2].metric("Theoretical density", round(last_recipe["theoretical_density"], 4))
+                        st.caption(f"Calculated planning volume: {last_recipe['planning_volume']:.6f} cm3")
 
                     display_dataframe(recipe_df, theme_mode, width="stretch", hide_index=True)
                     st.download_button(
@@ -946,25 +1032,45 @@ if page == "Calculate":
                     if stock_messages:
                         st.warning("Inventory warning: " + "; ".join(stock_messages))
 
-                    inventory_deducted = False
-                    if deduct_inventory:
-                        if in_stock:
-                            st.session_state.inventory = consume_stock(current_inventory, recipe_masses)
-                            clear_data_cache()
-                            inventory_deducted = True
-                            st.success("Inventory deducted.")
-                        else:
-                            st.warning("Inventory was not deducted because stock is insufficient.")
+                    inputs_changed = last_recipe["signature"] != current_signature
+                    if inputs_changed:
+                        st.warning("Inputs changed after this calculation. Recalculate before saving.")
 
-                    log_synthesis(
-                        normalize_formula(target),
-                        target_mass,
-                        recipe_masses,
-                        selected_powders=selected,
-                        warning=result.get("warning"),
-                        inventory_deducted=inventory_deducted,
-                    )
-                    cached_load_history.clear()
+                    save_disabled = inputs_changed or st.session_state.get("last_recipe_saved", False)
+                    if st.button("Save Recipe to History", type="primary", width="stretch", disabled=save_disabled):
+                        latest_inventory = load_inventory()
+                        latest_in_stock, latest_stock_messages = check_stock(latest_inventory, recipe_masses)
+
+                        inventory_deducted = False
+                        if deduct_inventory:
+                            if latest_in_stock:
+                                consume_stock(latest_inventory, recipe_masses)
+                                inventory_deducted = True
+                            else:
+                                st.error(
+                                    "Recipe was not saved because inventory is insufficient: "
+                                    + "; ".join(latest_stock_messages)
+                                )
+                                st.stop()
+
+                        log_synthesis(
+                            normalize_formula(last_recipe["target"]),
+                            displayed_target_mass,
+                            recipe_masses,
+                            selected_powders=last_recipe["selected"],
+                            warning=result.get("warning"),
+                            inventory_deducted=inventory_deducted,
+                        )
+                        clear_data_cache()
+                        st.session_state.last_recipe_saved = True
+                        st.session_state.recipe_save_message = (
+                            "Recipe saved to history"
+                            + (" and inventory deducted." if inventory_deducted else ".")
+                        )
+                        st.rerun()
+
+                    if st.session_state.get("last_recipe_saved", False):
+                        st.caption("This recipe has already been saved. Recalculate to save a new entry.")
 
 
 elif page == "Powders & Inventory":

@@ -32,13 +32,68 @@ def solve_elements(target_comp, selected_powders, db):
     return elements, ignored
 
 
+def non_negative_least_squares(A, b, tolerance=1e-12, max_iterations=None):
+    """
+    Deterministic Lawson-Hanson style NNLS solver.
+
+    Solves min ||A x - b|| with x >= 0. This keeps the chemistry engine
+    constrained without relying on scipy as an extra dependency.
+    """
+    rows, cols = A.shape
+    if cols == 0:
+        return np.array([], dtype=float)
+
+    if max_iterations is None:
+        max_iterations = max(30, cols * 20)
+
+    x = np.zeros(cols, dtype=float)
+    passive = np.zeros(cols, dtype=bool)
+    w = A.T @ (b - A @ x)
+
+    iterations = 0
+    while np.any((~passive) & (w > tolerance)):
+        if iterations > max_iterations:
+            raise np.linalg.LinAlgError("NNLS solver did not converge")
+        iterations += 1
+
+        inactive_candidates = np.where(~passive, w, -np.inf)
+        passive[int(np.argmax(inactive_candidates))] = True
+
+        while True:
+            z = np.zeros(cols, dtype=float)
+            if np.any(passive):
+                z[passive] = np.linalg.lstsq(A[:, passive], b, rcond=None)[0]
+
+            if np.all(z[passive] > tolerance):
+                x = z
+                break
+
+            nonpositive = passive & (z <= tolerance)
+            denominators = x[nonpositive] - z[nonpositive]
+            valid = denominators > tolerance
+            if not np.any(valid):
+                x = np.where(z > tolerance, z, 0.0)
+                passive &= x > tolerance
+                break
+
+            alpha = np.min(x[nonpositive][valid] / denominators[valid])
+            x = x + alpha * (z - x)
+            x[np.abs(x) <= tolerance] = 0.0
+            passive &= x > tolerance
+
+        w = A.T @ (b - A @ x)
+
+    x[x < tolerance] = 0.0
+    return x
+
+
 def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
     """
     Deterministic stoichiometric solver.
 
     - Uses only user-selected powders
     - No subset search
-    - Uses one least-squares linear solve: A x ~= b
+    - Uses one non-negative least-squares solve: A x ~= b, x >= 0
     - Interprets x as precursor moles per mole of target
     """
     if not selected_powders:
@@ -82,11 +137,9 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
     )
 
     try:
-        coefficients = np.linalg.lstsq(A, b, rcond=None)[0]
+        coefficients = non_negative_least_squares(A, b)
     except np.linalg.LinAlgError:
         return {"recipe": None, "warning": "Solver failed"}
-
-    coefficients = np.where(coefficients < 0, 0, coefficients)
 
     if np.sum(coefficients) == 0:
         return {"recipe": None, "warning": "No physically valid contribution from selected powders"}

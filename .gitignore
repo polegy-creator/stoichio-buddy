@@ -4,3 +4,4 @@ __pycache__/
 .idea/
 .DS_Store
 Open Stoichio Buddy.command
+*.json.lock

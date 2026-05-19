@@ -3,6 +3,12 @@ import os
 import datetime
 import tempfile
 import re
+from contextlib import contextmanager
+
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
 
 from formula_parser import molar_mass, normalize_formula, parse_formula
 
@@ -35,7 +41,7 @@ def normalize_powder(name):
 
 
 class GoogleSheetsStore:
-    """Tiny JSON document store backed by three Google Sheets tabs."""
+    """Tiny JSON document store backed by Google Sheets tabs."""
 
     def __init__(self, credentials_info, spreadsheet_id=None, spreadsheet_name=None):
         try:
@@ -212,26 +218,43 @@ def storage_error():
 
 
 def load_json_file(path, default):
-    if not os.path.exists(path):
-        return default
+    with json_file_lock(path):
+        if not os.path.exists(path):
+            return default
 
-    try:
-        with open(path, "r") as f:
-            content = f.read().strip()
-            if not content:
-                return default
-            return json.loads(content)
-    except (OSError, json.JSONDecodeError):
-        return default
+        try:
+            with open(path, "r") as f:
+                content = f.read().strip()
+                if not content:
+                    return default
+                return json.loads(content)
+        except (OSError, json.JSONDecodeError):
+            return default
 
 
 def save_json_file(path, data):
-    directory = os.path.dirname(os.path.abspath(path)) or "."
-    with tempfile.NamedTemporaryFile("w", dir=directory, delete=False) as f:
-        json.dump(data, f, indent=4)
-        f.write("\n")
-        temp_path = f.name
-    os.replace(temp_path, path)
+    with json_file_lock(path):
+        directory = os.path.dirname(os.path.abspath(path)) or "."
+        with tempfile.NamedTemporaryFile("w", dir=directory, delete=False) as f:
+            json.dump(data, f, indent=4)
+            f.write("\n")
+            temp_path = f.name
+        os.replace(temp_path, path)
+
+
+@contextmanager
+def json_file_lock(path):
+    if fcntl is None:
+        yield
+        return
+
+    lock_path = f"{path}.lock"
+    with open(lock_path, "w") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
 
 def load_json(path, default):

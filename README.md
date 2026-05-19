@@ -6,6 +6,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 
 - Light and dark display modes
 - User-selected precursor powders only
+- Non-negative deterministic stoichiometry solver, with no automatic powder picking
 - Add a powder and its starting inventory in one workflow
 - Update inventory quantities
 - Delete powders added by mistake
@@ -13,7 +14,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Calculate theoretical density from full lattice parameters (`a`, `b`, `c`, `alpha`, `beta`, `gamma`) and `Z`
 - Calculate precursor masses from a desired target height with a 25.05 mm die
 - Calculate post-sintering relative density from final pellet dimensions and mass
-- Recipe history grouped by target formula
+- Recipe history grouped by target formula, with manual save after calculation
 - CSV export for recipes, powders, inventory, and history
 
 ## Run locally
@@ -40,7 +41,7 @@ The simplest free hosted path is Streamlit Community Cloud plus Google Sheets fo
 1. Put this folder in a GitHub repository.
 2. Go to Streamlit Community Cloud and create a new app from the repository.
 3. Set the main file to `stochio_buddy.py`.
-4. Add Google Sheets secrets if you want shared persistent powder, inventory, and history data.
+4. Add Google Sheets secrets if you want shared persistent powder, inventory, density, and history data.
 
 Shared Google Sheets storage is disabled by default because it is much slower than local JSON. If Google Sheets is not explicitly enabled, the app uses local JSON files. This is good for local/offline use, but local writes on Streamlit Community Cloud are not reliable after app restarts.
 
@@ -60,6 +61,7 @@ const TAB_BY_PATH = {
   "powders.json": "powders",
   "inventory.json": "inventory",
   "history.json": "history",
+  "material_densities.json": "material_densities",
 };
 
 function jsonResponse(payload) {
@@ -69,18 +71,43 @@ function jsonResponse(payload) {
 }
 
 function tabFor(path) {
-  const title = TAB_BY_PATH[path] || path.replace(".json", "");
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+
+  if (!spreadsheet) {
+    throw new Error("Open Apps Script from the Google Sheet: Extensions -> Apps Script.");
+  }
+
+  const title = TAB_BY_PATH[path] || path.replace(".json", "");
   return spreadsheet.getSheetByName(title) || spreadsheet.insertSheet(title);
+}
+
+function doGet() {
+  return jsonResponse({
+    ok: true,
+    service: "Stoichio Buddy storage",
+  });
 }
 
 function doPost(event) {
   try {
-    const body = JSON.parse(event.postData.contents || "{}");
-    const expectedToken = PropertiesService.getScriptProperties().getProperty(TOKEN_PROPERTY);
+    const body = JSON.parse((event.postData && event.postData.contents) || "{}");
 
-    if (!expectedToken || body.token !== expectedToken) {
-      return jsonResponse({ ok: false, error: "Unauthorized" });
+    const expectedToken = PropertiesService
+      .getScriptProperties()
+      .getProperty(TOKEN_PROPERTY);
+
+    if (!expectedToken) {
+      return jsonResponse({
+        ok: false,
+        error: "Missing STOICHIO_TOKEN script property",
+      });
+    }
+
+    if (body.token !== expectedToken) {
+      return jsonResponse({
+        ok: false,
+        error: "Unauthorized",
+      });
     }
 
     const sheet = tabFor(body.path);
@@ -104,9 +131,15 @@ function doPost(event) {
       return jsonResponse({ ok: true, data: true });
     }
 
-    return jsonResponse({ ok: false, error: "Unknown action" });
+    return jsonResponse({
+      ok: false,
+      error: "Unknown action: " + body.action,
+    });
   } catch (error) {
-    return jsonResponse({ ok: false, error: String(error) });
+    return jsonResponse({
+      ok: false,
+      error: String(error.stack || error),
+    });
   }
 }
 ```
@@ -125,7 +158,7 @@ apps_script_url = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
 apps_script_token = "the-same-long-random-password"
 ```
 
-On first connection, the app will create three tabs in the sheet if needed: `powders`, `inventory`, and `history`. If those tabs are empty, it seeds them from the local JSON files in the repository.
+On first connection, the app will create four tabs in the sheet if needed: `powders`, `inventory`, `history`, and `material_densities`. If those tabs are empty, it seeds them from the local JSON files in the repository.
 
 ## Google Sheets shared storage, service account
 
@@ -175,3 +208,5 @@ There is also a template at `.streamlit/secrets.example.toml`. Do not commit a r
 - `inventory.json`: available grams by powder
 - `material_densities.json`: target material theoretical densities and unit cell data
 - `history.json`: saved recipe calculations
+
+Local JSON writes use small `.json.lock` files to avoid partially written data if two browser sessions save at the same time.
