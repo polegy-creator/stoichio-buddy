@@ -882,62 +882,18 @@ def target_density_history(history):
     return [entry for entry in history if history_entry_type(entry) == "target_density"]
 
 
-def verify_recipe_entry(entry, db, tolerance=1e-6):
-    saved_recipe = entry.get("recipe") or {}
-    selected_powders = entry.get("selected_powders") or list(saved_recipe.keys())
-
-    if not saved_recipe:
-        return {
-            "status": "No recipe data",
-            "max_diff": None,
-            "computed": None,
-        }
-
-    result = compute_recipe(
-        entry.get("target", ""),
-        entry.get("mass", 0),
-        db,
-        selected_powders,
-    )
-    computed_recipe = result.get("recipe") if result else None
-    if not computed_recipe:
-        return {
-            "status": result.get("warning", "Cannot verify") if result else "Cannot verify",
-            "max_diff": None,
-            "computed": None,
-        }
-
-    recipe_keys = set(saved_recipe) | set(computed_recipe)
-    max_diff = max(
-        abs(float(saved_recipe.get(powder, 0.0)) - float(computed_recipe.get(powder, 0.0)))
-        for powder in recipe_keys
-    )
-    return {
-        "status": "Verified" if max_diff <= tolerance else "Changed",
-        "max_diff": max_diff,
-        "computed": computed_recipe,
-    }
-
-
-def history_dataframe(history, db=None):
+def history_dataframe(history):
     if not history:
         return pd.DataFrame()
 
     rows = []
     for entry in history:
-        verification = verify_recipe_entry(entry, db) if db is not None else None
         rows.append(
             {
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target": entry.get("target", ""),
                 "Target mass (g)": entry.get("mass", ""),
                 "Recipe": json.dumps(entry.get("recipe", {}), ensure_ascii=False),
-                "Verification": verification["status"] if verification else "",
-                "Max diff (g)": (
-                    round(verification["max_diff"], 9)
-                    if verification and verification["max_diff"] is not None
-                    else ""
-                ),
                 "Inventory deducted": entry.get("inventory_deducted", False),
                 "Warning": entry.get("warning") or "",
             }
@@ -1038,23 +994,16 @@ def trash_button(key, help_text):
     )
 
 
-def recipe_history_summary(entry, db=None):
+def recipe_history_summary(entry):
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
     mass = entry.get("mass", "")
     mass_text = f"{mass:g} g" if isinstance(mass, (int, float)) else str(mass)
     powders = ", ".join(entry.get("selected_powders") or [])
     recipe = entry.get("recipe") or {}
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
-    verification_text = ""
-    if db is not None:
-        verification = verify_recipe_entry(entry, db)
-        if verification["max_diff"] is None:
-            verification_text = verification["status"]
-        else:
-            verification_text = f"{verification['status']} | max diff {verification['max_diff']:.9g} g"
     return {
         "title": f"{entry.get('target', 'Unknown target')} | {mass_text}",
-        "meta": " | ".join(part for part in [time_text, powders, recipe_text, verification_text] if part),
+        "meta": " | ".join(part for part in [time_text, powders, recipe_text] if part),
     }
 
 
@@ -1936,33 +1885,17 @@ elif page == "History":
 
     with recipe_tab:
         st.markdown("#### Recipe history")
-        history_df = history_dataframe(recipe_history, db)
+        history_df = history_dataframe(recipe_history)
         if history_df.empty:
             st.info("No saved recipes yet.")
         else:
-            verification_statuses = [
-                verify_recipe_entry(entry, db)
-                for entry in recipe_history
-            ]
-            changed_recipes = [
-                status
-                for status in verification_statuses
-                if status["status"] != "Verified"
-            ]
-            if changed_recipes:
-                st.warning(
-                    f"{len(changed_recipes)} saved recipe(s) no longer match the current solver or powder database."
-                )
-            else:
-                st.success("All saved recipes match the current solver exactly.")
-
             for target_name, entries in grouped_history(recipe_history).items():
                 group_col, group_delete_col = st.columns([0.94, 0.06], gap="small")
                 with group_col:
                     with st.expander(f"{target_name} ({len(entries)})", expanded=False):
                         for entry in reversed(entries):
                             entry_id = entry.get("entry_id")
-                            summary = recipe_history_summary(entry, db)
+                            summary = recipe_history_summary(entry)
                             item_col, item_delete_col = st.columns([0.94, 0.06], gap="small")
                             with item_col:
                                 st.markdown(
