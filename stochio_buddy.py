@@ -28,6 +28,7 @@ from lab_manager import (
     delete_history_entry,
     delete_material_density,
     delete_powder,
+    format_target_id,
     load_history,
     load_inventory,
     load_material_densities,
@@ -890,6 +891,7 @@ def history_dataframe(history):
     for entry in history:
         rows.append(
             {
+                "Recipe ID": entry.get("recipe_id", ""),
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target": entry.get("target", ""),
                 "Target mass (g)": entry.get("mass", ""),
@@ -910,6 +912,7 @@ def target_density_dataframe(history):
     for entry in history:
         rows.append(
             {
+                "Target ID": entry.get("target_id", ""),
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target #": entry.get("target_number", ""),
                 "Target for": entry.get("target_for", ""),
@@ -1004,8 +1007,9 @@ def recipe_history_summary(entry):
     recipe = entry.get("recipe") or {}
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
     notes = entry.get("notes", "")
+    recipe_id = entry.get("recipe_id") or "Recipe"
     return {
-        "title": f"{entry.get('target', 'Unknown target')} | {mass_text}",
+        "title": f"{recipe_id} | {entry.get('target', 'Unknown target')} | {mass_text}",
         "meta": " | ".join(part for part in [time_text, powders, recipe_text, notes] if part),
     }
 
@@ -1019,9 +1023,10 @@ def target_density_history_summary(entry):
     height_value = entry.get("final_height_mm") or 0
     mass_value = entry.get("final_mass_g") or 0
     notes = entry.get("notes", "")
+    target_id = entry.get("target_id") or f"#{entry.get('target_number', '')}"
     return {
         "title": (
-            f"#{entry.get('target_number', '')} | "
+            f"{target_id} | "
             f"{entry.get('target', 'Unknown target')} | "
             f"{relative_density:.2f}%"
         ),
@@ -1400,7 +1405,7 @@ if page == "Calculate":
                                 )
                                 st.stop()
 
-                        log_synthesis(
+                        saved_history = log_synthesis(
                             normalize_formula(last_recipe["target"]),
                             displayed_target_mass,
                             recipe_masses,
@@ -1409,10 +1414,12 @@ if page == "Calculate":
                             inventory_deducted=inventory_deducted,
                             notes=recipe_notes,
                         )
+                        saved_recipe = saved_history[-1] if saved_history else {}
+                        recipe_id = saved_recipe.get("recipe_id", "Recipe")
                         clear_data_cache()
                         st.session_state.last_recipe_saved = True
                         st.session_state.recipe_save_message = (
-                            "Recipe saved to history"
+                            f"{recipe_id} saved to history"
                             + (" and inventory deducted." if inventory_deducted else ".")
                         )
                         st.rerun()
@@ -1738,9 +1745,10 @@ elif page == "Target Density":
 
         normalized_person = target_for.strip()
         if normalized_person:
+            preview_number = next_target_number(history, normalized_person)
             st.caption(
                 f"Next saved target for {normalized_person} will be "
-                f"#{next_target_number(history, normalized_person)}."
+                f"{format_target_id(normalized_person, preview_number)}."
             )
 
         sintered_diameter = st.number_input(
@@ -1831,9 +1839,10 @@ elif page == "Target Density":
         else:
             deficit_percent = 100.0 - last_density["relative_percent"]
             current_target_number = next_target_number(history, last_density["target_for"])
+            current_target_id = format_target_id(last_density["target_for"], current_target_number)
 
             st.caption(
-                f"Will save as target #{current_target_number} for "
+                f"Will save as {current_target_id} for "
                 f"{last_density['target_for']}: {last_density['target']}"
             )
             metric_cols = st.columns(3)
@@ -1868,7 +1877,7 @@ elif page == "Target Density":
                 latest_history = load_history()
                 assigned_target_number = next_target_number(latest_history, last_density["target_for"])
 
-                log_target_density(
+                saved_history = log_target_density(
                     last_density["target"],
                     assigned_target_number,
                     last_density["target_for"],
@@ -1882,11 +1891,16 @@ elif page == "Target Density":
                     density_source=last_density["density_source"],
                     notes=target_density_notes,
                 )
+                saved_target = saved_history[-1] if saved_history else {}
+                target_id = saved_target.get(
+                    "target_id",
+                    format_target_id(last_density["target_for"], assigned_target_number),
+                )
                 clear_data_cache()
                 st.session_state.pop("last_target_density_result", None)
                 st.session_state.last_target_density_saved = False
                 st.session_state.target_density_save_message = (
-                    f"Target density saved as #{assigned_target_number} "
+                    f"Target density saved as {target_id} "
                     f"for {last_density['target_for']}."
                 )
                 st.rerun()

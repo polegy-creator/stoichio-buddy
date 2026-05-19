@@ -558,16 +558,139 @@ def consume_stock(inventory, recipe):
 # HISTORY SYSTEM
 # =========================
 
+def _positive_int(value):
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number > 0 else None
+
+
+def _history_name_code(value, fallback):
+    cleaned = "".join(character for character in str(value or "").strip() if character.isalnum())
+    return cleaned[:24] or fallback
+
+
+def _next_unused_number(used_numbers):
+    number = max(used_numbers, default=0) + 1
+    while number in used_numbers:
+        number += 1
+    return number
+
+
+def format_recipe_id(recipe_number):
+    number = _positive_int(recipe_number) or 1
+    return f"R{number:03d}"
+
+
+def format_target_id(target_for, target_number):
+    number = _positive_int(target_number) or 1
+    return f"{_history_name_code(target_for, 'Target')}-T{number:03d}"
+
+
+def _recipe_number_from_entry(entry):
+    number = _positive_int(entry.get("recipe_number"))
+    if number is not None:
+        return number
+
+    recipe_id = str(entry.get("recipe_id", ""))
+    match = re.fullmatch(r"R0*(\d+)", recipe_id, flags=re.IGNORECASE)
+    if match:
+        return _positive_int(match.group(1))
+    return None
+
+
+def _target_number_from_entry(entry):
+    number = _positive_int(entry.get("target_number"))
+    if number is not None:
+        return number
+
+    target_id = str(entry.get("target_id", ""))
+    match = re.search(r"-T0*(\d+)$", target_id, flags=re.IGNORECASE)
+    if match:
+        return _positive_int(match.group(1))
+    return None
+
+
+def next_recipe_number(history):
+    used_numbers = {
+        number
+        for entry in history
+        if isinstance(entry, dict) and history_entry_type(entry) == "synthesis"
+        for number in [_recipe_number_from_entry(entry)]
+        if number is not None
+    }
+    return _next_unused_number(used_numbers)
+
+
 def load_history():
     history = load_json(HISTORY_FILE, [])
     if not isinstance(history, list):
         return []
 
     changed = False
+    used_recipe_numbers = {
+        number
+        for entry in history
+        if isinstance(entry, dict) and history_entry_type(entry) == "synthesis"
+        for number in [_recipe_number_from_entry(entry)]
+        if number is not None
+    }
+    used_target_numbers = {}
+
     for entry in history:
-        if isinstance(entry, dict) and not entry.get("entry_id"):
+        if not isinstance(entry, dict) or history_entry_type(entry) != "target_density":
+            continue
+        person = str(entry.get("target_for", "")).strip()
+        number = _target_number_from_entry(entry)
+        if number is not None:
+            used_target_numbers.setdefault(person, set()).add(number)
+
+    for entry in history:
+        if not isinstance(entry, dict):
+            continue
+
+        if not entry.get("entry_id"):
             entry["entry_id"] = uuid.uuid4().hex
             changed = True
+
+        entry_type = history_entry_type(entry)
+        if entry_type == "synthesis":
+            recipe_number = _recipe_number_from_entry(entry)
+            if recipe_number is None:
+                recipe_number = _next_unused_number(used_recipe_numbers)
+                used_recipe_numbers.add(recipe_number)
+                entry["recipe_number"] = recipe_number
+                entry["recipe_id"] = format_recipe_id(recipe_number)
+                changed = True
+            else:
+                used_recipe_numbers.add(recipe_number)
+                if entry.get("recipe_number") != recipe_number:
+                    entry["recipe_number"] = recipe_number
+                    changed = True
+                if not entry.get("recipe_id"):
+                    entry["recipe_id"] = format_recipe_id(recipe_number)
+                    changed = True
+
+        if entry_type == "target_density":
+            person = str(entry.get("target_for", "")).strip()
+            used_for_person = used_target_numbers.setdefault(person, set())
+            target_number = _target_number_from_entry(entry)
+
+            if target_number is None:
+                target_number = _next_unused_number(used_for_person)
+                used_for_person.add(target_number)
+                entry["target_number"] = target_number
+                entry["target_id"] = format_target_id(person, target_number)
+                changed = True
+            else:
+                used_for_person.add(target_number)
+                if entry.get("target_number") != target_number:
+                    entry["target_number"] = target_number
+                    changed = True
+                if not entry.get("target_id"):
+                    entry["target_id"] = format_target_id(person, target_number)
+                    changed = True
 
     if changed:
         save_history(history)
@@ -635,10 +758,13 @@ def log_synthesis(
     notes=None,
 ):
     history = load_history()
+    recipe_number = next_recipe_number(history)
 
     entry = {
         "entry_id": uuid.uuid4().hex,
         "entry_type": "synthesis",
+        "recipe_id": format_recipe_id(recipe_number),
+        "recipe_number": recipe_number,
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,
         "mass": mass,
@@ -669,14 +795,17 @@ def log_target_density(
     notes=None,
 ):
     history = load_history()
+    target_for = str(target_for).strip()
+    target_number = int(target_number)
 
     entry = {
         "entry_id": uuid.uuid4().hex,
         "entry_type": "target_density",
+        "target_id": format_target_id(target_for, target_number),
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,
-        "target_number": int(target_number),
-        "target_for": str(target_for).strip(),
+        "target_number": target_number,
+        "target_for": target_for,
         "measured_density_g_cm3": float(measured_density),
         "theoretical_density_g_cm3": float(theoretical_density),
         "relative_density_percent": float(relative_density),
