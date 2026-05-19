@@ -891,6 +891,8 @@ def history_dataframe(history):
     for entry in history:
         rows.append(
             {
+                "Target ID": entry.get("target_id", ""),
+                "Target for": entry.get("target_for", ""),
                 "Recipe ID": entry.get("recipe_id", ""),
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target": entry.get("target", ""),
@@ -953,7 +955,7 @@ def next_target_number(history, target_for):
         return 1
 
     used_numbers = []
-    for entry in target_density_history(history):
+    for entry in history:
         if str(entry.get("target_for", "")).strip() != person:
             continue
         try:
@@ -962,6 +964,40 @@ def next_target_number(history, target_for):
             continue
 
     return max(used_numbers, default=0) + 1
+
+
+def linked_recipe_targets(history):
+    entries = [
+        entry
+        for entry in synthesis_history(history)
+        if entry.get("entry_id") and entry.get("target_id") and entry.get("target_for")
+    ]
+    return sorted(
+        entries,
+        key=lambda entry: (
+            str(entry.get("target_for", "")).lower(),
+            int(entry.get("target_number", 0) or 0),
+            str(entry.get("time", "")),
+        ),
+        reverse=True,
+    )
+
+
+def linked_recipe_target_label(entry):
+    mass = entry.get("mass", "")
+    mass_text = f"{mass:g} g" if isinstance(mass, (int, float)) else str(mass)
+    time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
+    return " | ".join(
+        part
+        for part in [
+            entry.get("target_id", ""),
+            entry.get("target", ""),
+            entry.get("target_for", ""),
+            mass_text,
+            time_text,
+        ]
+        if part
+    )
 
 
 def widget_key(prefix, value):
@@ -1008,9 +1044,22 @@ def recipe_history_summary(entry):
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
     notes = entry.get("notes", "")
     recipe_id = entry.get("recipe_id") or "Recipe"
+    target_id = entry.get("target_id") or recipe_id
+    target_for = entry.get("target_for", "")
     return {
-        "title": f"{recipe_id} | {entry.get('target', 'Unknown target')} | {mass_text}",
-        "meta": " | ".join(part for part in [time_text, powders, recipe_text, notes] if part),
+        "title": f"{target_id} | {entry.get('target', 'Unknown target')} | {mass_text}",
+        "meta": " | ".join(
+            part
+            for part in [
+                time_text,
+                f"For {target_for}" if target_for else "",
+                recipe_id if entry.get("target_id") else "",
+                powders,
+                recipe_text,
+                notes,
+            ]
+            if part
+        ),
     }
 
 
@@ -1082,10 +1131,12 @@ def target_density_signature(
     final_mass,
     theoretical_density,
     density_source,
+    target_id=None,
 ):
     return {
         "target": str(target).strip(),
         "target_for": str(target_for).strip(),
+        "target_id": str(target_id or "").strip(),
         "final_diameter": round(float(final_diameter), 8),
         "final_height": round(float(final_height), 8),
         "final_mass": round(float(final_mass), 8),
@@ -1209,6 +1260,18 @@ if page == "Calculate":
             placeholder="Fe1.98Ti0.02O3",
             help="Simple formulas with decimal stoichiometry are supported.",
         )
+        recipe_target_for = st.text_input(
+            "Target for",
+            placeholder="Person or project name",
+            key="recipe_target_for",
+        )
+        recipe_target_owner = recipe_target_for.strip()
+        if recipe_target_owner:
+            preview_number = next_target_number(history, recipe_target_owner)
+            st.caption(
+                f"This recipe will be the before-sintering record for "
+                f"{format_target_id(recipe_target_owner, preview_number)}."
+            )
         amount_mode = st.radio(
             "Target amount mode",
             ["Target mass", "Pellet height"],
@@ -1383,13 +1446,31 @@ if page == "Calculate":
                     if inputs_changed:
                         st.warning("Inputs changed after this calculation. Recalculate before saving.")
 
+                    recipe_target_owner = recipe_target_for.strip()
+                    if recipe_target_owner:
+                        recipe_target_number = next_target_number(history, recipe_target_owner)
+                        recipe_target_id = format_target_id(recipe_target_owner, recipe_target_number)
+                        st.caption(
+                            f"Will save before-sintering recipe as {recipe_target_id} "
+                            f"for {recipe_target_owner}."
+                        )
+                    else:
+                        recipe_target_id = None
+                        st.warning("Enter who the target is for before saving the recipe.")
+
                     recipe_notes = st.text_area(
                         "Recipe notes",
                         placeholder="Example: calcination plan, pressing force, operator notes",
                         key=widget_key("recipe_save_notes", last_recipe["signature"]),
                     )
-                    save_disabled = inputs_changed or st.session_state.get("last_recipe_saved", False)
+                    save_disabled = (
+                        inputs_changed
+                        or st.session_state.get("last_recipe_saved", False)
+                        or not recipe_target_owner
+                    )
                     if st.button("Save Recipe to History", type="primary", width="stretch", disabled=save_disabled):
+                        latest_history = load_history()
+                        assigned_target_number = next_target_number(latest_history, recipe_target_owner)
                         latest_inventory = load_inventory()
                         latest_in_stock, latest_stock_messages = check_stock(latest_inventory, recipe_masses)
 
@@ -1413,9 +1494,11 @@ if page == "Calculate":
                             warning=result.get("warning"),
                             inventory_deducted=inventory_deducted,
                             notes=recipe_notes,
+                            target_for=recipe_target_owner,
+                            target_number=assigned_target_number,
                         )
                         saved_recipe = saved_history[-1] if saved_history else {}
-                        recipe_id = saved_recipe.get("recipe_id", "Recipe")
+                        recipe_id = saved_recipe.get("target_id") or saved_recipe.get("recipe_id", "Recipe")
                         clear_data_cache()
                         st.session_state.last_recipe_saved = True
                         st.session_state.recipe_save_message = (
@@ -1740,16 +1823,57 @@ elif page == "Target Density":
     density_left, density_right = st.columns([0.95, 1.05], gap="large")
 
     with density_left:
-        density_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
-        target_for = st.text_input("Target for", placeholder="Person or project name", key="target_density_for")
+        linked_targets = linked_recipe_targets(history)
+        linked_target_lookup = {entry["entry_id"]: entry for entry in linked_targets}
+        linked_target_key = st.selectbox(
+            "Saved recipe target",
+            [""] + list(linked_target_lookup.keys()),
+            format_func=lambda key: (
+                "New target not linked to a recipe"
+                if not key
+                else linked_recipe_target_label(linked_target_lookup[key])
+            ),
+            help="Choose the before-sintering recipe target when this density measurement belongs to it.",
+        )
+        linked_target = linked_target_lookup.get(linked_target_key)
+
+        if linked_target:
+            density_target = linked_target.get("target", "")
+            target_for = str(linked_target.get("target_for", "")).strip()
+            linked_target_number = int(linked_target.get("target_number", 0) or 0)
+            linked_target_id = linked_target.get("target_id") or format_target_id(
+                target_for,
+                linked_target_number,
+            )
+            st.info(f"After-sintering density will be linked to {linked_target_id}.")
+            st.text_input(
+                "Target formula",
+                value=density_target,
+                disabled=True,
+                key=widget_key("linked_density_target", linked_target_key),
+            )
+            st.text_input(
+                "Target for",
+                value=target_for,
+                disabled=True,
+                key=widget_key("linked_density_for", linked_target_key),
+            )
+        else:
+            density_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
+            target_for = st.text_input("Target for", placeholder="Person or project name", key="target_density_for")
+            linked_target_number = None
+            linked_target_id = None
 
         normalized_person = target_for.strip()
         if normalized_person:
-            preview_number = next_target_number(history, normalized_person)
-            st.caption(
-                f"Next saved target for {normalized_person} will be "
-                f"{format_target_id(normalized_person, preview_number)}."
-            )
+            if linked_target_id:
+                st.caption(f"This is the after-sintering record for {linked_target_id}.")
+            else:
+                preview_number = next_target_number(history, normalized_person)
+                st.caption(
+                    f"Next saved target for {normalized_person} will be "
+                    f"{format_target_id(normalized_person, preview_number)}."
+                )
 
         sintered_diameter = st.number_input(
             "Measured final diameter (mm)",
@@ -1785,6 +1909,7 @@ elif page == "Target Density":
             sintered_mass,
             relative_theoretical_density,
             density_source_mode,
+            target_id=linked_target_id,
         )
         calculate_density = st.button("Calculate Target Density", type="primary", width="stretch")
 
@@ -1816,6 +1941,8 @@ elif page == "Target Density":
                     "final_diameter": sintered_diameter,
                     "final_height": sintered_height,
                     "density_source": density_source_mode,
+                    "target_number": linked_target_number,
+                    "target_id": linked_target_id,
                     "signature": current_density_signature,
                 }
                 st.session_state.last_target_density_saved = False
@@ -1838,11 +1965,17 @@ elif page == "Target Density":
             st.error(last_density["error"])
         else:
             deficit_percent = 100.0 - last_density["relative_percent"]
-            current_target_number = next_target_number(history, last_density["target_for"])
-            current_target_id = format_target_id(last_density["target_for"], current_target_number)
+            current_target_number = last_density.get("target_number") or next_target_number(
+                history,
+                last_density["target_for"],
+            )
+            current_target_id = last_density.get("target_id") or format_target_id(
+                last_density["target_for"],
+                current_target_number,
+            )
 
             st.caption(
-                f"Will save as {current_target_id} for "
+                f"Will save after-sintering density as {current_target_id} for "
                 f"{last_density['target_for']}: {last_density['target']}"
             )
             metric_cols = st.columns(3)
@@ -1874,8 +2007,14 @@ elif page == "Target Density":
                 or st.session_state.get("last_target_density_saved", False)
             )
             if st.button("Save Target Density to History", type="primary", width="stretch", disabled=save_disabled):
-                latest_history = load_history()
-                assigned_target_number = next_target_number(latest_history, last_density["target_for"])
+                assigned_target_number = last_density.get("target_number")
+                if not assigned_target_number:
+                    latest_history = load_history()
+                    assigned_target_number = next_target_number(latest_history, last_density["target_for"])
+                assigned_target_id = last_density.get("target_id") or format_target_id(
+                    last_density["target_for"],
+                    assigned_target_number,
+                )
 
                 saved_history = log_target_density(
                     last_density["target"],
@@ -1890,6 +2029,7 @@ elif page == "Target Density":
                     last_density["final_height"],
                     density_source=last_density["density_source"],
                     notes=target_density_notes,
+                    target_id=assigned_target_id,
                 )
                 saved_target = saved_history[-1] if saved_history else {}
                 target_id = saved_target.get(

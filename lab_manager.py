@@ -623,6 +623,21 @@ def next_recipe_number(history):
     return _next_unused_number(used_numbers)
 
 
+def next_target_number(history, target_for):
+    person = str(target_for).strip()
+    if not person:
+        return 1
+
+    used_numbers = {
+        number
+        for entry in history
+        if isinstance(entry, dict) and str(entry.get("target_for", "")).strip() == person
+        for number in [_target_number_from_entry(entry)]
+        if number is not None
+    }
+    return _next_unused_number(used_numbers)
+
+
 def load_history():
     history = load_json(HISTORY_FILE, [])
     if not isinstance(history, list):
@@ -639,9 +654,11 @@ def load_history():
     used_target_numbers = {}
 
     for entry in history:
-        if not isinstance(entry, dict) or history_entry_type(entry) != "target_density":
+        if not isinstance(entry, dict):
             continue
         person = str(entry.get("target_for", "")).strip()
+        if not person:
+            continue
         number = _target_number_from_entry(entry)
         if number is not None:
             used_target_numbers.setdefault(person, set()).add(number)
@@ -671,6 +688,26 @@ def load_history():
                 if not entry.get("recipe_id"):
                     entry["recipe_id"] = format_recipe_id(recipe_number)
                     changed = True
+
+            person = str(entry.get("target_for", "")).strip()
+            if person:
+                used_for_person = used_target_numbers.setdefault(person, set())
+                target_number = _target_number_from_entry(entry)
+
+                if target_number is None:
+                    target_number = _next_unused_number(used_for_person)
+                    used_for_person.add(target_number)
+                    entry["target_number"] = target_number
+                    entry["target_id"] = format_target_id(person, target_number)
+                    changed = True
+                else:
+                    used_for_person.add(target_number)
+                    if entry.get("target_number") != target_number:
+                        entry["target_number"] = target_number
+                        changed = True
+                    if not entry.get("target_id"):
+                        entry["target_id"] = format_target_id(person, target_number)
+                        changed = True
 
         if entry_type == "target_density":
             person = str(entry.get("target_for", "")).strip()
@@ -756,9 +793,16 @@ def log_synthesis(
     warning=None,
     inventory_deducted=False,
     notes=None,
+    target_for=None,
+    target_number=None,
+    target_id=None,
 ):
     history = load_history()
     recipe_number = next_recipe_number(history)
+    target_for = str(target_for or "").strip()
+    if target_for:
+        target_number = int(target_number or next_target_number(history, target_for))
+        target_id = target_id or format_target_id(target_for, target_number)
 
     entry = {
         "entry_id": uuid.uuid4().hex,
@@ -774,6 +818,14 @@ def log_synthesis(
         "inventory_deducted": inventory_deducted,
         "notes": str(notes or "").strip(),
     }
+    if target_for:
+        entry.update(
+            {
+                "target_id": target_id,
+                "target_number": target_number,
+                "target_for": target_for,
+            }
+        )
 
     history.append(entry)
     save_history(history)
@@ -793,15 +845,17 @@ def log_target_density(
     final_height,
     density_source=None,
     notes=None,
+    target_id=None,
 ):
     history = load_history()
     target_for = str(target_for).strip()
     target_number = int(target_number)
+    target_id = target_id or format_target_id(target_for, target_number)
 
     entry = {
         "entry_id": uuid.uuid4().hex,
         "entry_type": "target_density",
-        "target_id": format_target_id(target_for, target_number),
+        "target_id": target_id,
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,
         "target_number": target_number,
