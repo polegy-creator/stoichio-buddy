@@ -1,5 +1,6 @@
 import json
 import html
+import hashlib
 from collections import defaultdict
 from datetime import datetime
 from io import StringIO
@@ -49,6 +50,7 @@ st.set_page_config(
 )
 
 DATA_CACHE_TTL_SECONDS = 20
+LOW_STOCK_THRESHOLD_G = 10.0
 
 
 def apply_theme(mode):
@@ -351,6 +353,37 @@ def apply_theme(mode):
         border-bottom: 0;
     }
 
+    .sb-table tr.stock-low td {
+        background: color-mix(in srgb, var(--sb-accent) 18%, var(--sb-table-bg)) !important;
+        border-left: 3px solid var(--sb-accent);
+    }
+
+    .sb-table tr.stock-short td,
+    .sb-table tr.stock-empty td,
+    .sb-table tr.stock-missing td {
+        background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
+        border-left: 3px solid #d64a4a;
+    }
+
+    .history-item {
+        border: 1px solid var(--sb-border);
+        border-radius: 8px;
+        background: var(--sb-panel);
+        padding: 0.65rem 0.75rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .history-item-title {
+        color: var(--sb-text);
+        font-weight: 750;
+        margin-bottom: 0.15rem;
+    }
+
+    .history-item-meta {
+        color: var(--sb-muted);
+        font-size: 0.9rem;
+    }
+
     button,
     .stButton > button,
     .stDownloadButton > button,
@@ -405,6 +438,20 @@ def apply_theme(mode):
         filter: brightness(1.14) saturate(1.08);
         color: var(--sb-primary-text) !important;
     }
+
+    .stButton > button[kind="tertiary"] {
+        min-width: 2.1rem;
+        min-height: 2.1rem;
+        padding: 0.25rem 0.45rem;
+        background: color-mix(in srgb, var(--sb-accent) 14%, transparent) !important;
+        color: var(--sb-accent) !important;
+        border-color: color-mix(in srgb, var(--sb-accent) 55%, var(--sb-border)) !important;
+    }
+
+    .stButton > button[kind="tertiary"]:hover {
+        background: color-mix(in srgb, var(--sb-accent) 28%, transparent) !important;
+        color: var(--sb-accent) !important;
+    }
     </style>
     """
 
@@ -447,17 +494,45 @@ def load_app_state(storage_status):
     return st.session_state.db, st.session_state.inventory
 
 
-def recipe_dataframe(recipe_masses):
-    return pd.DataFrame(
-        [
-            {
-                "Powder": powder,
-                "Mass (g)": round(grams, 3),
-                "Exact mass (g)": grams,
-            }
-            for powder, grams in recipe_masses.items()
-        ]
-    )
+def recipe_dataframe(recipe_masses, inventory=None):
+    rows = []
+    for powder, grams in recipe_masses.items():
+        row = {
+            "Powder": powder,
+            "Mass (g)": round(grams, 3),
+            "Exact mass (g)": grams,
+        }
+
+        if inventory is not None:
+            available = inventory.get(normalize_formula(powder))
+            if available is None:
+                row.update(
+                    {
+                        "Available (g)": "",
+                        "After recipe (g)": "",
+                        "Stock status": "Not in inventory",
+                    }
+                )
+            else:
+                remaining = available - grams
+                if remaining < 0:
+                    status = f"Short by {abs(remaining):.3f} g"
+                elif remaining < LOW_STOCK_THRESHOLD_G:
+                    status = f"Low after recipe (<{LOW_STOCK_THRESHOLD_G:g} g)"
+                else:
+                    status = "OK"
+
+                row.update(
+                    {
+                        "Available (g)": round(available, 3),
+                        "After recipe (g)": round(remaining, 3),
+                        "Stock status": status,
+                    }
+                )
+
+        rows.append(row)
+
+    return pd.DataFrame(rows)
 
 
 def database_dataframe(db):
@@ -475,13 +550,36 @@ def database_dataframe(db):
     )
 
 
-def inventory_dataframe(inventory):
-    return pd.DataFrame(
-        [
-            {"Powder": powder, "Available (g)": round(grams, 3)}
-            for powder, grams in inventory.items()
-        ]
-    )
+def inventory_dataframe(inventory, recipe_masses=None):
+    rows = []
+    recipe_masses = recipe_masses or {}
+    normalized_requirements = {
+        normalize_formula(powder): grams
+        for powder, grams in recipe_masses.items()
+    }
+
+    for powder, grams in inventory.items():
+        required = normalized_requirements.get(normalize_formula(powder), 0.0)
+        remaining = grams - required
+
+        if required > grams:
+            status = f"Short for recipe by {abs(remaining):.3f} g"
+        elif grams < LOW_STOCK_THRESHOLD_G:
+            status = f"Low stock (<{LOW_STOCK_THRESHOLD_G:g} g)"
+        else:
+            status = "OK"
+
+        row = {
+            "Powder": powder,
+            "Available (g)": round(grams, 3),
+            "Status": status,
+        }
+        if recipe_masses:
+            row["Needed for last recipe (g)"] = round(required, 3) if required else ""
+            row["After last recipe (g)"] = round(remaining, 3) if required else round(grams, 3)
+        rows.append(row)
+
+    return pd.DataFrame(rows)
 
 
 def material_density_dataframe(records):
@@ -803,25 +901,75 @@ def next_target_number(history, target_for):
     return max(used_numbers, default=0) + 1
 
 
-def recipe_history_label(entry):
+def widget_key(prefix, value):
+    digest = hashlib.sha1(str(value).encode("utf-8")).hexdigest()[:12]
+    return f"{prefix}_{digest}"
+
+
+def stock_row_class(row):
+    status = str(row.get("Stock status", row.get("Status", ""))).lower()
+    if "not in inventory" in status:
+        return "stock-missing"
+    if "short" in status:
+        return "stock-short"
+    if "low" in status:
+        return "stock-low"
+    return ""
+
+
+def active_recipe_masses():
+    last_recipe = st.session_state.get("last_recipe_result")
+    if not last_recipe or last_recipe.get("error"):
+        return None
+    result = last_recipe.get("result") or {}
+    return result.get("recipe")
+
+
+def trash_button(key, help_text):
+    return st.button(
+        " ",
+        key=key,
+        help=help_text,
+        icon=":material/delete:",
+        type="tertiary",
+        width="content",
+    )
+
+
+def recipe_history_summary(entry):
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
-    target = entry.get("target", "Unknown target")
     mass = entry.get("mass", "")
+    mass_text = f"{mass:g} g" if isinstance(mass, (int, float)) else str(mass)
     powders = ", ".join(entry.get("selected_powders") or [])
-    powder_text = f" | {powders}" if powders else ""
-    if isinstance(mass, (int, float)):
-        return f"{time_text} | {target} | {mass:g} g{powder_text}"
-    return f"{time_text} | {target}{powder_text}"
+    recipe = entry.get("recipe") or {}
+    recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
+    return {
+        "title": f"{entry.get('target', 'Unknown target')} | {mass_text}",
+        "meta": " | ".join(part for part in [time_text, powders, recipe_text] if part),
+    }
 
 
-def target_density_history_label(entry):
+def target_density_history_summary(entry):
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
-    target_for = entry.get("target_for", "Unassigned")
-    target_number = entry.get("target_number", "")
-    target = entry.get("target", "Unknown target")
-    relative_density = entry.get("relative_density_percent")
-    density_text = f" | {relative_density:.2f}%" if isinstance(relative_density, (int, float)) else ""
-    return f"#{target_number} | {target_for} | {target}{density_text} | {time_text}"
+    relative_density = entry.get("relative_density_percent") or 0
+    measured_density_value = entry.get("measured_density_g_cm3") or 0
+    theoretical_density_value = entry.get("theoretical_density_g_cm3") or 0
+    diameter_value = entry.get("final_diameter_mm") or 0
+    height_value = entry.get("final_height_mm") or 0
+    mass_value = entry.get("final_mass_g") or 0
+    return {
+        "title": (
+            f"#{entry.get('target_number', '')} | "
+            f"{entry.get('target', 'Unknown target')} | "
+            f"{relative_density:.2f}%"
+        ),
+        "meta": (
+            f"{time_text} | measured {measured_density_value:.4f} g/cm3 | "
+            f"theoretical {theoretical_density_value:.4f} g/cm3 | "
+            f"{diameter_value:.3f} mm x {height_value:.3f} mm | "
+            f"{mass_value:.5f} g"
+        ),
+    }
 
 
 def csv_bytes(df):
@@ -830,14 +978,16 @@ def csv_bytes(df):
     return buffer.getvalue()
 
 
-def display_dataframe(df, theme_mode, **kwargs):
+def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     table_rows = []
     headers = "".join(f"<th>{html.escape(str(column))}</th>" for column in df.columns)
     table_rows.append(f"<tr>{headers}</tr>")
 
     for _, row in df.iterrows():
+        row_class = row_class_func(row) if row_class_func else ""
+        class_attr = f' class="{html.escape(row_class)}"' if row_class else ""
         cells = "".join(f"<td>{html.escape(str(value))}</td>" for value in row)
-        table_rows.append(f"<tr>{cells}</tr>")
+        table_rows.append(f"<tr{class_attr}>{cells}</tr>")
 
     st.markdown(
         '<div class="sb-table-wrap"><table class="sb-table">'
@@ -1099,7 +1249,9 @@ if page == "Calculate":
                     st.error(result.get("warning", "No valid solution found") if result else "No valid solution found")
                 else:
                     recipe_masses = result["recipe"]
-                    recipe_df = recipe_dataframe(recipe_masses)
+                    current_inventory = inventory
+                    in_stock, stock_messages = check_stock(current_inventory, recipe_masses)
+                    recipe_df = recipe_dataframe(recipe_masses, current_inventory)
                     total_powder = sum(recipe_masses.values())
                     displayed_target_mass = last_recipe["target_mass"]
 
@@ -1115,7 +1267,13 @@ if page == "Calculate":
                         detail_cols[2].metric("Theoretical density", round(last_recipe["theoretical_density"], 4))
                         st.caption(f"Calculated planning volume: {last_recipe['planning_volume']:.6f} cm3")
 
-                    display_dataframe(recipe_df, theme_mode, width="stretch", hide_index=True)
+                    display_dataframe(
+                        recipe_df,
+                        theme_mode,
+                        row_class_func=stock_row_class,
+                        width="stretch",
+                        hide_index=True,
+                    )
                     st.download_button(
                         "Download Recipe CSV",
                         data=csv_bytes(recipe_df),
@@ -1138,10 +1296,20 @@ if page == "Calculate":
                             + ", ".join(result["ignored_elements"])
                         )
 
-                    current_inventory = inventory
-                    in_stock, stock_messages = check_stock(current_inventory, recipe_masses)
                     if stock_messages:
-                        st.warning("Inventory warning: " + "; ".join(stock_messages))
+                        st.error("Inventory shortage: " + "; ".join(stock_messages))
+                    else:
+                        low_after_recipe = [
+                            row["Powder"]
+                            for _, row in recipe_df.iterrows()
+                            if "Low after recipe" in str(row.get("Stock status", ""))
+                        ]
+                        if low_after_recipe:
+                            st.warning(
+                                "Low inventory after this recipe: "
+                                + ", ".join(low_after_recipe)
+                                + f" will be below {LOW_STOCK_THRESHOLD_G:g} g."
+                            )
 
                     inputs_changed = last_recipe["signature"] != current_signature
                     if inputs_changed:
@@ -1283,8 +1451,32 @@ elif page == "Powders & Inventory":
     with stock_table_col:
         st.markdown("#### Current inventory")
         if inventory:
-            stock_df = inventory_dataframe(inventory)
-            display_dataframe(stock_df, theme_mode, width="stretch", hide_index=True)
+            comparison_recipe = active_recipe_masses()
+            if comparison_recipe:
+                in_stock, stock_messages = check_stock(inventory, comparison_recipe)
+                st.caption("Compared with the last calculated recipe.")
+                if stock_messages:
+                    st.error("Last recipe needs more powder than inventory: " + "; ".join(stock_messages))
+
+            low_stock_powders = [
+                powder
+                for powder, grams in inventory.items()
+                if grams < LOW_STOCK_THRESHOLD_G
+            ]
+            if low_stock_powders:
+                st.warning(
+                    f"Low inventory below {LOW_STOCK_THRESHOLD_G:g} g: "
+                    + ", ".join(low_stock_powders)
+                )
+
+            stock_df = inventory_dataframe(inventory, comparison_recipe)
+            display_dataframe(
+                stock_df,
+                theme_mode,
+                row_class_func=stock_row_class,
+                width="stretch",
+                hide_index=True,
+            )
             st.download_button(
                 "Download Inventory CSV",
                 data=csv_bytes(stock_df),
@@ -1639,62 +1831,42 @@ elif page == "History":
         if history_df.empty:
             st.info("No saved recipes yet.")
         else:
-            recipe_delete_options = {
-                entry.get("entry_id"): entry
-                for entry in reversed(recipe_history)
-                if entry.get("entry_id")
-            }
-            delete_col, delete_action_col = st.columns([1.25, 0.75], gap="large")
-            with delete_col:
-                recipe_entry_to_delete = st.selectbox(
-                    "Recipe item to delete",
-                    [""] + list(recipe_delete_options.keys()),
-                    format_func=lambda value: (
-                        recipe_history_label(recipe_delete_options[value])
-                        if value in recipe_delete_options
-                        else ("Choose saved recipe" if not value else str(value))
-                    ),
-                )
-            with delete_action_col:
-                st.write("")
-                st.write("")
-                if st.button("Delete Recipe Item", width="stretch"):
-                    if not recipe_entry_to_delete:
-                        st.error("Choose a recipe first.")
-                    else:
-                        removed_count, _ = delete_history_entry(recipe_entry_to_delete)
-                        cached_load_history.clear()
-                        st.success(f"Deleted {removed_count} recipe item.")
-                        st.rerun()
-
-            st.divider()
-
-            target_names = list(grouped_history(recipe_history).keys())
-            cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
-            with cleanup_col:
-                target_to_clear = st.selectbox(
-                    "Target history to clear",
-                    [""] + target_names,
-                    format_func=lambda value: value or "Choose target",
-                )
-            with action_col:
-                st.write("")
-                st.write("")
-                if st.button("Clear Recipe History", width="stretch"):
-                    if not target_to_clear:
-                        st.error("Choose a target first.")
-                    else:
-                        removed_count, _ = clear_history_for_target(target_to_clear)
-                        cached_load_history.clear()
-                        st.success(f"Removed {removed_count} recipe(s) for {target_to_clear}.")
-                        st.rerun()
-
-            st.divider()
-
             for target_name, entries in grouped_history(recipe_history).items():
-                target_df = history_dataframe(entries)
-                with st.expander(f"{target_name} ({len(entries)})", expanded=False):
-                    display_dataframe(target_df, theme_mode, width="stretch", hide_index=True)
+                group_col, group_delete_col = st.columns([0.94, 0.06], gap="small")
+                with group_col:
+                    with st.expander(f"{target_name} ({len(entries)})", expanded=False):
+                        for entry in reversed(entries):
+                            entry_id = entry.get("entry_id")
+                            summary = recipe_history_summary(entry)
+                            item_col, item_delete_col = st.columns([0.94, 0.06], gap="small")
+                            with item_col:
+                                st.markdown(
+                                    '<div class="history-item">'
+                                    f'<div class="history-item-title">{html.escape(summary["title"])}</div>'
+                                    f'<div class="history-item-meta">{html.escape(summary["meta"])}</div>'
+                                    "</div>",
+                                    unsafe_allow_html=True,
+                                )
+                            with item_delete_col:
+                                st.write("")
+                                if entry_id and trash_button(
+                                    widget_key("delete_recipe", entry_id),
+                                    "Delete this saved recipe",
+                                ):
+                                    removed_count, _ = delete_history_entry(entry_id)
+                                    cached_load_history.clear()
+                                    st.success(f"Deleted {removed_count} recipe item.")
+                                    st.rerun()
+                with group_delete_col:
+                    st.write("")
+                    if trash_button(
+                        widget_key("clear_recipe_group", target_name),
+                        f"Clear all recipe history for {target_name}",
+                    ):
+                        removed_count, _ = clear_history_for_target(target_name)
+                        cached_load_history.clear()
+                        st.success(f"Removed {removed_count} recipe(s) for {target_name}.")
+                        st.rerun()
 
             st.download_button(
                 "Download Recipe History CSV",
@@ -1710,62 +1882,42 @@ elif page == "History":
         if density_history_df.empty:
             st.info("No saved target-density records yet.")
         else:
-            density_delete_options = {
-                entry.get("entry_id"): entry
-                for entry in reversed(target_density_records)
-                if entry.get("entry_id")
-            }
-            delete_col, delete_action_col = st.columns([1.25, 0.75], gap="large")
-            with delete_col:
-                density_entry_to_delete = st.selectbox(
-                    "Target-density item to delete",
-                    [""] + list(density_delete_options.keys()),
-                    format_func=lambda value: (
-                        target_density_history_label(density_delete_options[value])
-                        if value in density_delete_options
-                        else ("Choose saved target density" if not value else str(value))
-                    ),
-                )
-            with delete_action_col:
-                st.write("")
-                st.write("")
-                if st.button("Delete Target-Density Item", width="stretch"):
-                    if not density_entry_to_delete:
-                        st.error("Choose a target-density record first.")
-                    else:
-                        removed_count, _ = delete_history_entry(density_entry_to_delete)
-                        cached_load_history.clear()
-                        st.success(f"Deleted {removed_count} target-density item.")
-                        st.rerun()
-
-            st.divider()
-
-            people = list(grouped_target_density_history(target_density_records).keys())
-            cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
-            with cleanup_col:
-                person_to_clear = st.selectbox(
-                    "Person target log to clear",
-                    [""] + people,
-                    format_func=lambda value: value or "Choose person",
-                )
-            with action_col:
-                st.write("")
-                st.write("")
-                if st.button("Clear Person Target Log", width="stretch"):
-                    if not person_to_clear:
-                        st.error("Choose a person first.")
-                    else:
-                        removed_count, _ = clear_target_density_history_for_person(person_to_clear)
-                        cached_load_history.clear()
-                        st.success(f"Removed {removed_count} target-density record(s) for {person_to_clear}.")
-                        st.rerun()
-
-            st.divider()
-
             for person, entries in grouped_target_density_history(target_density_records).items():
-                person_df = target_density_dataframe(entries)
-                with st.expander(f"{person} ({len(entries)} target{'s' if len(entries) != 1 else ''})", expanded=True):
-                    display_dataframe(person_df, theme_mode, width="stretch", hide_index=True)
+                group_col, group_delete_col = st.columns([0.94, 0.06], gap="small")
+                with group_col:
+                    with st.expander(f"{person} ({len(entries)} target{'s' if len(entries) != 1 else ''})", expanded=True):
+                        for entry in sorted(entries, key=lambda item: item.get("target_number", 0), reverse=True):
+                            entry_id = entry.get("entry_id")
+                            summary = target_density_history_summary(entry)
+                            item_col, item_delete_col = st.columns([0.94, 0.06], gap="small")
+                            with item_col:
+                                st.markdown(
+                                    '<div class="history-item">'
+                                    f'<div class="history-item-title">{html.escape(summary["title"])}</div>'
+                                    f'<div class="history-item-meta">{html.escape(summary["meta"])}</div>'
+                                    "</div>",
+                                    unsafe_allow_html=True,
+                                )
+                            with item_delete_col:
+                                st.write("")
+                                if entry_id and trash_button(
+                                    widget_key("delete_target_density", entry_id),
+                                    "Delete this saved target-density record",
+                                ):
+                                    removed_count, _ = delete_history_entry(entry_id)
+                                    cached_load_history.clear()
+                                    st.success(f"Deleted {removed_count} target-density item.")
+                                    st.rerun()
+                with group_delete_col:
+                    st.write("")
+                    if trash_button(
+                        widget_key("clear_target_density_group", person),
+                        f"Clear all target-density records for {person}",
+                    ):
+                        removed_count, _ = clear_target_density_history_for_person(person)
+                        cached_load_history.clear()
+                        st.success(f"Removed {removed_count} target-density record(s) for {person}.")
+                        st.rerun()
 
             st.download_button(
                 "Download Target Density CSV",

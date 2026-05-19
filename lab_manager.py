@@ -537,7 +537,7 @@ def check_stock(inventory, recipe):
         if available is None:
             missing.append(f"{powder} (not in inventory)")
         elif required > available:
-            missing.append(f"{powder} (need {required}g, have {available}g)")
+            missing.append(f"{powder} (need {required:.3f} g, have {available:.3f} g)")
 
     return len(missing) == 0, missing
 
