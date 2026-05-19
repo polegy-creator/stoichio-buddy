@@ -785,6 +785,20 @@ def clear_target_density_history_for_person(target_for):
     return removed_count, remaining
 
 
+def clear_history_for_target_id(target_id):
+    history = load_history()
+    target_key = str(target_id).strip()
+    remaining = [
+        entry
+        for entry in history
+        if str(entry.get("target_id", "")).strip() != target_key
+    ]
+    removed_count = len(history) - len(remaining)
+    if removed_count:
+        save_history(remaining)
+    return removed_count, remaining
+
+
 def log_synthesis(
     target,
     mass,

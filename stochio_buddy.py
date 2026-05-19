@@ -21,6 +21,7 @@ from lab_manager import (
     add_powder,
     check_stock,
     clear_history_for_target,
+    clear_history_for_target_id,
     clear_target_density_history_for_person,
     configure_apps_script,
     configure_google_sheets,
@@ -947,6 +948,60 @@ def grouped_target_density_history(history):
         target_for = str(entry.get("target_for", "")).strip() or "Unassigned"
         groups[target_for].append(entry)
     return dict(sorted(groups.items(), key=lambda item: item[0].lower()))
+
+
+def target_lifecycle_groups(history):
+    groups = defaultdict(list)
+    for entry in history:
+        entry_type = history_entry_type(entry)
+        if entry_type not in {"synthesis", "target_density"}:
+            continue
+
+        target_id = str(entry.get("target_id") or entry.get("recipe_id") or "Unassigned").strip()
+        target_for = str(entry.get("target_for", "")).strip() or "Unassigned"
+        target = entry.get("target") or "Unknown target"
+        groups[(target_for, target_id, target)].append(entry)
+
+    def sort_key(item):
+        (_, target_id, _), entries = item
+        latest_time = max(str(entry.get("time", entry.get("timestamp", ""))) for entry in entries)
+        target_number = max(
+            (
+                int(entry.get("target_number"))
+                for entry in entries
+                if str(entry.get("target_number", "")).isdigit()
+            ),
+            default=0,
+        )
+        return (latest_time, str(item[0][0]).lower(), target_number, target_id)
+
+    return sorted(groups.items(), key=sort_key, reverse=True)
+
+
+def target_lifecycle_summary(group_key, entries):
+    target_for, target_id, target = group_key
+    recipes = [entry for entry in entries if history_entry_type(entry) == "synthesis"]
+    densities = [entry for entry in entries if history_entry_type(entry) == "target_density"]
+    latest_entry = max(
+        entries,
+        key=lambda entry: str(entry.get("time", entry.get("timestamp", ""))),
+    )
+    latest_time = format_history_time(latest_entry.get("time", latest_entry.get("timestamp", "")))
+    status_parts = []
+    status_parts.append(f"{len(recipes)} before-sintering recipe{'s' if len(recipes) != 1 else ''}")
+    status_parts.append(f"{len(densities)} after-sintering density log{'s' if len(densities) != 1 else ''}")
+    if not recipes:
+        status_parts.append("recipe missing")
+    if not densities:
+        status_parts.append("density pending")
+
+    return {
+        "target_id": target_id,
+        "title": f"{target_id} | {target} | {target_for}",
+        "meta": " | ".join([latest_time] + status_parts),
+        "recipes": sorted(recipes, key=lambda entry: str(entry.get("time", "")), reverse=True),
+        "densities": sorted(densities, key=lambda entry: str(entry.get("time", "")), reverse=True),
+    }
 
 
 def next_target_number(history, target_for):
@@ -2052,7 +2107,91 @@ elif page == "Target Density":
 elif page == "History":
     st.subheader("History")
 
-    recipe_tab, density_tab, raw_tab = st.tabs(["Recipes", "Target Density", "Raw Log"])
+    target_tab, recipe_tab, density_tab, raw_tab = st.tabs(["Targets", "Recipes", "Target Density", "Raw Log"])
+
+    with target_tab:
+        st.markdown("#### Target lifecycle")
+        lifecycle_groups = target_lifecycle_groups(history)
+        if not lifecycle_groups:
+            st.info("No saved target records yet.")
+        else:
+            for group_key, entries in lifecycle_groups:
+                summary = target_lifecycle_summary(group_key, entries)
+                target_id = summary["target_id"]
+                can_clear_group = any(entry.get("target_id") for entry in entries)
+                group_col, group_delete_col = st.columns([0.94, 0.06], gap="small")
+                with group_col:
+                    with st.expander(summary["title"], expanded=True):
+                        st.markdown(
+                            '<div class="history-item-meta">'
+                            f'{html.escape(summary["meta"])}'
+                            "</div>",
+                            unsafe_allow_html=True,
+                        )
+
+                        if summary["recipes"]:
+                            st.markdown("##### Before sintering")
+                            for entry in summary["recipes"]:
+                                entry_id = entry.get("entry_id")
+                                item_summary = recipe_history_summary(entry)
+                                item_col, item_delete_col = st.columns([0.94, 0.06], gap="small")
+                                with item_col:
+                                    st.markdown(
+                                        '<div class="history-item">'
+                                        f'<div class="history-item-title">{html.escape(item_summary["title"])}</div>'
+                                        f'<div class="history-item-meta">{html.escape(item_summary["meta"])}</div>'
+                                        "</div>",
+                                        unsafe_allow_html=True,
+                                    )
+                                with item_delete_col:
+                                    st.write("")
+                                    if entry_id and trash_button(
+                                        widget_key("delete_lifecycle_recipe", entry_id),
+                                        "Delete this before-sintering recipe",
+                                    ):
+                                        removed_count, _ = delete_history_entry(entry_id)
+                                        cached_load_history.clear()
+                                        st.success(f"Deleted {removed_count} recipe item.")
+                                        st.rerun()
+                        else:
+                            st.caption("No before-sintering recipe saved for this target.")
+
+                        if summary["densities"]:
+                            st.markdown("##### After sintering")
+                            for entry in summary["densities"]:
+                                entry_id = entry.get("entry_id")
+                                item_summary = target_density_history_summary(entry)
+                                item_col, item_delete_col = st.columns([0.94, 0.06], gap="small")
+                                with item_col:
+                                    st.markdown(
+                                        '<div class="history-item">'
+                                        f'<div class="history-item-title">{html.escape(item_summary["title"])}</div>'
+                                        f'<div class="history-item-meta">{html.escape(item_summary["meta"])}</div>'
+                                        "</div>",
+                                        unsafe_allow_html=True,
+                                    )
+                                with item_delete_col:
+                                    st.write("")
+                                    if entry_id and trash_button(
+                                        widget_key("delete_lifecycle_density", entry_id),
+                                        "Delete this after-sintering density record",
+                                    ):
+                                        removed_count, _ = delete_history_entry(entry_id)
+                                        cached_load_history.clear()
+                                        st.success(f"Deleted {removed_count} target-density item.")
+                                        st.rerun()
+                        else:
+                            st.caption("No after-sintering density saved for this target yet.")
+                with group_delete_col:
+                    st.write("")
+                    if can_clear_group and trash_button(
+                        widget_key("clear_lifecycle_group", target_id),
+                        f"Clear all history for {target_id}",
+                    ):
+                        removed_count, _ = clear_history_for_target_id(target_id)
+                        cached_load_history.clear()
+                        st.success(f"Removed {removed_count} item(s) for {target_id}.")
+                        st.rerun()
 
     with recipe_tab:
         st.markdown("#### Recipe history")
