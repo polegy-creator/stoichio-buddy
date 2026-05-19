@@ -934,6 +934,76 @@ def target_density_dataframe(history):
     return pd.DataFrame(rows).iloc[::-1]
 
 
+def target_lifecycle_dataframe(history):
+    rows = []
+    for group_key, entries in target_lifecycle_groups(history):
+        summary = target_lifecycle_summary(group_key, entries)
+        latest_recipe = summary["recipes"][0] if summary["recipes"] else {}
+        latest_density = summary["densities"][0] if summary["densities"] else {}
+        recipe = latest_recipe.get("recipe", {})
+
+        rows.append(
+            {
+                "Target ID": summary["target_id"],
+                "Target for": group_key[0],
+                "Formula": group_key[2],
+                "Status": (
+                    "Recipe + density"
+                    if latest_recipe and latest_density
+                    else "Recipe only"
+                    if latest_recipe
+                    else "Density only"
+                    if latest_density
+                    else ""
+                ),
+                "Recipe time": format_history_time(
+                    latest_recipe.get("time", latest_recipe.get("timestamp", ""))
+                ) if latest_recipe else "",
+                "Recipe target mass (g)": latest_recipe.get("mass", ""),
+                "Recipe powders": ", ".join(
+                    f"{powder}: {grams:.3f} g" for powder, grams in recipe.items()
+                ),
+                "Recipe notes": latest_recipe.get("notes", ""),
+                "Density time": format_history_time(
+                    latest_density.get("time", latest_density.get("timestamp", ""))
+                ) if latest_density else "",
+                "Relative density (%)": (
+                    round(latest_density.get("relative_density_percent", 0), 2)
+                    if latest_density
+                    else ""
+                ),
+                "Measured density (g/cm3)": (
+                    round(latest_density.get("measured_density_g_cm3", 0), 4)
+                    if latest_density
+                    else ""
+                ),
+                "Theoretical density (g/cm3)": (
+                    round(latest_density.get("theoretical_density_g_cm3", 0), 4)
+                    if latest_density
+                    else ""
+                ),
+                "Final diameter (mm)": (
+                    round(latest_density.get("final_diameter_mm", 0), 4)
+                    if latest_density
+                    else ""
+                ),
+                "Final height (mm)": (
+                    round(latest_density.get("final_height_mm", 0), 4)
+                    if latest_density
+                    else ""
+                ),
+                "Final mass (g)": (
+                    round(latest_density.get("final_mass_g", 0), 6)
+                    if latest_density
+                    else ""
+                ),
+                "Density notes": latest_density.get("notes", ""),
+            }
+        )
+
+    return pd.DataFrame(rows)
+
+
 def grouped_history(history):
     groups = defaultdict(list)
     for entry in history:
@@ -2112,6 +2182,7 @@ elif page == "History":
     with target_tab:
         st.markdown("#### Target lifecycle")
         lifecycle_groups = target_lifecycle_groups(history)
+        lifecycle_df = target_lifecycle_dataframe(history)
         if not lifecycle_groups:
             st.info("No saved target records yet.")
         else:
@@ -2192,6 +2263,14 @@ elif page == "History":
                         cached_load_history.clear()
                         st.success(f"Removed {removed_count} item(s) for {target_id}.")
                         st.rerun()
+
+            st.download_button(
+                "Download Target Lifecycle CSV",
+                data=csv_bytes(lifecycle_df),
+                file_name="stoichio_target_lifecycle.csv",
+                mime="text/csv",
+                width="stretch",
+            )
 
     with recipe_tab:
         st.markdown("#### Recipe history")
