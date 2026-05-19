@@ -3,6 +3,7 @@ import os
 import datetime
 import tempfile
 import re
+import uuid
 from contextlib import contextmanager
 
 try:
@@ -558,7 +559,20 @@ def consume_stock(inventory, recipe):
 # =========================
 
 def load_history():
-    return load_json(HISTORY_FILE, [])
+    history = load_json(HISTORY_FILE, [])
+    if not isinstance(history, list):
+        return []
+
+    changed = False
+    for entry in history:
+        if isinstance(entry, dict) and not entry.get("entry_id"):
+            entry["entry_id"] = uuid.uuid4().hex
+            changed = True
+
+    if changed:
+        save_history(history)
+
+    return history
 
 
 def save_history(history):
@@ -578,6 +592,20 @@ def clear_history_for_target(target):
     ]
     removed_count = len(history) - len(remaining)
     save_history(remaining)
+    return removed_count, remaining
+
+
+def delete_history_entry(entry_id):
+    history = load_history()
+    entry_key = str(entry_id)
+    remaining = [
+        entry
+        for entry in history
+        if str(entry.get("entry_id", "")) != entry_key
+    ]
+    removed_count = len(history) - len(remaining)
+    if removed_count:
+        save_history(remaining)
     return removed_count, remaining
 
 
@@ -601,6 +629,7 @@ def log_synthesis(target, mass, recipe, selected_powders=None, warning=None, inv
     history = load_history()
 
     entry = {
+        "entry_id": uuid.uuid4().hex,
         "entry_type": "synthesis",
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,
@@ -632,6 +661,7 @@ def log_target_density(
     history = load_history()
 
     entry = {
+        "entry_id": uuid.uuid4().hex,
         "entry_type": "target_density",
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,

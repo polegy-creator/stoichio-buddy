@@ -17,6 +17,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Save target-density results with an automatic per-person target number and target owner
 - Recipe history grouped by target formula, with manual save after calculation
 - Target-density history grouped by person
+- Delete individual history items or clear a whole history group
 - CSV export for recipes, powders, inventory, and history
 
 ## Run locally

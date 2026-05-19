@@ -24,6 +24,7 @@ from lab_manager import (
     configure_apps_script,
     configure_google_sheets,
     consume_stock,
+    delete_history_entry,
     delete_material_density,
     delete_powder,
     load_history,
@@ -800,6 +801,27 @@ def next_target_number(history, target_for):
             continue
 
     return max(used_numbers, default=0) + 1
+
+
+def recipe_history_label(entry):
+    time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
+    target = entry.get("target", "Unknown target")
+    mass = entry.get("mass", "")
+    powders = ", ".join(entry.get("selected_powders") or [])
+    powder_text = f" | {powders}" if powders else ""
+    if isinstance(mass, (int, float)):
+        return f"{time_text} | {target} | {mass:g} g{powder_text}"
+    return f"{time_text} | {target}{powder_text}"
+
+
+def target_density_history_label(entry):
+    time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
+    target_for = entry.get("target_for", "Unassigned")
+    target_number = entry.get("target_number", "")
+    target = entry.get("target", "Unknown target")
+    relative_density = entry.get("relative_density_percent")
+    density_text = f" | {relative_density:.2f}%" if isinstance(relative_density, (int, float)) else ""
+    return f"#{target_number} | {target_for} | {target}{density_text} | {time_text}"
 
 
 def csv_bytes(df):
@@ -1617,6 +1639,36 @@ elif page == "History":
         if history_df.empty:
             st.info("No saved recipes yet.")
         else:
+            recipe_delete_options = {
+                entry.get("entry_id"): entry
+                for entry in reversed(recipe_history)
+                if entry.get("entry_id")
+            }
+            delete_col, delete_action_col = st.columns([1.25, 0.75], gap="large")
+            with delete_col:
+                recipe_entry_to_delete = st.selectbox(
+                    "Recipe item to delete",
+                    [""] + list(recipe_delete_options.keys()),
+                    format_func=lambda value: (
+                        recipe_history_label(recipe_delete_options[value])
+                        if value in recipe_delete_options
+                        else ("Choose saved recipe" if not value else str(value))
+                    ),
+                )
+            with delete_action_col:
+                st.write("")
+                st.write("")
+                if st.button("Delete Recipe Item", width="stretch"):
+                    if not recipe_entry_to_delete:
+                        st.error("Choose a recipe first.")
+                    else:
+                        removed_count, _ = delete_history_entry(recipe_entry_to_delete)
+                        cached_load_history.clear()
+                        st.success(f"Deleted {removed_count} recipe item.")
+                        st.rerun()
+
+            st.divider()
+
             target_names = list(grouped_history(recipe_history).keys())
             cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
             with cleanup_col:
@@ -1658,6 +1710,36 @@ elif page == "History":
         if density_history_df.empty:
             st.info("No saved target-density records yet.")
         else:
+            density_delete_options = {
+                entry.get("entry_id"): entry
+                for entry in reversed(target_density_records)
+                if entry.get("entry_id")
+            }
+            delete_col, delete_action_col = st.columns([1.25, 0.75], gap="large")
+            with delete_col:
+                density_entry_to_delete = st.selectbox(
+                    "Target-density item to delete",
+                    [""] + list(density_delete_options.keys()),
+                    format_func=lambda value: (
+                        target_density_history_label(density_delete_options[value])
+                        if value in density_delete_options
+                        else ("Choose saved target density" if not value else str(value))
+                    ),
+                )
+            with delete_action_col:
+                st.write("")
+                st.write("")
+                if st.button("Delete Target-Density Item", width="stretch"):
+                    if not density_entry_to_delete:
+                        st.error("Choose a target-density record first.")
+                    else:
+                        removed_count, _ = delete_history_entry(density_entry_to_delete)
+                        cached_load_history.clear()
+                        st.success(f"Deleted {removed_count} target-density item.")
+                        st.rerun()
+
+            st.divider()
+
             people = list(grouped_target_density_history(target_density_records).keys())
             cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
             with cleanup_col:
