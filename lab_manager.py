@@ -625,7 +625,15 @@ def clear_target_density_history_for_person(target_for):
     return removed_count, remaining
 
 
-def log_synthesis(target, mass, recipe, selected_powders=None, warning=None, inventory_deducted=False):
+def log_synthesis(
+    target,
+    mass,
+    recipe,
+    selected_powders=None,
+    warning=None,
+    inventory_deducted=False,
+    notes=None,
+):
     history = load_history()
 
     entry = {
@@ -638,6 +646,7 @@ def log_synthesis(target, mass, recipe, selected_powders=None, warning=None, inv
         "recipe": recipe,
         "warning": warning,
         "inventory_deducted": inventory_deducted,
+        "notes": str(notes or "").strip(),
     }
 
     history.append(entry)
@@ -657,6 +666,7 @@ def log_target_density(
     final_diameter,
     final_height,
     density_source=None,
+    notes=None,
 ):
     history = load_history()
 
@@ -675,6 +685,7 @@ def log_target_density(
         "final_diameter_mm": float(final_diameter),
         "final_height_mm": float(final_height),
         "density_source": density_source or "",
+        "notes": str(notes or "").strip(),
     }
 
     history.append(entry)

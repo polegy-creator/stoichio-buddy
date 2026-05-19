@@ -896,6 +896,7 @@ def history_dataframe(history):
                 "Recipe": json.dumps(entry.get("recipe", {}), ensure_ascii=False),
                 "Inventory deducted": entry.get("inventory_deducted", False),
                 "Warning": entry.get("warning") or "",
+                "Notes": entry.get("notes", ""),
             }
         )
     return pd.DataFrame(rows).iloc[::-1]
@@ -921,6 +922,7 @@ def target_density_dataframe(history):
                 "Final mass (g)": round(entry.get("final_mass_g", 0), 6),
                 "Final volume (cm3)": round(entry.get("final_volume_cm3", 0), 6),
                 "Density source": entry.get("density_source", ""),
+                "Notes": entry.get("notes", ""),
             }
         )
     return pd.DataFrame(rows).iloc[::-1]
@@ -1001,9 +1003,10 @@ def recipe_history_summary(entry):
     powders = ", ".join(entry.get("selected_powders") or [])
     recipe = entry.get("recipe") or {}
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
+    notes = entry.get("notes", "")
     return {
         "title": f"{entry.get('target', 'Unknown target')} | {mass_text}",
-        "meta": " | ".join(part for part in [time_text, powders, recipe_text] if part),
+        "meta": " | ".join(part for part in [time_text, powders, recipe_text, notes] if part),
     }
 
 
@@ -1015,18 +1018,20 @@ def target_density_history_summary(entry):
     diameter_value = entry.get("final_diameter_mm") or 0
     height_value = entry.get("final_height_mm") or 0
     mass_value = entry.get("final_mass_g") or 0
+    notes = entry.get("notes", "")
     return {
         "title": (
             f"#{entry.get('target_number', '')} | "
             f"{entry.get('target', 'Unknown target')} | "
             f"{relative_density:.2f}%"
         ),
-        "meta": (
+        "meta": " | ".join(part for part in [
             f"{time_text} | measured {measured_density_value:.4f} g/cm3 | "
             f"theoretical {theoretical_density_value:.4f} g/cm3 | "
             f"{diameter_value:.3f} mm x {height_value:.3f} mm | "
-            f"{mass_value:.5f} g"
-        ),
+            f"{mass_value:.5f} g",
+            notes,
+        ] if part),
     }
 
 
@@ -1373,6 +1378,11 @@ if page == "Calculate":
                     if inputs_changed:
                         st.warning("Inputs changed after this calculation. Recalculate before saving.")
 
+                    recipe_notes = st.text_area(
+                        "Recipe notes",
+                        placeholder="Example: calcination plan, pressing force, operator notes",
+                        key=widget_key("recipe_save_notes", last_recipe["signature"]),
+                    )
                     save_disabled = inputs_changed or st.session_state.get("last_recipe_saved", False)
                     if st.button("Save Recipe to History", type="primary", width="stretch", disabled=save_disabled):
                         latest_inventory = load_inventory()
@@ -1397,6 +1407,7 @@ if page == "Calculate":
                             selected_powders=last_recipe["selected"],
                             warning=result.get("warning"),
                             inventory_deducted=inventory_deducted,
+                            notes=recipe_notes,
                         )
                         clear_data_cache()
                         st.session_state.last_recipe_saved = True
@@ -1844,6 +1855,11 @@ elif page == "Target Density":
             if inputs_changed:
                 st.warning("Inputs changed after this calculation. Recalculate before saving.")
 
+            target_density_notes = st.text_area(
+                "Target density notes",
+                placeholder="Example: sintering temperature, cracks, polish state, measurement notes",
+                key=widget_key("target_density_save_notes", last_density["signature"]),
+            )
             save_disabled = (
                 inputs_changed
                 or st.session_state.get("last_target_density_saved", False)
@@ -1864,6 +1880,7 @@ elif page == "Target Density":
                     last_density["final_diameter"],
                     last_density["final_height"],
                     density_source=last_density["density_source"],
+                    notes=target_density_notes,
                 )
                 clear_data_cache()
                 st.session_state.pop("last_target_density_result", None)
