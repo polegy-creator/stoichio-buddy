@@ -802,19 +802,6 @@ def next_target_number(history, target_for):
     return max(used_numbers, default=0) + 1
 
 
-def target_number_exists(history, target_for, target_number):
-    person = str(target_for).strip()
-    for entry in target_density_history(history):
-        if str(entry.get("target_for", "")).strip() != person:
-            continue
-        try:
-            if int(entry.get("target_number")) == int(target_number):
-                return True
-        except (TypeError, ValueError):
-            continue
-    return False
-
-
 def csv_bytes(df):
     buffer = StringIO()
     df.to_csv(buffer, index=False)
@@ -850,7 +837,6 @@ def recipe_input_signature(target, target_mass, selected, amount_mode):
 def target_density_signature(
     target,
     target_for,
-    target_number,
     final_diameter,
     final_height,
     final_mass,
@@ -860,7 +846,6 @@ def target_density_signature(
     return {
         "target": str(target).strip(),
         "target_for": str(target_for).strip(),
-        "target_number": int(target_number),
         "final_diameter": round(float(final_diameter), 8),
         "final_height": round(float(final_height), 8),
         "final_mass": round(float(final_mass), 8),
@@ -1468,25 +1453,12 @@ elif page == "Target Density":
         density_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
         target_for = st.text_input("Target for", placeholder="Person or project name", key="target_density_for")
 
-        number_person_key = "target_density_number_person"
-        target_number_key = "target_density_number"
-        pending_number_key = "target_density_pending_number"
         normalized_person = target_for.strip()
-        if pending_number_key in st.session_state:
-            st.session_state[target_number_key] = st.session_state.pop(pending_number_key)
-        elif st.session_state.get(number_person_key) != normalized_person:
-            st.session_state[number_person_key] = normalized_person
-            st.session_state[target_number_key] = next_target_number(history, normalized_person)
-
-        target_number = st.number_input(
-            "Target number",
-            min_value=1,
-            step=1,
-            key=target_number_key,
-            help="Numbering is per person, so each lab member can have target 1, 2, 3, and so on.",
-        )
         if normalized_person:
-            st.caption(f"Next suggested number for {normalized_person}: {next_target_number(history, normalized_person)}")
+            st.caption(
+                f"Next saved target for {normalized_person} will be "
+                f"#{next_target_number(history, normalized_person)}."
+            )
 
         sintered_diameter = st.number_input(
             "Measured final diameter (mm)",
@@ -1517,7 +1489,6 @@ elif page == "Target Density":
         current_density_signature = target_density_signature(
             density_target,
             target_for,
-            target_number,
             sintered_diameter,
             sintered_height,
             sintered_mass,
@@ -1546,7 +1517,6 @@ elif page == "Target Density":
                 st.session_state.last_target_density_result = {
                     "target": normalized_density_target,
                     "target_for": normalized_person,
-                    "target_number": int(target_number),
                     "measured_density": pellet_measured_density,
                     "theoretical_density": relative_theoretical_density,
                     "relative_percent": relative_percent,
@@ -1577,10 +1547,11 @@ elif page == "Target Density":
             st.error(last_density["error"])
         else:
             deficit_percent = 100.0 - last_density["relative_percent"]
+            current_target_number = next_target_number(history, last_density["target_for"])
 
             st.caption(
-                f"Target {last_density['target_number']} for {last_density['target_for']}: "
-                f"{last_density['target']}"
+                f"Will save as target #{current_target_number} for "
+                f"{last_density['target_for']}: {last_density['target']}"
             )
             metric_cols = st.columns(3)
             metric_cols[0].metric("Measured density", round(last_density["measured_density"], 4))
@@ -1601,38 +1572,17 @@ elif page == "Target Density":
             if inputs_changed:
                 st.warning("Inputs changed after this calculation. Recalculate before saving.")
 
-            duplicate_number = target_number_exists(
-                history,
-                last_density["target_for"],
-                last_density["target_number"],
-            )
-            if duplicate_number and not st.session_state.get("last_target_density_saved", False):
-                st.warning(
-                    f"{last_density['target_for']} already has target "
-                    f"{last_density['target_number']} in the log."
-                )
-
             save_disabled = (
                 inputs_changed
-                or duplicate_number
                 or st.session_state.get("last_target_density_saved", False)
             )
             if st.button("Save Target Density to History", type="primary", width="stretch", disabled=save_disabled):
                 latest_history = load_history()
-                if target_number_exists(
-                    latest_history,
-                    last_density["target_for"],
-                    last_density["target_number"],
-                ):
-                    st.error(
-                        f"{last_density['target_for']} already has target "
-                        f"{last_density['target_number']} in the log."
-                    )
-                    st.stop()
+                assigned_target_number = next_target_number(latest_history, last_density["target_for"])
 
                 log_target_density(
                     last_density["target"],
-                    last_density["target_number"],
+                    assigned_target_number,
                     last_density["target_for"],
                     last_density["measured_density"],
                     last_density["theoretical_density"],
@@ -1644,15 +1594,12 @@ elif page == "Target Density":
                     density_source=last_density["density_source"],
                 )
                 clear_data_cache()
-                updated_history = load_history()
                 st.session_state.pop("last_target_density_result", None)
                 st.session_state.last_target_density_saved = False
-                st.session_state[pending_number_key] = next_target_number(
-                    updated_history,
-                    last_density["target_for"],
+                st.session_state.target_density_save_message = (
+                    f"Target density saved as #{assigned_target_number} "
+                    f"for {last_density['target_for']}."
                 )
-                st.session_state[number_person_key] = last_density["target_for"]
-                st.session_state.target_density_save_message = "Target density saved to history."
                 st.rerun()
 
             if st.session_state.get("last_target_density_saved", False):
