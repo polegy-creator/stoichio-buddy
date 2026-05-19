@@ -351,6 +351,13 @@ def normalize_density_record(formula, record):
         "z": None,
         "theoretical_density_g_cm3": None,
         "density_source": record.get("density_source", "manual"),
+        "crystal_system": str(record.get("crystal_system", "")).strip(),
+        "a_A": None,
+        "b_A": None,
+        "c_A": None,
+        "alpha_deg": None,
+        "beta_deg": None,
+        "gamma_deg": None,
         "source": str(record.get("source", "")).strip(),
         "notes": str(record.get("notes", "")).strip(),
     }
@@ -366,6 +373,18 @@ def normalize_density_record(formula, record):
     density = record.get("theoretical_density_g_cm3")
     if density not in (None, ""):
         normalized["theoretical_density_g_cm3"] = float(density)
+
+    for source_key, dest_key in (
+        ("a_A", "a_A"),
+        ("b_A", "b_A"),
+        ("c_A", "c_A"),
+        ("alpha_deg", "alpha_deg"),
+        ("beta_deg", "beta_deg"),
+        ("gamma_deg", "gamma_deg"),
+    ):
+        value = record.get(source_key)
+        if value not in (None, ""):
+            normalized[dest_key] = float(value)
 
     return normalized
 
@@ -393,6 +412,13 @@ def upsert_material_density(
     unit_cell_volume=None,
     z=None,
     density_source="manual",
+    crystal_system="",
+    a=None,
+    b=None,
+    c=None,
+    alpha=None,
+    beta=None,
+    gamma=None,
     source="",
     notes="",
 ):
@@ -404,6 +430,13 @@ def upsert_material_density(
         "z": z,
         "theoretical_density_g_cm3": theoretical_density,
         "density_source": density_source,
+        "crystal_system": crystal_system,
+        "a_A": a,
+        "b_A": b,
+        "c_A": c,
+        "alpha_deg": alpha,
+        "beta_deg": beta,
+        "gamma_deg": gamma,
         "source": source,
         "notes": notes,
     }

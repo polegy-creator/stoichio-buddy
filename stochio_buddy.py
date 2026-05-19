@@ -13,6 +13,7 @@ from density_engine import (
     relative_density_percent,
     target_mass_from_height,
     theoretical_density_from_cell,
+    unit_cell_volume_from_lattice,
 )
 from formula_parser import normalize_formula
 from lab_manager import (
@@ -486,6 +487,13 @@ def material_density_dataframe(records):
         "Theoretical density (g/cm3)",
         "Unit cell volume (A3)",
         "Z",
+        "Crystal system",
+        "a (A)",
+        "b (A)",
+        "c (A)",
+        "alpha",
+        "beta",
+        "gamma",
         "Density source",
         "Reference",
         "Notes",
@@ -506,6 +514,13 @@ def material_density_dataframe(records):
                     else ""
                 ),
                 "Z": record.get("z") if record.get("z") is not None else "",
+                "Crystal system": record.get("crystal_system", ""),
+                "a (A)": record.get("a_A") if record.get("a_A") is not None else "",
+                "b (A)": record.get("b_A") if record.get("b_A") is not None else "",
+                "c (A)": record.get("c_A") if record.get("c_A") is not None else "",
+                "alpha": record.get("alpha_deg") if record.get("alpha_deg") is not None else "",
+                "beta": record.get("beta_deg") if record.get("beta_deg") is not None else "",
+                "gamma": record.get("gamma_deg") if record.get("gamma_deg") is not None else "",
                 "Density source": record.get("density_source", ""),
                 "Reference": record.get("source", ""),
                 "Notes": record.get("notes", ""),
@@ -565,6 +580,72 @@ def density_source_control(target, material_densities, key_prefix):
         key=f"{key_prefix}_manual_density",
     )
     return density if density > 0 else None, source_mode
+
+
+def lattice_parameter_inputs(crystal_system):
+    system = crystal_system.lower()
+    a = b = c = alpha = beta = gamma = None
+
+    if system == "cubic":
+        a = st.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        b = c = a
+        alpha = beta = gamma = 90.0
+    elif system == "tetragonal":
+        col_a, col_c = st.columns(2)
+        a = col_a.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        c = col_c.number_input("c (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        b = a
+        alpha = beta = gamma = 90.0
+    elif system == "orthorhombic":
+        col_a, col_b, col_c = st.columns(3)
+        a = col_a.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        b = col_b.number_input("b (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        c = col_c.number_input("c (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        alpha = beta = gamma = 90.0
+    elif system == "hexagonal":
+        col_a, col_c = st.columns(2)
+        a = col_a.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        c = col_c.number_input("c (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        b = a
+        alpha = beta = 90.0
+        gamma = 120.0
+    elif system == "rhombohedral":
+        col_a, col_alpha = st.columns(2)
+        a = col_a.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        alpha = col_alpha.number_input(
+            "alpha = beta = gamma (deg)",
+            min_value=0.0,
+            value=90.0,
+            step=0.1,
+            format="%.6f",
+        )
+        b = c = a
+        beta = gamma = alpha
+    elif system == "monoclinic":
+        col_a, col_b, col_c = st.columns(3)
+        a = col_a.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        b = col_b.number_input("b (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        c = col_c.number_input("c (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        beta = st.number_input("beta (deg)", min_value=0.0, value=90.0, step=0.1, format="%.6f")
+        alpha = gamma = 90.0
+    else:
+        col_a, col_b, col_c = st.columns(3)
+        a = col_a.number_input("a (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        b = col_b.number_input("b (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        c = col_c.number_input("c (A)", min_value=0.0, value=0.0, step=0.01, format="%.6f")
+        col_alpha, col_beta, col_gamma = st.columns(3)
+        alpha = col_alpha.number_input("alpha (deg)", min_value=0.0, value=90.0, step=0.1, format="%.6f")
+        beta = col_beta.number_input("beta (deg)", min_value=0.0, value=90.0, step=0.1, format="%.6f")
+        gamma = col_gamma.number_input("gamma (deg)", min_value=0.0, value=90.0, step=0.1, format="%.6f")
+
+    return {
+        "a": a,
+        "b": b,
+        "c": c,
+        "alpha": alpha,
+        "beta": beta,
+        "gamma": gamma,
+    }
 
 
 def unknown_inventory_items(inventory, db):
@@ -1009,16 +1090,61 @@ elif page == "Material Density":
         density_formula = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
         density_entry_mode = st.radio(
             "Density entry mode",
-            ["Calculate from unit cell", "Manual theoretical density"],
-            horizontal=True,
+            ["From lattice parameters", "From unit cell volume", "Manual theoretical density"],
         )
 
         unit_cell_volume = None
         z_value = None
         theoretical_density = None
         density_source = "manual"
+        crystal_system = ""
+        lattice_params = {
+            "a": None,
+            "b": None,
+            "c": None,
+            "alpha": None,
+            "beta": None,
+            "gamma": None,
+        }
 
-        if density_entry_mode == "Calculate from unit cell":
+        if density_entry_mode == "From lattice parameters":
+            crystal_system = st.selectbox(
+                "Crystal system",
+                ["Cubic", "Tetragonal", "Orthorhombic", "Hexagonal", "Rhombohedral", "Monoclinic", "Triclinic"],
+            )
+            lattice_params = lattice_parameter_inputs(crystal_system)
+            z_value = st.number_input(
+                "Z, formula units per unit cell",
+                min_value=0.0,
+                value=1.0,
+                step=1.0,
+                format="%.6f",
+                help="Z is not atoms per unit cell. It is how many target formula units are in one unit cell.",
+            )
+            if density_formula and z_value > 0:
+                try:
+                    unit_cell_volume = unit_cell_volume_from_lattice(
+                        crystal_system,
+                        lattice_params["a"],
+                        lattice_params["b"],
+                        lattice_params["c"],
+                        lattice_params["alpha"],
+                        lattice_params["beta"],
+                        lattice_params["gamma"],
+                    )
+                    theoretical_density = theoretical_density_from_cell(
+                        density_formula,
+                        unit_cell_volume,
+                        z_value,
+                    )
+                    st.info(
+                        f"Unit cell volume: {unit_cell_volume:.5f} A3; "
+                        f"theoretical density: {theoretical_density:.5f} g/cm3"
+                    )
+                    density_source = "lattice parameters"
+                except ValueError as exc:
+                    st.warning(str(exc))
+        elif density_entry_mode == "From unit cell volume":
             unit_cell_volume = st.number_input(
                 "Unit cell volume (A3)",
                 min_value=0.0,
@@ -1033,6 +1159,7 @@ elif page == "Material Density":
                 value=1.0,
                 step=1.0,
                 format="%.6f",
+                help="Z is not atoms per unit cell. It is how many target formula units are in one unit cell.",
             )
             if density_formula and unit_cell_volume > 0 and z_value > 0:
                 try:
@@ -1071,6 +1198,13 @@ elif page == "Material Density":
                     unit_cell_volume=unit_cell_volume if unit_cell_volume and unit_cell_volume > 0 else None,
                     z=z_value if z_value and z_value > 0 else None,
                     density_source=density_source,
+                    crystal_system=crystal_system,
+                    a=lattice_params["a"],
+                    b=lattice_params["b"],
+                    c=lattice_params["c"],
+                    alpha=lattice_params["alpha"],
+                    beta=lattice_params["beta"],
+                    gamma=lattice_params["gamma"],
                     source=reference,
                     notes=notes,
                 )
