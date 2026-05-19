@@ -37,7 +37,12 @@ from lab_manager import (
 from stoich_engine import compute_recipe
 
 
-st.set_page_config(page_title="Stoichio Buddy", page_icon=":material/science:", layout="wide")
+st.set_page_config(
+    page_title="Stoichio Buddy",
+    page_icon=":material/science:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 DATA_CACHE_TTL_SECONDS = 20
 
