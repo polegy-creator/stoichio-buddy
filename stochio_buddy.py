@@ -20,6 +20,7 @@ from lab_manager import (
     add_powder,
     check_stock,
     clear_history_for_target,
+    clear_target_density_history_for_person,
     configure_apps_script,
     configure_google_sheets,
     consume_stock,
@@ -30,6 +31,7 @@ from lab_manager import (
     load_material_densities,
     load_powders,
     log_synthesis,
+    log_target_density,
     set_inventory_quantity,
     storage_error,
     storage_label,
@@ -711,6 +713,18 @@ def format_history_time(value):
     return parsed.strftime("D-%d.%m.%y T-%H:%M:%S")
 
 
+def history_entry_type(entry):
+    return entry.get("entry_type", "synthesis")
+
+
+def synthesis_history(history):
+    return [entry for entry in history if history_entry_type(entry) == "synthesis"]
+
+
+def target_density_history(history):
+    return [entry for entry in history if history_entry_type(entry) == "target_density"]
+
+
 def history_dataframe(history):
     if not history:
         return pd.DataFrame()
@@ -730,12 +744,75 @@ def history_dataframe(history):
     return pd.DataFrame(rows).iloc[::-1]
 
 
+def target_density_dataframe(history):
+    if not history:
+        return pd.DataFrame()
+
+    rows = []
+    for entry in history:
+        rows.append(
+            {
+                "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
+                "Target #": entry.get("target_number", ""),
+                "Target for": entry.get("target_for", ""),
+                "Formula": entry.get("target", ""),
+                "Measured density (g/cm3)": round(entry.get("measured_density_g_cm3", 0), 4),
+                "Theoretical density (g/cm3)": round(entry.get("theoretical_density_g_cm3", 0), 4),
+                "Relative density (%)": round(entry.get("relative_density_percent", 0), 2),
+                "Final diameter (mm)": round(entry.get("final_diameter_mm", 0), 4),
+                "Final height (mm)": round(entry.get("final_height_mm", 0), 4),
+                "Final mass (g)": round(entry.get("final_mass_g", 0), 6),
+                "Final volume (cm3)": round(entry.get("final_volume_cm3", 0), 6),
+                "Density source": entry.get("density_source", ""),
+            }
+        )
+    return pd.DataFrame(rows).iloc[::-1]
+
+
 def grouped_history(history):
     groups = defaultdict(list)
     for entry in history:
         target = entry.get("target") or "Unknown target"
         groups[target].append(entry)
     return dict(sorted(groups.items(), key=lambda item: item[0]))
+
+
+def grouped_target_density_history(history):
+    groups = defaultdict(list)
+    for entry in history:
+        target_for = str(entry.get("target_for", "")).strip() or "Unassigned"
+        groups[target_for].append(entry)
+    return dict(sorted(groups.items(), key=lambda item: item[0].lower()))
+
+
+def next_target_number(history, target_for):
+    person = str(target_for).strip()
+    if not person:
+        return 1
+
+    used_numbers = []
+    for entry in target_density_history(history):
+        if str(entry.get("target_for", "")).strip() != person:
+            continue
+        try:
+            used_numbers.append(int(entry.get("target_number")))
+        except (TypeError, ValueError):
+            continue
+
+    return max(used_numbers, default=0) + 1
+
+
+def target_number_exists(history, target_for, target_number):
+    person = str(target_for).strip()
+    for entry in target_density_history(history):
+        if str(entry.get("target_for", "")).strip() != person:
+            continue
+        try:
+            if int(entry.get("target_number")) == int(target_number):
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
 
 
 def csv_bytes(df):
@@ -767,6 +844,30 @@ def recipe_input_signature(target, target_mass, selected, amount_mode):
         "target_mass": round(float(target_mass), 8) if target_mass is not None else None,
         "selected": tuple(selected),
         "amount_mode": amount_mode,
+    }
+
+
+def target_density_signature(
+    target,
+    target_for,
+    target_number,
+    final_diameter,
+    final_height,
+    final_mass,
+    theoretical_density,
+    density_source,
+):
+    return {
+        "target": str(target).strip(),
+        "target_for": str(target_for).strip(),
+        "target_number": int(target_number),
+        "final_diameter": round(float(final_diameter), 8),
+        "final_height": round(float(final_height), 8),
+        "final_mass": round(float(final_mass), 8),
+        "theoretical_density": (
+            round(float(theoretical_density), 8) if theoretical_density is not None else None
+        ),
+        "density_source": density_source,
     }
 
 
@@ -824,6 +925,8 @@ def configure_app_storage():
 storage_status = configure_app_storage()
 db, inventory = load_app_state(storage_status)
 history = cached_load_history(storage_status)
+recipe_history = synthesis_history(history)
+target_density_records = target_density_history(history)
 material_densities = cached_load_material_densities(storage_status)
 storage_status = storage_label()
 storage_problem = storage_error()
@@ -842,7 +945,8 @@ with st.sidebar:
     unknown_stock = unknown_inventory_items(inventory, db)
     st.metric("Inventory items", len(inventory))
     st.metric("Material densities", len(material_densities))
-    st.metric("Saved recipes", len(history))
+    st.metric("Saved recipes", len(recipe_history))
+    st.metric("Target density logs", len(target_density_records))
 
     st.caption("Selected powders are always controlled by the user. The app never searches or swaps precursors automatically.")
     st.caption(f"Storage: {storage_status}")
@@ -1361,7 +1465,29 @@ elif page == "Target Density":
     density_left, density_right = st.columns([0.95, 1.05], gap="large")
 
     with density_left:
-        pellet_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
+        density_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
+        target_for = st.text_input("Target for", placeholder="Person or project name", key="target_density_for")
+
+        number_person_key = "target_density_number_person"
+        target_number_key = "target_density_number"
+        pending_number_key = "target_density_pending_number"
+        normalized_person = target_for.strip()
+        if pending_number_key in st.session_state:
+            st.session_state[target_number_key] = st.session_state.pop(pending_number_key)
+        elif st.session_state.get(number_person_key) != normalized_person:
+            st.session_state[number_person_key] = normalized_person
+            st.session_state[target_number_key] = next_target_number(history, normalized_person)
+
+        target_number = st.number_input(
+            "Target number",
+            min_value=1,
+            step=1,
+            key=target_number_key,
+            help="Numbering is per person, so each lab member can have target 1, 2, 3, and so on.",
+        )
+        if normalized_person:
+            st.caption(f"Next suggested number for {normalized_person}: {next_target_number(history, normalized_person)}")
+
         sintered_diameter = st.number_input(
             "Measured final diameter (mm)",
             min_value=0.0,
@@ -1383,21 +1509,31 @@ elif page == "Target Density":
             step=0.01,
             format="%.6f",
         )
-        relative_theoretical_density, _ = density_source_control(
-            pellet_target,
+        relative_theoretical_density, density_source_mode = density_source_control(
+            density_target,
             material_densities,
             key_prefix="relative_density",
         )
+        current_density_signature = target_density_signature(
+            density_target,
+            target_for,
+            target_number,
+            sintered_diameter,
+            sintered_height,
+            sintered_mass,
+            relative_theoretical_density,
+            density_source_mode,
+        )
         calculate_density = st.button("Calculate Target Density", type="primary", width="stretch")
 
-    with density_right:
-        st.markdown("#### Result")
-        if not calculate_density:
-            st.info("Enter final sintered dimensions, final mass, and a theoretical density.")
-        else:
+        if calculate_density:
             try:
+                if not normalized_person:
+                    raise ValueError("Enter who the target is for")
                 if relative_theoretical_density is None:
                     raise ValueError("Choose a saved density or enter a manual theoretical density")
+
+                normalized_density_target = normalize_formula(density_target)
                 pellet_measured_density, final_volume = measured_density(
                     sintered_mass,
                     sintered_diameter,
@@ -1407,68 +1543,212 @@ elif page == "Target Density":
                     pellet_measured_density,
                     relative_theoretical_density,
                 )
-                deficit_percent = 100.0 - relative_percent
-
-                metric_cols = st.columns(3)
-                metric_cols[0].metric("Measured density", round(pellet_measured_density, 4))
-                metric_cols[1].metric("Theoretical density", round(relative_theoretical_density, 4))
-                metric_cols[2].metric("Relative density", f"{relative_percent:.2f}%")
-
-                detail_cols = st.columns(3)
-                detail_cols[0].metric("Final volume (cm3)", round(final_volume, 5))
-                detail_cols[1].metric("Density deficit", f"{deficit_percent:.2f}%")
-                detail_cols[2].metric("Final mass (g)", round(sintered_mass, 5))
-
-                if relative_percent > 100:
-                    st.warning("Relative density is above 100%. Check dimensions, mass, or theoretical density.")
-                else:
-                    st.success("Relative density calculated.")
+                st.session_state.last_target_density_result = {
+                    "target": normalized_density_target,
+                    "target_for": normalized_person,
+                    "target_number": int(target_number),
+                    "measured_density": pellet_measured_density,
+                    "theoretical_density": relative_theoretical_density,
+                    "relative_percent": relative_percent,
+                    "final_volume": final_volume,
+                    "final_mass": sintered_mass,
+                    "final_diameter": sintered_diameter,
+                    "final_height": sintered_height,
+                    "density_source": density_source_mode,
+                    "signature": current_density_signature,
+                }
+                st.session_state.last_target_density_saved = False
             except ValueError as exc:
-                st.error(str(exc))
+                st.session_state.last_target_density_result = {
+                    "error": str(exc),
+                    "signature": current_density_signature,
+                }
+
+    with density_right:
+        st.markdown("#### Result")
+        save_message = st.session_state.pop("target_density_save_message", None)
+        if save_message:
+            st.success(save_message)
+
+        last_density = st.session_state.get("last_target_density_result")
+        if not last_density:
+            st.info("Enter final sintered dimensions, final mass, and a theoretical density.")
+        elif last_density.get("error"):
+            st.error(last_density["error"])
+        else:
+            deficit_percent = 100.0 - last_density["relative_percent"]
+
+            st.caption(
+                f"Target {last_density['target_number']} for {last_density['target_for']}: "
+                f"{last_density['target']}"
+            )
+            metric_cols = st.columns(3)
+            metric_cols[0].metric("Measured density", round(last_density["measured_density"], 4))
+            metric_cols[1].metric("Theoretical density", round(last_density["theoretical_density"], 4))
+            metric_cols[2].metric("Relative density", f"{last_density['relative_percent']:.2f}%")
+
+            detail_cols = st.columns(3)
+            detail_cols[0].metric("Final volume (cm3)", round(last_density["final_volume"], 5))
+            detail_cols[1].metric("Density deficit", f"{deficit_percent:.2f}%")
+            detail_cols[2].metric("Final mass (g)", round(last_density["final_mass"], 5))
+
+            if last_density["relative_percent"] > 100:
+                st.warning("Relative density is above 100%. Check dimensions, mass, or theoretical density.")
+            else:
+                st.success("Target density calculated.")
+
+            inputs_changed = last_density["signature"] != current_density_signature
+            if inputs_changed:
+                st.warning("Inputs changed after this calculation. Recalculate before saving.")
+
+            duplicate_number = target_number_exists(
+                history,
+                last_density["target_for"],
+                last_density["target_number"],
+            )
+            if duplicate_number and not st.session_state.get("last_target_density_saved", False):
+                st.warning(
+                    f"{last_density['target_for']} already has target "
+                    f"{last_density['target_number']} in the log."
+                )
+
+            save_disabled = (
+                inputs_changed
+                or duplicate_number
+                or st.session_state.get("last_target_density_saved", False)
+            )
+            if st.button("Save Target Density to History", type="primary", width="stretch", disabled=save_disabled):
+                latest_history = load_history()
+                if target_number_exists(
+                    latest_history,
+                    last_density["target_for"],
+                    last_density["target_number"],
+                ):
+                    st.error(
+                        f"{last_density['target_for']} already has target "
+                        f"{last_density['target_number']} in the log."
+                    )
+                    st.stop()
+
+                log_target_density(
+                    last_density["target"],
+                    last_density["target_number"],
+                    last_density["target_for"],
+                    last_density["measured_density"],
+                    last_density["theoretical_density"],
+                    last_density["relative_percent"],
+                    last_density["final_volume"],
+                    last_density["final_mass"],
+                    last_density["final_diameter"],
+                    last_density["final_height"],
+                    density_source=last_density["density_source"],
+                )
+                clear_data_cache()
+                updated_history = load_history()
+                st.session_state.pop("last_target_density_result", None)
+                st.session_state.last_target_density_saved = False
+                st.session_state[pending_number_key] = next_target_number(
+                    updated_history,
+                    last_density["target_for"],
+                )
+                st.session_state[number_person_key] = last_density["target_for"]
+                st.session_state.target_density_save_message = "Target density saved to history."
+                st.rerun()
+
+            if st.session_state.get("last_target_density_saved", False):
+                st.caption("This target density has already been saved. Recalculate to save a new entry.")
 
 
 elif page == "History":
-    st.subheader("Recipe history")
+    st.subheader("History")
 
-    history_df = history_dataframe(history)
-    if history_df.empty:
-        st.info("No saved recipes yet.")
-    else:
-        target_names = list(grouped_history(history).keys())
-        cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
-        with cleanup_col:
-            target_to_clear = st.selectbox(
-                "Target history to clear",
-                [""] + target_names,
-                format_func=lambda value: value or "Choose target",
+    recipe_tab, density_tab, raw_tab = st.tabs(["Recipes", "Target Density", "Raw Log"])
+
+    with recipe_tab:
+        st.markdown("#### Recipe history")
+        history_df = history_dataframe(recipe_history)
+        if history_df.empty:
+            st.info("No saved recipes yet.")
+        else:
+            target_names = list(grouped_history(recipe_history).keys())
+            cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
+            with cleanup_col:
+                target_to_clear = st.selectbox(
+                    "Target history to clear",
+                    [""] + target_names,
+                    format_func=lambda value: value or "Choose target",
+                )
+            with action_col:
+                st.write("")
+                st.write("")
+                if st.button("Clear Recipe History", width="stretch"):
+                    if not target_to_clear:
+                        st.error("Choose a target first.")
+                    else:
+                        removed_count, _ = clear_history_for_target(target_to_clear)
+                        cached_load_history.clear()
+                        st.success(f"Removed {removed_count} recipe(s) for {target_to_clear}.")
+                        st.rerun()
+
+            st.divider()
+
+            for target_name, entries in grouped_history(recipe_history).items():
+                target_df = history_dataframe(entries)
+                with st.expander(f"{target_name} ({len(entries)})", expanded=False):
+                    display_dataframe(target_df, theme_mode, width="stretch", hide_index=True)
+
+            st.download_button(
+                "Download Recipe History CSV",
+                data=csv_bytes(history_df),
+                file_name="stoichio_recipe_history.csv",
+                mime="text/csv",
+                width="stretch",
             )
-        with action_col:
-            st.write("")
-            st.write("")
-            if st.button("Clear Target History", width="stretch"):
-                if not target_to_clear:
-                    st.error("Choose a target first.")
-                else:
-                    removed_count, _ = clear_history_for_target(target_to_clear)
-                    cached_load_history.clear()
-                    st.success(f"Removed {removed_count} recipe(s) for {target_to_clear}.")
-                    st.rerun()
 
-        st.divider()
+    with density_tab:
+        st.markdown("#### Target density log")
+        density_history_df = target_density_dataframe(target_density_records)
+        if density_history_df.empty:
+            st.info("No saved target-density records yet.")
+        else:
+            people = list(grouped_target_density_history(target_density_records).keys())
+            cleanup_col, action_col = st.columns([1.25, 0.75], gap="large")
+            with cleanup_col:
+                person_to_clear = st.selectbox(
+                    "Person target log to clear",
+                    [""] + people,
+                    format_func=lambda value: value or "Choose person",
+                )
+            with action_col:
+                st.write("")
+                st.write("")
+                if st.button("Clear Person Target Log", width="stretch"):
+                    if not person_to_clear:
+                        st.error("Choose a person first.")
+                    else:
+                        removed_count, _ = clear_target_density_history_for_person(person_to_clear)
+                        cached_load_history.clear()
+                        st.success(f"Removed {removed_count} target-density record(s) for {person_to_clear}.")
+                        st.rerun()
 
-        for target_name, entries in grouped_history(history).items():
-            target_df = history_dataframe(entries)
-            with st.expander(f"{target_name} ({len(entries)})", expanded=False):
-                display_dataframe(target_df, theme_mode, width="stretch", hide_index=True)
+            st.divider()
 
-        st.download_button(
-            "Download Full History CSV",
-            data=csv_bytes(history_df),
-            file_name="stoichio_history.csv",
-            mime="text/csv",
-            width="stretch",
-        )
+            for person, entries in grouped_target_density_history(target_density_records).items():
+                person_df = target_density_dataframe(entries)
+                with st.expander(f"{person} ({len(entries)} target{'s' if len(entries) != 1 else ''})", expanded=True):
+                    display_dataframe(person_df, theme_mode, width="stretch", hide_index=True)
 
-        with st.expander("Raw history"):
+            st.download_button(
+                "Download Target Density CSV",
+                data=csv_bytes(density_history_df),
+                file_name="stoichio_target_density_history.csv",
+                mime="text/csv",
+                width="stretch",
+            )
+
+    with raw_tab:
+        if not history:
+            st.info("No saved history yet.")
+        else:
             for entry in reversed(history):
                 st.json(entry)

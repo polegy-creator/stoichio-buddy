@@ -565,9 +565,33 @@ def save_history(history):
     save_json(HISTORY_FILE, history)
 
 
+def history_entry_type(entry):
+    return entry.get("entry_type", "synthesis")
+
+
 def clear_history_for_target(target):
     history = load_history()
-    remaining = [entry for entry in history if entry.get("target") != target]
+    remaining = [
+        entry
+        for entry in history
+        if not (history_entry_type(entry) == "synthesis" and entry.get("target") == target)
+    ]
+    removed_count = len(history) - len(remaining)
+    save_history(remaining)
+    return removed_count, remaining
+
+
+def clear_target_density_history_for_person(target_for):
+    history = load_history()
+    person = str(target_for).strip()
+    remaining = [
+        entry
+        for entry in history
+        if not (
+            history_entry_type(entry) == "target_density"
+            and str(entry.get("target_for", "")).strip() == person
+        )
+    ]
     removed_count = len(history) - len(remaining)
     save_history(remaining)
     return removed_count, remaining
@@ -577,6 +601,7 @@ def log_synthesis(target, mass, recipe, selected_powders=None, warning=None, inv
     history = load_history()
 
     entry = {
+        "entry_type": "synthesis",
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,
         "mass": mass,
@@ -584,6 +609,42 @@ def log_synthesis(target, mass, recipe, selected_powders=None, warning=None, inv
         "recipe": recipe,
         "warning": warning,
         "inventory_deducted": inventory_deducted,
+    }
+
+    history.append(entry)
+    save_history(history)
+    return history
+
+
+def log_target_density(
+    target,
+    target_number,
+    target_for,
+    measured_density,
+    theoretical_density,
+    relative_density,
+    final_volume,
+    final_mass,
+    final_diameter,
+    final_height,
+    density_source=None,
+):
+    history = load_history()
+
+    entry = {
+        "entry_type": "target_density",
+        "time": datetime.datetime.now().isoformat(timespec="seconds"),
+        "target": target,
+        "target_number": int(target_number),
+        "target_for": str(target_for).strip(),
+        "measured_density_g_cm3": float(measured_density),
+        "theoretical_density_g_cm3": float(theoretical_density),
+        "relative_density_percent": float(relative_density),
+        "final_volume_cm3": float(final_volume),
+        "final_mass_g": float(final_mass),
+        "final_diameter_mm": float(final_diameter),
+        "final_height_mm": float(final_height),
+        "density_source": density_source or "",
     }
 
     history.append(entry)
