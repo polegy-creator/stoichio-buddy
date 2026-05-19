@@ -833,7 +833,7 @@ with st.sidebar:
     theme_mode = st.radio("Appearance", ["Dark", "Light"], horizontal=True, key="theme_mode")
     page = st.radio(
         "Navigation",
-        ["Calculate", "Powders & Inventory", "Material Density", "Pellet Density", "History"],
+        ["Calculate", "Powders & Inventory", "Material Density", "Target Density", "History"],
         label_visibility="collapsed",
     )
 
@@ -1354,9 +1354,9 @@ elif page == "Material Density":
             )
 
 
-elif page == "Pellet Density":
-    st.subheader("Post-sintering relative density")
-    st.caption("Use the final measured pellet dimensions after sintering, not the 25.05 mm die diameter.")
+elif page == "Target Density":
+    st.subheader("Target density after sintering")
+    st.caption("Use the final measured dimensions after sintering, not the 25.05 mm die diameter.")
 
     density_left, density_right = st.columns([0.95, 1.05], gap="large")
 
@@ -1388,7 +1388,7 @@ elif page == "Pellet Density":
             material_densities,
             key_prefix="relative_density",
         )
-        calculate_density = st.button("Calculate Relative Density", type="primary", width="stretch")
+        calculate_density = st.button("Calculate Target Density", type="primary", width="stretch")
 
     with density_right:
         st.markdown("#### Result")

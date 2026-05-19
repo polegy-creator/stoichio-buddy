@@ -13,7 +13,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Save theoretical densities for target materials
 - Calculate theoretical density from full lattice parameters (`a`, `b`, `c`, `alpha`, `beta`, `gamma`) and `Z`
 - Calculate precursor masses from a desired target height with a 25.05 mm die
-- Calculate post-sintering relative density from final pellet dimensions and mass
+- Calculate target density and relative density from final sintered dimensions and mass
 - Recipe history grouped by target formula, with manual save after calculation
 - CSV export for recipes, powders, inventory, and history
 
