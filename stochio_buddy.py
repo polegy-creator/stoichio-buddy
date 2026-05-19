@@ -934,9 +934,11 @@ def target_density_dataframe(history):
     return pd.DataFrame(rows).iloc[::-1]
 
 
-def target_lifecycle_dataframe(history):
+def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
+    if lifecycle_groups is None:
+        lifecycle_groups = target_lifecycle_groups(history or [])
     rows = []
-    for group_key, entries in target_lifecycle_groups(history):
+    for group_key, entries in lifecycle_groups:
         summary = target_lifecycle_summary(group_key, entries)
         latest_recipe = summary["recipes"][0] if summary["recipes"] else {}
         latest_density = summary["densities"][0] if summary["densities"] else {}
@@ -1002,6 +1004,65 @@ def target_lifecycle_dataframe(history):
         )
 
     return pd.DataFrame(rows)
+
+
+def target_lifecycle_status(summary):
+    has_recipe = bool(summary["recipes"])
+    has_density = bool(summary["densities"])
+    if has_recipe and has_density:
+        return "Complete"
+    if has_recipe:
+        return "Needs density"
+    if has_density:
+        return "Needs recipe"
+    return "Empty"
+
+
+def target_lifecycle_search_text(group_key, entries, summary):
+    recipe_text = []
+    for entry in summary["recipes"]:
+        recipe_text.extend(entry.get("selected_powders") or [])
+        recipe_text.extend(entry.get("recipe", {}).keys())
+        recipe_text.append(str(entry.get("notes", "")))
+
+    density_text = [
+        str(entry.get("density_source", "")) + " " + str(entry.get("notes", ""))
+        for entry in summary["densities"]
+    ]
+
+    return " ".join(
+        str(part)
+        for part in [
+            group_key[0],
+            group_key[1],
+            group_key[2],
+            summary["title"],
+            summary["meta"],
+            *recipe_text,
+            *density_text,
+        ]
+    ).lower()
+
+
+def filter_target_lifecycle_groups(lifecycle_groups, search_text="", owner_filter="All", status_filter="All"):
+    query = str(search_text or "").strip().lower()
+    filtered = []
+
+    for group_key, entries in lifecycle_groups:
+        summary = target_lifecycle_summary(group_key, entries)
+        owner = group_key[0]
+        status = target_lifecycle_status(summary)
+
+        if owner_filter != "All" and owner != owner_filter:
+            continue
+        if status_filter != "All" and status != status_filter:
+            continue
+        if query and query not in target_lifecycle_search_text(group_key, entries, summary):
+            continue
+
+        filtered.append((group_key, entries))
+
+    return filtered
 
 
 def grouped_history(history):
@@ -2182,11 +2243,33 @@ elif page == "History":
     with target_tab:
         st.markdown("#### Target lifecycle")
         lifecycle_groups = target_lifecycle_groups(history)
-        lifecycle_df = target_lifecycle_dataframe(history)
         if not lifecycle_groups:
             st.info("No saved target records yet.")
         else:
-            for group_key, entries in lifecycle_groups:
+            search_col, owner_col, status_col = st.columns([1.45, 0.9, 0.85], gap="small")
+            lifecycle_search = search_col.text_input(
+                "Search targets",
+                placeholder="Target ID, person, formula, powder, notes",
+            )
+            owner_options = ["All"] + sorted({group_key[0] for group_key, _ in lifecycle_groups})
+            owner_filter = owner_col.selectbox("Target for", owner_options)
+            status_filter = status_col.selectbox(
+                "Status",
+                ["All", "Complete", "Needs density", "Needs recipe"],
+            )
+            filtered_lifecycle_groups = filter_target_lifecycle_groups(
+                lifecycle_groups,
+                search_text=lifecycle_search,
+                owner_filter=owner_filter,
+                status_filter=status_filter,
+            )
+            lifecycle_df = target_lifecycle_dataframe(lifecycle_groups=filtered_lifecycle_groups)
+            st.caption(f"Showing {len(filtered_lifecycle_groups)} of {len(lifecycle_groups)} target groups.")
+
+            if not filtered_lifecycle_groups:
+                st.info("No target records match these filters.")
+
+            for group_key, entries in filtered_lifecycle_groups:
                 summary = target_lifecycle_summary(group_key, entries)
                 target_id = summary["target_id"]
                 can_clear_group = any(entry.get("target_id") for entry in entries)
@@ -2264,13 +2347,14 @@ elif page == "History":
                         st.success(f"Removed {removed_count} item(s) for {target_id}.")
                         st.rerun()
 
-            st.download_button(
-                "Download Target Lifecycle CSV",
-                data=csv_bytes(lifecycle_df),
-                file_name="stoichio_target_lifecycle.csv",
-                mime="text/csv",
-                width="stretch",
-            )
+            if not lifecycle_df.empty:
+                st.download_button(
+                    "Download Filtered Target Lifecycle CSV",
+                    data=csv_bytes(lifecycle_df),
+                    file_name="stoichio_target_lifecycle.csv",
+                    mime="text/csv",
+                    width="stretch",
+                )
 
     with recipe_tab:
         st.markdown("#### Recipe history")
