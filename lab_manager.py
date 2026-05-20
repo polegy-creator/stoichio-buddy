@@ -41,6 +41,14 @@ def normalize_powder(name):
     return normalize_formula(name)
 
 
+def material_density_record_key(formula, phase=""):
+    formula_key = normalize_formula(formula)
+    phase_key = re.sub(r"[^A-Za-z0-9]+", "-", str(phase or "").strip()).strip("-").lower()
+    if not phase_key:
+        return formula_key
+    return f"{formula_key}__{phase_key}"
+
+
 class GoogleSheetsStore:
     """Tiny JSON document store backed by Google Sheets tabs."""
 
@@ -368,9 +376,18 @@ def delete_powder(powder, remove_inventory=True):
 # =========================
 
 def normalize_density_record(formula, record):
-    key = normalize_formula(formula)
+    raw_formula = record.get("formula") or str(formula).split("__", 1)[0]
+    key = normalize_formula(raw_formula)
+    phase = str(record.get("phase", "")).strip()
+    display_name = str(record.get("display_name", "")).strip()
+    if not display_name:
+        display_name = f"{key} ({phase})" if phase else key
+    record_id = material_density_record_key(key, phase)
     normalized = {
+        "record_id": record_id,
         "formula": key,
+        "phase": phase,
+        "display_name": display_name,
         "unit_cell_volume_A3": None,
         "z": None,
         "theoretical_density_g_cm3": None,
@@ -417,9 +434,9 @@ def load_material_densities():
     raw_records = load_json(MATERIAL_DENSITIES_FILE, {})
     records = {}
 
-    for formula, record in raw_records.items():
-        key = normalize_formula(formula)
-        records[key] = normalize_density_record(key, record)
+    for record_key, record in raw_records.items():
+        normalized = normalize_density_record(record_key, record)
+        records[normalized["record_id"]] = normalized
 
     if records != raw_records:
         save_material_densities(records)
@@ -432,6 +449,7 @@ def save_material_densities(records):
 
 def upsert_material_density(
     formula,
+    phase="",
     theoretical_density=None,
     unit_cell_volume=None,
     z=None,
@@ -450,6 +468,7 @@ def upsert_material_density(
     key = normalize_formula(formula)
     record = {
         "formula": key,
+        "phase": phase,
         "unit_cell_volume_A3": unit_cell_volume,
         "z": z,
         "theoretical_density_g_cm3": theoretical_density,
@@ -464,16 +483,19 @@ def upsert_material_density(
         "source": source,
         "notes": notes,
     }
-    records[key] = normalize_density_record(key, record)
+    normalized = normalize_density_record(key, record)
+    records[normalized["record_id"]] = normalized
     save_material_densities(records)
-    return key, records
+    return normalized["record_id"], records
 
 
-def delete_material_density(formula):
+def delete_material_density(identifier):
     records = load_material_densities()
-    key = normalize_formula(formula)
+    key = str(identifier).strip()
     if key not in records:
-        raise ValueError(f"Material density not found: {key}")
+        key = material_density_record_key(identifier)
+    if key not in records:
+        raise ValueError(f"Material density not found: {identifier}")
     records.pop(key)
     save_material_densities(records)
     return records
@@ -877,10 +899,10 @@ def restore_backup_data(backup):
         normalize_powder(powder): float(grams)
         for powder, grams in backup.get("inventory", {}).items()
     }
-    material_densities = {
-        normalize_formula(formula): normalize_density_record(formula, record)
-        for formula, record in backup.get("material_densities", {}).items()
-    }
+    material_densities = {}
+    for record_key, record in backup.get("material_densities", {}).items():
+        normalized_record = normalize_density_record(record_key, record)
+        material_densities[normalized_record["record_id"]] = normalized_record
     history = [dict(entry) for entry in backup.get("history", [])]
 
     save_powders(powders)

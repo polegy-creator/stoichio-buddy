@@ -62,5 +62,41 @@ class LabManagerHistoryTests(unittest.TestCase):
         self.assertNotIn("target_for", history[-1])
 
 
+class LabManagerMaterialDensityTests(unittest.TestCase):
+    def setUp(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.old_material_densities_file = lab_manager.MATERIAL_DENSITIES_FILE
+        self.old_storage_backend = lab_manager._storage_backend
+        lab_manager.MATERIAL_DENSITIES_FILE = f"{self.tempdir.name}/material_densities.json"
+        lab_manager._storage_backend = None
+
+    def tearDown(self):
+        lab_manager.MATERIAL_DENSITIES_FILE = self.old_material_densities_file
+        lab_manager._storage_backend = self.old_storage_backend
+        self.tempdir.cleanup()
+
+    def test_material_density_records_are_phase_specific(self):
+        rutile_key, _ = lab_manager.upsert_material_density(
+            "TiO2",
+            phase="rutile",
+            theoretical_density=4.25,
+            unit_cell_volume=62.435,
+            z=2,
+        )
+        anatase_key, records = lab_manager.upsert_material_density(
+            "TiO2",
+            phase="anatase",
+            theoretical_density=3.89,
+            unit_cell_volume=136.251,
+            z=4,
+        )
+
+        self.assertEqual(rutile_key, "TiO2__rutile")
+        self.assertEqual(anatase_key, "TiO2__anatase")
+        self.assertEqual(records[rutile_key]["formula"], "TiO2")
+        self.assertEqual(records[anatase_key]["phase"], "anatase")
+        self.assertEqual(len(records), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

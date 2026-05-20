@@ -646,7 +646,9 @@ def inventory_dataframe(inventory, recipe_masses=None):
 
 def material_density_dataframe(records):
     columns = [
-        "Target",
+        "Record",
+        "Formula",
+        "Phase",
         "Theoretical density (g/cm3)",
         "Unit cell volume (A3)",
         "Z",
@@ -662,10 +664,20 @@ def material_density_dataframe(records):
         "Notes",
     ]
     rows = []
-    for formula, record in records.items():
+    sorted_records = sorted(
+        records.items(),
+        key=lambda item: (
+            item[1].get("formula", item[0]),
+            item[1].get("phase", ""),
+            item[1].get("display_name", item[0]),
+        ),
+    )
+    for formula, record in sorted_records:
         rows.append(
             {
-                "Target": formula,
+                "Record": record.get("display_name", formula),
+                "Formula": record.get("formula", formula),
+                "Phase": record.get("phase", ""),
                 "Theoretical density (g/cm3)": (
                     round(record["theoretical_density_g_cm3"], 4)
                     if record.get("theoretical_density_g_cm3") is not None
@@ -692,24 +704,47 @@ def material_density_dataframe(records):
     return pd.DataFrame(rows, columns=columns)
 
 
-def lookup_known_density(target, material_densities):
+def density_record_label(record_key, record, include_density=True):
+    label = record.get("display_name") or record.get("formula") or record_key
+    density = record.get("theoretical_density_g_cm3")
+    if include_density and density:
+        return f"{label} - {float(density):.4f} g/cm3"
+    return label
+
+
+def density_records_for_formula(target, material_densities):
     if not target:
-        return None, None, "Enter a target formula first"
+        return None, [], "Enter a target formula first"
 
     try:
         key = normalize_formula(target)
     except ValueError as exc:
-        return None, None, str(exc)
+        return None, [], str(exc)
 
-    record = material_densities.get(key)
-    if not record:
-        return key, None, f"No saved density for {key}"
+    records = [
+        (record_key, record)
+        for record_key, record in material_densities.items()
+        if record.get("formula", record_key) == key or record_key == key
+    ]
+    records.sort(key=lambda item: (item[1].get("phase", ""), item[1].get("display_name", item[0])))
 
+    if not records:
+        return key, [], f"No saved density for {key}"
+
+    return key, records, None
+
+
+def lookup_known_density(target, material_densities):
+    key, records, error = density_records_for_formula(target, material_densities)
+    if error:
+        return key, None, error
+
+    record_key, record = records[0]
     density = record.get("theoretical_density_g_cm3")
     if density is None or density <= 0:
-        return key, None, f"Saved density for {key} is missing"
+        return key, None, f"Saved density for {density_record_label(record_key, record, False)} is missing"
 
-    return key, float(density), None
+    return record_key, float(density), None
 
 
 def density_source_control(target, material_densities, key_prefix):
@@ -721,24 +756,41 @@ def density_source_control(target, material_densities, key_prefix):
     )
 
     if source_mode == "Known material density":
-        normalized_target, density, error = lookup_known_density(target, material_densities)
-        if density is not None:
-            record = material_densities[normalized_target]
-            st.success(f"Using {normalized_target}: {density:.4f} g/cm3")
+        normalized_target, density_records, error = density_records_for_formula(target, material_densities)
+        if density_records:
+            if len(density_records) > 1:
+                selected_record_key = st.selectbox(
+                    "Known density phase",
+                    [record_key for record_key, _ in density_records],
+                    format_func=lambda value: density_record_label(value, material_densities[value]),
+                    key=f"{key_prefix}_known_density_phase",
+                )
+            else:
+                selected_record_key = density_records[0][0]
+
+            record = material_densities[selected_record_key]
+            density = record.get("theoretical_density_g_cm3")
+            if density is None or density <= 0:
+                st.warning(f"Saved density for {density_record_label(selected_record_key, record, False)} is missing")
+                return None, source_mode
+
+            density = float(density)
+            st.success(f"Using {density_record_label(selected_record_key, record)}")
             if record.get("source") or record.get("density_source"):
                 st.caption(
                     "Source: "
                     + (record.get("source") or record.get("density_source") or "saved material density")
                 )
+            return density, f"Known material density: {density_record_label(selected_record_key, record, False)}"
         else:
             st.warning(error)
-        return density, source_mode
+        return None, source_mode
 
     if source_mode == "Use another density record":
         source_target = st.selectbox(
             "Density record to use",
             [""] + list(material_densities.keys()),
-            format_func=lambda value: value or "Choose saved material",
+            format_func=lambda value: density_record_label(value, material_densities[value]) if value else "Choose saved material",
             key=f"{key_prefix}_density_record",
         )
         if not source_target:
@@ -758,7 +810,8 @@ def density_source_control(target, material_densities, key_prefix):
             try:
                 density = theoretical_density_from_cell(normalized_target, volume, z_value)
                 st.success(
-                    f"Using {source_target} unit cell for {normalized_target}: "
+                    f"Using {density_record_label(source_target, source_record, False)} unit cell "
+                    f"for {normalized_target}: "
                     f"{density:.4f} g/cm3"
                 )
                 st.caption(
@@ -2441,6 +2494,7 @@ elif page == "Material Density":
     with entry_col:
         st.markdown("#### Add or update target")
         density_formula = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
+        density_phase = st.text_input("Phase / polymorph (optional)", placeholder="rutile, anatase, hematite")
         density_entry_mode = st.radio(
             "Density entry mode",
             ["From lattice parameters", "From unit cell volume", "Manual theoretical density"],
@@ -2547,6 +2601,7 @@ elif page == "Material Density":
                     raise ValueError("Enter enough density information")
                 upsert_material_density(
                     density_formula,
+                    phase=density_phase,
                     theoretical_density=theoretical_density,
                     unit_cell_volume=unit_cell_volume if unit_cell_volume and unit_cell_volume > 0 else None,
                     z=z_value if z_value and z_value > 0 else None,
@@ -2562,7 +2617,10 @@ elif page == "Material Density":
                     notes=notes,
                 )
                 clear_data_cache()
-                st.success(f"Saved density for {normalize_formula(density_formula)}.")
+                saved_label = normalize_formula(density_formula)
+                if density_phase.strip():
+                    saved_label = f"{saved_label} ({density_phase.strip()})"
+                st.success(f"Saved density for {saved_label}.")
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
@@ -2572,7 +2630,7 @@ elif page == "Material Density":
         density_delete_target = st.selectbox(
             "Density record to delete",
             [""] + list(material_densities.keys()),
-            format_func=lambda value: value or "Choose target",
+            format_func=lambda value: density_record_label(value, material_densities[value]) if value else "Choose target",
         )
         if st.button("Delete Density Record", width="stretch"):
             try:
