@@ -1275,6 +1275,54 @@ def target_density_history_summary(entry):
     }
 
 
+def recipe_lab_summary(target, target_mass, recipe_masses, target_for="", target_id=None, notes=""):
+    lines = [
+        "Stoichio Buddy recipe",
+        f"Target: {target}",
+        f"Target basis: {target_mass:.4f} g",
+    ]
+    if target_id:
+        lines.append(f"Target ID: {target_id}")
+    if target_for:
+        lines.append(f"Target for: {target_for}")
+
+    lines.append("Precursors:")
+    for powder, grams in recipe_masses.items():
+        lines.append(f"- {powder}: {grams:.6f} g")
+
+    total_powder = sum(recipe_masses.values())
+    lines.append(f"Total precursor powder: {total_powder:.6f} g")
+    if notes:
+        lines.append(f"Notes: {notes}")
+    return "\n".join(lines)
+
+
+def target_density_lab_summary(result, target_id=None):
+    target_for = str(result.get("target_for", "")).strip()
+    lines = [
+        "Stoichio Buddy target density",
+        f"Target: {result['target']}",
+    ]
+    if target_id:
+        lines.append(f"Target ID: {target_id}")
+    if target_for:
+        lines.append(f"Target for: {target_for}")
+
+    lines.extend(
+        [
+            f"Measured density: {result['measured_density']:.6f} g/cm3",
+            f"Theoretical density: {result['theoretical_density']:.6f} g/cm3",
+            f"Relative density: {result['relative_percent']:.2f}%",
+            f"Final diameter: {result['final_diameter']:.4f} mm",
+            f"Final height: {result['final_height']:.4f} mm",
+            f"Final mass: {result['final_mass']:.6f} g",
+            f"Final volume: {result['final_volume']:.6f} cm3",
+            f"Density source: {result.get('density_source', '')}",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def csv_bytes(df):
     buffer = StringIO()
     df.to_csv(buffer, index=False)
@@ -1633,6 +1681,7 @@ if page == "Calculate":
                         st.warning("Inputs changed after this calculation. Recalculate before saving.")
 
                     recipe_target_owner = recipe_target_for.strip()
+                    recipe_target_id = None
                     if recipe_target_owner:
                         recipe_target_number = next_target_number(history, recipe_target_owner)
                         recipe_target_id = format_target_id(recipe_target_owner, recipe_target_number)
@@ -1641,13 +1690,24 @@ if page == "Calculate":
                             f"for {recipe_target_owner}."
                         )
                     else:
-                        recipe_target_id = None
                         st.caption("No target owner set. This can still be saved as a quick recipe record.")
 
                     recipe_notes = st.text_area(
                         "Recipe notes",
                         placeholder="Example: calcination plan, pressing force, operator notes",
                         key=widget_key("recipe_save_notes", last_recipe["signature"]),
+                    )
+                    st.markdown("#### Lab notebook summary")
+                    st.code(
+                        recipe_lab_summary(
+                            normalize_formula(last_recipe["target"]),
+                            displayed_target_mass,
+                            recipe_masses,
+                            target_for=recipe_target_owner,
+                            target_id=recipe_target_id,
+                            notes=recipe_notes,
+                        ),
+                        language="text",
                     )
                     save_disabled = (
                         inputs_changed
@@ -2191,6 +2251,11 @@ elif page == "Target Density":
                 "Target density notes",
                 placeholder="Example: sintering temperature, cracks, polish state, measurement notes",
                 key=widget_key("target_density_save_notes", last_density["signature"]),
+            )
+            st.markdown("#### Lab notebook summary")
+            st.code(
+                target_density_lab_summary(last_density, target_id=current_target_id),
+                language="text",
             )
             save_disabled = (
                 inputs_changed
