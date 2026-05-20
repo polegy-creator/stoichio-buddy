@@ -7,6 +7,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Light and dark display modes
 - User-selected precursor powders only
 - Non-negative deterministic stoichiometry solver, with no automatic powder picking
+- Formula parsing for decimals, grouped salts such as `Ba(NO3)2`, and hydrates using `·` or `*`
 - Add a powder and its starting inventory in one workflow
 - Update inventory quantities
 - Delete powders added by mistake

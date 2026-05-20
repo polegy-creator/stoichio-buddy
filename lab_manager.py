@@ -711,8 +711,14 @@ def load_history():
 
         if entry_type == "target_density":
             person = str(entry.get("target_for", "")).strip()
-            used_for_person = used_target_numbers.setdefault(person, set())
             target_number = _target_number_from_entry(entry)
+            if not person:
+                if target_number is not None and entry.get("target_number") != target_number:
+                    entry["target_number"] = target_number
+                    changed = True
+                continue
+
+            used_for_person = used_target_numbers.setdefault(person, set())
 
             if target_number is None:
                 target_number = _next_unused_number(used_for_person)

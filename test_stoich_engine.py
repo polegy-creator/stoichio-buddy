@@ -20,6 +20,16 @@ class StoichEngineTests(unittest.TestCase):
         self.assertAlmostEqual(result["recipe"]["TiO2"], 0.156, places=3)
         self.assertAlmostEqual(sum(result["recipe"].values()), 15.615, places=6)
 
+    def test_missing_cation_source_warns(self):
+        db = {
+            "Fe2O3": {"elements": parse_formula("Fe2O3")},
+        }
+
+        result = compute_recipe("FeTiO3", 10.0, db, ["Fe2O3"])
+
+        self.assertIsNone(result["recipe"])
+        self.assertIn("Ti", result["warning"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1911,7 +1911,7 @@ if page == "Powder Mass Calculation":
         target = st.text_input(
             "Target formula",
             placeholder="Fe1.98Ti0.02O3",
-            help="Simple formulas with decimal stoichiometry are supported.",
+            help="Supports decimals, parentheses, and hydrates with middle dot or asterisk.",
         )
         recipe_target_for = st.text_input(
             "Target for (optional)",

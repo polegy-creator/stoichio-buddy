@@ -61,43 +61,104 @@ def normalize_formula(formula):
 
 def parse_formula(formula):
     """
-    Parse a simple formula into an element-count dictionary.
-    Supports decimal stoichiometries, but not parentheses or hydrates.
+    Parse a formula into an element-count dictionary.
+
+    Supports decimal stoichiometry, grouped formulas such as Ba(NO3)2,
+    and hydrate separators written as middle dot or asterisk.
     """
     formula = normalize_formula(formula)
-    pattern = re.compile(r"([A-Z][a-z]?)(\d*\.?\d*)")
     composition = {}
-    pos = 0
 
-    for match in pattern.finditer(formula):
-        if match.start() != pos:
-            raise ValueError(f"Invalid formula near '{formula[pos:match.start()]}'")
+    for part in _hydrate_parts(formula):
+        multiplier, body = _leading_multiplier(part)
+        parsed, pos = _parse_group(body, 0, None)
+        if pos != len(body):
+            raise ValueError(f"Invalid formula near '{body[pos:]}'")
 
-        element, amount_text = match.groups()
-        if element not in ATOMIC_MASSES:
-            raise ValueError(f"Unknown element '{element}'")
-
-        if amount_text in ("", None):
-            amount = 1.0
-        else:
-            try:
-                amount = float(amount_text)
-            except ValueError as exc:
-                raise ValueError(f"Invalid amount for '{element}'") from exc
-
-        if amount <= 0:
-            raise ValueError(f"Amount for '{element}' must be positive")
-
-        composition[element] = composition.get(element, 0.0) + amount
-        pos = match.end()
-
-    if pos != len(formula):
-        raise ValueError(f"Invalid formula near '{formula[pos:]}'")
+        for element, amount in parsed.items():
+            composition[element] = composition.get(element, 0.0) + amount * multiplier
 
     if not composition:
         raise ValueError("Formula did not contain any elements")
 
     return composition
+
+
+def _hydrate_parts(formula):
+    parts = re.split(r"[·•*]", formula)
+    if not parts or any(part == "" for part in parts):
+        raise ValueError("Formula did not contain any elements")
+    return parts
+
+
+def _leading_multiplier(part):
+    match = re.match(r"(\d+(?:\.\d*)?|\.\d+)(?=[A-Z(\[{])", part)
+    if not match:
+        return 1.0, part
+
+    multiplier = float(match.group(1))
+    if multiplier <= 0:
+        raise ValueError("Formula multiplier must be positive")
+    return multiplier, part[match.end():]
+
+
+def _parse_group(text, pos, closing):
+    composition = {}
+    matching_close = {"(": ")", "[": "]", "{": "}"}
+
+    while pos < len(text):
+        ch = text[pos]
+
+        if closing and ch == closing:
+            return composition, pos + 1
+        if ch in ")]}":
+            raise ValueError(f"Unexpected closing group '{ch}'")
+
+        if ch in matching_close:
+            group_comp, pos = _parse_group(text, pos + 1, matching_close[ch])
+            multiplier, pos = _read_amount(text, pos)
+            _merge_composition(composition, group_comp, multiplier)
+            continue
+
+        if ch.isupper():
+            element, pos = _read_element(text, pos)
+            amount, pos = _read_amount(text, pos)
+            composition[element] = composition.get(element, 0.0) + amount
+            continue
+
+        raise ValueError(f"Invalid formula near '{text[pos:]}'")
+
+    if closing:
+        raise ValueError(f"Missing closing group '{closing}'")
+    return composition, pos
+
+
+def _read_element(text, pos):
+    element = text[pos]
+    pos += 1
+    if pos < len(text) and text[pos].islower():
+        element += text[pos]
+        pos += 1
+
+    if element not in ATOMIC_MASSES:
+        raise ValueError(f"Unknown element '{element}'")
+    return element, pos
+
+
+def _read_amount(text, pos):
+    match = re.match(r"\d+(?:\.\d*)?|\.\d+", text[pos:])
+    if not match:
+        return 1.0, pos
+
+    amount = float(match.group(0))
+    if amount <= 0:
+        raise ValueError("Formula amounts must be positive")
+    return amount, pos + len(match.group(0))
+
+
+def _merge_composition(destination, source, multiplier):
+    for element, amount in source.items():
+        destination[element] = destination.get(element, 0.0) + amount * multiplier
 
 
 def molar_mass(composition):

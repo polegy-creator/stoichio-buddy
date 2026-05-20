@@ -41,6 +41,26 @@ class LabManagerHistoryTests(unittest.TestCase):
         self.assertEqual(history[-1]["target_id"], "Daniel-T001")
         self.assertEqual(history[-1]["linked_recipe"], linked_recipe)
 
+    def test_unassigned_target_density_stays_quick_record(self):
+        lab_manager.log_target_density(
+            "Fe1.98Ti0.02O3",
+            None,
+            None,
+            measured_density=5.1,
+            theoretical_density=5.2,
+            relative_density=98.08,
+            final_volume=0.12,
+            final_mass=0.61,
+            final_diameter=24.8,
+            final_height=0.25,
+        )
+
+        history = lab_manager.load_history()
+
+        self.assertNotIn("target_id", history[-1])
+        self.assertNotIn("target_number", history[-1])
+        self.assertNotIn("target_for", history[-1])
+
 
 if __name__ == "__main__":
     unittest.main()
