@@ -49,6 +49,47 @@ def material_density_record_key(formula, phase=""):
     return f"{formula_key}__{phase_key}"
 
 
+def formula_cation_elements(formula):
+    composition = parse_formula(normalize_formula(formula))
+    return {element for element in composition if element != "O"}
+
+
+def related_material_density_records(target, material_densities):
+    try:
+        target_elements = formula_cation_elements(target)
+    except ValueError:
+        return []
+
+    if not target_elements:
+        return []
+
+    matches = []
+    for record_key, record in material_densities.items():
+        try:
+            record_elements = formula_cation_elements(record.get("formula", record_key))
+        except ValueError:
+            continue
+
+        overlap = target_elements & record_elements
+        if not overlap:
+            continue
+
+        matches.append(
+            (
+                -len(overlap),
+                len(record_elements - target_elements),
+                record.get("formula", record_key),
+                record.get("phase", ""),
+                record.get("display_name", record_key),
+                record_key,
+                record,
+            )
+        )
+
+    matches.sort()
+    return [(record_key, record) for *_, record_key, record in matches]
+
+
 class GoogleSheetsStore:
     """Tiny JSON document store backed by Google Sheets tabs."""
 
@@ -399,6 +440,9 @@ def normalize_density_record(formula, record):
         "alpha_deg": None,
         "beta_deg": None,
         "gamma_deg": None,
+        "reported_density_g_cm3": None,
+        "density_delta_g_cm3": None,
+        "density_validation": str(record.get("density_validation", "")).strip(),
         "source": str(record.get("source", "")).strip(),
         "notes": str(record.get("notes", "")).strip(),
         "origin": str(record.get("origin", record.get("added_by", "Lab entry"))).strip() or "Lab entry",
@@ -415,6 +459,14 @@ def normalize_density_record(formula, record):
     density = record.get("theoretical_density_g_cm3")
     if density not in (None, ""):
         normalized["theoretical_density_g_cm3"] = float(density)
+
+    reported_density = record.get("reported_density_g_cm3")
+    if reported_density not in (None, ""):
+        normalized["reported_density_g_cm3"] = float(reported_density)
+
+    density_delta = record.get("density_delta_g_cm3")
+    if density_delta not in (None, ""):
+        normalized["density_delta_g_cm3"] = float(density_delta)
 
     for source_key, dest_key in (
         ("a_A", "a_A"),
@@ -465,6 +517,9 @@ def upsert_material_density(
     source="",
     notes="",
     origin="Lab entry",
+    reported_density=None,
+    density_delta=None,
+    density_validation="",
 ):
     records = load_material_densities()
     key = normalize_formula(formula)
@@ -482,6 +537,9 @@ def upsert_material_density(
         "alpha_deg": alpha,
         "beta_deg": beta,
         "gamma_deg": gamma,
+        "reported_density_g_cm3": reported_density,
+        "density_delta_g_cm3": density_delta,
+        "density_validation": density_validation,
         "source": source,
         "notes": notes,
         "origin": origin,

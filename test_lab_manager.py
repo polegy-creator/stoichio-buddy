@@ -98,6 +98,38 @@ class LabManagerMaterialDensityTests(unittest.TestCase):
         self.assertEqual(records[anatase_key]["origin"], "Lab entry")
         self.assertEqual(len(records), 2)
 
+    def test_related_material_density_records_match_target_cations(self):
+        records = {
+            "Fe2O3__hematite-alpha": {
+                "formula": "Fe2O3",
+                "phase": "hematite alpha",
+                "display_name": "Fe2O3 (hematite alpha)",
+            },
+            "Ti2O3__tistarite-alpha": {
+                "formula": "Ti2O3",
+                "phase": "tistarite alpha",
+                "display_name": "Ti2O3 (tistarite alpha)",
+            },
+            "BaTiO3__tetragonal-perovskite": {
+                "formula": "BaTiO3",
+                "phase": "tetragonal perovskite",
+                "display_name": "BaTiO3 (tetragonal perovskite)",
+            },
+            "ZnO__zincite-wurtzite": {
+                "formula": "ZnO",
+                "phase": "zincite wurtzite",
+                "display_name": "ZnO (zincite wurtzite)",
+            },
+        }
+
+        related = lab_manager.related_material_density_records("Fe1.98Ti0.02O3", records)
+        related_keys = [record_key for record_key, _ in related]
+
+        self.assertIn("Fe2O3__hematite-alpha", related_keys)
+        self.assertIn("Ti2O3__tistarite-alpha", related_keys)
+        self.assertIn("BaTiO3__tetragonal-perovskite", related_keys)
+        self.assertNotIn("ZnO__zincite-wurtzite", related_keys)
+
 
 if __name__ == "__main__":
     unittest.main()

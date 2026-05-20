@@ -16,7 +16,7 @@ from density_engine import (
     theoretical_density_from_cell,
     unit_cell_volume_from_lattice,
 )
-from formula_parser import normalize_formula
+from formula_parser import normalize_formula, parse_formula
 from lab_manager import (
     add_powder,
     check_stock,
@@ -36,6 +36,7 @@ from lab_manager import (
     load_powders,
     log_synthesis,
     log_target_density,
+    related_material_density_records,
     restore_backup_data,
     set_inventory_quantity,
     storage_error,
@@ -655,6 +656,9 @@ def material_density_dataframe(records):
         "Formula",
         "Phase",
         "Theoretical density (g/cm3)",
+        "Reported density (g/cm3)",
+        "Delta vs reported (g/cm3)",
+        "Density check",
         "Unit cell volume (A3)",
         "Z",
         "Crystal system",
@@ -689,6 +693,17 @@ def material_density_dataframe(records):
                     if record.get("theoretical_density_g_cm3") is not None
                     else ""
                 ),
+                "Reported density (g/cm3)": (
+                    round(record["reported_density_g_cm3"], 4)
+                    if record.get("reported_density_g_cm3") is not None
+                    else ""
+                ),
+                "Delta vs reported (g/cm3)": (
+                    round(record["density_delta_g_cm3"], 5)
+                    if record.get("density_delta_g_cm3") is not None
+                    else ""
+                ),
+                "Density check": record.get("density_validation", ""),
                 "Unit cell volume (A3)": (
                     round(record["unit_cell_volume_A3"], 4)
                     if record.get("unit_cell_volume_A3") is not None
@@ -741,6 +756,14 @@ def density_records_for_formula(target, material_densities):
     return key, records, None
 
 
+def target_cation_label(target):
+    try:
+        elements = sorted(element for element in parse_formula(normalize_formula(target)) if element != "O")
+    except ValueError:
+        return ""
+    return ", ".join(elements)
+
+
 def lookup_known_density(target, material_densities):
     key, records, error = density_records_for_formula(target, material_densities)
     if error:
@@ -790,13 +813,77 @@ def density_source_control(target, material_densities, key_prefix):
                 )
             return density, f"Known material density: {density_record_label(selected_record_key, record, False)}"
         else:
-            st.warning(error)
+            related_records = related_material_density_records(target, material_densities)
+            if related_records and normalized_target:
+                cation_text = target_cation_label(target)
+                st.warning(f"No exact density for {normalized_target}. Choose a related cation-containing record.")
+                if cation_text:
+                    st.caption(
+                        f"Showing {len(related_records)} records that contain target cation(s): {cation_text}."
+                    )
+                selected_record_key = st.selectbox(
+                    "Related density record",
+                    [record_key for record_key, _ in related_records],
+                    format_func=lambda value: density_record_label(value, material_densities[value]),
+                    key=f"{key_prefix}_related_known_density",
+                )
+                source_record = material_densities[selected_record_key]
+                volume = source_record.get("unit_cell_volume_A3")
+                z_value = source_record.get("z")
+                if volume and z_value:
+                    try:
+                        density = theoretical_density_from_cell(normalized_target, volume, z_value)
+                        st.success(
+                            f"Using {density_record_label(selected_record_key, source_record, False)} unit cell "
+                            f"for {normalized_target}: {density:.4f} g/cm3"
+                        )
+                        st.caption(
+                            f"Recalculated from V={volume:g} A3 and Z={z_value:g}; "
+                            "molar mass comes from the current target formula."
+                        )
+                        return (
+                            density,
+                            f"Related material density: {density_record_label(selected_record_key, source_record, False)}",
+                        )
+                    except ValueError as exc:
+                        st.warning(str(exc))
+                else:
+                    st.warning(f"{density_record_label(selected_record_key, source_record, False)} has no unit cell data.")
+            else:
+                st.warning(error)
         return None, source_mode
 
     if source_mode == "Use another density record":
+        related_records = related_material_density_records(target, material_densities)
+        all_records = sorted(
+            material_densities.items(),
+            key=lambda item: (
+                item[1].get("formula", item[0]),
+                item[1].get("phase", ""),
+                item[1].get("display_name", item[0]),
+            ),
+        )
+        show_all_density_records = False
+        if related_records:
+            cation_text = target_cation_label(target)
+            if cation_text:
+                st.caption(
+                    f"Showing {len(related_records)} records that contain target cation(s): {cation_text}."
+                )
+            show_all_density_records = st.checkbox(
+                "Show all density records",
+                value=False,
+                key=f"{key_prefix}_show_all_density_records",
+            )
+            record_choices = all_records if show_all_density_records else related_records
+        else:
+            record_choices = all_records
+            if target:
+                st.warning("No density records share cations with this target. Showing all records.")
+
         source_target = st.selectbox(
             "Density record to use",
-            [""] + list(material_densities.keys()),
+            [""] + [record_key for record_key, _ in record_choices],
             format_func=lambda value: density_record_label(value, material_densities[value]) if value else "Choose saved material",
             key=f"{key_prefix}_density_record",
         )

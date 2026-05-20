@@ -17,7 +17,10 @@
         "gamma_deg": 90.0,
         "source": "Niggli, P. Die Kristallstruktur einiger Oxyde I. Zeitschrift fuer Kristallographie, Kristallgeometrie, Kristallphysik, Kristallchemie (-144,1977) 57, 253-299 (1922). COD 1010486: https://www.crystallography.net/cod/1010486.html",
         "notes": "cubic. COD reports a=4.718 A, b=4.718 A, c=4.718 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=105 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010486.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Al2O3__corundum-alpha": {
         "record_id": "Al2O3__corundum-alpha",
@@ -37,7 +40,10 @@
         "gamma_deg": 120.0,
         "source": "Schreyer, Martin; Guo, Liangfeng; Thirunahari, Satyanarayana; Gao, Feng; Garland, Marc. Simultaneous determination of several crystal structures from powder mixtures: the combination of powder X-ray diffraction, band-target entropy minimization and Rietveld methods. Journal of Applied Crystallography 47, 659-667 (2014). https://doi.org/10.1107/S1600576714003379. COD 2300448: https://www.crystallography.net/cod/2300448.html",
         "notes": "corundum alpha. COD reports a=4.75815 A, b=4.75815 A, c=12.9897 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=254.687 A3, Z=6, diffraction density=3.989 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2300448.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 3.989,
+        "density_delta_g_cm3": -0.0003341357482891105,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Au2O3__gold-iii-oxide": {
         "record_id": "Au2O3__gold-iii-oxide",
@@ -57,7 +63,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Sheldrick, G.M.; Jones, P.G.; Schwarzmann, E.; Rumpel, H. Gold(III) oxide. Acta Crystallographica B (24,1968-38,1982) 35, 1435-1437 (1979). https://doi.org/10.1107/S0567740879006622. COD 2105390: https://www.crystallography.net/cod/2105390.html",
-        "notes": "gold(III) oxide. COD reports a=12.827 A, b=10.52 A, c=3.838 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=517.9 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2105390.html"
+        "notes": "gold(III) oxide. COD reports a=12.827 A, b=10.52 A, c=3.838 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=517.9 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2105390.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BaCeO3__orthorhombic-perovskite": {
         "record_id": "BaCeO3__orthorhombic-perovskite",
@@ -77,7 +86,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Genet, F.; Loridant, S.; Ritter, C.; Lucazeau, G. Phase transitions in Ba Ce O3 : neutron diffraction and Raman studies. Journal of Physics and Chemistry of Solids 60, 2009-2021 (1999). COD 1521059: https://www.crystallography.net/cod/1521059.html",
-        "notes": "orthorhombic perovskite. COD reports a=6.2517 A, b=8.7906 A, c=6.2271 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=342.218 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1521059.html"
+        "notes": "orthorhombic perovskite. COD reports a=6.2517 A, b=8.7906 A, c=6.2271 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=342.218 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1521059.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BaFe12O19__m-type-hexaferrite": {
         "record_id": "BaFe12O19__m-type-hexaferrite",
@@ -97,7 +109,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Collomb, A; Wolfers, P; Obradors, X. Neutron diffraction studies of some hexagonal ferrites: BaFe~12~O~19~, BaMg~2~-W and BaCo~2~-W. Journal of Magnetism and Magnetic Materials 62, 57-67 (1986). https://doi.org/10.1016/0304-8853(86)90734-1. COD 1008326: https://www.crystallography.net/cod/1008326.html",
-        "notes": "M-type hexaferrite. COD reports a=5.929 A, b=5.929 A, c=23.413 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=712.8 A3, Z=2, diffraction density=5.179 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1008326.html"
+        "notes": "M-type hexaferrite. COD reports a=5.929 A, b=5.929 A, c=23.413 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=712.8 A3, Z=2, diffraction density=5.179 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1008326.html",
+        "reported_density_g_cm3": 5.179,
+        "density_delta_g_cm3": -0.0005269170891146757,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "BaO__rocksalt": {
         "record_id": "BaO__rocksalt",
@@ -117,7 +132,10 @@
         "gamma_deg": 90.0,
         "source": "Gerlach, W. Die Gitterstruktur der Erdalkalioxyde. Zeitschrift fuer Physik 9, 184-192 (1922). https://doi.org/10.1007/BF01326966. COD 1011362: https://www.crystallography.net/cod/1011362.html",
         "notes": "rocksalt. COD reports a=5.496 A, b=5.496 A, c=5.496 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=166 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1011362.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BaO2__peroxide": {
         "record_id": "BaO2__peroxide",
@@ -137,7 +155,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wong-Ng W; Roth, R. S. Single-crystal structural investigation of BaO2. Physica C 233, 97-101 (1994). https://doi.org/10.1016/0921-4534(94)00562-1. COD 9013413: https://www.crystallography.net/cod/9013413.html",
-        "notes": "peroxide. COD reports a=3.8114 A, b=3.8114 A, c=6.8215 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=99.094 A3, Z=2, diffraction density=5.675 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9013413.html"
+        "notes": "peroxide. COD reports a=3.8114 A, b=3.8114 A, c=6.8215 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=99.094 A3, Z=2, diffraction density=5.675 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9013413.html",
+        "reported_density_g_cm3": 5.675,
+        "density_delta_g_cm3": -6.99504225654124e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "BaTiO3__cubic-perovskite": {
         "record_id": "BaTiO3__cubic-perovskite",
@@ -157,7 +178,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Natheer B. Mahmood; Emad K. Al-Shakarchi. Three Techniques Used to Produce BaTiO3 Fine Powder. Journal of Modern Physics 2, 1420-1428 (2011). https://doi.org/10.4236/jmp.2011.211175. COD 1507757: https://www.crystallography.net/cod/1507757.html",
-        "notes": "cubic perovskite. COD reports a=4.0073 A, b=4.0073 A, c=4.0073 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.351 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1507757.html"
+        "notes": "cubic perovskite. COD reports a=4.0073 A, b=4.0073 A, c=4.0073 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.351 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1507757.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BaTiO3__orthorhombic-perovskite": {
         "record_id": "BaTiO3__orthorhombic-perovskite",
@@ -177,7 +201,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zeng, L.; Jiang, Y. X-ray diffraction study of orthorhombic barium titanate. Beijing Gongye Daxue Xuebao 17, 32-37 (1991). COD 1540757: https://www.crystallography.net/cod/1540757.html",
-        "notes": "orthorhombic perovskite. COD reports a=3.98 A, b=4.01 A, c=4.02 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.158 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1540757.html"
+        "notes": "orthorhombic perovskite. COD reports a=3.98 A, b=4.01 A, c=4.02 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.158 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1540757.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BaTiO3__tetragonal-perovskite": {
         "record_id": "BaTiO3__tetragonal-perovskite",
@@ -197,7 +224,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Natheer B. Mahmood; Emad K. Al-Shakarchi. Three Techniques Used to Produce BaTiO3 Fine Powder. Journal of Modern Physics 2, 1420-1428 (2011). https://doi.org/10.4236/jmp.2011.211175. COD 1507756: https://www.crystallography.net/cod/1507756.html",
-        "notes": "tetragonal perovskite. COD reports a=3.9999 A, b=3.9999 A, c=4.017 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.269 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1507756.html"
+        "notes": "tetragonal perovskite. COD reports a=3.9999 A, b=3.9999 A, c=4.017 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.269 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1507756.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BaZrO3__cubic-perovskite": {
         "record_id": "BaZrO3__cubic-perovskite",
@@ -217,7 +247,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Megaw, H.D. Crystal structure of double oxides of the perovskite type. Proceedings of the Physical Society, London 58, 133-152 (1946). COD 1538369: https://www.crystallography.net/cod/1538369.html",
-        "notes": "cubic perovskite. COD reports a=4.1815 A, b=4.1815 A, c=4.1815 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=73.113 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1538369.html"
+        "notes": "cubic perovskite. COD reports a=4.1815 A, b=4.1815 A, c=4.1815 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=73.113 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1538369.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "BeO__bromellite-wurtzite": {
         "record_id": "BeO__bromellite-wurtzite",
@@ -237,7 +270,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Aminoff, G. Ueber Berylliumoxyd als Mineral und dessen Kristallstruktur. Zeitschrift fuer Kristallographie, Kristallgeometrie, Kristallphysik, Kristallchemie (-144,1977) 62, 113-122 (1925). COD 1010943: https://www.crystallography.net/cod/1010943.html",
-        "notes": "bromellite wurtzite. COD reports a=2.685 A, b=2.685 A, c=4.369 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=27.3 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010943.html"
+        "notes": "bromellite wurtzite. COD reports a=2.685 A, b=2.685 A, c=4.369 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=27.3 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010943.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Bi2O3__alpha-bismite": {
         "record_id": "Bi2O3__alpha-bismite",
@@ -257,7 +293,10 @@
         "gamma_deg": 90.0,
         "source": "Malmros, G. The crystal structure of alpha-Bi2O3. Acta Chemica Scandinavica 24, 384-396 (1970). https://doi.org/10.3891/acta.chem.scand.24-0384. COD 9012546: https://www.crystallography.net/cod/9012546.html",
         "notes": "alpha bismite. COD reports a=5.8486 A, b=8.1661 A, c=7.5097 A, alpha=90 deg, beta=113 deg, gamma=90 deg, V=330.153 A3, Z=4, diffraction density=9.374 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9012546.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 9.374,
+        "density_delta_g_cm3": 0.00031799345302374604,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "BiFeO3__rhombohedral-perovskite": {
         "record_id": "BiFeO3__rhombohedral-perovskite",
@@ -277,7 +316,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Palewicz, Andrzej; Przenioslo, Radoslaw; Sosnowska, Izabela; Hewat, Alan. Atomic displacements in BiFeO~3~ as a function of temperature: neutron diffraction study. Acta Crystallographica Section B 63, 537-544 (2007). https://doi.org/10.1107/S0108768107023956. COD 2102909: https://www.crystallography.net/cod/2102909.html",
-        "notes": "rhombohedral perovskite. COD reports a=5.57882 A, b=5.57882 A, c=13.8693 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=373.827 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2102909.html"
+        "notes": "rhombohedral perovskite. COD reports a=5.57882 A, b=5.57882 A, c=13.8693 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=373.827 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2102909.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "CaO__lime-rocksalt": {
         "record_id": "CaO__lime-rocksalt",
@@ -297,7 +339,10 @@
         "gamma_deg": 90.0,
         "source": "Primak, W; Kaufman, H; Ward, R. X-Ray Diffraction Studies of Systems Involved in the Preparation of Alkaline Earth Sulfide and Selenide Phosphors. Journal of the American Chemical Society 70, 2043-2046 (1948). https://doi.org/10.1021/ja01186a018. COD 1000044: https://www.crystallography.net/cod/1000044.html",
         "notes": "lime rocksalt. COD reports a=4.799 A, b=4.799 A, c=4.799 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=110.5 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000044.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "CaO2__peroxide": {
         "record_id": "CaO2__peroxide",
@@ -317,7 +362,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Kotov, V.; Reichstein, S. About the structure of calcium peroxide Ca O2. Zhurnal Fizicheskoi Khimii 15, 1057-1058 (1941). COD 1530292: https://www.crystallography.net/cod/1530292.html",
-        "notes": "peroxide. COD reports a=5.01 A, b=5.01 A, c=5.92 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=148.593 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1530292.html"
+        "notes": "peroxide. COD reports a=5.01 A, b=5.01 A, c=5.92 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=148.593 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1530292.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "CaTiO3__orthorhombic-perovskite": {
         "record_id": "CaTiO3__orthorhombic-perovskite",
@@ -337,7 +385,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Beran, A; Libowitzky, E; Armbruster, T. A single-crystal infrared spectroscopic and X-ray diffraction study of untwinned San Benito perovskite containing O H groups. Canadian Mineralogist 34, 803-809 (1996). COD 1000022: https://www.crystallography.net/cod/1000022.html",
-        "notes": "orthorhombic perovskite. COD reports a=5.38 A, b=5.44 A, c=7.639 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=223.6 A3, Z=4, diffraction density=4.039 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000022.html"
+        "notes": "orthorhombic perovskite. COD reports a=5.38 A, b=5.44 A, c=7.639 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=223.6 A3, Z=4, diffraction density=4.039 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000022.html",
+        "reported_density_g_cm3": 4.039,
+        "density_delta_g_cm3": -0.0007709862299272174,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "CaZrO3__orthorhombic-perovskite": {
         "record_id": "CaZrO3__orthorhombic-perovskite",
@@ -357,7 +408,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Levin, I.; Amos, T.G.; Toby, B.H.; Roth, R.S.; Vanderah, T.A.; Bell, S.M.; Farber, L. Phase equilibria, crystal structures and dielectric anomaly in the (Ba Zr O3) - (Ca Zr O3) system. Journal of Solid State Chemistry 175, 170-181 (2003). COD 1532747: https://www.crystallography.net/cod/1532747.html",
-        "notes": "orthorhombic perovskite. COD reports a=5.58305 A, b=8.00703 A, c=5.75904 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=257.45 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1532747.html"
+        "notes": "orthorhombic perovskite. COD reports a=5.58305 A, b=8.00703 A, c=5.75904 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=257.45 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1532747.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "CdO__monteponite-rocksalt": {
         "record_id": "CdO__monteponite-rocksalt",
@@ -377,7 +431,10 @@
         "gamma_deg": 90.0,
         "source": "Zhang, J. Room temperature compressibilities of MnO and CdO: further examination of the role of cation type in bulk modulus systematics Sample from Run #1: P = 0.00 GPa at beginning of experiment. Physics and Chemistry of Minerals 26, 644-648 (1999). https://doi.org/10.1007/s002690050229. COD 9006671: https://www.crystallography.net/cod/9006671.html",
         "notes": "monteponite rocksalt. COD reports a=4.6963 A, b=4.6963 A, c=4.6963 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=103.578 A3, Z=4, diffraction density=8.235 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9006671.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 8.235,
+        "density_delta_g_cm3": -0.0005038298972195321,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "CeO2__cerianite-fluorite": {
         "record_id": "CeO2__cerianite-fluorite",
@@ -397,7 +454,10 @@
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Fluorite structure. Crystal Structures 1, 239-444 (1963). COD 9009008: https://www.crystallography.net/cod/9009008.html",
         "notes": "cerianite fluorite. COD reports a=5.411 A, b=5.411 A, c=5.411 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=158.428 A3, Z=4, diffraction density=7.216 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009008.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 7.216,
+        "density_delta_g_cm3": 0.0001149080674665015,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Co3O4__spinel": {
         "record_id": "Co3O4__spinel",
@@ -417,7 +477,10 @@
         "gamma_deg": 90.0,
         "source": "Kotousova, I.S.; Polyakov, S.M. Electron-diffraction study of Co3 O4. Kristallografiya 17, 661-663 (1972). COD 1526734: https://www.crystallography.net/cod/1526734.html",
         "notes": "spinel. COD reports a=8.065 A, b=8.065 A, c=8.065 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=524.582 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1526734.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "CoFe2O4__spinel": {
         "record_id": "CoFe2O4__spinel",
@@ -437,7 +500,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Inoue, T. X-ray examination on cobaltous ferrite (1). Denkikagu (= J.Electrochem.Soc.Japan) 23, 24-29 (1955). COD 1535820: https://www.crystallography.net/cod/1535820.html",
-        "notes": "spinel. COD reports a=8.4 A, b=8.4 A, c=8.4 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=592.704 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1535820.html"
+        "notes": "spinel. COD reports a=8.4 A, b=8.4 A, c=8.4 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=592.704 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1535820.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "CoO__cobalt-monoxide-rocksalt": {
         "record_id": "CoO__cobalt-monoxide-rocksalt",
@@ -457,7 +523,10 @@
         "gamma_deg": 90.0,
         "source": "Sasaki, Satoshi; Fujino, Kiyoshi; Tak\u00e9uchi, Yoshio. X-Ray Determination of Electron-Density Distributions in Oxides, MgO, MnO, CoO, and NiO, and Atomic Scattering Factors of their Constituent Atoms. Proceedings of the Japan Academy, Series B: Physical and Biological Sciences 55, 43-48 (1979). https://doi.org/10.2183/pjab.55.43. COD 1533087: https://www.crystallography.net/cod/1533087.html",
         "notes": "cobalt monoxide rocksalt. COD reports a=4.263 A, b=4.263 A, c=4.263 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=77.472 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1533087.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Cr2O3__eskolaite-alpha": {
         "record_id": "Cr2O3__eskolaite-alpha",
@@ -477,7 +546,10 @@
         "gamma_deg": 120.0,
         "source": "Newnham, R. E.; de Haan, Y. M. Refinement of the alpha Al2O3, Ti2O3, V2O3 and Cr2O3 structures. Zeitschrift fur Kristallographie 117, 235-237 (1962). COD 9008084: https://www.crystallography.net/cod/9008084.html",
         "notes": "eskolaite alpha. COD reports a=4.9607 A, b=4.9607 A, c=13.599 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=289.817 A3, Z=6, diffraction density=5.225 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008084.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.225,
+        "density_delta_g_cm3": 2.832368051208789e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Cs2O__cadmium-chloride-type": {
         "record_id": "Cs2O__cadmium-chloride-type",
@@ -497,7 +569,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Note: cadmium chloride structure. Crystal Structures 1, 239-444 (1963). COD 9009127: https://www.crystallography.net/cod/9009127.html",
-        "notes": "cadmium chloride type. COD reports a=4.256 A, b=4.256 A, c=18.99 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=297.892 A3, Z=3, diffraction density=4.713 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009127.html"
+        "notes": "cadmium chloride type. COD reports a=4.256 A, b=4.256 A, c=18.99 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=297.892 A3, Z=3, diffraction density=4.713 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009127.html",
+        "reported_density_g_cm3": 4.713,
+        "density_delta_g_cm3": -0.0001699202543230527,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Cs2O2__peroxide": {
         "record_id": "Cs2O2__peroxide",
@@ -517,7 +592,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Cesium peroxide. Crystal Structures 1, 85-237 (1963). COD 9008991: https://www.crystallography.net/cod/9008991.html",
-        "notes": "peroxide. COD reports a=4.322 A, b=7.517 A, c=6.43 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=208.901 A3, Z=2, diffraction density=4.735 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008991.html"
+        "notes": "peroxide. COD reports a=4.322 A, b=7.517 A, c=6.43 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=208.901 A3, Z=2, diffraction density=4.735 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008991.html",
+        "reported_density_g_cm3": 4.735,
+        "density_delta_g_cm3": -0.00033215343554537924,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "CsO2__superoxide": {
         "record_id": "CsO2__superoxide",
@@ -537,7 +615,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Ziegler, M.; Rosenfeld, M.; Fischer, P.; Kaenzig, W. Strukturuntersuchungen an Alkalihyperoxiden. Helvetica Physica Acta 49, 57-90 (1976). COD 1537129: https://www.crystallography.net/cod/1537129.html",
-        "notes": "superoxide. COD reports a=4.477 A, b=4.477 A, c=7.35 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=147.32 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1537129.html"
+        "notes": "superoxide. COD reports a=4.477 A, b=4.477 A, c=7.35 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=147.32 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1537129.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Cu2O__cuprite": {
         "record_id": "Cu2O__cuprite",
@@ -557,7 +638,10 @@
         "gamma_deg": 90.0,
         "source": "Kirfel, A.; Eichhorn, K. Accurate structure analysis with synchrotron radiation. The electron density in Al2O3 and Cu2O Note: Atomic parameters were mislabeled in the publication. They have been fixed in this dataset. Acta Crystallographica, Section A 46, 271-284 (1990). https://doi.org/10.1107/S0108767389012596. COD 9007497: https://www.crystallography.net/cod/9007497.html",
         "notes": "cuprite. COD reports a=4.2685 A, b=4.2685 A, c=4.2685 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=77.772 A3, Z=2, diffraction density=6.11 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9007497.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 6.11,
+        "density_delta_g_cm3": 0.00037894514665648416,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "CuFe2O4__tetragonal-spinel": {
         "record_id": "CuFe2O4__tetragonal-spinel",
@@ -577,7 +661,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Prince, E.; Treuting, R. G. The structure of tetragonal copper ferrite Note: cell extrapolated from tetrahedra description. Acta Crystallographica 9, 1025-1028 (1956). https://doi.org/10.1107/S0365110X56002977. COD 9011012: https://www.crystallography.net/cod/9011012.html",
-        "notes": "tetragonal spinel. COD reports a=5.8 A, b=5.8 A, c=8.73 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=293.677 A3, Z=4, diffraction density=5.411 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9011012.html"
+        "notes": "tetragonal spinel. COD reports a=5.8 A, b=5.8 A, c=8.73 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=293.677 A3, Z=4, diffraction density=5.411 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9011012.html",
+        "reported_density_g_cm3": 5.411,
+        "density_delta_g_cm3": -0.00023807968436440063,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "CuO__tenorite": {
         "record_id": "CuO__tenorite",
@@ -597,7 +684,10 @@
         "gamma_deg": 90.0,
         "source": "Asbrink, S.; Norrby, L. J. A refinement of the crystal structure of copper(II) oxide, with a discussion of some exceptional E.s.d.'s. Acta Crystallographica, Section B 26, 8-15 (1970). https://doi.org/10.1107/S0567740870001838. COD 9014580: https://www.crystallography.net/cod/9014580.html",
         "notes": "tenorite. COD reports a=4.6837 A, b=3.4226 A, c=5.1288 A, alpha=90 deg, beta=99.54 deg, gamma=90 deg, V=81.08 A3, Z=4, diffraction density=6.516 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9014580.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 6.516,
+        "density_delta_g_cm3": 0.000407503618334637,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Dy2O3__c-type-cubic": {
         "record_id": "Dy2O3__c-type-cubic",
@@ -617,7 +707,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zachariasen, W. The crystal structure of the modification C of the sesquioxides of the rare earth metals, and of indium and thallium. Norsk Geologisk Tidsskrift 9, 310-316 (1927). COD 1010336: https://www.crystallography.net/cod/1010336.html",
-        "notes": "C-type cubic. COD reports a=10.63 A, b=10.63 A, c=10.63 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1201.2 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010336.html"
+        "notes": "C-type cubic. COD reports a=10.63 A, b=10.63 A, c=10.63 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1201.2 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010336.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Er2O3__c-type-cubic": {
         "record_id": "Er2O3__c-type-cubic",
@@ -637,7 +730,10 @@
         "gamma_deg": 90.0,
         "source": "Malinovskii, Yu.A.; Bondareva, O.S. Refined crystal structure of Er2 O3. Kristallografiya 36, 1558-1560 (1991). COD 1534952: https://www.crystallography.net/cod/1534952.html",
         "notes": "C-type cubic. COD reports a=10.536 A, b=10.536 A, c=10.536 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1169.57 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1534952.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Eu2O3__c-type-cubic": {
         "record_id": "Eu2O3__c-type-cubic",
@@ -657,7 +753,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zachariasen, W. The crystal structure of the modification C of the sesquioxides of the rare earth metals, and of indium and thallium. Norsk Geologisk Tidsskrift 9, 310-316 (1927). COD 1010339: https://www.crystallography.net/cod/1010339.html",
-        "notes": "C-type cubic. COD reports a=10.84 A, b=10.84 A, c=10.84 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1273.8 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010339.html"
+        "notes": "C-type cubic. COD reports a=10.84 A, b=10.84 A, c=10.84 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1273.8 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010339.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Fe2O3__hematite-alpha": {
         "record_id": "Fe2O3__hematite-alpha",
@@ -677,7 +776,10 @@
         "gamma_deg": 120.0,
         "source": "Blake, R. L.; Hessevick, R. E.; Zoltai, T.; Finger, L. W. Refinement of the hematite structure. American Mineralogist 51, 123-129 (1966). COD 9000139: https://www.crystallography.net/cod/9000139.html",
         "notes": "hematite alpha. COD reports a=5.038 A, b=5.038 A, c=13.772 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=302.722 A3, Z=6, diffraction density=5.256 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9000139.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.256,
+        "density_delta_g_cm3": -0.00035616797345205953,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Fe3O4__magnetite-spinel": {
         "record_id": "Fe3O4__magnetite-spinel",
@@ -697,7 +799,10 @@
         "gamma_deg": 90.0,
         "source": "Fleet, Michael E. The structure of magnetite: Symmetry of cubic spinels. Journal of Solid State Chemistry 62, 75-82 (1986). https://doi.org/10.1016/0022-4596(86)90218-5. COD 1539747: https://www.crystallography.net/cod/1539747.html",
         "notes": "magnetite spinel. COD reports a=8.3941 A, b=8.3941 A, c=8.3941 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=591.456 A3, Z=8, diffraction density=5.2 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1539747.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.2,
+        "density_delta_g_cm3": 0.00026877078704679036,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Ga2O3__beta-monoclinic": {
         "record_id": "Ga2O3__beta-monoclinic",
@@ -717,7 +822,10 @@
         "gamma_deg": 90.0,
         "source": "\u00c5hman, J.; Svensson, G.; Albertsson, J. A Reinvestigation of \u03b2-Gallium Oxide. Acta Crystallographica Section C 52, 1336-1338 (1996). https://doi.org/10.1107/S0108270195016404. COD 2004987: https://www.crystallography.net/cod/2004987.html",
         "notes": "beta monoclinic. COD reports a=12.214 A, b=3.0371 A, c=5.7981 A, alpha=90 deg, beta=103.83 deg, gamma=90 deg, V=208.85 A3, Z=4, diffraction density=5.961 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2004987.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.961,
+        "density_delta_g_cm3": 0.0003392265887933732,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Gd2O3__c-type-cubic": {
         "record_id": "Gd2O3__c-type-cubic",
@@ -737,7 +845,10 @@
         "gamma_deg": 90.0,
         "source": "Bartos, A.; Lieb, K.P.; Uhrmacher, M.; Wiarda, D. Refinement of atomic positions in bixbyite oxides using perturbed angular correlation spectroscopy. Acta Crystallographica B (39,1983-) 49, 165-169 (1993). COD 2106881: https://www.crystallography.net/cod/2106881.html",
         "notes": "C-type cubic. COD reports a=10.79 A, b=10.79 A, c=10.79 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1256.22 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2106881.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "GdBa2Cu3O7__orthorhombic-superconductor": {
         "record_id": "GdBa2Cu3O7__orthorhombic-superconductor",
@@ -757,7 +868,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Asano, H.; Takita, K.; Ishigaki, T.; Akinaga, H.; Katoh, H.; Masuda, K.; Imai, M.; Nishino, M. Crystal structure of the high-Tc superconductor Ln Ba2 Cu3 O7-d (Ln= Sm, Eu and Gd). Japanese Journal of Applied Physics, Part 2 26, 1410-1412 (1987). COD 1539605: https://www.crystallography.net/cod/1539605.html",
-        "notes": "orthorhombic superconductor. COD reports a=3.8947 A, b=3.835 A, c=11.6992 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=174.741 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1539605.html"
+        "notes": "orthorhombic superconductor. COD reports a=3.8947 A, b=3.835 A, c=11.6992 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=174.741 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1539605.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "HfO2__monoclinic-hafnia": {
         "record_id": "HfO2__monoclinic-hafnia",
@@ -777,7 +891,10 @@
         "beta_deg": 99.18,
         "gamma_deg": 90.0,
         "source": "Ruh, R.; Corfield, P. W. R. Crystal structure of monoclinic hafnia and comparison with monoclinic zirconia Locality: synthetic. Journal of the American Ceramic Society 53, 126-129 (1970). https://doi.org/10.1111/j.1151-2916.1970.tb12052.x. COD 9013470: https://www.crystallography.net/cod/9013470.html",
-        "notes": "monoclinic hafnia. COD reports a=5.1156 A, b=5.1722 A, c=5.2948 A, alpha=90 deg, beta=99.18 deg, gamma=90 deg, V=138.3 A3, Z=4, diffraction density=10.109 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9013470.html"
+        "notes": "monoclinic hafnia. COD reports a=5.1156 A, b=5.1722 A, c=5.2948 A, alpha=90 deg, beta=99.18 deg, gamma=90 deg, V=138.3 A3, Z=4, diffraction density=10.109 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9013470.html",
+        "reported_density_g_cm3": 10.109,
+        "density_delta_g_cm3": 0.00014091601702403977,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "HgO__montroydite-orthorhombic": {
         "record_id": "HgO__montroydite-orthorhombic",
@@ -797,7 +914,10 @@
         "gamma_deg": 90.0,
         "source": "Aurivillius, K. Least-squares refinement of the crystal structures of orthorhombic HgO and of Hg2O2NaI Locality: synthetic. Acta Chemica Scandinavica 18, 1305-1306 (1964). https://doi.org/10.3891/acta.chem.scand.18-1305. COD 9012530: https://www.crystallography.net/cod/9012530.html",
         "notes": "montroydite orthorhombic. COD reports a=6.6129 A, b=5.5208 A, c=3.5219 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=128.579 A3, Z=4, diffraction density=11.189 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9012530.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 11.189,
+        "density_delta_g_cm3": -0.00040789646470074103,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Ho2O3__c-type-cubic": {
         "record_id": "Ho2O3__c-type-cubic",
@@ -817,7 +937,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zachariasen, W. The crystal structure of the modification C of the sesquioxides of the rare earth metals, and of indium and thallium. Norsk Geologisk Tidsskrift 9, 310-316 (1927). COD 1010335: https://www.crystallography.net/cod/1010335.html",
-        "notes": "C-type cubic. COD reports a=10.58 A, b=10.58 A, c=10.58 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1184.3 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010335.html"
+        "notes": "C-type cubic. COD reports a=10.58 A, b=10.58 A, c=10.58 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1184.3 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010335.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "In2O3__bixbyite-cubic": {
         "record_id": "In2O3__bixbyite-cubic",
@@ -837,7 +960,10 @@
         "gamma_deg": 90.0,
         "source": "Marezio, M. Refinement of the crystal structure of In~2~O~3~ at two wavelengths. Acta Crystallographica 66, 723-728 (1966). https://doi.org/10.1107/s0365110x66001749. COD 2310009: https://www.crystallography.net/cod/2310009.html",
         "notes": "bixbyite cubic. COD reports a=10.117 A, b=10.117 A, c=10.117 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1035.51 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2310009.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "IrO2__rutile": {
         "record_id": "IrO2__rutile",
@@ -847,7 +973,11 @@
         "unit_cell_volume_A3": 64.107,
         "z": 2.0,
         "theoretical_density_g_cm3": 11.615665951100054,
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF.",
         "density_source": "COD literature lattice parameters",
+        "origin": "Codex literature seed",
         "crystal_system": "Tetragonal",
         "a_A": 4.5051,
         "b_A": 4.5051,
@@ -855,9 +985,8 @@
         "alpha_deg": 90.0,
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
-        "source": "Zhao, Qing; Kulik, Heather J. Where Does the Density Localize in the Solid State? Divergent Behavior for Hybrids and DFT+U. Journal of Chemical Theory and Computation 14, 670-683 (2018). https://doi.org/10.1021/acs.jctc.7b01061. COD 1548817: https://www.crystallography.net/cod/1548817.html",
-        "notes": "rutile. COD reports a=4.5051 A, b=4.5051 A, c=3.1586 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.107 A3, Z=2, diffraction density=11.67 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1548817.html",
-        "origin": "Codex literature seed"
+        "source": "Bolzan, A. A.; Fong, C.; Kennedy, B. J.; Howard, C. J. Structural Studies of Rutile-Type Metal Dioxides. Acta Crystallographica Section B 53, 373-380 (1997). https://doi.org/10.1107/S0108768197001468. COD 2101854: https://www.crystallography.net/cod/2101854.html",
+        "notes": "rutile. COD reports a=4.5051 A, b=4.5051 A, c=3.1586 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.107 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2101854.html"
     },
     "K2O__antifluorite": {
         "record_id": "K2O__antifluorite",
@@ -877,7 +1006,10 @@
         "gamma_deg": 90.0,
         "source": "Zintl, E.; Harder, A.; Dauth, B. Gitterstruktur der Oxide, Sulfide, Selenide und Telluride des Lithiums, Natriums und Kaliums. Zeitschrift f\u00fcr Elektrochemie und angewandte physikalische Chemie 40, 588-593 (1934). COD 1010878: https://www.crystallography.net/cod/1010878.html",
         "notes": "antifluorite. COD reports a=6.436 A, b=6.436 A, c=6.436 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=266.6 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010878.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "K2O2__peroxide": {
         "record_id": "K2O2__peroxide",
@@ -897,7 +1029,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Potassium peroxide. Crystal Structures 1, 85-237 (1963). COD 9008989: https://www.crystallography.net/cod/9008989.html",
-        "notes": "peroxide. COD reports a=6.736 A, b=7.001 A, c=6.479 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=305.541 A3, Z=4, diffraction density=2.396 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008989.html"
+        "notes": "peroxide. COD reports a=6.736 A, b=7.001 A, c=6.479 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=305.541 A3, Z=4, diffraction density=2.396 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008989.html",
+        "reported_density_g_cm3": 2.396,
+        "density_delta_g_cm3": -0.0004924646033770408,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "KO2__superoxide": {
         "record_id": "KO2__superoxide",
@@ -917,7 +1052,10 @@
         "beta_deg": 122.85,
         "gamma_deg": 90.0,
         "source": "Ziegler, M.; Rosenfeld, M.; Kaenzig, W.; Fischer, P. Strukturuntersuchungen an Alkalihyperoxiden. Helvetica Physica Acta 49, 57-90 (1976). COD 1537125: https://www.crystallography.net/cod/1537125.html",
-        "notes": "superoxide. COD reports a=7.88 A, b=4.035 A, c=7.968 A, alpha=90 deg, beta=122.85 deg, gamma=90 deg, V=212.837 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1537125.html"
+        "notes": "superoxide. COD reports a=7.88 A, b=4.035 A, c=7.968 A, alpha=90 deg, beta=122.85 deg, gamma=90 deg, V=212.837 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1537125.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "La2CuO4__k2nif4-type": {
         "record_id": "La2CuO4__k2nif4-type",
@@ -937,7 +1075,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Grande, B; Mueller-Buschbaum, Hk; Schweizer, M. Zur Kristallstruktur von Seltenerdmetalloxocupraten: La2 Cu O4, Gd2 Cu O4. Zeitschrift fuer Anorganische und Allgemeine Chemie 428, 120-124 (1977). https://doi.org/10.1002/zaac.19774280116. COD 2002183: https://www.crystallography.net/cod/2002183.html",
-        "notes": "K2NiF4-type. COD reports a=5.406 A, b=5.37 A, c=13.15 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=381.7 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2002183.html"
+        "notes": "K2NiF4-type. COD reports a=5.406 A, b=5.37 A, c=13.15 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=381.7 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2002183.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "La2NiO4__k2nif4-type": {
         "record_id": "La2NiO4__k2nif4-type",
@@ -957,7 +1098,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Rodriguez-Carvajal, J; Fernandez-Diaz, M T; Martinez, J L. Neutron diffraction study on structural and magnetic properties of La~2~NiO~4~. Journal of Physics: Condensed Matter 3, 3215-3234 (1991). https://doi.org/10.1088/0953-8984/3/19/002. COD 1006042: https://www.crystallography.net/cod/1006042.html",
-        "notes": "K2NiF4-type. COD reports a=5.4618 A, b=5.4967 A, c=12.561 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=377.1 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1006042.html"
+        "notes": "K2NiF4-type. COD reports a=5.4618 A, b=5.4967 A, c=12.561 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=377.1 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1006042.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "La2O3__a-type-hexagonal": {
         "record_id": "La2O3__a-type-hexagonal",
@@ -977,7 +1121,10 @@
         "gamma_deg": 120.0,
         "source": "Mueller-Buschbaum, Hk; Schnering, H G von. Strukturuntersuchungen an La2 O3. Zeitschrift fuer Anorganische und Allgemeine Chemie 340, 232-245 (1965). https://doi.org/10.1002/zaac.19653400503. COD 2002286: https://www.crystallography.net/cod/2002286.html",
         "notes": "A-type hexagonal. COD reports a=3.9373 A, b=3.9373 A, c=6.1299 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=82.3 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2002286.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LaAlO3__rhombohedral-perovskite": {
         "record_id": "LaAlO3__rhombohedral-perovskite",
@@ -997,7 +1144,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Hayward, S.A.; Morrison, F.D.; Redfern, S.A.T.; Salje, E.K.H.; Scott, J.F.; Knight, K.S.; Tarantino, S.; Glazer, A.M.; Shuvaeva, V.; Daniel, P.; Zhang, M.; Carpenter, M.A. Transformation processes in LaAlO3: neutron diffraction, dielectric, thermal, optical and Raman studies. Physical Review B 72 (2005). COD 1508503: https://www.crystallography.net/cod/1508503.html",
-        "notes": "rhombohedral perovskite. COD reports a=5.38641 A, b=5.38641 A, c=13.1907 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=331.43 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1508503.html"
+        "notes": "rhombohedral perovskite. COD reports a=5.38641 A, b=5.38641 A, c=13.1907 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=331.43 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1508503.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LaCoO3__rhombohedral-perovskite": {
         "record_id": "LaCoO3__rhombohedral-perovskite",
@@ -1017,7 +1167,10 @@
         "beta_deg": 60.99,
         "gamma_deg": 60.99,
         "source": "Thornton, G.; Tofield, B.C.; Hewat, A.W. A neutron diffraction study of La Co O3 in the temperature range 4.2 < T < 1248 K. Journal of Solid State Chemistry 61, 301-307 (1986). COD 1530874: https://www.crystallography.net/cod/1530874.html",
-        "notes": "rhombohedral perovskite. COD reports a=5.3416 A, b=5.3416 A, c=5.3416 A, alpha=60.99 deg, beta=60.99 deg, gamma=60.99 deg, V=110.174 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1530874.html"
+        "notes": "rhombohedral perovskite. COD reports a=5.3416 A, b=5.3416 A, c=5.3416 A, alpha=60.99 deg, beta=60.99 deg, gamma=60.99 deg, V=110.174 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1530874.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LaFeO3__orthorhombic-perovskite": {
         "record_id": "LaFeO3__orthorhombic-perovskite",
@@ -1037,7 +1190,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Dixon, Charlotte A.L.; Kavanagh, Christopher M.; Knight, Kevin S.; Kockelmann, Winfried; Morrison, Finlay D.; Lightfoot, Philip. Thermal evolution of the crystal structure of the orthorhombic perovskite LaFeO3. Journal of Solid State Chemistry 230, 337-342 (2015). https://doi.org/10.1016/j.jssc.2015.07.019. COD 1561804: https://www.crystallography.net/cod/1561804.html",
-        "notes": "orthorhombic perovskite. COD reports a=5.56275 A, b=7.8416 A, c=5.54642 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=241.94 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1561804.html"
+        "notes": "orthorhombic perovskite. COD reports a=5.56275 A, b=7.8416 A, c=5.54642 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=241.94 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1561804.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LaMnO3__orthorhombic-perovskite": {
         "record_id": "LaMnO3__orthorhombic-perovskite",
@@ -1057,7 +1213,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Rodriguez-Carvajal, J; Hennion, M; Moussa, F; Moudden, A H; Pinsard, L; Revcolevschi, A. Neutron-diffraction of the Jahn-Teller transition in stoichiometric La Mn O3. Physical Review, Serie 3. B - Condensed Matter (18,1978-) 57, 3189-3192 (1998). https://doi.org/10.1103/PhysRevB.57.R3189. COD 1006141: https://www.crystallography.net/cod/1006141.html",
-        "notes": "orthorhombic perovskite. COD reports a=5.5367 A, b=5.7473 A, c=7.6929 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=244.8 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1006141.html"
+        "notes": "orthorhombic perovskite. COD reports a=5.5367 A, b=5.7473 A, c=7.6929 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=244.8 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1006141.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LaNiO3__rhombohedral-perovskite": {
         "record_id": "LaNiO3__rhombohedral-perovskite",
@@ -1077,7 +1236,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Garc\u00eda-Mu\u00f1oz, J. L.; Rodr\u00edguez-Carvajal, J.; Lacorre, P.; Torrance, J. B. Neutron-diffraction study of RNiO~3~ (R= La, Pr, Nd, Sm): Electronically induced structural changes across the metal-insulator transition. Physical Review B: Condensed Matter and Materials Physics 46, 4414-4425 (1992). https://doi.org/10.1103/PhysRevB.46.4414. COD 1000307: https://www.crystallography.net/cod/1000307.html",
-        "notes": "rhombohedral perovskite. COD reports a=5.4535 A, b=5.4535 A, c=13.101 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=337.4 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000307.html"
+        "notes": "rhombohedral perovskite. COD reports a=5.4535 A, b=5.4535 A, c=13.101 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=337.4 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000307.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Li2O__antifluorite": {
         "record_id": "Li2O__antifluorite",
@@ -1097,7 +1259,10 @@
         "gamma_deg": 90.0,
         "source": "Farley, T. W. D.; Hayes, W.; Hull, S.; Hutchings, M. T.; Vrtis, M. Investigation of thermally induced Li+ ion disorder in Li2 O using neutron diffraction. Journal of Physics: Condensed Matter 3, 4761-4781 (1991). https://doi.org/10.1088/0953-8984/3/26/001. COD 1514086: https://www.crystallography.net/cod/1514086.html",
         "notes": "antifluorite. COD reports a=4.61 A, b=4.61 A, c=4.61 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=97.972 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514086.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Li2O2__peroxide": {
         "record_id": "Li2O2__peroxide",
@@ -1117,7 +1282,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "F\u00f6ppl, H. Die Kristallstrukturen der Alkaliperoxyde. Zeitschrift f\u00fcr anorganische und allgemeine Chemie 291, 12-50 (1957). https://doi.org/10.1002/zaac.19572910104. COD 1514084: https://www.crystallography.net/cod/1514084.html",
-        "notes": "peroxide. COD reports a=3.142 A, b=3.142 A, c=7.65 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=65.404 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514084.html"
+        "notes": "peroxide. COD reports a=3.142 A, b=3.142 A, c=7.65 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=65.404 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514084.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LiCoO2__layered": {
         "record_id": "LiCoO2__layered",
@@ -1137,7 +1305,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Rosolen JM; Ballirano P; Berrettoni M; Decker F; Gregorkiewitz M. Structural Assessment of the Electrochemical Performance of LixCoO2 Membrane Electrodes by X-Ray Diffraction and Absorpion Refinements. Ionics 3, 345-354 (1997). COD 1550397: https://www.crystallography.net/cod/1550397.html",
-        "notes": "layered. COD reports a=2.8185 A, b=2.8185 A, c=14.0664 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=96.772 A3, Z=3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1550397.html"
+        "notes": "layered. COD reports a=2.8185 A, b=2.8185 A, c=14.0664 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=96.772 A3, Z=3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1550397.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "LiMn2O4__spinel": {
         "record_id": "LiMn2O4__spinel",
@@ -1157,7 +1328,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Shimakawa, Y.; Numata, T.; Tabuchi, J. Verwey-type transition and magnetic properties of the LiMn~2~O~4~ spinels. Journal of Solid State Chemistry 131, 138-143 (1997). https://doi.org/10.1006/jssc.1997.7366. COD 1513966: https://www.crystallography.net/cod/1513966.html",
-        "notes": "spinel. COD reports a=8.2402 A, b=8.2402 A, c=8.2402 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=559.517 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1513966.html"
+        "notes": "spinel. COD reports a=8.2402 A, b=8.2402 A, c=8.2402 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=559.517 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1513966.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Lu2O3__c-type-cubic": {
         "record_id": "Lu2O3__c-type-cubic",
@@ -1177,7 +1351,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Pavlik, III, Alfred J.; Ushakov, Sergey V.; Navrotsky, Alexandra; Benmore, Chris J.; Weber, Richard J.K. Structure and thermal expansion of Lu 2 O 3 and Yb 2 O 3 up to the melting points. Journal of Nuclear Materials 495, 385 (2017). https://doi.org/10.1016/j.jnucmat.2017.08.031. COD 1548517: https://www.crystallography.net/cod/1548517.html",
-        "notes": "C-type cubic. COD reports a=10.4786 A, b=10.4786 A, c=10.4786 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1150.6 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1548517.html"
+        "notes": "C-type cubic. COD reports a=10.4786 A, b=10.4786 A, c=10.4786 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1150.6 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1548517.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "MgAl2O4__spinel": {
         "record_id": "MgAl2O4__spinel",
@@ -1197,7 +1374,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Peterson, R. C.; Lager, G. A.; Hitterman, R. L. A time-of-flight neutron powder diffraction study of MgAl2O4 at temperatures up to 1273 K sample W, T = 293 K. American Mineralogist 76, 1455-1458 (1991). COD 9001364: https://www.crystallography.net/cod/9001364.html",
-        "notes": "spinel. COD reports a=8.08435 A, b=8.08435 A, c=8.08435 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=528.367 A3, Z=8, diffraction density=3.577 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9001364.html"
+        "notes": "spinel. COD reports a=8.08435 A, b=8.08435 A, c=8.08435 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=528.367 A3, Z=8, diffraction density=3.577 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9001364.html",
+        "reported_density_g_cm3": 3.577,
+        "density_delta_g_cm3": -0.00014390729947422187,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "MgO__periclase-rocksalt": {
         "record_id": "MgO__periclase-rocksalt",
@@ -1217,7 +1397,10 @@
         "gamma_deg": 90.0,
         "source": "Sasaki, Satoshi; Fujino, Kiyoshi; Tak\u00e9uchi, Yoshio. X-Ray Determination of Electron-Density Distributions in Oxides, MgO, MnO, CoO, and NiO, and Atomic Scattering Factors of their Constituent Atoms. Proceedings of the Japan Academy, Series B: Physical and Biological Sciences 55, 43-48 (1979). https://doi.org/10.2183/pjab.55.43. COD 1000053: https://www.crystallography.net/cod/1000053.html",
         "notes": "periclase rocksalt. COD reports a=4.217 A, b=4.217 A, c=4.217 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=75 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000053.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Mn2O3__bixbyite-alpha": {
         "record_id": "Mn2O3__bixbyite-alpha",
@@ -1237,7 +1420,10 @@
         "gamma_deg": 90.0,
         "source": "Morozov, I. S.; Kuznetsov, V. G. The crystal structure of Mn2 O3. Izvestiya Akademii Nauk SSSR, Seriya Khimicheskaya 1949, 343-353 (1949). COD 1514119: https://www.crystallography.net/cod/1514119.html",
         "notes": "bixbyite alpha. COD reports a=9.408 A, b=9.408 A, c=9.408 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=832.706 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514119.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Mn3O4__hausmannite": {
         "record_id": "Mn3O4__hausmannite",
@@ -1257,7 +1443,10 @@
         "gamma_deg": 90.0,
         "source": "Jarosch, D. Crystal structure refinement and reflectance measurements of hausmannite, Mn3 O4. Mineralogy and Petrology 37, 15-23 (1987). https://doi.org/10.1007/BF01163155. COD 1514115: https://www.crystallography.net/cod/1514115.html",
         "notes": "hausmannite. COD reports a=5.765 A, b=5.765 A, c=9.442 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=313.81 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514115.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "MnFe2O4__spinel": {
         "record_id": "MnFe2O4__spinel",
@@ -1277,7 +1466,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Koenig, U.; Chol, G. Roentgenbeugungs- und Neutronenbeugungsuntersuchungen an Ferriten der Reihe Mnx Zn1-x Fe2 O4. Journal of Applied Crystallography 1, 124-126 (1968). COD 2300585: https://www.crystallography.net/cod/2300585.html",
-        "notes": "spinel. COD reports a=8.511 A, b=8.511 A, c=8.511 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=616.512 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2300585.html"
+        "notes": "spinel. COD reports a=8.511 A, b=8.511 A, c=8.511 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=616.512 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2300585.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "MnO__manganosite-rocksalt": {
         "record_id": "MnO__manganosite-rocksalt",
@@ -1297,7 +1489,10 @@
         "gamma_deg": 90.0,
         "source": "Sasaki, Satoshi; Fujino, Kiyoshi; Tak\u00e9uchi, Yoshio. X-Ray Determination of Electron-Density Distributions in Oxides, MgO, MnO, CoO, and NiO, and Atomic Scattering Factors of their Constituent Atoms. Proceedings of the Japan Academy, Series B: Physical and Biological Sciences 55, 43-48 (1979). https://doi.org/10.2183/pjab.55.43. COD 1514099: https://www.crystallography.net/cod/1514099.html",
         "notes": "manganosite rocksalt. COD reports a=4.446 A, b=4.446 A, c=4.446 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=87.88 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514099.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "MnO2__pyrolusite-beta": {
         "record_id": "MnO2__pyrolusite-beta",
@@ -1317,7 +1512,10 @@
         "gamma_deg": 90.0,
         "source": "Bolzan, A. A.; Fong, C.; Kennedy, B. J.; Howard, C. J. Powder neutron diffraction study of pyrolusite, beta-Mn O2. Australian Journal of Chemistry 46, 939-944 (1993). https://doi.org/10.1071/CH9930939. COD 1514117: https://www.crystallography.net/cod/1514117.html",
         "notes": "pyrolusite beta. COD reports a=4.4041 A, b=4.4041 A, c=2.8765 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=55.793 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1514117.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "MoO3__alpha-molybdite": {
         "record_id": "MoO3__alpha-molybdite",
@@ -1337,7 +1535,10 @@
         "gamma_deg": 90.0,
         "source": "Kihlborg, L. Least squares refinement of the crystal structure of molybdenum trioxide. Arkiv for Kemi 21, 357-364 (1963). COD 9014282: https://www.crystallography.net/cod/9014282.html",
         "notes": "alpha molybdite. COD reports a=3.9628 A, b=13.855 A, c=3.6964 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=202.949 A3, Z=4, diffraction density=4.711 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9014282.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 4.711,
+        "density_delta_g_cm3": 0.00012677771210967137,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Na2O__antifluorite": {
         "record_id": "Na2O__antifluorite",
@@ -1357,7 +1558,10 @@
         "gamma_deg": 90.0,
         "source": "Zintl, E.; Harder, A.; Dauth, B. Gitterstruktur der Oxide, Sulfide, Selenide und Telluride des Lithiums, Natriums und Kaliums. Zeitschrift f\u00fcr Elektrochemie und angewandte physikalische Chemie 40, 588-593 (1934). COD 1010876: https://www.crystallography.net/cod/1010876.html",
         "notes": "antifluorite. COD reports a=5.55 A, b=5.55 A, c=5.55 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=171 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010876.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Na2O2__peroxide": {
         "record_id": "Na2O2__peroxide",
@@ -1377,7 +1581,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Tallman, R.L.; Margrave, J.L.; Bailey, S.W. The crystal structure of sodium peroxide. Journal of the American Chemical Society 79, 2979-2980 (1957). COD 4124685: https://www.crystallography.net/cod/4124685.html",
-        "notes": "peroxide. COD reports a=6.22 A, b=6.22 A, c=4.47 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=149.768 A3, Z=3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/4124685.html"
+        "notes": "peroxide. COD reports a=6.22 A, b=6.22 A, c=4.47 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=149.768 A3, Z=3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/4124685.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "NaO2__superoxide": {
         "record_id": "NaO2__superoxide",
@@ -1397,7 +1604,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Carter, G.F.; Templeton, D.H. Polymorphism of sodium superoxide. Journal of the American Chemical Society 75, 5247-5249 (1953). COD 4124631: https://www.crystallography.net/cod/4124631.html",
-        "notes": "superoxide. COD reports a=4.26 A, b=5.54 A, c=3.44 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=81.185 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/4124631.html"
+        "notes": "superoxide. COD reports a=4.26 A, b=5.54 A, c=3.44 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=81.185 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/4124631.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Nb2O5__h-phase": {
         "record_id": "Nb2O5__h-phase",
@@ -1417,7 +1627,10 @@
         "gamma_deg": 90.0,
         "source": "Kato, K. Structure refinement of h-Nb2 O5. Acta Crystallographica B (24,1968-38,1982) 32, 764-767 (1976). COD 2107337: https://www.crystallography.net/cod/2107337.html",
         "notes": "H phase. COD reports a=21.153 A, b=3.8233 A, c=19.356 A, alpha=90 deg, beta=119.8 deg, gamma=90 deg, V=1358.4 A3, Z=14. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2107337.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "NbO2__high-temperature": {
         "record_id": "NbO2__high-temperature",
@@ -1437,7 +1650,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zhao, Qing; Kulik, Heather J. Where Does the Density Localize in the Solid State? Divergent Behavior for Hybrids and DFT+U. Journal of Chemical Theory and Computation 14, 670-683 (2018). https://doi.org/10.1021/acs.jctc.7b01061. COD 1548821: https://www.crystallography.net/cod/1548821.html",
-        "notes": "high-temperature. COD reports a=4.8463 A, b=4.8463 A, c=3.0315 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=71.2 A3, Z=2, diffraction density=5.83 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1548821.html"
+        "notes": "high-temperature. COD reports a=4.8463 A, b=4.8463 A, c=3.0315 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=71.2 A3, Z=2, diffraction density=5.83 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1548821.html",
+        "reported_density_g_cm3": 5.83,
+        "density_delta_g_cm3": -0.003933380722410007,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Nd2CuO4__t-prime": {
         "record_id": "Nd2CuO4__t-prime",
@@ -1457,7 +1673,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Mueller-Buschbaum, Hk; Wollschlaeger, W. Zur Kristallstruktur von Nd2 Cu O4. Zeitschrift fuer Anorganische und Allgemeine Chemie 414, 76-80 (1975). https://doi.org/10.1002/zaac.19754140110. COD 2002200: https://www.crystallography.net/cod/2002200.html",
-        "notes": "T-prime. COD reports a=3.945 A, b=3.945 A, c=12.171 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=189.4 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2002200.html"
+        "notes": "T-prime. COD reports a=3.945 A, b=3.945 A, c=12.171 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=189.4 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2002200.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Nd2O3__a-type-hexagonal": {
         "record_id": "Nd2O3__a-type-hexagonal",
@@ -1477,7 +1696,10 @@
         "gamma_deg": 120.0,
         "source": "Mueller-Buschbaum, Hk. Zur Struktur der A-Form der Sesquioxide der Seltenen Erden. II Strukturuntersuchung an Nd2 O3. Zeitschrift fuer Anorganische und Allgemeine Chemie 343, 6-10 (1966). https://doi.org/10.1002/zaac.19663430103. COD 2002849: https://www.crystallography.net/cod/2002849.html",
         "notes": "A-type hexagonal. COD reports a=3.83 A, b=3.83 A, c=6.01 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=76.3 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2002849.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "NiFe2O4__spinel": {
         "record_id": "NiFe2O4__spinel",
@@ -1497,7 +1719,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Kremenovi\u0107, Aleksandar; Anti\u0107, Bratislav; Vu\u010dini\u0107-Vasi\u0107, Milica; Colomban, Philippe; Jovaleki\u0107, \u010cedomir; Bibi\u0107, Nata\u0161a; Kahlenberg, Volker; Leoni, Matteo. Temperature-induced structure and microstructure evolution of nanostructured Ni~0.9~Zn~0.1~O. Journal of Applied Crystallography 43, 699-709 (2010). https://doi.org/10.1107/S0021889810019163. COD 2300295: https://www.crystallography.net/cod/2300295.html",
-        "notes": "spinel. COD reports a=8.35966 A, b=8.35966 A, c=8.35966 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=584.206 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2300295.html"
+        "notes": "spinel. COD reports a=8.35966 A, b=8.35966 A, c=8.35966 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=584.206 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2300295.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "NiO__bunsenite-rocksalt": {
         "record_id": "NiO__bunsenite-rocksalt",
@@ -1517,7 +1742,10 @@
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York rocksalt structure. Crystal Structures 1, 85-237 (1963). COD 9008693: https://www.crystallography.net/cod/9008693.html",
         "notes": "bunsenite rocksalt. COD reports a=4.1684 A, b=4.1684 A, c=4.1684 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=72.428 A3, Z=4, diffraction density=6.85 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008693.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 6.85,
+        "density_delta_g_cm3": -0.0002190310184477795,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "NpO2__fluorite": {
         "record_id": "NpO2__fluorite",
@@ -1537,7 +1765,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Fluorite structure. Crystal Structures 1, 239-444 (1963). COD 9009025: https://www.crystallography.net/cod/9009025.html",
-        "notes": "fluorite. COD reports a=5.4341 A, b=5.4341 A, c=5.4341 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=160.466 A3, Z=4, diffraction density=11.135 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009025.html"
+        "notes": "fluorite. COD reports a=5.4341 A, b=5.4341 A, c=5.4341 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=160.466 A3, Z=4, diffraction density=11.135 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009025.html",
+        "reported_density_g_cm3": 11.135,
+        "density_delta_g_cm3": -0.00038735952462509715,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "OsO2__rutile": {
         "record_id": "OsO2__rutile",
@@ -1557,7 +1788,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Baur, W. H.; Khan, A. A. Rutile-type compounds. IV. SiO2, GeO2 and a comparison with other rutile-type structures Note: data from Boman (1970). Acta Crystallographica, Section B 27, 2133-2139 (1971). https://doi.org/10.1107/S0567740871005466. COD 9007542: https://www.crystallography.net/cod/9007542.html",
-        "notes": "rutile. COD reports a=4.5003 A, b=4.5003 A, c=3.1839 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.483 A3, Z=2, diffraction density=11.444 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9007542.html"
+        "notes": "rutile. COD reports a=4.5003 A, b=4.5003 A, c=3.1839 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=64.483 A3, Z=2, diffraction density=11.444 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9007542.html",
+        "reported_density_g_cm3": 11.444,
+        "density_delta_g_cm3": 0.0014437858012037452,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "OsO4__osmium-tetroxide": {
         "record_id": "OsO4__osmium-tetroxide",
@@ -1577,7 +1811,10 @@
         "beta_deg": 117.9,
         "gamma_deg": 90.0,
         "source": "Zalkin, A.; Templeton, D.H. The Crystal Structure of Osmium Tetroxide. Acta Crystallographica (1,1948-23,1967) 6, 106-106 (1953). COD 2311032: https://www.crystallography.net/cod/2311032.html",
-        "notes": "osmium tetroxide. COD reports a=8.66 A, b=4.52 A, c=4.75 A, alpha=90 deg, beta=117.9 deg, gamma=90 deg, V=164.319 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2311032.html"
+        "notes": "osmium tetroxide. COD reports a=8.66 A, b=4.52 A, c=4.75 A, alpha=90 deg, beta=117.9 deg, gamma=90 deg, V=164.319 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2311032.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "PbO__litharge-alpha": {
         "record_id": "PbO__litharge-alpha",
@@ -1597,7 +1834,10 @@
         "gamma_deg": 90.0,
         "source": "Dickinson, R G; Friauf, J B. The crystal structure of tetragonal lead monoxide. Journal of the American Chemical Society 46, 2457-2462 (1924). https://doi.org/10.1021/ja01676a015. COD 1010977: https://www.crystallography.net/cod/1010977.html",
         "notes": "litharge alpha. COD reports a=3.99 A, b=3.99 A, c=5.01 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=79.8 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010977.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "PbO2__plattnerite-beta": {
         "record_id": "PbO2__plattnerite-beta",
@@ -1617,7 +1857,10 @@
         "gamma_deg": 90.0,
         "source": "Bolzan, A. A.; Fong, C.; Kennedy, B. J.; Howard, C. J. Structural studies of rutile-type metal dioxides. Acta Crystallographica, Section B 53, 373-380 (1997). https://doi.org/10.1107/S0108768197001468. COD 9014175: https://www.crystallography.net/cod/9014175.html",
         "notes": "plattnerite beta. COD reports a=4.9577 A, b=4.9577 A, c=3.3879 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=83.27 A3, Z=2, diffraction density=9.54 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9014175.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 9.54,
+        "density_delta_g_cm3": -6.634085510270893e-06,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "PbTiO3__tetragonal-perovskite": {
         "record_id": "PbTiO3__tetragonal-perovskite",
@@ -1637,7 +1880,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Cole, S S; Espenschied, H. Lead titanate: crystal structure, temperature of formation, and specific gravity data. Journal of Physical Chemistry 41, 445-451 (1937). https://doi.org/10.1021/j150381a009. COD 1011028: https://www.crystallography.net/cod/1011028.html",
-        "notes": "tetragonal perovskite. COD reports a=4 A, b=4.211 A, c=3.875 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=65.3 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1011028.html"
+        "notes": "tetragonal perovskite. COD reports a=4 A, b=4.211 A, c=3.875 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=65.3 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1011028.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "PdO__palladinite": {
         "record_id": "PdO__palladinite",
@@ -1657,7 +1903,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Waser, J.; Levy, H. A.; Peterson, S. W. The structure of PdO Locality: synthetic. Acta Crystallographica 6, 661-663 (1953). https://doi.org/10.1107/S0365110X53001800. COD 1009031: https://www.crystallography.net/cod/1009031.html",
-        "notes": "palladinite. COD reports a=3.03 A, b=3.03 A, c=5.33 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=48.9 A3, Z=2, diffraction density=8.308 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1009031.html"
+        "notes": "palladinite. COD reports a=3.03 A, b=3.03 A, c=5.33 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=48.9 A3, Z=2, diffraction density=8.308 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1009031.html",
+        "reported_density_g_cm3": 8.308,
+        "density_delta_g_cm3": 0.006173090566672812,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Pr2O3__a-type-hexagonal": {
         "record_id": "Pr2O3__a-type-hexagonal",
@@ -1677,7 +1926,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Zachariasen, W H. Die Kristallstruktur der A-Modifikation von den Sesquioxiden der seltenen Erdmetalle. ( La~2~ O~3~, Ce~2~ O~3~, Pr~2~ O~3~, Nd~2~ O~3~ ). Zeitschrift fuer Physikalische Chemie (Leipzig) 123, 134-150 (1926). COD 1010280: https://www.crystallography.net/cod/1010280.html",
-        "notes": "A-type hexagonal. COD reports a=3.85 A, b=3.85 A, c=6 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=77 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010280.html"
+        "notes": "A-type hexagonal. COD reports a=3.85 A, b=3.85 A, c=6 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=77 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010280.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "PrO2__fluorite": {
         "record_id": "PrO2__fluorite",
@@ -1697,7 +1949,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Andreeva, A.F.; Dekhtyaruk, V.I.; Gil'man, I.Ya.; Gamarnik, M.Ya. Structure and optical absorption of praseodymium oxides. Izvestiya Akademii Nauk SSSR, Metally 1986, 1155-1160 (1986). COD 1523192: https://www.crystallography.net/cod/1523192.html",
-        "notes": "fluorite. COD reports a=5.402 A, b=5.402 A, c=5.402 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=157.639 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1523192.html"
+        "notes": "fluorite. COD reports a=5.402 A, b=5.402 A, c=5.402 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=157.639 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1523192.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "PtO2__beta": {
         "record_id": "PtO2__beta",
@@ -1717,7 +1972,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Range, K.J.; Klement, U.; Rau, F.; Heyns, A.M. beta-Pt O2: High pressure synthesis of single crystals and structure refinement. Materials Research Bulletin 22, 1541-1547 (1987). COD 1530633: https://www.crystallography.net/cod/1530633.html",
-        "notes": "beta. COD reports a=4.4839 A, b=4.5385 A, c=3.136 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=63.818 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1530633.html"
+        "notes": "beta. COD reports a=4.4839 A, b=4.5385 A, c=3.136 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=63.818 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1530633.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "PuO2__fluorite": {
         "record_id": "PuO2__fluorite",
@@ -1737,7 +1995,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Fluorite structure. Crystal Structures 1, 239-444 (1963). COD 9009036: https://www.crystallography.net/cod/9009036.html",
-        "notes": "fluorite. COD reports a=5.396 A, b=5.396 A, c=5.396 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=157.114 A3, Z=4, diffraction density=11.668 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009036.html"
+        "notes": "fluorite. COD reports a=5.396 A, b=5.396 A, c=5.396 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=157.114 A3, Z=4, diffraction density=11.668 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009036.html",
+        "reported_density_g_cm3": 11.668,
+        "density_delta_g_cm3": 9.988828105633729e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Rb2O__antifluorite": {
         "record_id": "Rb2O__antifluorite",
@@ -1757,7 +2018,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Anti-fluorite structure. Crystal Structures 1, 239-444 (1963). COD 9009067: https://www.crystallography.net/cod/9009067.html",
-        "notes": "antifluorite. COD reports a=6.74 A, b=6.74 A, c=6.74 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=306.182 A3, Z=4, diffraction density=4.055 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009067.html"
+        "notes": "antifluorite. COD reports a=6.74 A, b=6.74 A, c=6.74 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=306.182 A3, Z=4, diffraction density=4.055 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009067.html",
+        "reported_density_g_cm3": 4.055,
+        "density_delta_g_cm3": 0.00027262245518056005,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Rb2O2__peroxide": {
         "record_id": "Rb2O2__peroxide",
@@ -1777,7 +2041,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Rubidium peroxide. Crystal Structures 1, 85-237 (1963). COD 9008990: https://www.crystallography.net/cod/9008990.html",
-        "notes": "peroxide. COD reports a=4.201 A, b=7.075 A, c=5.983 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=177.827 A3, Z=2, diffraction density=3.79 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008990.html"
+        "notes": "peroxide. COD reports a=4.201 A, b=7.075 A, c=5.983 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=177.827 A3, Z=2, diffraction density=3.79 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008990.html",
+        "reported_density_g_cm3": 3.79,
+        "density_delta_g_cm3": -2.62045937073907e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "RbO2__superoxide": {
         "record_id": "RbO2__superoxide",
@@ -1797,7 +2064,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Helms, A.; Klemm, W. Die Kristallstrukturen von Rubidium- und Caesiumoxyd. Zeitschrift fuer Anorganische und Allgemeine Chemie 242, 33-40 (1939). COD 1538157: https://www.crystallography.net/cod/1538157.html",
-        "notes": "superoxide. COD reports a=4.252 A, b=4.252 A, c=7.044 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=127.352 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1538157.html"
+        "notes": "superoxide. COD reports a=4.252 A, b=4.252 A, c=7.044 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=127.352 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1538157.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Re2O7__rhenium-vii-oxide": {
         "record_id": "Re2O7__rhenium-vii-oxide",
@@ -1817,7 +2087,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Krebs, B.; Mueller, A.; Beyer, H.H. The crystal structure of rhenium(VII) oxide. Inorganic Chemistry 8, 436-443 (1969). COD 4343785: https://www.crystallography.net/cod/4343785.html",
-        "notes": "rhenium(VII) oxide. COD reports a=12.508 A, b=15.196 A, c=5.448 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1035.51 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/4343785.html"
+        "notes": "rhenium(VII) oxide. COD reports a=12.508 A, b=15.196 A, c=5.448 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1035.51 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/4343785.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "ReO2__orthorhombic": {
         "record_id": "ReO2__orthorhombic",
@@ -1837,7 +2110,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York. Crystal Structures 1, 239-444 (1963). COD 9009092: https://www.crystallography.net/cod/9009092.html",
-        "notes": "orthorhombic. COD reports a=4.8094 A, b=5.6433 A, c=4.6007 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=124.867 A3, Z=4, diffraction density=11.607 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009092.html"
+        "notes": "orthorhombic. COD reports a=4.8094 A, b=5.6433 A, c=4.6007 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=124.867 A3, Z=4, diffraction density=11.607 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009092.html",
+        "reported_density_g_cm3": 11.607,
+        "density_delta_g_cm3": 0.00032327259790854157,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "ReO3__cubic": {
         "record_id": "ReO3__cubic",
@@ -1857,7 +2133,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Meisel, K. Rheniumtrioxyd III. Mitteilung: Ueber die Kristallstruktur des Rhenium trioxyds. Zeitschrift fuer Anorganische und Allgemeine Chemie 207, 121-128 (1932). https://doi.org/10.1002/zaac.19322070113. COD 1010031: https://www.crystallography.net/cod/1010031.html",
-        "notes": "cubic. COD reports a=3.734 A, b=3.734 A, c=3.734 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=52.1 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010031.html"
+        "notes": "cubic. COD reports a=3.734 A, b=3.734 A, c=3.734 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=52.1 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010031.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "RuO2__rutile": {
         "record_id": "RuO2__rutile",
@@ -1877,7 +2156,10 @@
         "gamma_deg": 90.0,
         "source": "Bolzan A A; Fong C; Kennedy B J; Howard C J. Structural studies of rutile-type metal dioxides. Acta Crystallographica, Section B 53, 373-380 (1997). COD 1000058: https://www.crystallography.net/cod/1000058.html",
         "notes": "rutile. COD reports a=4.4968 A, b=4.4968 A, c=3.1049 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=62.8 A3, Z=2, diffraction density=7.039 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1000058.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 7.039,
+        "density_delta_g_cm3": -0.0019104270481076213,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Sc2O3__bixbyite-cubic": {
         "record_id": "Sc2O3__bixbyite-cubic",
@@ -1897,7 +2179,10 @@
         "gamma_deg": 90.0,
         "source": "Milligan, W O; Vernon, L W; Levy, H A; Peterson, S W. Neutron diffraction studies on scandium orthovanadate and scandium oxide. Journal of Physical Chemistry 57, 535-537 (1953). https://doi.org/10.1021/j150506a012. COD 1008928: https://www.crystallography.net/cod/1008928.html",
         "notes": "bixbyite cubic. COD reports a=9.79 A, b=9.79 A, c=9.79 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=938.3 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1008928.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Sm2O3__c-type-cubic": {
         "record_id": "Sm2O3__c-type-cubic",
@@ -1917,7 +2202,10 @@
         "gamma_deg": 90.0,
         "source": "Zav'yalova, A.A.; Imamov, R.M.; Ragimli, N.A.; Semiletov, S.A. Electron-diffraction study of the structure of cubic C-Sm2 O3. Kristallografiya 21, 727-729 (1976). COD 1542109: https://www.crystallography.net/cod/1542109.html",
         "notes": "C-type cubic. COD reports a=10.93 A, b=10.93 A, c=10.93 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1305.75 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1542109.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "SnO2__cassiterite-rutile": {
         "record_id": "SnO2__cassiterite-rutile",
@@ -1937,7 +2225,10 @@
         "gamma_deg": 90.0,
         "source": "Baur, W. H.; Khan, A. A. Rutile-type compounds. IV. SiO2, GeO2 and a comparison with other rutile-type structures. Acta Crystallographica, Section B 27, 2133-2139 (1971). https://doi.org/10.1107/S0567740871005466. COD 9007533: https://www.crystallography.net/cod/9007533.html",
         "notes": "cassiterite rutile. COD reports a=4.738 A, b=4.738 A, c=3.1865 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=71.533 A3, Z=2, diffraction density=6.997 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9007533.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 6.997,
+        "density_delta_g_cm3": -4.6936780615070006e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "SrFe12O19__m-type-hexaferrite": {
         "record_id": "SrFe12O19__m-type-hexaferrite",
@@ -1957,7 +2248,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Obradors, X; Solans, X; Collomb, A; Samaras, D; Rodriguez, J; Pernet, M; Font-Altaba, M. Crystal structure of strontium hexaferrite Sr Fe~12~ O~19~. Journal of Solid State Chemistry 72, 218-224 (1988). https://doi.org/10.1016/0022-4596(88)90025-4. COD 1006000: https://www.crystallography.net/cod/1006000.html",
-        "notes": "M-type hexaferrite. COD reports a=5.8844 A, b=5.8844 A, c=23.05 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=691.2 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1006000.html"
+        "notes": "M-type hexaferrite. COD reports a=5.8844 A, b=5.8844 A, c=23.05 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=691.2 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1006000.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "SrO__rocksalt": {
         "record_id": "SrO__rocksalt",
@@ -1977,7 +2271,10 @@
         "gamma_deg": 90.0,
         "source": "Gerlach, W. Die Gitterstruktur der Erdalkalioxyde. Zeitschrift fuer Physik 9, 184-192 (1922). https://doi.org/10.1007/BF01326966. COD 1011328: https://www.crystallography.net/cod/1011328.html",
         "notes": "rocksalt. COD reports a=5.104 A, b=5.104 A, c=5.104 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=133 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1011328.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "SrO2__peroxide": {
         "record_id": "SrO2__peroxide",
@@ -1997,7 +2294,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Bernal, J D; Djatlowa, E; Kasarnowsky, I; Reichstein, S; Ward, A G. The Structure of Strontium and Barium Peroxides, Sr O~2~ and Ba O~2~. Zeitschrift fuer Kristallographie, Kristallgeometrie, Kristallphysik, Kristallchemie (-144,1977) 92, 344-354 (1935). COD 1010114: https://www.crystallography.net/cod/1010114.html",
-        "notes": "peroxide. COD reports a=3.55 A, b=3.55 A, c=6.55 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=82.5 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010114.html"
+        "notes": "peroxide. COD reports a=3.55 A, b=3.55 A, c=6.55 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=82.5 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010114.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "SrTiO3__cubic-perovskite": {
         "record_id": "SrTiO3__cubic-perovskite",
@@ -2017,7 +2317,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Natheer B. Mahmood; Emad K. Al-Shakarchi; Brahim Elouadi. Three Techniques Used to Produce BaTiO3 Fine Powder. Journal of Modern Physics 2, 1420-1428 (2011). https://doi.org/10.4236/jmp.2011.211175. COD 1512124: https://www.crystallography.net/cod/1512124.html",
-        "notes": "cubic perovskite. COD reports a=3.899 A, b=3.899 A, c=3.899 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=59.273 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1512124.html"
+        "notes": "cubic perovskite. COD reports a=3.899 A, b=3.899 A, c=3.899 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=59.273 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1512124.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "SrZrO3__orthorhombic-perovskite": {
         "record_id": "SrZrO3__orthorhombic-perovskite",
@@ -2037,7 +2340,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Kennedy, B.J.; Howard, C.J.; Chakoumakos, B.C. High-temperature phase transitions in Sr Zr O3. Physical Review, Serie 3. B - Condensed Matter (18,1978-) 59, 4023-4027 (1999). COD 1521387: https://www.crystallography.net/cod/1521387.html",
-        "notes": "orthorhombic perovskite. COD reports a=5.9763 A, b=5.8171 A, c=8.2048 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=285.238 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1521387.html"
+        "notes": "orthorhombic perovskite. COD reports a=5.9763 A, b=5.8171 A, c=8.2048 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=285.238 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1521387.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Ta2O__tantalum-suboxide": {
         "record_id": "Ta2O__tantalum-suboxide",
@@ -2057,7 +2363,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Steeb, S.; Renner, J. Ermitllung der Struktur des Tantalsuboxyds Ta Oz (Ta2 O) mittels Elektronenbeugung. Journal of the Less-Common Metals 9, 181-189 (1965). COD 1541814: https://www.crystallography.net/cod/1541814.html",
-        "notes": "tantalum suboxide. COD reports a=6.68 A, b=6.68 A, c=6.68 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=298.078 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1541814.html"
+        "notes": "tantalum suboxide. COD reports a=6.68 A, b=6.68 A, c=6.68 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=298.078 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1541814.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Ta2O5__orthorhombic": {
         "record_id": "Ta2O5__orthorhombic",
@@ -2077,7 +2386,10 @@
         "gamma_deg": 90.0,
         "source": "Stephenson, N.C.; Roth, R.S. Structural systematics in the binary system Ta2 O5 W O3. V. The structure of the low-temperature form of tantalum oxide L-Ta2 O5. Acta Crystallographica B (24,1968-38,1982) 27, 1037-1044 (1971). COD 2106064: https://www.crystallography.net/cod/2106064.html",
         "notes": "orthorhombic. COD reports a=6.198 A, b=40.29 A, c=3.888 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=970.901 A3, Z=11. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2106064.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "TaO__gamma": {
         "record_id": "TaO__gamma",
@@ -2097,7 +2409,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Klechkovskaya, V.V.; Khitrova, V.I. An electron-diffraction study of the gamma phase in the Ta-O system. Soviet Physics, Crystallography (= Kristallografiya) 13, 428-430 (1968). COD 1538733: https://www.crystallography.net/cod/1538733.html",
-        "notes": "gamma. COD reports a=4.38 A, b=4.38 A, c=4.38 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=84.028 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1538733.html"
+        "notes": "gamma. COD reports a=4.38 A, b=4.38 A, c=4.38 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=84.028 A3, Z=4. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1538733.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Tb2O3__c-type-cubic": {
         "record_id": "Tb2O3__c-type-cubic",
@@ -2117,7 +2432,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Bommer, H. Die Gitterkonstanten der C-Formen der Oxyde der seltenen Erdmetalle. Zeitschrift fuer Anorganische und Allgemeine Chemie 241, 273-273 (1939). COD 1537837: https://www.crystallography.net/cod/1537837.html",
-        "notes": "C-type cubic. COD reports a=10.71 A, b=10.71 A, c=10.71 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1228.48 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1537837.html"
+        "notes": "C-type cubic. COD reports a=10.71 A, b=10.71 A, c=10.71 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1228.48 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1537837.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "ThO2__thorianite-fluorite": {
         "record_id": "ThO2__thorianite-fluorite",
@@ -2137,7 +2455,33 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Fluorite structure. Crystal Structures 1, 239-444 (1963). COD 9009046: https://www.crystallography.net/cod/9009046.html",
-        "notes": "thorianite fluorite. COD reports a=5.5997 A, b=5.5997 A, c=5.5997 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=175.588 A3, Z=4, diffraction density=9.988 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009046.html"
+        "notes": "thorianite fluorite. COD reports a=5.5997 A, b=5.5997 A, c=5.5997 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=175.588 A3, Z=4, diffraction density=9.988 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009046.html",
+        "reported_density_g_cm3": 9.988,
+        "density_delta_g_cm3": 4.9621123270782164e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
+    },
+    "Ti2O3__tistarite-alpha": {
+        "record_id": "Ti2O3__tistarite-alpha",
+        "formula": "Ti2O3",
+        "phase": "tistarite alpha",
+        "display_name": "Ti2O3 (tistarite alpha)",
+        "unit_cell_volume_A3": 313.224,
+        "z": 6.0,
+        "theoretical_density_g_cm3": 4.571889906213397,
+        "reported_density_g_cm3": 4.573,
+        "density_delta_g_cm3": -0.0011100937866030947,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3).",
+        "density_source": "COD literature lattice parameters",
+        "origin": "Codex literature seed",
+        "crystal_system": "Hexagonal",
+        "a_A": 5.149,
+        "b_A": 5.149,
+        "c_A": 13.642,
+        "alpha_deg": 90.0,
+        "beta_deg": 90.0,
+        "gamma_deg": 120.0,
+        "source": "Newnham, R. E.; de Haan, Y. M. Refinement of the alpha Al2O3, Ti2O3, V2O3 and Cr2O3 structures. Zeitschrift fur Kristallographie 117, 235-237 (1962). COD 9008082: https://www.crystallography.net/cod/9008082.html",
+        "notes": "tistarite alpha. COD reports a=5.149 A, b=5.149 A, c=13.642 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=313.224 A3, Z=6, diffraction density=4.573 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008082.html"
     },
     "TiO2__anatase": {
         "record_id": "TiO2__anatase",
@@ -2157,7 +2501,10 @@
         "gamma_deg": 90.0,
         "source": "Horn, M.; Schwerdtfeger, C. F.; Meagher, E. P. Refinement of the structure of anatase at several temperatures Sample: T = 25 C. Zeitschrift fur Kristallographie 136, 273-281 (1972). https://doi.org/10.1524/zkri.1972.136.3-4.273. COD 9008213: https://www.crystallography.net/cod/9008213.html",
         "notes": "anatase. COD reports a=3.7842 A, b=3.7842 A, c=9.5146 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=136.251 A3, Z=4, diffraction density=3.894 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008213.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 3.894,
+        "density_delta_g_cm3": -0.0006281319083378811,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "TiO2__brookite": {
         "record_id": "TiO2__brookite",
@@ -2177,7 +2524,10 @@
         "gamma_deg": 90.0,
         "source": "Meagher, E. P.; Lager, G. A. Polyhedral thermal expansion in the TiO2 polymorphs: Refinement of the crystal structures of rutile and brookite at high temperature Sample at 25 degrees C. The Canadian Mineralogist 17, 77-85 (1979). COD 9004137: https://www.crystallography.net/cod/9004137.html",
         "notes": "brookite. COD reports a=9.174 A, b=5.449 A, c=5.138 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=256.844 A3, Z=8, diffraction density=4.131 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9004137.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 4.131,
+        "density_delta_g_cm3": -0.00027621124607080105,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "TiO2__rutile": {
         "record_id": "TiO2__rutile",
@@ -2197,7 +2547,10 @@
         "gamma_deg": 90.0,
         "source": "Howard, C. J.; Sabine, T. M.; Dickson, F. Structural and thermal parameters for rutile and anatase. Acta Crystallographica, Section B 47, 462-468 (1991). https://doi.org/10.1107/S010876819100335X. COD 9015662: https://www.crystallography.net/cod/9015662.html",
         "notes": "rutile. COD reports a=4.5937 A, b=4.5937 A, c=2.9587 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=62.435 A3, Z=2, diffraction density=4.249 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9015662.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 4.249,
+        "density_delta_g_cm3": -0.000775363182853539,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "Tl2O__thallium-i-oxide": {
         "record_id": "Tl2O__thallium-i-oxide",
@@ -2217,7 +2570,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Sabrowsky, H. Zur Darstellung und Kristallstruktur von Tl2 O. Zeitschrift fuer Anorganische und Allgemeine Chemie 381, 266-278 (1971). COD 1528007: https://www.crystallography.net/cod/1528007.html",
-        "notes": "thallium(I) oxide. COD reports a=3.516 A, b=3.516 A, c=37.84 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=405.116 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1528007.html"
+        "notes": "thallium(I) oxide. COD reports a=3.516 A, b=3.516 A, c=37.84 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=405.116 A3, Z=6. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1528007.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Tl2O3__avicennite": {
         "record_id": "Tl2O3__avicennite",
@@ -2237,7 +2593,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zachariasen, W. The crystal structure of the modification C of the sesquioxides of the rare earth metals, and of indium and thallium. Norsk Geologisk Tidsskrift 9, 310-316 (1927). COD 1010927: https://www.crystallography.net/cod/1010927.html",
-        "notes": "avicennite. COD reports a=10.57 A, b=10.57 A, c=10.57 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1180.9 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010927.html"
+        "notes": "avicennite. COD reports a=10.57 A, b=10.57 A, c=10.57 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1180.9 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010927.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Tm2O3__c-type-cubic": {
         "record_id": "Tm2O3__c-type-cubic",
@@ -2257,7 +2616,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Zachariasen, W. The crystal structure of the modification C of the sesquioxides of the rare earth metals, and of indium and thallium. Norsk Geologisk Tidsskrift 9, 310-316 (1927). COD 1010333: https://www.crystallography.net/cod/1010333.html",
-        "notes": "C-type cubic. COD reports a=10.52 A, b=10.52 A, c=10.52 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1164.3 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010333.html"
+        "notes": "C-type cubic. COD reports a=10.52 A, b=10.52 A, c=10.52 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1164.3 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010333.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "U3O8__alpha": {
         "record_id": "U3O8__alpha",
@@ -2277,7 +2639,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Andresen, A.F. The structure of U3 O8 determined by neutron diffraction. Acta Crystallographica (1,1948-23,1967) 11, 612-614 (1958). COD 2310519: https://www.crystallography.net/cod/2310519.html",
-        "notes": "alpha. COD reports a=6.704 A, b=11.95 A, c=4.142 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=331.827 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2310519.html"
+        "notes": "alpha. COD reports a=6.704 A, b=11.95 A, c=4.142 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=331.827 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2310519.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "UO2__uraninite-fluorite": {
         "record_id": "UO2__uraninite-fluorite",
@@ -2297,7 +2662,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Wyckoff, R. W. G. Second edition. Interscience Publishers, New York, New York Fluorite structure. Crystal Structures 1, 239-444 (1963). COD 9009049: https://www.crystallography.net/cod/9009049.html",
-        "notes": "uraninite fluorite. COD reports a=5.4682 A, b=5.4682 A, c=5.4682 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=163.506 A3, Z=4, diffraction density=10.969 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009049.html"
+        "notes": "uraninite fluorite. COD reports a=5.4682 A, b=5.4682 A, c=5.4682 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=163.506 A3, Z=4, diffraction density=10.969 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9009049.html",
+        "reported_density_g_cm3": 10.969,
+        "density_delta_g_cm3": 0.0004333720064000346,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "UO3__alpha": {
         "record_id": "UO3__alpha",
@@ -2317,7 +2685,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Loopstra, B.O.; Cordfunke, E.H.P. On the structure of alpha U O3. Recueil des Travaux Chimiques des Pays-Bas et de la Belgique 85, 135-142 (1966). COD 1527743: https://www.crystallography.net/cod/1527743.html",
-        "notes": "alpha. COD reports a=3.961 A, b=6.86 A, c=4.166 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=113.2 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1527743.html"
+        "notes": "alpha. COD reports a=3.961 A, b=6.86 A, c=4.166 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=113.2 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1527743.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "V2O3__karelianite-alpha": {
         "record_id": "V2O3__karelianite-alpha",
@@ -2337,7 +2708,10 @@
         "gamma_deg": 120.0,
         "source": "Newnham, R. E.; de Haan, Y. M. Refinement of the alpha Al2O3, Ti2O3, V2O3 and Cr2O3 structures. Zeitschrift fur Kristallographie 117, 235-237 (1962). COD 9008083: https://www.crystallography.net/cod/9008083.html",
         "notes": "karelianite alpha. COD reports a=4.952 A, b=4.952 A, c=14.002 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=297.36 A3, Z=6, diffraction density=5.022 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9008083.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.022,
+        "density_delta_g_cm3": -0.0001425357731372756,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "V2O5__shcherbinaite-alpha": {
         "record_id": "V2O5__shcherbinaite-alpha",
@@ -2357,7 +2731,10 @@
         "gamma_deg": 90.0,
         "source": "Enjalbert, Renee; Galy, Jean. A refinement of the structure of V~2~O~5~. Acta Crystallographica, Section C: Crystal Structure Communications 42, 1467-1469 (1986). https://doi.org/10.1107/s0108270186091825. COD 2020756: https://www.crystallography.net/cod/2020756.html",
         "notes": "shcherbinaite alpha. COD reports a=11.512 A, b=3.564 A, c=4.368 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=179.21 A3, Z=2, diffraction density=3.37 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2020756.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 3.37,
+        "density_delta_g_cm3": 0.0005394230066633199,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "VO2__rutile-high-temperature": {
         "record_id": "VO2__rutile-high-temperature",
@@ -2377,7 +2754,10 @@
         "gamma_deg": 90.0,
         "source": "Westman, S. Note on a phase transition in V O2. Acta Chemica Scandinavica (1-27,1973-42,1988) 15, 217-217 (1961). COD 1539951: https://www.crystallography.net/cod/1539951.html",
         "notes": "rutile high-temperature. COD reports a=4.53 A, b=4.53 A, c=2.869 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=58.874 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1539951.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "WO3__monoclinic-gamma": {
         "record_id": "WO3__monoclinic-gamma",
@@ -2397,7 +2777,10 @@
         "gamma_deg": 90.0,
         "source": "Tanisaki, S. Crystal structure of monoclinic tungsten oxide at room temperature. Journal of the Physical Society of Japan 15, 573-580 (1960). COD 1528915: https://www.crystallography.net/cod/1528915.html",
         "notes": "monoclinic gamma. COD reports a=7.3 A, b=7.53 A, c=7.68 A, alpha=90 deg, beta=90.9 deg, gamma=90 deg, V=422.11 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1528915.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Y2O3__cubic-c-type": {
         "record_id": "Y2O3__cubic-c-type",
@@ -2417,7 +2800,10 @@
         "gamma_deg": 90.0,
         "source": "Zachariasen, W H. Untersuchungen ueber die Kristallstruktur von Sesquioxyden und Verbindungen ABO~3~. Skrifter utgitt av det Norske Videnskaps-Akademi i Oslo 1: Matematisk- Naturvidenskapelig Klasse 1928, 1-165 (1928). COD 1010587: https://www.crystallography.net/cod/1010587.html",
         "notes": "cubic C-type. COD reports a=10.6 A, b=10.6 A, c=10.6 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1191 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1010587.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Y3Al5O12__yag-garnet": {
         "record_id": "Y3Al5O12__yag-garnet",
@@ -2437,7 +2823,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Yoder, H.S.; Keith, M.L. Complete substitution of aluminum for silicon: The system (Mn O)3 Al2 O3 (Si O2)3 - (Y2 O3)3 (Al2 O3)5. Geological Society of America, Bulletin 61, 1516-1517 (1950). COD 1529037: https://www.crystallography.net/cod/1529037.html",
-        "notes": "YAG garnet. COD reports a=12.01 A, b=12.01 A, c=12.01 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1732.32 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1529037.html"
+        "notes": "YAG garnet. COD reports a=12.01 A, b=12.01 A, c=12.01 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1732.32 A3, Z=8. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1529037.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "YAlO3__hexagonal": {
         "record_id": "YAlO3__hexagonal",
@@ -2457,7 +2846,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 120.0,
         "source": "Bertaut, F; Mareschal, J. Un nouveau type de structure hexagonale: Al T O3 (T = Y, Eu, Gd, Tb, Dy, Ho, Er). Comptes Rendus Hebdomadaires des Seances de l'Academie des Sciences (1884 - 1965) 257, 867-870 (1963). COD 1008923: https://www.crystallography.net/cod/1008923.html",
-        "notes": "hexagonal. COD reports a=3.68 A, b=3.68 A, c=10.52 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=123.4 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1008923.html"
+        "notes": "hexagonal. COD reports a=3.68 A, b=3.68 A, c=10.52 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=123.4 A3, Z=2. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1008923.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "YBa2Cu3O7__orthorhombic-superconductor": {
         "record_id": "YBa2Cu3O7__orthorhombic-superconductor",
@@ -2477,7 +2869,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "Capponi, J J; Chaillout, C; Hewat, A W; Lejay, P; Marezio, M; Nguyen, N; Raveau, B; Soubeyroux, J L; Tholence, J L; Tournier, R. Structure of the 100 K Superconductor Ba~2~ Y Cu~3~ O~7~ between (5- 300)K by Neutron Powder Diffraction. Europhysics Letters 3, 1301-1307 (1987). https://doi.org/10.1209/0295-5075/3/12/009. COD 1001452: https://www.crystallography.net/cod/1001452.html",
-        "notes": "orthorhombic superconductor. COD reports a=3.8128 A, b=3.8806 A, c=11.6303 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=172.1 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1001452.html"
+        "notes": "orthorhombic superconductor. COD reports a=3.8128 A, b=3.8806 A, c=11.6303 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=172.1 A3, Z=1. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1001452.html",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "Yb2O3__c-type-cubic": {
         "record_id": "Yb2O3__c-type-cubic",
@@ -2497,7 +2892,10 @@
         "gamma_deg": 90.0,
         "source": "Pavlik, III, Alfred J.; Ushakov, Sergey V.; Navrotsky, Alexandra; Benmore, Chris J.; Weber, Richard J.K. Structure and thermal expansion of Lu 2 O 3 and Yb 2 O 3 up to the melting points. Journal of Nuclear Materials 495, 385 (2017). https://doi.org/10.1016/j.jnucmat.2017.08.031. COD 1548520: https://www.crystallography.net/cod/1548520.html",
         "notes": "C-type cubic. COD reports a=10.5078 A, b=10.5078 A, c=10.5078 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=1160.21 A3, Z=16. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/1548520.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": null,
+        "density_delta_g_cm3": null,
+        "density_validation": "Calculated from COD lattice parameters; no reported diffraction density in COD CIF."
     },
     "ZnAl2O4__gahnite-spinel": {
         "record_id": "ZnAl2O4__gahnite-spinel",
@@ -2517,7 +2915,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "O'Neill H St C; Dollase, W. A. Crystal structures and cation distributions in simple spinels from powder XRD structural refinements: MgCr2O4, ZnCr2O4, Fe3O4 and the temperature dependence of the cation distribution in ZnAl2O4 Sample: 900, UCLA (CuKalpha radiation). Physics and Chemistry of Minerals 20, 541-555 (1994). https://doi.org/10.1007/BF00211850. COD 9006200: https://www.crystallography.net/cod/9006200.html",
-        "notes": "gahnite spinel. COD reports a=8.0865 A, b=8.0865 A, c=8.0865 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=528.788 A3, Z=8, diffraction density=4.606 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9006200.html"
+        "notes": "gahnite spinel. COD reports a=8.0865 A, b=8.0865 A, c=8.0865 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=528.788 A3, Z=8, diffraction density=4.606 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9006200.html",
+        "reported_density_g_cm3": 4.606,
+        "density_delta_g_cm3": -9.770909093109736e-05,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "ZnFe2O4__franklinite-spinel": {
         "record_id": "ZnFe2O4__franklinite-spinel",
@@ -2537,7 +2938,10 @@
         "beta_deg": 90.0,
         "gamma_deg": 90.0,
         "source": "O'Neill H St C. Temperature dependence of the cation distribution in zinc ferrite (ZnFe2O4) from powder XRD structural refinements Sample: at T = 500 C. European Journal of Mineralogy 4, 571-580 (1992). https://doi.org/10.1127/ejm/4/3/0571. COD 9005102: https://www.crystallography.net/cod/9005102.html",
-        "notes": "franklinite spinel. COD reports a=8.4421 A, b=8.4421 A, c=8.4421 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=601.66 A3, Z=8, diffraction density=5.323 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9005102.html"
+        "notes": "franklinite spinel. COD reports a=8.4421 A, b=8.4421 A, c=8.4421 A, alpha=90 deg, beta=90 deg, gamma=90 deg, V=601.66 A3, Z=8, diffraction density=5.323 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9005102.html",
+        "reported_density_g_cm3": 5.323,
+        "density_delta_g_cm3": -0.00039905239064541576,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "ZnO__zincite-wurtzite": {
         "record_id": "ZnO__zincite-wurtzite",
@@ -2557,7 +2961,10 @@
         "gamma_deg": 120.0,
         "source": "Schreyer, Martin; Guo, Liangfeng; Thirunahari, Satyanarayana; Gao, Feng; Garland, Marc. Simultaneous determination of several crystal structures from powder mixtures: the combination of powder X-ray diffraction, band-target entropy minimization and Rietveld methods. Journal of Applied Crystallography 47, 659-667 (2014). https://doi.org/10.1107/S1600576714003379. COD 2300450: https://www.crystallography.net/cod/2300450.html",
         "notes": "zincite wurtzite. COD reports a=3.24931 A, b=3.24931 A, c=5.20571 A, alpha=90 deg, beta=90 deg, gamma=120 deg, V=47.5984 A3, Z=2, diffraction density=5.67848 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/2300450.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.67848,
+        "density_delta_g_cm3": -0.00043163083042863093,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     },
     "ZrO2__baddeleyite-monoclinic": {
         "record_id": "ZrO2__baddeleyite-monoclinic",
@@ -2577,6 +2984,9 @@
         "gamma_deg": 90.0,
         "source": "Smith, D. K.; Newkirk, H. W. The crystal structure of baddeleyite (monoclinic ZrO2) and its relation to the polymorphism of ZrO2. Acta Crystallographica 18, 983-991 (1965). https://doi.org/10.1107/S0365110X65002402. COD 9007485: https://www.crystallography.net/cod/9007485.html",
         "notes": "baddeleyite monoclinic. COD reports a=5.145 A, b=5.2075 A, c=5.3107 A, alpha=90 deg, beta=99.23 deg, gamma=90 deg, V=140.445 A3, Z=4, diffraction density=5.828 g/cm3. App density is calculated from Z*M/(N_A*V). Source retrieved 2026-05-20. Reference link: https://www.crystallography.net/cod/9007485.html",
-        "origin": "Codex literature seed"
+        "origin": "Codex literature seed",
+        "reported_density_g_cm3": 5.828,
+        "density_delta_g_cm3": -0.0003822155207870992,
+        "density_validation": "Matches reported COD diffraction density (abs delta <= 0.01 g/cm3)."
     }
 }

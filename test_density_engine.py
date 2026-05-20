@@ -1,3 +1,5 @@
+import json
+from pathlib import Path
 import unittest
 
 from density_engine import (
@@ -11,6 +13,9 @@ from density_engine import (
     unit_cell_volume_from_lattice,
 )
 from formula_parser import molar_mass, parse_formula
+
+
+MATERIAL_DENSITIES_FILE = Path(__file__).with_name("material_densities.json")
 
 
 LITERATURE_DENSITY_CASES = [
@@ -93,6 +98,35 @@ class DensityEngineTests(unittest.TestCase):
                 self.assertAlmostEqual(volume, case["published_volume"], delta=0.001)
                 if case["published_density"] is not None:
                     self.assertAlmostEqual(density, case["published_density"], delta=0.001)
+
+    def test_codex_seeded_reported_densities_match_calculated_values(self):
+        records = json.loads(MATERIAL_DENSITIES_FILE.read_text())
+        checked_records = 0
+
+        for record_key, record in records.items():
+            if record.get("origin") != "Codex literature seed":
+                continue
+
+            reported_density = record.get("reported_density_g_cm3")
+            if reported_density is None:
+                continue
+
+            checked_records += 1
+            calculated_density = theoretical_density_from_cell(
+                record["formula"],
+                record["unit_cell_volume_A3"],
+                record["z"],
+            )
+
+            with self.subTest(record=record_key):
+                self.assertAlmostEqual(
+                    calculated_density,
+                    record["theoretical_density_g_cm3"],
+                    places=10,
+                )
+                self.assertAlmostEqual(calculated_density, reported_density, delta=0.01)
+
+        self.assertGreater(checked_records, 0)
 
     def test_pellet_mass_and_relative_density(self):
         volume = cylinder_volume_cm3(25.05, 1.0)
