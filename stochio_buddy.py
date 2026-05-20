@@ -892,6 +892,7 @@ def history_dataframe(history):
 
     rows = []
     for entry in history:
+        calculation = entry.get("calculation") or {}
         rows.append(
             {
                 "Target ID": entry.get("target_id", ""),
@@ -900,6 +901,9 @@ def history_dataframe(history):
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target": entry.get("target", ""),
                 "Powder basis (g)": entry.get("mass", ""),
+                "Estimated target mass (g)": calculation.get("estimated_target_mass", ""),
+                "Solve basis": calculation.get("basis", ""),
+                "Residual": calculation.get("residual", ""),
                 "Recipe": json.dumps(entry.get("recipe", {}), ensure_ascii=False),
                 "Inventory deducted": entry.get("inventory_deducted", False),
                 "Warning": entry.get("warning") or "",
@@ -976,6 +980,25 @@ def recipe_balance_dataframe(result, powder_db):
     return pd.DataFrame(rows)
 
 
+def recipe_calculation_metadata(result):
+    if not result:
+        return {}
+
+    keys = (
+        "basis",
+        "residual",
+        "exact",
+        "coefficients",
+        "elements",
+        "ignored_elements",
+        "target_molar_mass",
+        "precursor_formula_mass",
+        "formula_units",
+        "estimated_target_mass",
+    )
+    return {key: result[key] for key in keys if key in result}
+
+
 def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
     if lifecycle_groups is None:
         lifecycle_groups = target_lifecycle_groups(history or [])
@@ -985,6 +1008,7 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
         latest_recipe = summary["recipes"][0] if summary["recipes"] else {}
         latest_density = summary["densities"][0] if summary["densities"] else {}
         recipe = latest_recipe.get("recipe", {})
+        calculation = latest_recipe.get("calculation", {})
 
         rows.append(
             {
@@ -1004,6 +1028,8 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
                     latest_recipe.get("time", latest_recipe.get("timestamp", ""))
                 ) if latest_recipe else "",
                 "Recipe powder basis (g)": latest_recipe.get("mass", ""),
+                "Estimated target mass (g)": calculation.get("estimated_target_mass", ""),
+                "Recipe solve basis": calculation.get("basis", ""),
                 "Recipe powders": ", ".join(
                     f"{powder}: {grams:.3f} g" for powder, grams in recipe.items()
                 ),
@@ -1270,6 +1296,20 @@ def recipe_history_summary(entry):
     powders = ", ".join(entry.get("selected_powders") or [])
     recipe = entry.get("recipe") or {}
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
+    calculation = entry.get("calculation") or {}
+    residual = calculation.get("residual")
+    if isinstance(residual, (int, float)):
+        residual_text = f"residual {residual:.3g}"
+    else:
+        residual_text = f"residual {residual}" if residual not in ("", None) else ""
+    calculation_text = "; ".join(
+        part
+        for part in [
+            calculation.get("basis", ""),
+            residual_text,
+        ]
+        if part
+    )
     notes = entry.get("notes", "")
     recipe_id = entry.get("recipe_id") or "Recipe"
     target_id = entry.get("target_id") or recipe_id
@@ -1282,6 +1322,7 @@ def recipe_history_summary(entry):
                 time_text,
                 f"For {target_for}" if target_for else "",
                 recipe_id if entry.get("target_id") else "",
+                calculation_text,
                 powders,
                 recipe_text,
                 notes,
@@ -1916,6 +1957,7 @@ if page == "Powder Mass Calculation":
                             notes=recipe_notes,
                             target_for=recipe_target_owner or None,
                             target_number=assigned_target_number,
+                            calculation=recipe_calculation_metadata(result),
                         )
                         saved_recipe = saved_history[-1] if saved_history else {}
                         recipe_id = saved_recipe.get("target_id") or saved_recipe.get("recipe_id", "Recipe")

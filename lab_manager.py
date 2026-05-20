@@ -901,6 +901,7 @@ def log_synthesis(
     target_for=None,
     target_number=None,
     target_id=None,
+    calculation=None,
 ):
     history = load_history()
     recipe_number = next_recipe_number(history)
@@ -923,6 +924,8 @@ def log_synthesis(
         "inventory_deducted": inventory_deducted,
         "notes": str(notes or "").strip(),
     }
+    if calculation:
+        entry["calculation"] = calculation
     if target_for:
         entry.update(
             {
