@@ -1446,7 +1446,13 @@ with st.sidebar:
     theme_mode = st.radio("Appearance", ["Dark", "Light"], horizontal=True, key="theme_mode")
     page = st.radio(
         "Navigation",
-        ["Calculate", "Powders & Inventory", "Material Density", "Target Density", "History"],
+        [
+            "Powder Mass Calculation",
+            "Target Density",
+            "Powders & Inventory",
+            "Material Density",
+            "History",
+        ],
         label_visibility="collapsed",
     )
 
@@ -1484,11 +1490,11 @@ if storage_problem:
     )
 
 
-if page == "Calculate":
+if page == "Powder Mass Calculation":
     left, right = st.columns([0.95, 1.05], gap="large")
 
     with left:
-        st.subheader("Recipe setup")
+        st.subheader("Powder mass setup")
         target = st.text_input(
             "Target formula",
             placeholder="Fe1.98Ti0.02O3",
