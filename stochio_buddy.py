@@ -36,10 +36,12 @@ from lab_manager import (
     load_powders,
     log_synthesis,
     log_target_density,
+    restore_backup_data,
     set_inventory_quantity,
     storage_error,
     storage_label,
     upsert_material_density,
+    validate_backup_data,
 )
 from stoich_engine import compute_recipe
 
@@ -1341,6 +1343,24 @@ def data_backup_json(powders, inventory, material_densities, history):
     return json.dumps(backup, indent=2, ensure_ascii=False)
 
 
+def parse_backup_upload(uploaded_file):
+    try:
+        backup = json.loads(uploaded_file.getvalue().decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        return None, [f"Could not read backup JSON: {exc}"]
+
+    return backup, validate_backup_data(backup)
+
+
+def backup_counts(backup):
+    return {
+        "powders": len(backup.get("powders", {})),
+        "inventory": len(backup.get("inventory", {})),
+        "material_densities": len(backup.get("material_densities", {})),
+        "history": len(backup.get("history", [])),
+    }
+
+
 def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     table_rows = []
     headers = "".join(f"<th>{html.escape(str(column))}</th>" for column in df.columns)
@@ -1488,6 +1508,47 @@ with st.sidebar:
         mime="application/json",
         width="stretch",
     )
+    with st.expander("Restore Data Backup", expanded=False):
+        backup_file = st.file_uploader(
+            "Backup JSON file",
+            type=["json"],
+            key="restore_backup_json",
+        )
+        if backup_file is not None:
+            backup_data, backup_errors = parse_backup_upload(backup_file)
+            if backup_errors:
+                st.error("Backup cannot be restored: " + "; ".join(backup_errors[:4]))
+            else:
+                counts = backup_counts(backup_data)
+                st.caption(
+                    "Backup contains "
+                    f"{counts['powders']} powders, "
+                    f"{counts['inventory']} inventory entries, "
+                    f"{counts['material_densities']} material densities, and "
+                    f"{counts['history']} history entries."
+                )
+                confirm_restore = st.checkbox(
+                    "Replace current app data with this backup",
+                    key="confirm_restore_backup",
+                )
+                if st.button(
+                    "Restore Backup",
+                    disabled=not confirm_restore,
+                    width="stretch",
+                ):
+                    try:
+                        restored_counts = restore_backup_data(backup_data)
+                        clear_data_cache()
+                        st.success(
+                            "Backup restored: "
+                            f"{restored_counts['powders']} powders, "
+                            f"{restored_counts['inventory']} inventory entries, "
+                            f"{restored_counts['material_densities']} material densities, "
+                            f"{restored_counts['history']} history entries."
+                        )
+                        st.rerun()
+                    except ValueError as exc:
+                        st.error(str(exc))
     if storage_problem:
         st.warning("Shared storage is not connected. The app is using local JSON files for now.")
     if unknown_stock:

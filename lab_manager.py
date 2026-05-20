@@ -799,6 +799,97 @@ def clear_history_for_target_id(target_id):
     return removed_count, remaining
 
 
+def validate_backup_data(backup):
+    errors = []
+    if not isinstance(backup, dict):
+        return ["Backup must be a JSON object"]
+
+    required_sections = ("powders", "inventory", "material_densities", "history")
+    for section in required_sections:
+        if section not in backup:
+            errors.append(f"Missing section: {section}")
+
+    powders = backup.get("powders", {})
+    if not isinstance(powders, dict):
+        errors.append("powders must be an object")
+    else:
+        for name, record in powders.items():
+            if not isinstance(record, dict):
+                errors.append(f"Powder {name} must be an object")
+                continue
+            try:
+                normalize_powder(name)
+                normalize_powder_record(record)
+            except Exception as exc:
+                errors.append(f"Powder {name}: {exc}")
+
+    inventory = backup.get("inventory", {})
+    if not isinstance(inventory, dict):
+        errors.append("inventory must be an object")
+    else:
+        for powder, grams in inventory.items():
+            try:
+                normalize_powder(powder)
+                float(grams)
+            except Exception as exc:
+                errors.append(f"Inventory {powder}: {exc}")
+
+    material_densities = backup.get("material_densities", {})
+    if not isinstance(material_densities, dict):
+        errors.append("material_densities must be an object")
+    else:
+        for formula, record in material_densities.items():
+            if not isinstance(record, dict):
+                errors.append(f"Material density {formula} must be an object")
+                continue
+            try:
+                normalize_density_record(formula, record)
+            except Exception as exc:
+                errors.append(f"Material density {formula}: {exc}")
+
+    history = backup.get("history", [])
+    if not isinstance(history, list):
+        errors.append("history must be a list")
+    else:
+        for index, entry in enumerate(history, start=1):
+            if not isinstance(entry, dict):
+                errors.append(f"History entry {index} must be an object")
+
+    return errors
+
+
+def restore_backup_data(backup):
+    errors = validate_backup_data(backup)
+    if errors:
+        raise ValueError("; ".join(errors))
+
+    powders = {
+        normalize_powder(name): normalize_powder_record(record)
+        for name, record in backup.get("powders", {}).items()
+    }
+    inventory = {
+        normalize_powder(powder): float(grams)
+        for powder, grams in backup.get("inventory", {}).items()
+    }
+    material_densities = {
+        normalize_formula(formula): normalize_density_record(formula, record)
+        for formula, record in backup.get("material_densities", {}).items()
+    }
+    history = [dict(entry) for entry in backup.get("history", [])]
+
+    save_powders(powders)
+    save_inventory(inventory)
+    save_material_densities(material_densities)
+    save_history(history)
+
+    return {
+        "powders": len(powders),
+        "inventory": len(inventory),
+        "material_densities": len(material_densities),
+        "history": len(history),
+    }
+
+
 def log_synthesis(
     target,
     mass,
