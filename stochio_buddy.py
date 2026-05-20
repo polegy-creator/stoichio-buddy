@@ -899,7 +899,7 @@ def history_dataframe(history):
                 "Recipe ID": entry.get("recipe_id", ""),
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target": entry.get("target", ""),
-                "Target mass (g)": entry.get("mass", ""),
+                "Powder basis (g)": entry.get("mass", ""),
                 "Recipe": json.dumps(entry.get("recipe", {}), ensure_ascii=False),
                 "Inventory deducted": entry.get("inventory_deducted", False),
                 "Warning": entry.get("warning") or "",
@@ -936,6 +936,46 @@ def target_density_dataframe(history):
     return pd.DataFrame(rows).iloc[::-1]
 
 
+def recipe_coefficients_dataframe(result, recipe_masses):
+    rows = []
+    coefficients = result.get("coefficients", {})
+    for powder, grams in recipe_masses.items():
+        rows.append(
+            {
+                "Powder": powder,
+                "Moles per target formula": coefficients.get(powder, ""),
+                "Mass (g)": round(grams, 6),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def recipe_balance_dataframe(result, powder_db):
+    rows = []
+    target = result.get("target", {})
+    elements = result.get("elements", [])
+    coefficients = result.get("coefficients", {})
+    selected = list(coefficients.keys())
+
+    for element in elements:
+        delivered = 0.0
+        for powder in selected:
+            # The engine already solved these coefficients; this table is an audit
+            # of the selected precursor contribution to each balanced element.
+            delivered += coefficients.get(powder, 0.0) * powder_db[powder]["elements"].get(element, 0.0)
+        target_amount = float(target.get(element, 0.0))
+        rows.append(
+            {
+                "Element": element,
+                "Target amount": round(target_amount, 8),
+                "Delivered amount": round(delivered, 8),
+                "Difference": round(delivered - target_amount, 10),
+            }
+        )
+
+    return pd.DataFrame(rows)
+
+
 def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
     if lifecycle_groups is None:
         lifecycle_groups = target_lifecycle_groups(history or [])
@@ -963,7 +1003,7 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
                 "Recipe time": format_history_time(
                     latest_recipe.get("time", latest_recipe.get("timestamp", ""))
                 ) if latest_recipe else "",
-                "Recipe target mass (g)": latest_recipe.get("mass", ""),
+                "Recipe powder basis (g)": latest_recipe.get("mass", ""),
                 "Recipe powders": ", ".join(
                     f"{powder}: {grams:.3f} g" for powder, grams in recipe.items()
                 ),
@@ -1173,7 +1213,7 @@ def linked_recipe_targets(history):
 
 def linked_recipe_target_label(entry):
     mass = entry.get("mass", "")
-    mass_text = f"{mass:g} g" if isinstance(mass, (int, float)) else str(mass)
+    mass_text = f"{mass:g} g powder" if isinstance(mass, (int, float)) else str(mass)
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
     return " | ".join(
         part
@@ -1226,7 +1266,7 @@ def trash_button(key, help_text):
 def recipe_history_summary(entry):
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
     mass = entry.get("mass", "")
-    mass_text = f"{mass:g} g" if isinstance(mass, (int, float)) else str(mass)
+    mass_text = f"{mass:g} g powder" if isinstance(mass, (int, float)) else str(mass)
     powders = ", ".join(entry.get("selected_powders") or [])
     recipe = entry.get("recipe") or {}
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
@@ -1277,12 +1317,18 @@ def target_density_history_summary(entry):
     }
 
 
-def recipe_lab_summary(target, target_mass, recipe_masses, target_for="", target_id=None, notes=""):
+def recipe_lab_summary(target, target_mass, recipe_masses, target_for="", target_id=None, notes="", result=None):
     lines = [
         "Stoichio Buddy recipe",
         f"Target: {target}",
-        f"Target basis: {target_mass:.4f} g",
+        f"Powder basis: {target_mass:.4f} g",
     ]
+    if result:
+        lines.append(f"Solve basis: {result.get('basis', 'element balance')}")
+        lines.append(f"Target molar mass: {result.get('target_molar_mass', '')} g/mol")
+        lines.append(f"Precursor formula mass: {result.get('precursor_formula_mass', '')} g")
+        lines.append(f"Estimated target mass: {result.get('estimated_target_mass', '')} g")
+        lines.append(f"Residual: {result.get('residual', '')}")
     if target_id:
         lines.append(f"Target ID: {target_id}")
     if target_for:
@@ -1593,10 +1639,10 @@ if page == "Powder Mass Calculation":
                 f"{format_target_id(recipe_target_owner, preview_number)}."
             )
         amount_mode = st.radio(
-            "Target amount mode",
-            ["Target mass", "Pellet height"],
+            "Powder amount mode",
+            ["Total powder mass", "Pellet height"],
             horizontal=True,
-            help="Use pellet height to calculate target mass from theoretical density and a 25.05 mm die.",
+            help="Use pellet height to calculate the powder basis from theoretical density and a 25.05 mm die.",
         )
 
         target_mass = None
@@ -1605,14 +1651,14 @@ if page == "Powder Mass Calculation":
         planning_height = None
         planning_error = None
 
-        if amount_mode == "Target mass":
+        if amount_mode == "Total powder mass":
             target_mass = st.number_input(
-                "Target formula mass (g)",
+                "Total precursor powder (g)",
                 min_value=0.0,
                 value=15.6,
                 step=0.1,
                 format="%.4f",
-                help="This is the intended formula batch basis. Total precursor powder can be higher.",
+                help="Recipe powder masses will sum to this amount.",
             )
         else:
             st.caption(f"Fixed die diameter: {DEFAULT_DIE_DIAMETER_MM:.2f} mm")
@@ -1636,7 +1682,7 @@ if page == "Powder Mass Calculation":
                         DEFAULT_DIE_DIAMETER_MM,
                     )
                     st.info(
-                        f"Calculated target mass: {target_mass:.4f} g "
+                        f"Calculated powder basis: {target_mass:.4f} g "
                         f"from {planning_volume:.4f} cm3."
                     )
                 except ValueError as exc:
@@ -1656,7 +1702,7 @@ if page == "Powder Mass Calculation":
         if solve:
             if target_mass is None or target_mass <= 0:
                 st.session_state.last_recipe_result = {
-                    "error": "Enter a valid target mass, or a valid height and theoretical density.",
+                    "error": "Enter a valid powder basis, or a valid height and theoretical density.",
                     "signature": current_signature,
                 }
             elif planning_error:
@@ -1687,7 +1733,7 @@ if page == "Powder Mass Calculation":
 
         last_recipe = st.session_state.get("last_recipe_result")
         if not last_recipe:
-            st.info("Enter a target formula, mass, and selected powders, then calculate.")
+            st.info("Enter a target formula, powder basis, and selected powders, then calculate.")
             if db:
                 display_dataframe(database_dataframe(db), theme_mode, width="stretch", hide_index=True)
         else:
@@ -1707,8 +1753,11 @@ if page == "Powder Mass Calculation":
                     displayed_target_mass = last_recipe["target_mass"]
 
                     metric_cols = st.columns(3)
-                    metric_cols[0].metric("Target basis (g)", round(displayed_target_mass, 3))
-                    metric_cols[1].metric("Precursor powder (g)", round(total_powder, 3))
+                    metric_cols[0].metric("Powder basis (g)", round(total_powder, 3))
+                    metric_cols[1].metric(
+                        "Estimated target mass (g)",
+                        round(result.get("estimated_target_mass", displayed_target_mass), 3),
+                    )
                     metric_cols[2].metric("Powders used", len(recipe_masses))
 
                     if last_recipe["amount_mode"] == "Pellet height":
@@ -1745,6 +1794,36 @@ if page == "Powder Mass Calculation":
                             + result.get("basis", "element balance")
                             + "; ignored in balance: "
                             + ", ".join(result["ignored_elements"])
+                        )
+
+                    with st.expander("Stoichiometry audit", expanded=False):
+                        audit_cols = st.columns(4)
+                        audit_cols[0].metric("Solve basis", result.get("basis", "element balance"))
+                        audit_cols[1].metric("Precursor formula mass", result.get("precursor_formula_mass", ""))
+                        audit_cols[2].metric("Target molar mass", result.get("target_molar_mass", ""))
+                        audit_cols[3].metric("Residual", f"{result.get('residual', 0):.3g}")
+
+                        coeff_df = recipe_coefficients_dataframe(result, recipe_masses)
+                        balance_df = recipe_balance_dataframe(result, db)
+
+                        st.markdown("##### Precursor coefficients")
+                        display_dataframe(coeff_df, theme_mode, width="stretch", hide_index=True)
+                        st.download_button(
+                            "Download Coefficients CSV",
+                            data=csv_bytes(coeff_df),
+                            file_name="stoichio_recipe_coefficients.csv",
+                            mime="text/csv",
+                            width="stretch",
+                        )
+
+                        st.markdown("##### Element balance")
+                        display_dataframe(balance_df, theme_mode, width="stretch", hide_index=True)
+                        st.download_button(
+                            "Download Element Balance CSV",
+                            data=csv_bytes(balance_df),
+                            file_name="stoichio_element_balance.csv",
+                            mime="text/csv",
+                            width="stretch",
                         )
 
                     if stock_messages:
@@ -1791,6 +1870,7 @@ if page == "Powder Mass Calculation":
                         target_for=recipe_target_owner,
                         target_id=recipe_target_id,
                         notes=recipe_notes,
+                        result=result,
                     )
                     st.code(recipe_summary_text, language="text")
                     st.download_button(

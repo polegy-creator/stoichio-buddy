@@ -95,12 +95,13 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
     - No subset search
     - Uses one non-negative least-squares solve: A x ~= b, x >= 0
     - Interprets x as precursor moles per mole of target
+    - Interprets mass as the requested total precursor powder mass
     """
     if not selected_powders:
         return {"recipe": None, "warning": "Select at least one powder"}
 
     if mass <= 0:
-        return {"recipe": None, "warning": "Target mass must be greater than 0"}
+        return {"recipe": None, "warning": "Powder basis must be greater than 0"}
 
     try:
         normalized_formula, target_comp = normalize_target(target)
@@ -149,9 +150,16 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
     except ValueError as exc:
         return {"recipe": None, "warning": str(exc)}
 
-    target_moles = float(mass) / target_molar_mass
+    precursor_formula_mass = sum(
+        float(coefficients[i]) * powder_molar_mass(db[powder])
+        for i, powder in enumerate(selected_powders)
+    )
+    if precursor_formula_mass <= tolerance:
+        return {"recipe": None, "warning": "No physically valid precursor mass from selected powders"}
+
+    formula_units = float(mass) / precursor_formula_mass
     recipe = {
-        powder: round(float(coefficients[i] * target_moles * powder_molar_mass(db[powder])), 6)
+        powder: round(float(coefficients[i] * formula_units * powder_molar_mass(db[powder])), 6)
         for i, powder in enumerate(selected_powders)
     }
 
@@ -177,4 +185,7 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
         "target": target_comp,
         "normalized_target": normalized_formula,
         "target_molar_mass": round(float(target_molar_mass), 6),
+        "precursor_formula_mass": round(float(precursor_formula_mass), 6),
+        "formula_units": round(float(formula_units), 12),
+        "estimated_target_mass": round(float(formula_units * target_molar_mass), 6),
     }
