@@ -1704,16 +1704,21 @@ if page == "Powder Mass Calculation":
                         key=widget_key("recipe_save_notes", last_recipe["signature"]),
                     )
                     st.markdown("#### Lab notebook summary")
-                    st.code(
-                        recipe_lab_summary(
-                            normalize_formula(last_recipe["target"]),
-                            displayed_target_mass,
-                            recipe_masses,
-                            target_for=recipe_target_owner,
-                            target_id=recipe_target_id,
-                            notes=recipe_notes,
-                        ),
-                        language="text",
+                    recipe_summary_text = recipe_lab_summary(
+                        normalize_formula(last_recipe["target"]),
+                        displayed_target_mass,
+                        recipe_masses,
+                        target_for=recipe_target_owner,
+                        target_id=recipe_target_id,
+                        notes=recipe_notes,
+                    )
+                    st.code(recipe_summary_text, language="text")
+                    st.download_button(
+                        "Download Recipe Summary TXT",
+                        data=recipe_summary_text,
+                        file_name="stoichio_recipe_summary.txt",
+                        mime="text/plain",
+                        width="stretch",
                     )
                     save_disabled = (
                         inputs_changed
@@ -2259,9 +2264,14 @@ elif page == "Target Density":
                 key=widget_key("target_density_save_notes", last_density["signature"]),
             )
             st.markdown("#### Lab notebook summary")
-            st.code(
-                target_density_lab_summary(last_density, target_id=current_target_id),
-                language="text",
+            density_summary_text = target_density_lab_summary(last_density, target_id=current_target_id)
+            st.code(density_summary_text, language="text")
+            st.download_button(
+                "Download Density Summary TXT",
+                data=density_summary_text,
+                file_name="stoichio_density_summary.txt",
+                mime="text/plain",
+                width="stretch",
             )
             save_disabled = (
                 inputs_changed
