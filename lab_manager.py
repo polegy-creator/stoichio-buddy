@@ -862,18 +862,20 @@ def log_target_density(
     target_id=None,
 ):
     history = load_history()
-    target_for = str(target_for).strip()
-    target_number = int(target_number)
-    target_id = target_id or format_target_id(target_for, target_number)
+    target_for = str(target_for or "").strip()
+    target_number = _positive_int(target_number)
+    target_id = str(target_id or "").strip()
+
+    if target_for and target_number is None:
+        target_number = next_target_number(history, target_for)
+    if target_for and not target_id:
+        target_id = format_target_id(target_for, target_number)
 
     entry = {
         "entry_id": uuid.uuid4().hex,
         "entry_type": "target_density",
-        "target_id": target_id,
         "time": datetime.datetime.now().isoformat(timespec="seconds"),
         "target": target,
-        "target_number": target_number,
-        "target_for": target_for,
         "measured_density_g_cm3": float(measured_density),
         "theoretical_density_g_cm3": float(theoretical_density),
         "relative_density_percent": float(relative_density),
@@ -884,6 +886,12 @@ def log_target_density(
         "density_source": density_source or "",
         "notes": str(notes or "").strip(),
     }
+    if target_id:
+        entry["target_id"] = target_id
+    if target_number is not None:
+        entry["target_number"] = target_number
+    if target_for:
+        entry["target_for"] = target_for
 
     history.append(entry)
     save_history(history)

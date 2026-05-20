@@ -1447,7 +1447,7 @@ if page == "Calculate":
             help="Simple formulas with decimal stoichiometry are supported.",
         )
         recipe_target_for = st.text_input(
-            "Target for",
+            "Target for (optional)",
             placeholder="Person or project name",
             key="recipe_target_for",
         )
@@ -1642,7 +1642,7 @@ if page == "Calculate":
                         )
                     else:
                         recipe_target_id = None
-                        st.warning("Enter who the target is for before saving the recipe.")
+                        st.caption("No target owner set. This can still be saved as a quick recipe record.")
 
                     recipe_notes = st.text_area(
                         "Recipe notes",
@@ -1652,11 +1652,14 @@ if page == "Calculate":
                     save_disabled = (
                         inputs_changed
                         or st.session_state.get("last_recipe_saved", False)
-                        or not recipe_target_owner
                     )
                     if st.button("Save Recipe to History", type="primary", width="stretch", disabled=save_disabled):
                         latest_history = load_history()
-                        assigned_target_number = next_target_number(latest_history, recipe_target_owner)
+                        assigned_target_number = (
+                            next_target_number(latest_history, recipe_target_owner)
+                            if recipe_target_owner
+                            else None
+                        )
                         latest_inventory = load_inventory()
                         latest_in_stock, latest_stock_messages = check_stock(latest_inventory, recipe_masses)
 
@@ -1680,7 +1683,7 @@ if page == "Calculate":
                             warning=result.get("warning"),
                             inventory_deducted=inventory_deducted,
                             notes=recipe_notes,
-                            target_for=recipe_target_owner,
+                            target_for=recipe_target_owner or None,
                             target_number=assigned_target_number,
                         )
                         saved_recipe = saved_history[-1] if saved_history else {}
@@ -2031,22 +2034,23 @@ elif page == "Target Density":
                 target_for,
                 linked_target_number,
             )
-            st.info(f"After-sintering density will be linked to {linked_target_id}.")
+            st.info(
+                f"After-sintering density will be linked to {linked_target_id}"
+                + (f" for {target_for}." if target_for else ".")
+            )
             st.text_input(
                 "Target formula",
                 value=density_target,
                 disabled=True,
                 key=widget_key("linked_density_target", linked_target_key),
             )
-            st.text_input(
-                "Target for",
-                value=target_for,
-                disabled=True,
-                key=widget_key("linked_density_for", linked_target_key),
-            )
         else:
             density_target = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
-            target_for = st.text_input("Target for", placeholder="Person or project name", key="target_density_for")
+            target_for = st.text_input(
+                "Target for (optional)",
+                placeholder="Person or project name",
+                key="target_density_for",
+            )
             linked_target_number = None
             linked_target_id = None
 
@@ -2101,8 +2105,6 @@ elif page == "Target Density":
 
         if calculate_density:
             try:
-                if not normalized_person:
-                    raise ValueError("Enter who the target is for")
                 if relative_theoretical_density is None:
                     raise ValueError("Choose a saved density or enter a manual theoretical density")
 
@@ -2151,19 +2153,21 @@ elif page == "Target Density":
             st.error(last_density["error"])
         else:
             deficit_percent = 100.0 - last_density["relative_percent"]
-            current_target_number = last_density.get("target_number") or next_target_number(
-                history,
-                last_density["target_for"],
-            )
-            current_target_id = last_density.get("target_id") or format_target_id(
-                last_density["target_for"],
-                current_target_number,
-            )
+            current_target_owner = str(last_density.get("target_for", "")).strip()
+            current_target_number = last_density.get("target_number")
+            if not current_target_number and current_target_owner:
+                current_target_number = next_target_number(history, current_target_owner)
+            current_target_id = last_density.get("target_id")
+            if not current_target_id and current_target_owner:
+                current_target_id = format_target_id(current_target_owner, current_target_number)
 
-            st.caption(
-                f"Will save after-sintering density as {current_target_id} for "
-                f"{last_density['target_for']}: {last_density['target']}"
-            )
+            if current_target_id:
+                st.caption(
+                    f"Will save after-sintering density as {current_target_id} for "
+                    f"{current_target_owner}: {last_density['target']}"
+                )
+            else:
+                st.caption("This can be saved as a quick unassigned density record.")
             metric_cols = st.columns(3)
             metric_cols[0].metric("Measured density", round(last_density["measured_density"], 4))
             metric_cols[1].metric("Theoretical density", round(last_density["theoretical_density"], 4))
@@ -2194,18 +2198,17 @@ elif page == "Target Density":
             )
             if st.button("Save Target Density to History", type="primary", width="stretch", disabled=save_disabled):
                 assigned_target_number = last_density.get("target_number")
-                if not assigned_target_number:
+                if not assigned_target_number and current_target_owner:
                     latest_history = load_history()
-                    assigned_target_number = next_target_number(latest_history, last_density["target_for"])
-                assigned_target_id = last_density.get("target_id") or format_target_id(
-                    last_density["target_for"],
-                    assigned_target_number,
-                )
+                    assigned_target_number = next_target_number(latest_history, current_target_owner)
+                assigned_target_id = last_density.get("target_id")
+                if not assigned_target_id and current_target_owner:
+                    assigned_target_id = format_target_id(current_target_owner, assigned_target_number)
 
                 saved_history = log_target_density(
                     last_density["target"],
                     assigned_target_number,
-                    last_density["target_for"],
+                    current_target_owner or None,
                     last_density["measured_density"],
                     last_density["theoretical_density"],
                     last_density["relative_percent"],
@@ -2218,17 +2221,16 @@ elif page == "Target Density":
                     target_id=assigned_target_id,
                 )
                 saved_target = saved_history[-1] if saved_history else {}
-                target_id = saved_target.get(
-                    "target_id",
-                    format_target_id(last_density["target_for"], assigned_target_number),
-                )
+                target_id = saved_target.get("target_id") or "quick density record"
                 clear_data_cache()
                 st.session_state.pop("last_target_density_result", None)
                 st.session_state.last_target_density_saved = False
-                st.session_state.target_density_save_message = (
-                    f"Target density saved as {target_id} "
-                    f"for {last_density['target_for']}."
-                )
+                if current_target_owner:
+                    st.session_state.target_density_save_message = (
+                        f"Target density saved as {target_id} for {current_target_owner}."
+                    )
+                else:
+                    st.session_state.target_density_save_message = "Target density saved as a quick record."
                 st.rerun()
 
             if st.session_state.get("last_target_density_saved", False):
