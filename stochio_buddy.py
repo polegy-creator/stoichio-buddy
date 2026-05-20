@@ -1329,6 +1329,18 @@ def csv_bytes(df):
     return buffer.getvalue()
 
 
+def data_backup_json(powders, inventory, material_densities, history):
+    backup = {
+        "exported_at": datetime.now().isoformat(timespec="seconds"),
+        "app": "Stoichio Buddy",
+        "powders": powders,
+        "inventory": inventory,
+        "material_densities": material_densities,
+        "history": history,
+    }
+    return json.dumps(backup, indent=2, ensure_ascii=False)
+
+
 def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     table_rows = []
     headers = "".join(f"<th>{html.escape(str(column))}</th>" for column in df.columns)
@@ -1469,6 +1481,13 @@ with st.sidebar:
     if st.button("Refresh Data", width="stretch"):
         clear_data_cache()
         st.rerun()
+    st.download_button(
+        "Download Data Backup JSON",
+        data=data_backup_json(db, inventory, material_densities, history),
+        file_name=f"stoichio_buddy_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+        mime="application/json",
+        width="stretch",
+    )
     if storage_problem:
         st.warning("Shared storage is not connected. The app is using local JSON files for now.")
     if unknown_stock:
