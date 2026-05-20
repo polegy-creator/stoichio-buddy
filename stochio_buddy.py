@@ -919,6 +919,7 @@ def target_density_dataframe(history):
 
     rows = []
     for entry in history:
+        linked_recipe = entry.get("linked_recipe") or {}
         rows.append(
             {
                 "Target ID": entry.get("target_id", ""),
@@ -926,6 +927,8 @@ def target_density_dataframe(history):
                 "Target #": entry.get("target_number", ""),
                 "Target for": entry.get("target_for", ""),
                 "Formula": entry.get("target", ""),
+                "Linked recipe": linked_recipe.get("recipe_id", ""),
+                "Linked recipe entry": linked_recipe.get("entry_id", ""),
                 "Measured density (g/cm3)": round(entry.get("measured_density_g_cm3", 0), 4),
                 "Theoretical density (g/cm3)": round(entry.get("theoretical_density_g_cm3", 0), 4),
                 "Relative density (%)": round(entry.get("relative_density_percent", 0), 2),
@@ -1009,6 +1012,7 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
         latest_density = summary["densities"][0] if summary["densities"] else {}
         recipe = latest_recipe.get("recipe", {})
         calculation = latest_recipe.get("calculation", {})
+        linked_recipe = latest_density.get("linked_recipe", {}) if latest_density else {}
 
         rows.append(
             {
@@ -1037,6 +1041,7 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
                 "Density time": format_history_time(
                     latest_density.get("time", latest_density.get("timestamp", ""))
                 ) if latest_density else "",
+                "Density linked recipe": linked_recipe.get("recipe_id", ""),
                 "Relative density (%)": (
                     round(latest_density.get("relative_density_percent", 0), 2)
                     if latest_density
@@ -1094,7 +1099,13 @@ def target_lifecycle_search_text(group_key, entries, summary):
         recipe_text.append(str(entry.get("notes", "")))
 
     density_text = [
-        str(entry.get("density_source", "")) + " " + str(entry.get("notes", ""))
+        str(entry.get("density_source", ""))
+        + " "
+        + str(entry.get("notes", ""))
+        + " "
+        + str((entry.get("linked_recipe") or {}).get("recipe_id", ""))
+        + " "
+        + " ".join((entry.get("linked_recipe") or {}).get("selected_powders") or [])
         for entry in summary["densities"]
     ]
 
@@ -1254,6 +1265,25 @@ def linked_recipe_target_label(entry):
     )
 
 
+def recipe_link_snapshot(entry):
+    if not entry:
+        return None
+
+    return {
+        "entry_id": entry.get("entry_id", ""),
+        "recipe_id": entry.get("recipe_id", ""),
+        "target_id": entry.get("target_id", ""),
+        "target": entry.get("target", ""),
+        "time": entry.get("time", entry.get("timestamp", "")),
+        "powder_basis_g": entry.get("mass", ""),
+        "selected_powders": entry.get("selected_powders") or [],
+        "recipe": entry.get("recipe") or {},
+        "notes": entry.get("notes", ""),
+        "inventory_deducted": entry.get("inventory_deducted", False),
+        "calculation": entry.get("calculation") or {},
+    }
+
+
 def widget_key(prefix, value):
     digest = hashlib.sha1(str(value).encode("utf-8")).hexdigest()[:12]
     return f"{prefix}_{digest}"
@@ -1340,6 +1370,12 @@ def target_density_history_summary(entry):
     diameter_value = entry.get("final_diameter_mm") or 0
     height_value = entry.get("final_height_mm") or 0
     mass_value = entry.get("final_mass_g") or 0
+    linked_recipe = entry.get("linked_recipe") or {}
+    linked_recipe_text = (
+        f"from {linked_recipe.get('recipe_id')}"
+        if linked_recipe.get("recipe_id")
+        else ""
+    )
     notes = entry.get("notes", "")
     target_id = entry.get("target_id") or f"#{entry.get('target_number', '')}"
     return {
@@ -1349,6 +1385,7 @@ def target_density_history_summary(entry):
             f"{relative_density:.2f}%"
         ),
         "meta": " | ".join(part for part in [
+            linked_recipe_text,
             f"{time_text} | measured {measured_density_value:.4f} g/cm3 | "
             f"theoretical {theoretical_density_value:.4f} g/cm3 | "
             f"{diameter_value:.3f} mm x {height_value:.3f} mm | "
@@ -1396,6 +1433,9 @@ def target_density_lab_summary(result, target_id=None):
         lines.append(f"Target ID: {target_id}")
     if target_for:
         lines.append(f"Target for: {target_for}")
+    linked_recipe = result.get("linked_recipe") or {}
+    if linked_recipe.get("recipe_id"):
+        lines.append(f"Linked recipe: {linked_recipe['recipe_id']}")
 
     lines.extend(
         [
@@ -1410,6 +1450,210 @@ def target_density_lab_summary(result, target_id=None):
         ]
     )
     return "\n".join(lines)
+
+
+def safe_filename(value, fallback="stoichio_report"):
+    cleaned = "".join(
+        character.lower() if character.isalnum() else "-"
+        for character in str(value or "").strip()
+    ).strip("-")
+    while "--" in cleaned:
+        cleaned = cleaned.replace("--", "-")
+    return cleaned or fallback
+
+
+def report_html_document(title, body_html):
+    return f"""<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{html.escape(title)}</title>
+  <style>
+    body {{
+      color: #18242b;
+      font-family: Arial, sans-serif;
+      line-height: 1.45;
+      margin: 36px;
+    }}
+    h1, h2, h3 {{ color: #12313f; margin-bottom: 8px; }}
+    .meta {{ color: #536975; margin-bottom: 18px; }}
+    .panel {{ border: 1px solid #ccd9df; padding: 14px; margin: 14px 0; }}
+    table {{ border-collapse: collapse; width: 100%; margin: 10px 0 16px; }}
+    th, td {{ border: 1px solid #ccd9df; padding: 8px; text-align: left; }}
+    th {{ background: #e8f1f5; }}
+    .warning {{ color: #8a3f00; font-weight: 700; }}
+    @media print {{ body {{ margin: 18mm; }} }}
+  </style>
+</head>
+<body>
+{body_html}
+</body>
+</html>"""
+
+
+def html_table(headers, rows):
+    header_html = "".join(f"<th>{html.escape(str(header))}</th>" for header in headers)
+    row_html = []
+    for row in rows:
+        row_html.append(
+            "<tr>"
+            + "".join(f"<td>{html.escape(str(value))}</td>" for value in row)
+            + "</tr>"
+        )
+    return f"<table><tr>{header_html}</tr>{''.join(row_html)}</table>"
+
+
+def recipe_report_html(
+    target,
+    powder_basis,
+    recipe_masses,
+    target_for="",
+    target_id=None,
+    notes="",
+    result=None,
+    stock_messages=None,
+    low_after_recipe=None,
+    planning_context=None,
+):
+    result = result or {}
+    stock_messages = stock_messages or []
+    low_after_recipe = low_after_recipe or []
+    planning_context = planning_context or {}
+    title = f"Recipe report {target_id or target}"
+
+    recipe_rows = [
+        [powder, f"{grams:.6f}"]
+        for powder, grams in recipe_masses.items()
+    ]
+    detail_rows = [
+        ["Target", target],
+        ["Target ID", target_id or ""],
+        ["Target for", target_for or ""],
+        ["Generated", datetime.now().strftime("D-%d.%m.%y T-%H:%M:%S")],
+        ["Powder basis (g)", f"{powder_basis:.6f}"],
+        ["Total precursor powder (g)", f"{sum(recipe_masses.values()):.6f}"],
+        ["Estimated target mass (g)", result.get("estimated_target_mass", "")],
+        ["Solve basis", result.get("basis", "")],
+        ["Residual", result.get("residual", "")],
+        ["Target molar mass (g/mol)", result.get("target_molar_mass", "")],
+        ["Precursor formula mass (g)", result.get("precursor_formula_mass", "")],
+    ]
+
+    if planning_context.get("amount_mode") == "Pellet height":
+        detail_rows.extend(
+            [
+                ["Desired height (mm)", planning_context.get("planning_height", "")],
+                ["Die diameter (mm)", DEFAULT_DIE_DIAMETER_MM],
+                ["Planning volume (cm3)", planning_context.get("planning_volume", "")],
+                ["Theoretical density (g/cm3)", planning_context.get("theoretical_density", "")],
+            ]
+        )
+
+    inventory_warning = ""
+    if stock_messages:
+        inventory_warning = (
+            '<p class="warning">Inventory shortage: '
+            + html.escape("; ".join(stock_messages))
+            + "</p>"
+        )
+    elif low_after_recipe:
+        inventory_warning = (
+            '<p class="warning">Low inventory after recipe: '
+            + html.escape(", ".join(low_after_recipe))
+            + "</p>"
+        )
+
+    notes_html = f"<p>{html.escape(notes)}</p>" if notes else "<p></p>"
+    body = (
+        f"<h1>{html.escape(title)}</h1>"
+        '<div class="meta">Stoichio Buddy printable lab report</div>'
+        '<div class="panel"><h2>Recipe details</h2>'
+        + html_table(["Field", "Value"], detail_rows)
+        + "</div>"
+        '<div class="panel"><h2>Powder masses</h2>'
+        + html_table(["Powder", "Mass (g)"], recipe_rows)
+        + inventory_warning
+        + "</div>"
+        '<div class="panel"><h2>Notes</h2>'
+        + notes_html
+        + "</div>"
+    )
+    return report_html_document(title, body)
+
+
+def target_traceability_report_html(group_key, summary):
+    target_for, target_id, target = group_key
+    title = f"Target report {target_id}"
+    body = [
+        f"<h1>{html.escape(title)}</h1>",
+        '<div class="meta">Stoichio Buddy target traceability report</div>',
+        '<div class="panel"><h2>Target</h2>',
+        html_table(
+            ["Field", "Value"],
+            [
+                ["Target ID", target_id],
+                ["Target for", target_for],
+                ["Formula", target],
+                ["Generated", datetime.now().strftime("D-%d.%m.%y T-%H:%M:%S")],
+                ["Status", target_lifecycle_status(summary)],
+            ],
+        ),
+        "</div>",
+    ]
+
+    body.append('<div class="panel"><h2>Before sintering recipes</h2>')
+    if summary["recipes"]:
+        for recipe_entry in summary["recipes"]:
+            recipe_rows = [
+                [powder, f"{grams:.6f}"]
+                for powder, grams in (recipe_entry.get("recipe") or {}).items()
+            ]
+            calculation = recipe_entry.get("calculation") or {}
+            body.append(f"<h3>{html.escape(recipe_entry.get('recipe_id', 'Recipe'))}</h3>")
+            body.append(
+                html_table(
+                    ["Field", "Value"],
+                    [
+                        ["Time", format_history_time(recipe_entry.get("time", ""))],
+                        ["Powder basis (g)", recipe_entry.get("mass", "")],
+                        ["Inventory deducted", recipe_entry.get("inventory_deducted", False)],
+                        ["Solve basis", calculation.get("basis", "")],
+                        ["Residual", calculation.get("residual", "")],
+                        ["Notes", recipe_entry.get("notes", "")],
+                    ],
+                )
+            )
+            body.append(html_table(["Powder", "Mass (g)"], recipe_rows))
+    else:
+        body.append("<p>No before-sintering recipe saved.</p>")
+    body.append("</div>")
+
+    body.append('<div class="panel"><h2>After sintering density records</h2>')
+    if summary["densities"]:
+        for density_entry in summary["densities"]:
+            linked_recipe = density_entry.get("linked_recipe") or {}
+            body.append(f"<h3>{html.escape(format_history_time(density_entry.get('time', '')))}</h3>")
+            body.append(
+                html_table(
+                    ["Field", "Value"],
+                    [
+                        ["Linked recipe", linked_recipe.get("recipe_id", "")],
+                        ["Measured density (g/cm3)", density_entry.get("measured_density_g_cm3", "")],
+                        ["Theoretical density (g/cm3)", density_entry.get("theoretical_density_g_cm3", "")],
+                        ["Relative density (%)", density_entry.get("relative_density_percent", "")],
+                        ["Final diameter (mm)", density_entry.get("final_diameter_mm", "")],
+                        ["Final height (mm)", density_entry.get("final_height_mm", "")],
+                        ["Final mass (g)", density_entry.get("final_mass_g", "")],
+                        ["Density source", density_entry.get("density_source", "")],
+                        ["Notes", density_entry.get("notes", "")],
+                    ],
+                )
+            )
+    else:
+        body.append("<p>No after-sintering density record saved.</p>")
+    body.append("</div>")
+
+    return report_html_document(title, "".join(body))
 
 
 def csv_bytes(df):
@@ -1485,11 +1729,13 @@ def target_density_signature(
     theoretical_density,
     density_source,
     target_id=None,
+    linked_recipe_entry_id=None,
 ):
     return {
         "target": str(target).strip(),
         "target_for": str(target_for).strip(),
         "target_id": str(target_id or "").strip(),
+        "linked_recipe_entry_id": str(linked_recipe_entry_id or "").strip(),
         "final_diameter": round(float(final_diameter), 8),
         "final_height": round(float(final_height), 8),
         "final_mass": round(float(final_mass), 8),
@@ -1867,14 +2113,15 @@ if page == "Powder Mass Calculation":
                             width="stretch",
                         )
 
+                    low_after_recipe = [
+                        row["Powder"]
+                        for _, row in recipe_df.iterrows()
+                        if "Low after recipe" in str(row.get("Stock status", ""))
+                    ]
+
                     if stock_messages:
                         st.error("Inventory shortage: " + "; ".join(stock_messages))
                     else:
-                        low_after_recipe = [
-                            row["Powder"]
-                            for _, row in recipe_df.iterrows()
-                            if "Low after recipe" in str(row.get("Stock status", ""))
-                        ]
                         if low_after_recipe:
                             st.warning(
                                 "Low inventory after this recipe: "
@@ -1919,6 +2166,25 @@ if page == "Powder Mass Calculation":
                         data=recipe_summary_text,
                         file_name="stoichio_recipe_summary.txt",
                         mime="text/plain",
+                        width="stretch",
+                    )
+                    recipe_report = recipe_report_html(
+                        normalize_formula(last_recipe["target"]),
+                        displayed_target_mass,
+                        recipe_masses,
+                        target_for=recipe_target_owner,
+                        target_id=recipe_target_id,
+                        notes=recipe_notes,
+                        result=result,
+                        stock_messages=stock_messages,
+                        low_after_recipe=low_after_recipe,
+                        planning_context=last_recipe,
+                    )
+                    st.download_button(
+                        "Download Printable Recipe Report HTML",
+                        data=recipe_report,
+                        file_name=f"{safe_filename(recipe_target_id or last_recipe['target'])}_recipe_report.html",
+                        mime="text/html",
                         width="stretch",
                     )
                     save_disabled = (
@@ -2311,6 +2577,10 @@ elif page == "Target Density":
                 f"After-sintering density will be linked to {linked_target_id}"
                 + (f" for {target_for}." if target_for else ".")
             )
+            st.caption(
+                "Linked before-sintering recipe: "
+                + (linked_target.get("recipe_id") or linked_target.get("entry_id", "saved recipe"))
+            )
             st.text_input(
                 "Target formula",
                 value=density_target,
@@ -2373,6 +2643,7 @@ elif page == "Target Density":
             relative_theoretical_density,
             density_source_mode,
             target_id=linked_target_id,
+            linked_recipe_entry_id=linked_target.get("entry_id") if linked_target else None,
         )
         calculate_density = st.button("Calculate Target Density", type="primary", width="stretch")
 
@@ -2404,6 +2675,7 @@ elif page == "Target Density":
                     "density_source": density_source_mode,
                     "target_number": linked_target_number,
                     "target_id": linked_target_id,
+                    "linked_recipe": recipe_link_snapshot(linked_target),
                     "signature": current_density_signature,
                 }
                 st.session_state.last_target_density_saved = False
@@ -2450,6 +2722,27 @@ elif page == "Target Density":
             detail_cols[0].metric("Final volume (cm3)", round(last_density["final_volume"], 5))
             detail_cols[1].metric("Density deficit", f"{deficit_percent:.2f}%")
             detail_cols[2].metric("Final mass (g)", round(last_density["final_mass"], 5))
+
+            linked_recipe = last_density.get("linked_recipe")
+            if linked_recipe:
+                linked_recipe_label = linked_recipe.get("recipe_id") or linked_recipe.get("entry_id", "saved recipe")
+                st.info(f"Linked to before-sintering recipe {linked_recipe_label}.")
+                with st.expander("Linked recipe details", expanded=False):
+                    st.markdown(f"**Powder basis:** {linked_recipe.get('powder_basis_g', '')} g")
+                    st.markdown(
+                        "**Powders:** "
+                        + ", ".join(linked_recipe.get("selected_powders") or [])
+                    )
+                    linked_recipe_masses = linked_recipe.get("recipe") or {}
+                    if linked_recipe_masses:
+                        display_dataframe(
+                            recipe_dataframe(linked_recipe_masses),
+                            theme_mode,
+                            width="stretch",
+                            hide_index=True,
+                        )
+                    if linked_recipe.get("notes"):
+                        st.markdown(f"**Recipe notes:** {linked_recipe['notes']}")
 
             if last_density["relative_percent"] > 100:
                 st.warning("Relative density is above 100%. Check dimensions, mass, or theoretical density.")
@@ -2502,6 +2795,7 @@ elif page == "Target Density":
                     density_source=last_density["density_source"],
                     notes=target_density_notes,
                     target_id=assigned_target_id,
+                    linked_recipe=last_density.get("linked_recipe"),
                 )
                 saved_target = saved_history[-1] if saved_history else {}
                 target_id = saved_target.get("target_id") or "quick density record"
@@ -2566,6 +2860,14 @@ elif page == "History":
                             f'{html.escape(summary["meta"])}'
                             "</div>",
                             unsafe_allow_html=True,
+                        )
+                        st.download_button(
+                            "Download Target Report HTML",
+                            data=target_traceability_report_html(group_key, summary),
+                            file_name=f"{safe_filename(target_id)}_target_report.html",
+                            mime="text/html",
+                            key=widget_key("target_report_html", target_id),
+                            width="stretch",
                         )
 
                         if summary["recipes"]:

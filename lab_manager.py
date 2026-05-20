@@ -954,6 +954,7 @@ def log_target_density(
     density_source=None,
     notes=None,
     target_id=None,
+    linked_recipe=None,
 ):
     history = load_history()
     target_for = str(target_for or "").strip()
@@ -980,6 +981,8 @@ def log_target_density(
         "density_source": density_source or "",
         "notes": str(notes or "").strip(),
     }
+    if linked_recipe:
+        entry["linked_recipe"] = linked_recipe
     if target_id:
         entry["target_id"] = target_id
     if target_number is not None:
