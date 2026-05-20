@@ -6,6 +6,9 @@ from formula_parser import molar_mass, normalize_formula, parse_formula
 # CORE STOICHIOMETRY ENGINE
 # =========================
 
+MASS_BASIS_TOTAL_PRECURSOR = "total_precursor_powder"
+MASS_BASIS_TARGET_FORMULA = "target_formula_mass"
+
 
 def normalize_target(target):
     if isinstance(target, str):
@@ -87,7 +90,14 @@ def non_negative_least_squares(A, b, tolerance=1e-12, max_iterations=None):
     return x
 
 
-def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
+def compute_recipe(
+    target,
+    mass,
+    db,
+    selected_powders,
+    tolerance=1e-6,
+    mass_basis=MASS_BASIS_TOTAL_PRECURSOR,
+):
     """
     Deterministic stoichiometric solver.
 
@@ -95,13 +105,17 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
     - No subset search
     - Uses one non-negative least-squares solve: A x ~= b, x >= 0
     - Interprets x as precursor moles per mole of target
-    - Interprets mass as the requested total precursor powder mass
+    - Defaults to interpreting mass as requested total precursor powder mass
+    - Can also reproduce legacy saved recipes that used target formula mass
     """
     if not selected_powders:
         return {"recipe": None, "warning": "Select at least one powder"}
 
     if mass <= 0:
         return {"recipe": None, "warning": "Powder basis must be greater than 0"}
+
+    if mass_basis not in {MASS_BASIS_TOTAL_PRECURSOR, MASS_BASIS_TARGET_FORMULA}:
+        return {"recipe": None, "warning": f"Unknown mass basis: {mass_basis}"}
 
     try:
         normalized_formula, target_comp = normalize_target(target)
@@ -157,11 +171,16 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
     if precursor_formula_mass <= tolerance:
         return {"recipe": None, "warning": "No physically valid precursor mass from selected powders"}
 
-    formula_units = float(mass) / precursor_formula_mass
+    if mass_basis == MASS_BASIS_TARGET_FORMULA:
+        formula_units = float(mass) / target_molar_mass
+    else:
+        formula_units = float(mass) / precursor_formula_mass
+
     recipe = {
         powder: round(float(coefficients[i] * formula_units * powder_molar_mass(db[powder])), 6)
         for i, powder in enumerate(selected_powders)
     }
+    powder_basis = sum(recipe.values())
 
     residual_vector = A @ coefficients - b
     residual = float(np.linalg.norm(residual_vector))
@@ -184,6 +203,9 @@ def compute_recipe(target, mass, db, selected_powders, tolerance=1e-6):
         "basis": "cation balance" if ignored_elements == ["O"] else "element balance",
         "target": target_comp,
         "normalized_target": normalized_formula,
+        "input_mass": round(float(mass), 6),
+        "mass_basis": mass_basis,
+        "powder_basis": round(float(powder_basis), 6),
         "target_molar_mass": round(float(target_molar_mass), 6),
         "precursor_formula_mass": round(float(precursor_formula_mass), 6),
         "formula_units": round(float(formula_units), 12),

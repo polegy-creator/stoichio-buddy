@@ -43,7 +43,7 @@ from lab_manager import (
     upsert_material_density,
     validate_backup_data,
 )
-from stoich_engine import compute_recipe
+from stoich_engine import MASS_BASIS_TARGET_FORMULA, MASS_BASIS_TOTAL_PRECURSOR, compute_recipe
 
 
 st.set_page_config(
@@ -886,6 +886,37 @@ def target_density_history(history):
     return [entry for entry in history if history_entry_type(entry) == "target_density"]
 
 
+def recipe_mass_basis(entry):
+    calculation = entry.get("calculation") or {}
+    if calculation.get("mass_basis"):
+        return calculation["mass_basis"]
+    if entry.get("mass_basis"):
+        return entry["mass_basis"]
+    if calculation:
+        return MASS_BASIS_TOTAL_PRECURSOR
+    return MASS_BASIS_TARGET_FORMULA
+
+
+def mass_basis_label(mass_basis):
+    if mass_basis == MASS_BASIS_TOTAL_PRECURSOR:
+        return "Total precursor powder"
+    if mass_basis == MASS_BASIS_TARGET_FORMULA:
+        return "Target formula mass"
+    return str(mass_basis or "")
+
+
+def recipe_powder_basis(entry):
+    calculation = entry.get("calculation") or {}
+    if calculation.get("powder_basis") not in (None, ""):
+        return calculation["powder_basis"]
+
+    recipe = entry.get("recipe") or {}
+    if recipe:
+        return sum(float(grams) for grams in recipe.values())
+
+    return entry.get("mass", "")
+
+
 def history_dataframe(history):
     if not history:
         return pd.DataFrame()
@@ -893,6 +924,7 @@ def history_dataframe(history):
     rows = []
     for entry in history:
         calculation = entry.get("calculation") or {}
+        mass_basis = recipe_mass_basis(entry)
         rows.append(
             {
                 "Target ID": entry.get("target_id", ""),
@@ -900,7 +932,9 @@ def history_dataframe(history):
                 "Recipe ID": entry.get("recipe_id", ""),
                 "Time": format_history_time(entry.get("time", entry.get("timestamp", ""))),
                 "Target": entry.get("target", ""),
-                "Powder basis (g)": entry.get("mass", ""),
+                "Input basis (g)": entry.get("mass", ""),
+                "Input basis type": mass_basis_label(mass_basis),
+                "Powder basis (g)": round(recipe_powder_basis(entry), 6),
                 "Estimated target mass (g)": calculation.get("estimated_target_mass", ""),
                 "Solve basis": calculation.get("basis", ""),
                 "Residual": calculation.get("residual", ""),
@@ -994,6 +1028,9 @@ def recipe_calculation_metadata(result):
         "coefficients",
         "elements",
         "ignored_elements",
+        "input_mass",
+        "mass_basis",
+        "powder_basis",
         "target_molar_mass",
         "precursor_formula_mass",
         "formula_units",
@@ -1013,6 +1050,7 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
         recipe = latest_recipe.get("recipe", {})
         calculation = latest_recipe.get("calculation", {})
         linked_recipe = latest_density.get("linked_recipe", {}) if latest_density else {}
+        mass_basis = recipe_mass_basis(latest_recipe) if latest_recipe else ""
 
         rows.append(
             {
@@ -1031,7 +1069,13 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
                 "Recipe time": format_history_time(
                     latest_recipe.get("time", latest_recipe.get("timestamp", ""))
                 ) if latest_recipe else "",
-                "Recipe powder basis (g)": latest_recipe.get("mass", ""),
+                "Recipe input basis (g)": latest_recipe.get("mass", ""),
+                "Recipe input basis type": mass_basis_label(mass_basis),
+                "Recipe powder basis (g)": (
+                    round(recipe_powder_basis(latest_recipe), 6)
+                    if latest_recipe
+                    else ""
+                ),
                 "Estimated target mass (g)": calculation.get("estimated_target_mass", ""),
                 "Recipe solve basis": calculation.get("basis", ""),
                 "Recipe powders": ", ".join(
@@ -1250,7 +1294,9 @@ def linked_recipe_targets(history):
 
 def linked_recipe_target_label(entry):
     mass = entry.get("mass", "")
-    mass_text = f"{mass:g} g powder" if isinstance(mass, (int, float)) else str(mass)
+    mass_basis = recipe_mass_basis(entry)
+    mass_label = "powder" if mass_basis == MASS_BASIS_TOTAL_PRECURSOR else "target"
+    mass_text = f"{mass:g} g {mass_label}" if isinstance(mass, (int, float)) else str(mass)
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
     return " | ".join(
         part
@@ -1275,7 +1321,9 @@ def recipe_link_snapshot(entry):
         "target_id": entry.get("target_id", ""),
         "target": entry.get("target", ""),
         "time": entry.get("time", entry.get("timestamp", "")),
-        "powder_basis_g": entry.get("mass", ""),
+        "input_basis_g": entry.get("mass", ""),
+        "input_basis_type": recipe_mass_basis(entry),
+        "powder_basis_g": recipe_powder_basis(entry),
         "selected_powders": entry.get("selected_powders") or [],
         "recipe": entry.get("recipe") or {},
         "notes": entry.get("notes", ""),
@@ -1322,7 +1370,9 @@ def trash_button(key, help_text):
 def recipe_history_summary(entry):
     time_text = format_history_time(entry.get("time", entry.get("timestamp", "")))
     mass = entry.get("mass", "")
-    mass_text = f"{mass:g} g powder" if isinstance(mass, (int, float)) else str(mass)
+    mass_basis = recipe_mass_basis(entry)
+    mass_label = "powder" if mass_basis == MASS_BASIS_TOTAL_PRECURSOR else "target"
+    mass_text = f"{mass:g} g {mass_label}" if isinstance(mass, (int, float)) else str(mass)
     powders = ", ".join(entry.get("selected_powders") or [])
     recipe = entry.get("recipe") or {}
     recipe_text = ", ".join(f"{powder}: {grams:.3f} g" for powder, grams in recipe.items())
@@ -1530,6 +1580,7 @@ def recipe_report_html(
         ["Target ID", target_id or ""],
         ["Target for", target_for or ""],
         ["Generated", datetime.now().strftime("D-%d.%m.%y T-%H:%M:%S")],
+        ["Input basis", mass_basis_label(result.get("mass_basis", MASS_BASIS_TOTAL_PRECURSOR))],
         ["Powder basis (g)", f"{powder_basis:.6f}"],
         ["Total precursor powder (g)", f"{sum(recipe_masses.values()):.6f}"],
         ["Estimated target mass (g)", result.get("estimated_target_mass", "")],
@@ -1609,13 +1660,16 @@ def target_traceability_report_html(group_key, summary):
                 for powder, grams in (recipe_entry.get("recipe") or {}).items()
             ]
             calculation = recipe_entry.get("calculation") or {}
+            mass_basis = recipe_mass_basis(recipe_entry)
             body.append(f"<h3>{html.escape(recipe_entry.get('recipe_id', 'Recipe'))}</h3>")
             body.append(
                 html_table(
                     ["Field", "Value"],
                     [
                         ["Time", format_history_time(recipe_entry.get("time", ""))],
-                        ["Powder basis (g)", recipe_entry.get("mass", "")],
+                        ["Input basis (g)", recipe_entry.get("mass", "")],
+                        ["Input basis type", mass_basis_label(mass_basis)],
+                        ["Powder basis (g)", recipe_powder_basis(recipe_entry)],
                         ["Inventory deducted", recipe_entry.get("inventory_deducted", False)],
                         ["Solve basis", calculation.get("basis", "")],
                         ["Residual", calculation.get("residual", "")],
@@ -2728,6 +2782,10 @@ elif page == "Target Density":
                 linked_recipe_label = linked_recipe.get("recipe_id") or linked_recipe.get("entry_id", "saved recipe")
                 st.info(f"Linked to before-sintering recipe {linked_recipe_label}.")
                 with st.expander("Linked recipe details", expanded=False):
+                    st.markdown(
+                        f"**Input basis:** {linked_recipe.get('input_basis_g', '')} g "
+                        f"({mass_basis_label(linked_recipe.get('input_basis_type'))})"
+                    )
                     st.markdown(f"**Powder basis:** {linked_recipe.get('powder_basis_g', '')} g")
                     st.markdown(
                         "**Powders:** "
