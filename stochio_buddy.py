@@ -1449,7 +1449,7 @@ def recipe_lab_summary(target, target_mass, recipe_masses, target_for="", target
     lines = [
         "Stoichio Buddy recipe",
         f"Target: {target}",
-        f"Powder basis: {target_mass:.4f} g",
+        f"Target formula mass: {target_mass:.4f} g",
     ]
     if result:
         lines.append(f"Solve basis: {result.get('basis', 'element balance')}")
@@ -1580,10 +1580,10 @@ def recipe_report_html(
         ["Target ID", target_id or ""],
         ["Target for", target_for or ""],
         ["Generated", datetime.now().strftime("D-%d.%m.%y T-%H:%M:%S")],
-        ["Input basis", mass_basis_label(result.get("mass_basis", MASS_BASIS_TOTAL_PRECURSOR))],
-        ["Powder basis (g)", f"{powder_basis:.6f}"],
-        ["Total precursor powder (g)", f"{sum(recipe_masses.values()):.6f}"],
+        ["Input basis", mass_basis_label(result.get("mass_basis", MASS_BASIS_TARGET_FORMULA))],
+        ["Input mass (g)", f"{powder_basis:.6f}"],
         ["Estimated target mass (g)", result.get("estimated_target_mass", "")],
+        ["Total precursor powder (g)", f"{sum(recipe_masses.values()):.6f}"],
         ["Solve basis", result.get("basis", "")],
         ["Residual", result.get("residual", "")],
         ["Target molar mass (g/mol)", result.get("target_molar_mass", "")],
@@ -1980,10 +1980,10 @@ if page == "Powder Mass Calculation":
                 f"{format_target_id(recipe_target_owner, preview_number)}."
             )
         amount_mode = st.radio(
-            "Powder amount mode",
-            ["Total powder mass", "Pellet height"],
+            "Target amount mode",
+            ["Target formula mass", "Pellet height"],
             horizontal=True,
-            help="Use pellet height to calculate the powder basis from theoretical density and a 25.05 mm die.",
+            help="This uses the original lab math. Powder totals may be slightly higher or lower than the target formula mass.",
         )
 
         target_mass = None
@@ -1992,14 +1992,14 @@ if page == "Powder Mass Calculation":
         planning_height = None
         planning_error = None
 
-        if amount_mode == "Total powder mass":
+        if amount_mode == "Target formula mass":
             target_mass = st.number_input(
-                "Total precursor powder (g)",
+                "Target formula mass (g)",
                 min_value=0.0,
                 value=15.6,
                 step=0.1,
                 format="%.4f",
-                help="Recipe powder masses will sum to this amount.",
+                help="Original basis: the target compound/formula is scaled to this mass.",
             )
         else:
             st.caption(f"Fixed die diameter: {DEFAULT_DIE_DIAMETER_MM:.2f} mm")
@@ -2023,7 +2023,7 @@ if page == "Powder Mass Calculation":
                         DEFAULT_DIE_DIAMETER_MM,
                     )
                     st.info(
-                        f"Calculated powder basis: {target_mass:.4f} g "
+                        f"Calculated target formula mass: {target_mass:.4f} g "
                         f"from {planning_volume:.4f} cm3."
                     )
                 except ValueError as exc:
@@ -2043,7 +2043,7 @@ if page == "Powder Mass Calculation":
         if solve:
             if target_mass is None or target_mass <= 0:
                 st.session_state.last_recipe_result = {
-                    "error": "Enter a valid powder basis, or a valid height and theoretical density.",
+                    "error": "Enter a valid target formula mass, or a valid height and theoretical density.",
                     "signature": current_signature,
                 }
             elif planning_error:
@@ -2052,7 +2052,13 @@ if page == "Powder Mass Calculation":
                     "signature": current_signature,
                 }
             else:
-                result = compute_recipe(target, target_mass, db, selected)
+                result = compute_recipe(
+                    target,
+                    target_mass,
+                    db,
+                    selected,
+                    mass_basis=MASS_BASIS_TARGET_FORMULA,
+                )
                 st.session_state.last_recipe_result = {
                     "result": result,
                     "target": target,
@@ -2074,7 +2080,7 @@ if page == "Powder Mass Calculation":
 
         last_recipe = st.session_state.get("last_recipe_result")
         if not last_recipe:
-            st.info("Enter a target formula, powder basis, and selected powders, then calculate.")
+            st.info("Enter a target formula, target mass, and selected powders, then calculate.")
             if db:
                 display_dataframe(database_dataframe(db), theme_mode, width="stretch", hide_index=True)
         else:
@@ -2094,11 +2100,8 @@ if page == "Powder Mass Calculation":
                     displayed_target_mass = last_recipe["target_mass"]
 
                     metric_cols = st.columns(3)
-                    metric_cols[0].metric("Powder basis (g)", round(total_powder, 3))
-                    metric_cols[1].metric(
-                        "Estimated target mass (g)",
-                        round(result.get("estimated_target_mass", displayed_target_mass), 3),
-                    )
+                    metric_cols[0].metric("Target formula mass (g)", round(displayed_target_mass, 3))
+                    metric_cols[1].metric("Precursor powder total (g)", round(total_powder, 3))
                     metric_cols[2].metric("Powders used", len(recipe_masses))
 
                     if last_recipe["amount_mode"] == "Pellet height":

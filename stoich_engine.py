@@ -96,7 +96,7 @@ def compute_recipe(
     db,
     selected_powders,
     tolerance=1e-6,
-    mass_basis=MASS_BASIS_TOTAL_PRECURSOR,
+    mass_basis=MASS_BASIS_TARGET_FORMULA,
 ):
     """
     Deterministic stoichiometric solver.
@@ -105,14 +105,14 @@ def compute_recipe(
     - No subset search
     - Uses one non-negative least-squares solve: A x ~= b, x >= 0
     - Interprets x as precursor moles per mole of target
-    - Defaults to interpreting mass as requested total precursor powder mass
-    - Can also reproduce legacy saved recipes that used target formula mass
+    - Defaults to the original lab math: target formula mass basis
+    - Can also scale to a requested total precursor powder mass when explicitly requested
     """
     if not selected_powders:
         return {"recipe": None, "warning": "Select at least one powder"}
 
     if mass <= 0:
-        return {"recipe": None, "warning": "Powder basis must be greater than 0"}
+        return {"recipe": None, "warning": "Input mass must be greater than 0"}
 
     if mass_basis not in {MASS_BASIS_TOTAL_PRECURSOR, MASS_BASIS_TARGET_FORMULA}:
         return {"recipe": None, "warning": f"Unknown mass basis: {mass_basis}"}

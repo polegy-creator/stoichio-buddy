@@ -5,7 +5,7 @@ from stoich_engine import MASS_BASIS_TARGET_FORMULA, MASS_BASIS_TOTAL_PRECURSOR,
 
 
 class StoichEngineTests(unittest.TestCase):
-    def test_fe_ti_recipe_uses_total_precursor_powder_basis(self):
+    def test_fe_ti_recipe_uses_original_target_formula_basis_by_default(self):
         db = {
             "Fe2O3": {"elements": parse_formula("Fe2O3")},
             "TiO2": {"elements": parse_formula("TiO2")},
@@ -16,11 +16,30 @@ class StoichEngineTests(unittest.TestCase):
         self.assertIsNone(result["warning"])
         self.assertEqual(result["basis"], "cation balance")
         self.assertEqual(result["coefficients"], {"Fe2O3": 0.99, "TiO2": 0.02})
+        self.assertAlmostEqual(result["recipe"]["Fe2O3"], 15.474312, places=6)
+        self.assertAlmostEqual(result["recipe"]["TiO2"], 0.156348, places=6)
+        self.assertAlmostEqual(sum(result["recipe"].values()), 15.63066, places=6)
+        self.assertEqual(result["mass_basis"], MASS_BASIS_TARGET_FORMULA)
+        self.assertAlmostEqual(result["estimated_target_mass"], 15.615, places=6)
+
+    def test_fe_ti_recipe_can_still_use_total_precursor_powder_basis(self):
+        db = {
+            "Fe2O3": {"elements": parse_formula("Fe2O3")},
+            "TiO2": {"elements": parse_formula("TiO2")},
+        }
+
+        result = compute_recipe(
+            "Fe1.98Ti0.02O3",
+            15.615,
+            db,
+            ["Fe2O3", "TiO2"],
+            mass_basis=MASS_BASIS_TOTAL_PRECURSOR,
+        )
+
         self.assertAlmostEqual(result["recipe"]["Fe2O3"], 15.459, places=3)
         self.assertAlmostEqual(result["recipe"]["TiO2"], 0.156, places=3)
         self.assertAlmostEqual(sum(result["recipe"].values()), 15.615, places=6)
         self.assertEqual(result["mass_basis"], MASS_BASIS_TOTAL_PRECURSOR)
-        self.assertAlmostEqual(result["powder_basis"], 15.615, places=6)
 
     def test_legacy_target_formula_basis_reproduces_saved_zn_recipe(self):
         db = {
@@ -33,7 +52,6 @@ class StoichEngineTests(unittest.TestCase):
             15.6,
             db,
             ["ZnO", "Fe2O3"],
-            mass_basis=MASS_BASIS_TARGET_FORMULA,
         )
 
         self.assertEqual(result["coefficients"], {"ZnO": 0.04, "Fe2O3": 0.98})
@@ -53,7 +71,6 @@ class StoichEngineTests(unittest.TestCase):
             15.485,
             db,
             ["Fe2O3", "TiO2", "Co3O4"],
-            mass_basis=MASS_BASIS_TARGET_FORMULA,
         )
 
         self.assertEqual(
