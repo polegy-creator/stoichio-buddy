@@ -427,6 +427,11 @@ def apply_theme(mode):
         border-left: 3px solid #d64a4a;
     }
 
+    .sb-table tr.codex-seeded td {
+        background: color-mix(in srgb, #2f80ed 18%, var(--sb-table-bg)) !important;
+        border-left: 3px solid #2f80ed;
+    }
+
     .history-item {
         border: 1px solid var(--sb-border);
         border-radius: 8px;
@@ -660,6 +665,7 @@ def material_density_dataframe(records):
         "beta",
         "gamma",
         "Density source",
+        "Origin",
         "Reference",
         "Notes",
     ]
@@ -697,6 +703,7 @@ def material_density_dataframe(records):
                 "beta": record.get("beta_deg") if record.get("beta_deg") is not None else "",
                 "gamma": record.get("gamma_deg") if record.get("gamma_deg") is not None else "",
                 "Density source": record.get("density_source", ""),
+                "Origin": record.get("origin", "Lab entry"),
                 "Reference": record.get("source", ""),
                 "Notes": record.get("notes", ""),
             }
@@ -2649,7 +2656,18 @@ elif page == "Material Density":
         if density_df.empty:
             st.info("No material densities saved yet.")
         else:
-            display_dataframe(density_df, theme_mode, width="stretch", hide_index=True)
+            st.caption("Blue rows were seeded by Codex from COD/paper literature and should be source-checked before lab use.")
+            display_dataframe(
+                density_df,
+                theme_mode,
+                row_class_func=lambda row: (
+                    "codex-seeded"
+                    if str(row.get("Origin", "")).lower().startswith("codex")
+                    else ""
+                ),
+                width="stretch",
+                hide_index=True,
+            )
             st.download_button(
                 "Download Material Density CSV",
                 data=csv_bytes(density_df),

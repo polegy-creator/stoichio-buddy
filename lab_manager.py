@@ -401,6 +401,7 @@ def normalize_density_record(formula, record):
         "gamma_deg": None,
         "source": str(record.get("source", "")).strip(),
         "notes": str(record.get("notes", "")).strip(),
+        "origin": str(record.get("origin", record.get("added_by", "Lab entry"))).strip() or "Lab entry",
     }
 
     volume = record.get("unit_cell_volume_A3")
@@ -463,6 +464,7 @@ def upsert_material_density(
     gamma=None,
     source="",
     notes="",
+    origin="Lab entry",
 ):
     records = load_material_densities()
     key = normalize_formula(formula)
@@ -482,6 +484,7 @@ def upsert_material_density(
         "gamma_deg": gamma,
         "source": source,
         "notes": notes,
+        "origin": origin,
     }
     normalized = normalize_density_record(key, record)
     records[normalized["record_id"]] = normalized

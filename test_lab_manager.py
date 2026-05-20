@@ -95,6 +95,7 @@ class LabManagerMaterialDensityTests(unittest.TestCase):
         self.assertEqual(anatase_key, "TiO2__anatase")
         self.assertEqual(records[rutile_key]["formula"], "TiO2")
         self.assertEqual(records[anatase_key]["phase"], "anatase")
+        self.assertEqual(records[anatase_key]["origin"], "Lab entry")
         self.assertEqual(len(records), 2)
 
 
