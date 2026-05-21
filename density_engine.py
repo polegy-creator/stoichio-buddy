@@ -143,6 +143,23 @@ def target_mass_from_height(theoretical_density_g_cm3, height_mm, diameter_mm=DE
     return density * volume, volume
 
 
+def target_height_from_mass(theoretical_density_g_cm3, target_mass_g, diameter_mm=DEFAULT_DIE_DIAMETER_MM):
+    density = float(theoretical_density_g_cm3)
+    mass = float(target_mass_g)
+    diameter = float(diameter_mm)
+    if density <= 0:
+        raise ValueError("Theoretical density must be positive")
+    if mass <= 0:
+        raise ValueError("Target formula mass must be positive")
+    if diameter <= 0:
+        raise ValueError("Diameter must be positive")
+
+    volume_cm3 = mass / density
+    radius_cm = (diameter / 10.0) / 2.0
+    height_cm = volume_cm3 / (math.pi * radius_cm**2)
+    return height_cm * 10.0, volume_cm3
+
+
 def measured_density(mass_g, diameter_mm, height_mm):
     mass = float(mass_g)
     if mass <= 0:

@@ -8,6 +8,7 @@ from density_engine import (
     cylinder_volume_cm3,
     measured_density,
     relative_density_percent,
+    target_height_from_mass,
     target_mass_from_height,
     theoretical_density_from_cell,
     unit_cell_volume_from_lattice,
@@ -133,6 +134,10 @@ class DensityEngineTests(unittest.TestCase):
         mass, reported_volume = target_mass_from_height(5.2, 1.0, 25.05)
         self.assertAlmostEqual(reported_volume, volume, places=12)
         self.assertAlmostEqual(mass, 5.2 * volume, places=12)
+
+        height, height_volume = target_height_from_mass(5.2, mass, 25.05)
+        self.assertAlmostEqual(height_volume, volume, places=12)
+        self.assertAlmostEqual(height, 1.0, places=12)
 
         measured, measured_volume = measured_density(2.5, 25.05, 1.0)
         self.assertAlmostEqual(measured_volume, volume, places=12)

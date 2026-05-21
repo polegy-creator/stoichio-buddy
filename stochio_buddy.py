@@ -12,6 +12,7 @@ from density_engine import (
     DEFAULT_DIE_DIAMETER_MM,
     measured_density,
     relative_density_percent,
+    target_height_from_mass,
     target_mass_from_height,
     theoretical_density_from_cell,
     unit_cell_volume_from_lattice,
@@ -44,7 +45,12 @@ from lab_manager import (
     upsert_material_density,
     validate_backup_data,
 )
-from stoich_engine import MASS_BASIS_TARGET_FORMULA, MASS_BASIS_TOTAL_PRECURSOR, compute_recipe
+from stoich_engine import (
+    MASS_BASIS_TARGET_FORMULA,
+    MASS_BASIS_TOTAL_PRECURSOR,
+    compute_recipe,
+    infer_target_mass_from_recipe,
+)
 
 
 st.set_page_config(
@@ -1138,6 +1144,23 @@ def recipe_coefficients_dataframe(result, recipe_masses):
     return pd.DataFrame(rows)
 
 
+def known_recipe_height_check_dataframe(check_result):
+    rows = []
+    actual = check_result.get("actual_recipe", {})
+    expected = check_result.get("expected_recipe", {})
+    deviations = check_result.get("deviations", {})
+    for powder in actual:
+        rows.append(
+            {
+                "Powder": powder,
+                "Known mass (g)": round(actual[powder], 6),
+                "Round-trip mass (g)": round(expected.get(powder, 0.0), 6),
+                "Difference (g)": round(deviations.get(powder, 0.0), 6),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def recipe_balance_dataframe(result, powder_db):
     rows = []
     target = result.get("target", {})
@@ -2182,6 +2205,100 @@ if page == "Powder Mass Calculation":
             list(db.keys()),
             help="Only these powders will be used in the calculation.",
         )
+
+        with st.expander("Check height from known powder masses", expanded=False):
+            st.caption(
+                "Enter known precursor masses to infer the matching target formula mass, "
+                "then convert that mass to a target height with the same density calculation."
+            )
+            if not target.strip():
+                st.info("Enter a target formula first.")
+            elif not selected:
+                st.info("Select the powders used in the known recipe first.")
+            else:
+                known_masses = {}
+                for powder in selected:
+                    powder_key = hashlib.sha1(f"known-height-{powder}".encode("utf-8")).hexdigest()[:10]
+                    known_masses[powder] = st.number_input(
+                        f"{powder} known mass (g)",
+                        min_value=0.0,
+                        value=0.0,
+                        step=0.001,
+                        format="%.6f",
+                        key=f"known_recipe_height_mass_{powder_key}",
+                    )
+
+                height_check_density, height_check_density_label = density_source_control(
+                    target,
+                    material_densities,
+                    key_prefix="known_recipe_height",
+                )
+                if st.button("Calculate Height From Known Masses", key="known_recipe_height_calculate"):
+                    if height_check_density is None:
+                        st.error("Choose a valid theoretical density source first.")
+                    else:
+                        check_result = infer_target_mass_from_recipe(
+                            target,
+                            known_masses,
+                            db,
+                            selected,
+                        )
+                        if check_result.get("target_mass") is None:
+                            st.error(check_result.get("warning", "Could not infer target formula mass"))
+                        else:
+                            try:
+                                checked_height, checked_volume = target_height_from_mass(
+                                    height_check_density,
+                                    check_result["target_mass"],
+                                    DEFAULT_DIE_DIAMETER_MM,
+                                )
+                                roundtrip_target_mass, _ = target_mass_from_height(
+                                    height_check_density,
+                                    checked_height,
+                                    DEFAULT_DIE_DIAMETER_MM,
+                                )
+                                roundtrip = compute_recipe(
+                                    target,
+                                    roundtrip_target_mass,
+                                    db,
+                                    selected,
+                                    mass_basis=MASS_BASIS_TARGET_FORMULA,
+                                )
+                            except ValueError as exc:
+                                st.error(str(exc))
+                            else:
+                                height_cols = st.columns(3)
+                                height_cols[0].metric(
+                                    "Inferred target formula mass (g)",
+                                    round(check_result["target_mass"], 6),
+                                )
+                                height_cols[1].metric("Equivalent height (mm)", round(checked_height, 6))
+                                height_cols[2].metric("Volume (cm3)", round(checked_volume, 6))
+                                st.caption(
+                                    f"Density source: {height_check_density_label}; "
+                                    f"fixed die diameter {DEFAULT_DIE_DIAMETER_MM:.2f} mm."
+                                )
+
+                                display_dataframe(
+                                    known_recipe_height_check_dataframe(check_result),
+                                    theme_mode,
+                                    width="stretch",
+                                    hide_index=True,
+                                )
+
+                                if roundtrip.get("recipe") is not None:
+                                    st.caption(
+                                        "Pellet-height round trip: "
+                                        + ", ".join(
+                                            f"{powder} {grams:.6f} g"
+                                            for powder, grams in roundtrip["recipe"].items()
+                                        )
+                                    )
+                                if check_result["max_abs_deviation"] <= 0.001:
+                                    st.success("Known masses round-trip within 0.001 g.")
+                                else:
+                                    st.warning(check_result["warning"])
+
         deduct_inventory = st.checkbox("Deduct inventory when saving recipe")
 
         solve = st.button("Calculate Recipe", type="primary", width="stretch")

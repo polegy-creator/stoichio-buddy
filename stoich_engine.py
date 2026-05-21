@@ -211,3 +211,83 @@ def compute_recipe(
         "formula_units": round(float(formula_units), 12),
         "estimated_target_mass": round(float(formula_units * target_molar_mass), 6),
     }
+
+
+def infer_target_mass_from_recipe(
+    target,
+    recipe_masses,
+    db,
+    selected_powders,
+    tolerance=1e-3,
+):
+    """
+    Infer the target formula mass represented by known precursor masses.
+
+    This is the inverse of the default target-formula-mass scaling. It uses the
+    same cation-balance coefficients as compute_recipe, then reports how closely
+    the entered masses match that stoichiometric ratio.
+    """
+    if not selected_powders:
+        return {"target_mass": None, "warning": "Select at least one powder"}
+
+    actual_masses = {}
+    for powder in selected_powders:
+        try:
+            grams = float(recipe_masses.get(powder, 0.0))
+        except (TypeError, ValueError):
+            return {"target_mass": None, "warning": f"Enter a valid mass for {powder}"}
+        if grams < 0:
+            return {"target_mass": None, "warning": f"Mass for {powder} cannot be negative"}
+        actual_masses[powder] = grams
+
+    total_actual_mass = sum(actual_masses.values())
+    if total_actual_mass <= 0:
+        return {"target_mass": None, "warning": "Enter at least one known powder mass"}
+
+    reference = compute_recipe(
+        target,
+        1.0,
+        db,
+        selected_powders,
+        tolerance=tolerance,
+        mass_basis=MASS_BASIS_TARGET_FORMULA,
+    )
+    if reference.get("recipe") is None:
+        return {"target_mass": None, "warning": reference.get("warning", "No valid solution found")}
+
+    coefficients = reference["coefficients"]
+    precursor_formula_mass = sum(
+        float(coefficients[powder]) * powder_molar_mass(db[powder])
+        for powder in selected_powders
+    )
+    if precursor_formula_mass <= 0:
+        return {"target_mass": None, "warning": "No physically valid precursor mass from selected powders"}
+
+    target_molar_mass = molar_mass(reference["target"])
+    formula_units = total_actual_mass / precursor_formula_mass
+    target_mass = formula_units * target_molar_mass
+
+    expected_recipe = {
+        powder: float(coefficients[powder]) * formula_units * powder_molar_mass(db[powder])
+        for powder in selected_powders
+    }
+    deviations = {
+        powder: actual_masses[powder] - expected_recipe[powder]
+        for powder in selected_powders
+    }
+    max_abs_deviation = max(abs(value) for value in deviations.values())
+
+    warning = reference.get("warning")
+    if warning is None and max_abs_deviation > tolerance:
+        warning = "Known powder masses do not match the target stoichiometric ratio"
+
+    return {
+        "target_mass": float(target_mass),
+        "formula_units": float(formula_units),
+        "actual_recipe": actual_masses,
+        "expected_recipe": expected_recipe,
+        "deviations": deviations,
+        "max_abs_deviation": float(max_abs_deviation),
+        "warning": warning,
+        "reference": reference,
+    }
