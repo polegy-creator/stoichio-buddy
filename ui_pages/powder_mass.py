@@ -86,11 +86,56 @@ def render(ctx):
                     planning_error = str(exc)
                     st.error(planning_error)
 
+        powder_options, hidden_powders, target_powder_elements, powder_filter_error = relevant_powders_for_target(target, db)
+        show_all_powders = st.checkbox(
+            "Show all powders",
+            value=False,
+            help="Turn this on if you intentionally want to choose from powders that do not match the target cations.",
+        )
+        if powder_filter_error:
+            st.warning(f"Powder filter could not read the target formula. Showing all powders. Details: {powder_filter_error}")
+            powder_options = list(db.keys())
+        elif show_all_powders:
+            powder_options = list(db.keys())
+            if target_powder_elements:
+                st.caption(
+                    "Showing all powders. Normally this target would show only sources for: "
+                    + ", ".join(sorted(target_powder_elements))
+                    + "."
+                )
+        elif target_powder_elements:
+            if powder_options:
+                st.caption(
+                    f"Showing {len(powder_options)} relevant powder(s) for "
+                    + ", ".join(sorted(target_powder_elements))
+                    + f". Hidden: {len(hidden_powders)}."
+                )
+            else:
+                st.warning(
+                    "No powder in the database matches this target's cations. "
+                    "Turn on Show all powders if you want to choose manually."
+                )
+
+        if "selected_recipe_powders" in st.session_state and not show_all_powders:
+            selected_powders_state = [
+                powder
+                for powder in st.session_state.selected_recipe_powders
+                if powder in powder_options
+            ]
+            if selected_powders_state != st.session_state.selected_recipe_powders:
+                st.session_state.selected_recipe_powders = selected_powders_state
+
         selected = st.multiselect(
             "Selected powders",
-            list(db.keys()),
-            help="Only these powders will be used in the calculation.",
+            powder_options,
+            key="selected_recipe_powders",
+            help="Only these powders will be used in the calculation. The list is filtered to powders matching the target cations.",
         )
+        visible_powder_db = {
+            powder: db[powder]
+            for powder in powder_options
+            if powder in db
+        }
 
         with st.expander("Check height from known powder masses", expanded=False):
             st.caption(
@@ -233,8 +278,8 @@ def render(ctx):
         last_recipe = st.session_state.get("last_recipe_result")
         if not last_recipe:
             st.info("Enter a target formula, target mass, and selected powders, then calculate.")
-            if db:
-                display_dataframe(database_dataframe(db), theme_mode, width="stretch", hide_index=True)
+            if visible_powder_db:
+                display_dataframe(database_dataframe(visible_powder_db), theme_mode, width="stretch", hide_index=True)
         else:
             if last_recipe.get("error"):
                 st.error(last_recipe["error"])
@@ -470,4 +515,3 @@ def render(ctx):
 
                     if st.session_state.get("last_recipe_saved", False):
                         st.caption("This recipe has already been saved. Recalculate to save a new entry.")
-

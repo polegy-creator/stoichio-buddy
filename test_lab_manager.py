@@ -4,6 +4,50 @@ import unittest
 import lab_manager
 
 
+class LabManagerPowderRelevanceTests(unittest.TestCase):
+    def test_relevant_powders_hide_non_target_cations(self):
+        powders = {
+            "Fe2O3": {"elements": {"Fe": 2, "O": 3}},
+            "TiO2": {"elements": {"Ti": 1, "O": 2}},
+            "Y2O3": {"elements": {"Y": 2, "O": 3}},
+            "BaTiO3": {"elements": {"Ba": 1, "Ti": 1, "O": 3}},
+        }
+
+        relevant, hidden, target_elements, error = lab_manager.relevant_powders_for_target("FeTiO3", powders)
+
+        self.assertIsNone(error)
+        self.assertEqual(target_elements, {"Fe", "Ti"})
+        self.assertEqual(relevant, ["Fe2O3", "TiO2"])
+        self.assertIn("Y2O3", hidden)
+        self.assertIn("BaTiO3", hidden)
+
+    def test_relevant_powders_allow_common_decomposition_anions(self):
+        powders = {
+            "BaCO3": {"elements": {"Ba": 1, "C": 1, "O": 3}},
+            "TiO2": {"elements": {"Ti": 1, "O": 2}},
+            "Fe2O3": {"elements": {"Fe": 2, "O": 3}},
+        }
+
+        relevant, hidden, _, error = lab_manager.relevant_powders_for_target("BaTiO3", powders)
+
+        self.assertIsNone(error)
+        self.assertEqual(relevant, ["BaCO3", "TiO2"])
+        self.assertEqual(hidden, ["Fe2O3"])
+
+    def test_relevant_powders_show_all_until_target_is_parseable(self):
+        powders = {
+            "Fe2O3": {"elements": {"Fe": 2, "O": 3}},
+            "TiO2": {"elements": {"Ti": 1, "O": 2}},
+        }
+
+        relevant, hidden, target_elements, error = lab_manager.relevant_powders_for_target("Fe(", powders)
+
+        self.assertEqual(relevant, ["Fe2O3", "TiO2"])
+        self.assertEqual(hidden, [])
+        self.assertEqual(target_elements, set())
+        self.assertIsNotNone(error)
+
+
 class LabManagerHistoryTests(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory()

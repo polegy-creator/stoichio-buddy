@@ -28,6 +28,7 @@ LAB_CHECKED_DENSITY_STATUS = "Lab checked"
 LAB_UNVERIFIED_DENSITY_STATUS = "Lab entry - unverified"
 CODEX_UNVERIFIED_DENSITY_STATUS = "Codex seeded - verify before use"
 BLOCKED_DENSITY_STATUS = "Do not use"
+POWDER_RELEVANCE_IGNORED_ELEMENTS = {"O", "H", "C", "N"}
 
 SHEET_TABS = {
     POWDERS_FILE: "powders",
@@ -60,6 +61,39 @@ def material_density_record_key(formula, phase=""):
 def formula_cation_elements(formula):
     composition = parse_formula(normalize_formula(formula))
     return {element for element in composition if element != "O"}
+
+
+def powder_relevance_elements(composition):
+    return {
+        element
+        for element, amount in composition.items()
+        if float(amount) != 0.0 and element not in POWDER_RELEVANCE_IGNORED_ELEMENTS
+    }
+
+
+def relevant_powders_for_target(target, powders):
+    powder_names = list(powders.keys())
+    if not str(target or "").strip():
+        return powder_names, [], set(), None
+
+    try:
+        target_elements = powder_relevance_elements(parse_formula(normalize_formula(target)))
+    except ValueError as exc:
+        return powder_names, [], set(), str(exc)
+
+    if not target_elements:
+        return powder_names, [], target_elements, None
+
+    relevant = []
+    hidden = []
+    for powder, record in powders.items():
+        powder_elements = powder_relevance_elements(record.get("elements", {}))
+        if powder_elements and powder_elements <= target_elements and powder_elements & target_elements:
+            relevant.append(powder)
+        else:
+            hidden.append(powder)
+
+    return relevant, hidden, target_elements, None
 
 
 def material_density_status(record):

@@ -40,6 +40,7 @@ from lab_manager import (
     log_synthesis,
     log_target_density,
     related_material_density_records,
+    relevant_powders_for_target,
     restore_backup_data,
     set_preferred_material_density,
     set_inventory_quantity,
