@@ -93,6 +93,7 @@ def render(ctx):
             material_densities,
             key_prefix="relative_density",
         )
+        relative_density_verified = st.session_state.get("relative_density_density_verified", False)
         current_density_signature = target_density_signature(
             density_target,
             target_for,
@@ -132,6 +133,7 @@ def render(ctx):
                     "final_diameter": sintered_diameter,
                     "final_height": sintered_height,
                     "density_source": density_source_mode,
+                    "density_verified": relative_density_verified,
                     "target_number": linked_target_number,
                     "target_id": linked_target_id,
                     "linked_recipe": recipe_link_snapshot(linked_target),
@@ -211,6 +213,12 @@ def render(ctx):
                 st.warning("Relative density is above 100%. Check dimensions, mass, or theoretical density.")
             else:
                 st.success("Target density calculated.")
+            if str(last_density.get("density_source", "")).startswith("Related"):
+                st.warning("This calculation used a related density record, not an exact density for this formula.")
+            if not last_density.get("density_verified", False):
+                st.warning("The theoretical density source is not marked as lab-checked or preferred.")
+            if last_density["relative_percent"] < 50:
+                st.warning("Relative density is very low. Check final dimensions, mass, and selected theoretical density.")
 
             inputs_changed = last_density["signature"] != current_density_signature
             if inputs_changed:
@@ -275,5 +283,4 @@ def render(ctx):
 
             if st.session_state.get("last_target_density_saved", False):
                 st.caption("This target density has already been saved. Recalculate to save a new entry.")
-
 

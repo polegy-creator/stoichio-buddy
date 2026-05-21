@@ -107,6 +107,24 @@ def render(ctx):
             )
             density_source = "manual"
 
+        verification_status = st.selectbox(
+            "Trust status",
+            [
+                "Lab checked",
+                "Preferred for formula",
+                "Lab entry - unverified",
+                "Codex seeded - verify before use",
+                "Do not use",
+            ],
+            index=2,
+            help="Use this to control which density records should be trusted first in calculations.",
+        )
+        verified_by = st.text_input("Verified by (optional)", placeholder="Name")
+        verified_date = st.text_input(
+            "Verified date (optional)",
+            value=datetime.now().date().isoformat() if verification_status in {"Lab checked", "Preferred for formula"} else "",
+            placeholder="YYYY-MM-DD",
+        )
         reference = st.text_input("Source / reference", placeholder="XRD refinement, paper, manual")
         notes = st.text_area("Notes", height=90)
 
@@ -133,6 +151,9 @@ def render(ctx):
                     gamma=lattice_params["gamma"],
                     source=reference,
                     notes=notes,
+                    verification_status=verification_status,
+                    verified_by=verified_by,
+                    verified_date=verified_date,
                 )
                 clear_data_cache()
                 saved_label = normalize_formula(density_formula)
@@ -167,14 +188,51 @@ def render(ctx):
         if density_df.empty:
             st.info("No material densities saved yet.")
         else:
-            st.caption("Blue rows were seeded by Codex from COD/paper literature and should be source-checked before lab use.")
+            filter_cols = st.columns([1, 1], gap="small")
+            trust_filter = filter_cols[0].selectbox(
+                "Trust filter",
+                ["All", "Preferred for formula", "Lab checked", "Needs verification", "Do not use"],
+            )
+            formula_filter = filter_cols[1].text_input(
+                "Search formula or phase",
+                placeholder="Fe, Ti, hematite",
+            ).strip().lower()
+
+            if trust_filter == "Preferred for formula":
+                density_df = density_df[density_df["Trust status"].str.contains("Preferred", case=False, na=False)]
+            elif trust_filter == "Lab checked":
+                density_df = density_df[density_df["Trust status"].str.contains("checked", case=False, na=False)]
+            elif trust_filter == "Needs verification":
+                density_df = density_df[
+                    density_df["Trust status"].str.contains("unverified|Codex", case=False, na=False)
+                ]
+            elif trust_filter == "Do not use":
+                density_df = density_df[density_df["Trust status"].str.contains("Do not use", case=False, na=False)]
+
+            if formula_filter:
+                density_df = density_df[
+                    density_df.apply(
+                        lambda row: formula_filter
+                        in " ".join(str(value).lower() for value in row.values),
+                        axis=1,
+                    )
+                ]
+
+            st.caption(
+                "Blue rows were seeded by Codex from COD/paper literature. "
+                "Mark records as Lab checked or Preferred for formula after source review."
+            )
             display_dataframe(
                 density_df,
                 theme_mode,
                 row_class_func=lambda row: (
-                    "codex-seeded"
-                    if str(row.get("Origin", "")).lower().startswith("codex")
-                    else ""
+                    "stock-short"
+                    if "do not use" in str(row.get("Trust status", "")).lower()
+                    else (
+                        "codex-seeded"
+                        if str(row.get("Origin", "")).lower().startswith("codex")
+                        else ""
+                    )
                 ),
                 width="stretch",
                 hide_index=True,
@@ -186,5 +244,4 @@ def render(ctx):
                 mime="text/csv",
                 width="stretch",
             )
-
 

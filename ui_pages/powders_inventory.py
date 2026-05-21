@@ -31,7 +31,7 @@ def render(ctx):
             try:
                 powder_name, powders = add_powder(new_formula)
                 if new_grams > 0:
-                    set_inventory_quantity(powder_name, new_grams)
+                    set_inventory_quantity(powder_name, new_grams, reason="Initial stock when powder was added")
                 clear_data_cache()
                 if new_grams > 0:
                     st.success(f"Added {powder_name} with {new_grams:g} g in inventory.")
@@ -53,7 +53,7 @@ def render(ctx):
             try:
                 if not powder:
                     raise ValueError("Choose a powder")
-                set_inventory_quantity(powder, grams)
+                set_inventory_quantity(powder, grams, reason="Manual inventory edit from UI")
                 clear_data_cache()
                 st.success(f"Updated {normalize_formula(powder)} to {grams:g} g.")
                 st.rerun()
@@ -119,8 +119,24 @@ def render(ctx):
                     f"Low inventory below {LOW_STOCK_THRESHOLD_G:g} g: "
                     + ", ".join(low_stock_powders)
                 )
+                low_stock_df = inventory_dataframe(
+                    {
+                        powder: inventory[powder]
+                        for powder in low_stock_powders
+                    },
+                    comparison_recipe,
+                )
+                st.markdown("##### Low-stock dashboard")
+                display_dataframe(
+                    low_stock_df,
+                    theme_mode,
+                    row_class_func=stock_row_class,
+                    width="stretch",
+                    hide_index=True,
+                )
 
             stock_df = inventory_dataframe(inventory, comparison_recipe)
+            st.markdown("##### Full inventory")
             display_dataframe(
                 stock_df,
                 theme_mode,
@@ -138,4 +154,18 @@ def render(ctx):
         else:
             st.info("Inventory is empty.")
 
+    st.divider()
+    st.markdown("#### Inventory ledger")
+    if inventory_log:
+        ledger_df = inventory_log_dataframe(inventory_log)
+        display_dataframe(ledger_df, theme_mode, width="stretch", hide_index=True)
+        st.download_button(
+            "Download Inventory Ledger CSV",
+            data=csv_bytes(ledger_df),
+            file_name="inventory_ledger.csv",
+            mime="text/csv",
+            width="stretch",
+        )
+    else:
+        st.info("No inventory transactions logged yet.")
 

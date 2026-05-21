@@ -130,6 +130,70 @@ class LabManagerMaterialDensityTests(unittest.TestCase):
         self.assertIn("BaTiO3__tetragonal-perovskite", related_keys)
         self.assertNotIn("ZnO__zincite-wurtzite", related_keys)
 
+    def test_material_density_records_keep_trust_status(self):
+        record_key, records = lab_manager.upsert_material_density(
+            "Fe2O3",
+            phase="hematite",
+            theoretical_density=5.25,
+            unit_cell_volume=302.722,
+            z=6,
+            verification_status="Preferred for formula",
+            verified_by="Daniel",
+            verified_date="2026-05-21",
+        )
+
+        record = records[record_key]
+
+        self.assertEqual(record["verification_status"], "Preferred for formula")
+        self.assertEqual(record["verified_by"], "Daniel")
+        self.assertEqual(record["verified_date"], "2026-05-21")
+
+
+class LabManagerInventoryLogTests(unittest.TestCase):
+    def setUp(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.old_inventory_file = lab_manager.INVENTORY_FILE
+        self.old_inventory_log_file = lab_manager.INVENTORY_LOG_FILE
+        self.old_storage_backend = lab_manager._storage_backend
+        lab_manager.INVENTORY_FILE = f"{self.tempdir.name}/inventory.json"
+        lab_manager.INVENTORY_LOG_FILE = f"{self.tempdir.name}/inventory_log.json"
+        lab_manager._storage_backend = None
+
+    def tearDown(self):
+        lab_manager.INVENTORY_FILE = self.old_inventory_file
+        lab_manager.INVENTORY_LOG_FILE = self.old_inventory_log_file
+        lab_manager._storage_backend = self.old_storage_backend
+        self.tempdir.cleanup()
+
+    def test_inventory_quantity_changes_are_logged(self):
+        lab_manager.set_inventory_quantity("TiO2", 150, reason="Initial stock")
+        lab_manager.set_inventory_quantity("TiO2", 125, reason="Manual correction")
+
+        log_entries = lab_manager.load_inventory_log()
+
+        self.assertEqual(len(log_entries), 2)
+        self.assertEqual(log_entries[0]["powder"], "TiO2")
+        self.assertEqual(log_entries[0]["change_g"], 150)
+        self.assertEqual(log_entries[1]["change_g"], -25)
+        self.assertEqual(log_entries[1]["after_g"], 125)
+
+    def test_recipe_deduction_is_logged(self):
+        inventory = lab_manager.set_inventory_quantity("Fe2O3", 20, reason="Initial stock")
+        lab_manager.consume_stock(
+            inventory,
+            {"Fe2O3": 2.5},
+            reason="Saved recipe",
+            recipe_id="R001",
+        )
+
+        log_entries = lab_manager.load_inventory_log()
+
+        self.assertEqual(len(log_entries), 2)
+        self.assertEqual(log_entries[-1]["action"], "recipe deduction")
+        self.assertEqual(log_entries[-1]["recipe_id"], "R001")
+        self.assertEqual(log_entries[-1]["before_g"], 20)
+        self.assertEqual(log_entries[-1]["after_g"], 17.5)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -34,6 +34,7 @@ from lab_manager import (
     format_target_id,
     load_history,
     load_inventory,
+    load_inventory_log,
     load_material_densities,
     load_powders,
     log_synthesis,
@@ -554,6 +555,11 @@ def cached_load_inventory(storage_status):
 
 
 @st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
+def cached_load_inventory_log(storage_status):
+    return load_inventory_log()
+
+
+@st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
 def cached_load_history(storage_status):
     return load_history()
 
@@ -566,6 +572,7 @@ def cached_load_material_densities(storage_status):
 def clear_data_cache():
     cached_load_powders.clear()
     cached_load_inventory.clear()
+    cached_load_inventory_log.clear()
     cached_load_history.clear()
     cached_load_material_densities.clear()
 
@@ -614,6 +621,13 @@ def recipe_dataframe(recipe_masses, inventory=None):
 
         rows.append(row)
 
+    rows.sort(
+        key=lambda row: (
+            0 if "short" in str(row.get("Stock status", "")).lower() else 1,
+            0 if "low" in str(row.get("Stock status", "")).lower() else 1,
+            row.get("Powder", ""),
+        )
+    )
     return pd.DataFrame(rows)
 
 
@@ -661,6 +675,31 @@ def inventory_dataframe(inventory, recipe_masses=None):
             row["After last recipe (g)"] = round(remaining, 3) if required else round(grams, 3)
         rows.append(row)
 
+    rows.sort(
+        key=lambda row: (
+            0 if "short" in str(row.get("Status", "")).lower() else 1,
+            0 if "low" in str(row.get("Status", "")).lower() else 1,
+            row.get("Powder", ""),
+        )
+    )
+    return pd.DataFrame(rows)
+
+
+def inventory_log_dataframe(log_entries, limit=50):
+    rows = []
+    for entry in reversed(log_entries[-limit:]):
+        rows.append(
+            {
+                "Time": format_history_time(entry.get("time", "")),
+                "Powder": entry.get("powder", ""),
+                "Action": entry.get("action", ""),
+                "Change (g)": entry.get("change_g", ""),
+                "Before (g)": entry.get("before_g", ""),
+                "After (g)": entry.get("after_g", ""),
+                "Recipe": entry.get("recipe_id", ""),
+                "Reason": entry.get("reason", ""),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -673,6 +712,9 @@ def material_density_dataframe(records):
         "Reported density (g/cm3)",
         "Delta vs reported (g/cm3)",
         "Density check",
+        "Trust status",
+        "Verified by",
+        "Verified date",
         "Unit cell volume (A3)",
         "Z",
         "Crystal system",
@@ -690,11 +732,7 @@ def material_density_dataframe(records):
     rows = []
     sorted_records = sorted(
         records.items(),
-        key=lambda item: (
-            item[1].get("formula", item[0]),
-            item[1].get("phase", ""),
-            item[1].get("display_name", item[0]),
-        ),
+        key=lambda item: density_record_sort_key(item[0], item[1]),
     )
     for formula, record in sorted_records:
         rows.append(
@@ -718,6 +756,9 @@ def material_density_dataframe(records):
                     else ""
                 ),
                 "Density check": record.get("density_validation", ""),
+                "Trust status": density_trust_status(record),
+                "Verified by": record.get("verified_by", ""),
+                "Verified date": record.get("verified_date", ""),
                 "Unit cell volume (A3)": (
                     round(record["unit_cell_volume_A3"], 4)
                     if record.get("unit_cell_volume_A3") is not None
@@ -740,11 +781,49 @@ def material_density_dataframe(records):
     return pd.DataFrame(rows, columns=columns)
 
 
+def density_trust_status(record):
+    status = str(record.get("verification_status", "")).strip()
+    if status:
+        return status
+    if str(record.get("origin", "")).lower().startswith("codex"):
+        return "Codex seeded - verify before use"
+    return "Lab entry - unverified"
+
+
+def density_record_is_verified(record):
+    status = density_trust_status(record).lower()
+    return "preferred" in status or "checked" in status
+
+
+def density_record_is_blocked(record):
+    return "do not use" in density_trust_status(record).lower()
+
+
+def density_record_sort_key(record_key, record):
+    status = density_trust_status(record).lower()
+    if "preferred" in status:
+        trust_rank = 0
+    elif "checked" in status:
+        trust_rank = 1
+    elif "lab entry" in status:
+        trust_rank = 2
+    elif "codex" in status:
+        trust_rank = 3
+    else:
+        trust_rank = 4
+    return (
+        trust_rank,
+        record.get("formula", record_key),
+        record.get("phase", ""),
+        record.get("display_name", record_key),
+    )
+
+
 def density_record_label(record_key, record, include_density=True):
     label = record.get("display_name") or record.get("formula") or record_key
     density = record.get("theoretical_density_g_cm3")
     if include_density and density:
-        return f"{label} - {float(density):.4f} g/cm3"
+        return f"{label} - {float(density):.4f} g/cm3 [{density_trust_status(record)}]"
     return label
 
 
@@ -762,7 +841,7 @@ def density_records_for_formula(target, material_densities):
         for record_key, record in material_densities.items()
         if record.get("formula", record_key) == key or record_key == key
     ]
-    records.sort(key=lambda item: (item[1].get("phase", ""), item[1].get("display_name", item[0])))
+    records.sort(key=lambda item: density_record_sort_key(item[0], item[1]))
 
     if not records:
         return key, [], f"No saved density for {key}"
@@ -820,11 +899,21 @@ def density_source_control(target, material_densities, key_prefix):
 
             density = float(density)
             st.success(f"Using {density_record_label(selected_record_key, record)}")
+            if not density_record_is_verified(record):
+                st.warning(
+                    "This density record is not lab-verified yet. "
+                    "Check the source before using it for final planning."
+                )
+            if density_record_is_blocked(record):
+                st.error("This density record is marked Do not use.")
+                return None, source_mode
             if record.get("source") or record.get("density_source"):
                 st.caption(
                     "Source: "
                     + (record.get("source") or record.get("density_source") or "saved material density")
                 )
+            st.session_state[f"{key_prefix}_density_verified"] = density_record_is_verified(record)
+            st.session_state[f"{key_prefix}_density_record_key"] = selected_record_key
             return density, f"Known material density: {density_record_label(selected_record_key, record, False)}"
         else:
             related_records = related_material_density_records(target, material_densities)
@@ -842,6 +931,9 @@ def density_source_control(target, material_densities, key_prefix):
                     key=f"{key_prefix}_related_known_density",
                 )
                 source_record = material_densities[selected_record_key]
+                if density_record_is_blocked(source_record):
+                    st.error("This density record is marked Do not use.")
+                    return None, source_mode
                 volume = source_record.get("unit_cell_volume_A3")
                 z_value = source_record.get("z")
                 if volume and z_value:
@@ -855,6 +947,8 @@ def density_source_control(target, material_densities, key_prefix):
                             f"Recalculated from V={volume:g} A3 and Z={z_value:g}; "
                             "molar mass comes from the current target formula."
                         )
+                        st.session_state[f"{key_prefix}_density_verified"] = density_record_is_verified(source_record)
+                        st.session_state[f"{key_prefix}_density_record_key"] = selected_record_key
                         return (
                             density,
                             f"Related material density: {density_record_label(selected_record_key, source_record, False)}",
@@ -871,11 +965,7 @@ def density_source_control(target, material_densities, key_prefix):
         related_records = related_material_density_records(target, material_densities)
         all_records = sorted(
             material_densities.items(),
-            key=lambda item: (
-                item[1].get("formula", item[0]),
-                item[1].get("phase", ""),
-                item[1].get("display_name", item[0]),
-            ),
+            key=lambda item: density_record_sort_key(item[0], item[1]),
         )
         show_all_density_records = False
         if related_records:
@@ -912,6 +1002,14 @@ def density_source_control(target, material_densities, key_prefix):
             return None, source_mode
 
         source_record = material_densities[source_target]
+        if not density_record_is_verified(source_record):
+            st.warning(
+                "This density record is not lab-verified yet. "
+                "Check the source before using it for final planning."
+            )
+        if density_record_is_blocked(source_record):
+            st.error("This density record is marked Do not use.")
+            return None, source_mode
         volume = source_record.get("unit_cell_volume_A3")
         z_value = source_record.get("z")
         if volume and z_value:
@@ -926,7 +1024,9 @@ def density_source_control(target, material_densities, key_prefix):
                     f"Recalculated from V={volume:g} A3 and Z={z_value:g}; "
                     "molar mass comes from the current target formula."
                 )
-                return density, source_mode
+                st.session_state[f"{key_prefix}_density_verified"] = density_record_is_verified(source_record)
+                st.session_state[f"{key_prefix}_density_record_key"] = source_target
+                return density, f"Related/manual density record: {density_record_label(source_target, source_record, False)}"
             except ValueError as exc:
                 st.warning(str(exc))
                 return None, source_mode
@@ -937,7 +1037,9 @@ def density_source_control(target, material_densities, key_prefix):
                 f"{source_target} has no saved unit cell volume and Z. "
                 "Using its stored density directly."
             )
-            return float(density), source_mode
+            st.session_state[f"{key_prefix}_density_verified"] = density_record_is_verified(source_record)
+            st.session_state[f"{key_prefix}_density_record_key"] = source_target
+            return float(density), f"Stored density record: {density_record_label(source_target, source_record, False)}"
 
         st.warning(f"{source_target} has no usable density data")
         return None, source_mode
@@ -950,6 +1052,8 @@ def density_source_control(target, material_densities, key_prefix):
         format="%.5f",
         key=f"{key_prefix}_manual_density",
     )
+    st.session_state[f"{key_prefix}_density_verified"] = False
+    st.session_state[f"{key_prefix}_density_record_key"] = ""
     return density if density > 0 else None, source_mode
 
 
@@ -1193,6 +1297,57 @@ def recipe_balance_dataframe(result, powder_db):
         )
 
     return pd.DataFrame(rows)
+
+
+def recipe_stoich_ratio_text(result):
+    coefficients = result.get("coefficients", {}) if result else {}
+    if not coefficients:
+        return ""
+    return ", ".join(f"{powder}: {amount:g}" for powder, amount in coefficients.items())
+
+
+def recipe_basis_audit_dataframe(result, recipe_masses, planning_context=None):
+    planning_context = planning_context or {}
+    rows = [
+        ["Calculation mode", planning_context.get("amount_mode", "Target formula mass")],
+        ["Input mass basis", mass_basis_label(result.get("mass_basis", MASS_BASIS_TARGET_FORMULA))],
+        ["Target formula mass (g)", result.get("estimated_target_mass", "")],
+        ["Precursor powder total (g)", round(sum(recipe_masses.values()), 6)],
+        ["Stoich ratio coefficients", recipe_stoich_ratio_text(result)],
+        ["Solve basis", result.get("basis", "")],
+        ["Ignored elements", ", ".join(result.get("ignored_elements") or [])],
+        ["Residual", result.get("residual", "")],
+    ]
+    if planning_context.get("amount_mode") == "Pellet height":
+        rows.extend(
+            [
+                ["Desired target height (mm)", planning_context.get("planning_height", "")],
+                ["Die diameter (mm)", DEFAULT_DIE_DIAMETER_MM],
+                ["Planning volume (cm3)", planning_context.get("planning_volume", "")],
+                ["Theoretical density (g/cm3)", planning_context.get("theoretical_density", "")],
+                ["Density source", planning_context.get("density_source", "")],
+            ]
+        )
+    return pd.DataFrame(rows, columns=["Field", "Value"])
+
+
+def recipe_validation_warnings(result, recipe_masses, stock_messages=None, planning_context=None):
+    warnings = []
+    if not result.get("exact", False):
+        warnings.append("Stoichiometry is approximate; inspect the residual and element balance.")
+    if stock_messages:
+        warnings.append("Inventory is not enough for this recipe: " + "; ".join(stock_messages))
+    if planning_context and planning_context.get("amount_mode") == "Pellet height":
+        density_source = str(planning_context.get("density_source", ""))
+        if density_source.startswith("Related"):
+            warnings.append(
+                "Pellet-height mode is using a related density record, not an exact density for this formula."
+            )
+        if not planning_context.get("density_verified", False):
+            warnings.append("Pellet-height density source is not marked as lab-checked or preferred.")
+    if any(mass <= 0 for mass in recipe_masses.values()):
+        warnings.append("One or more selected powders calculated to zero mass; check the selected powder set.")
+    return warnings
 
 
 def recipe_calculation_metadata(result):
@@ -1775,6 +1930,8 @@ def recipe_report_html(
                 ["Die diameter (mm)", DEFAULT_DIE_DIAMETER_MM],
                 ["Planning volume (cm3)", planning_context.get("planning_volume", "")],
                 ["Theoretical density (g/cm3)", planning_context.get("theoretical_density", "")],
+                ["Density source", planning_context.get("density_source", "")],
+                ["Density lab checked/preferred", planning_context.get("density_verified", "")],
             ]
         )
 
@@ -1894,12 +2051,13 @@ def csv_bytes(df):
     return buffer.getvalue()
 
 
-def data_backup_json(powders, inventory, material_densities, history):
+def data_backup_json(powders, inventory, material_densities, history, inventory_log=None):
     backup = {
         "exported_at": datetime.now().isoformat(timespec="seconds"),
         "app": "Stoichio Buddy",
         "powders": powders,
         "inventory": inventory,
+        "inventory_log": inventory_log or [],
         "material_densities": material_densities,
         "history": history,
     }
@@ -1919,6 +2077,7 @@ def backup_counts(backup):
     return {
         "powders": len(backup.get("powders", {})),
         "inventory": len(backup.get("inventory", {})),
+        "inventory_log": len(backup.get("inventory_log", [])),
         "material_densities": len(backup.get("material_densities", {})),
         "history": len(backup.get("history", [])),
     }
@@ -2031,6 +2190,7 @@ def configure_app_storage():
 
 storage_status = configure_app_storage()
 db, inventory = load_app_state(storage_status)
+inventory_log = cached_load_inventory_log(storage_status)
 history = cached_load_history(storage_status)
 recipe_history = synthesis_history(history)
 target_density_records = target_density_history(history)
@@ -2057,6 +2217,7 @@ with st.sidebar:
     st.metric("Powders", len(db))
     unknown_stock = unknown_inventory_items(inventory, db)
     st.metric("Inventory items", len(inventory))
+    st.metric("Inventory log", len(inventory_log))
     st.metric("Material densities", len(material_densities))
     st.metric("Saved recipes", len(recipe_history))
     st.metric("Target density logs", len(target_density_records))
@@ -2068,7 +2229,7 @@ with st.sidebar:
         st.rerun()
     st.download_button(
         "Download Data Backup JSON",
-        data=data_backup_json(db, inventory, material_densities, history),
+        data=data_backup_json(db, inventory, material_densities, history, inventory_log),
         file_name=f"stoichio_buddy_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
         mime="application/json",
         width="stretch",
@@ -2089,6 +2250,7 @@ with st.sidebar:
                     "Backup contains "
                     f"{counts['powders']} powders, "
                     f"{counts['inventory']} inventory entries, "
+                    f"{counts['inventory_log']} inventory log entries, "
                     f"{counts['material_densities']} material densities, and "
                     f"{counts['history']} history entries."
                 )
@@ -2108,6 +2270,7 @@ with st.sidebar:
                             "Backup restored: "
                             f"{restored_counts['powders']} powders, "
                             f"{restored_counts['inventory']} inventory entries, "
+                            f"{restored_counts['inventory_log']} inventory log entries, "
                             f"{restored_counts['material_densities']} material densities, "
                             f"{restored_counts['history']} history entries."
                         )

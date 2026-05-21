@@ -35,6 +35,8 @@ def render(ctx):
         target_mass = None
         planning_volume = None
         theoretical_density_used = None
+        theoretical_density_source = ""
+        theoretical_density_verified = False
         planning_height = None
         planning_error = None
 
@@ -56,11 +58,12 @@ def render(ctx):
                 step=0.1,
                 format="%.4f",
             )
-            theoretical_density_used, _ = density_source_control(
+            theoretical_density_used, theoretical_density_source = density_source_control(
                 target,
                 material_densities,
                 key_prefix="recipe_height",
             )
+            theoretical_density_verified = st.session_state.get("recipe_height_density_verified", False)
             if theoretical_density_used is not None and planning_height > 0:
                 try:
                     target_mass, planning_volume = target_mass_from_height(
@@ -72,6 +75,13 @@ def render(ctx):
                         f"Calculated target formula mass: {target_mass:.4f} g "
                         f"from {planning_volume:.4f} cm3."
                     )
+                    st.caption(f"Density source: {theoretical_density_source}")
+                    if str(theoretical_density_source).startswith("Related"):
+                        st.warning(
+                            "This height plan uses a related density cell, not an exact saved density for the target formula."
+                        )
+                    if not theoretical_density_verified:
+                        st.warning("This density record is not marked as lab-checked or preferred.")
                 except ValueError as exc:
                     planning_error = str(exc)
                     st.error(planning_error)
@@ -208,6 +218,8 @@ def render(ctx):
                     "planning_height": planning_height,
                     "planning_volume": planning_volume,
                     "theoretical_density": theoretical_density_used,
+                    "density_source": theoretical_density_source,
+                    "density_verified": theoretical_density_verified,
                     "signature": current_signature,
                 }
                 st.session_state.last_recipe_saved = False
@@ -250,6 +262,7 @@ def render(ctx):
                         detail_cols[1].metric("Desired height (mm)", round(last_recipe["planning_height"], 3))
                         detail_cols[2].metric("Theoretical density", round(last_recipe["theoretical_density"], 4))
                         st.caption(f"Calculated planning volume: {last_recipe['planning_volume']:.6f} cm3")
+                        st.caption(f"Density source: {last_recipe.get('density_source', '')}")
 
                     display_dataframe(
                         recipe_df,
@@ -280,7 +293,15 @@ def render(ctx):
                             + ", ".join(result["ignored_elements"])
                         )
 
-                    with st.expander("Stoichiometry audit", expanded=False):
+                    st.markdown("#### Calculation audit")
+                    display_dataframe(
+                        recipe_basis_audit_dataframe(result, recipe_masses, last_recipe),
+                        theme_mode,
+                        width="stretch",
+                        hide_index=True,
+                    )
+
+                    with st.expander("Detailed stoichiometry audit", expanded=False):
                         audit_cols = st.columns(4)
                         audit_cols[0].metric("Solve basis", result.get("basis", "element balance"))
                         audit_cols[1].metric("Precursor formula mass", result.get("precursor_formula_mass", ""))
@@ -325,6 +346,17 @@ def render(ctx):
                                 + ", ".join(low_after_recipe)
                                 + f" will be below {LOW_STOCK_THRESHOLD_G:g} g."
                             )
+
+                    validation_warnings = recipe_validation_warnings(
+                        result,
+                        recipe_masses,
+                        stock_messages=stock_messages,
+                        planning_context=last_recipe,
+                    )
+                    if validation_warnings:
+                        with st.expander("Validation warnings", expanded=True):
+                            for warning in validation_warnings:
+                                st.warning(warning)
 
                     inputs_changed = last_recipe["signature"] != current_signature
                     if inputs_changed:
@@ -401,7 +433,11 @@ def render(ctx):
                         inventory_deducted = False
                         if deduct_inventory:
                             if latest_in_stock:
-                                consume_stock(latest_inventory, recipe_masses)
+                                consume_stock(
+                                    latest_inventory,
+                                    recipe_masses,
+                                    reason=f"Saved recipe for {normalize_formula(last_recipe['target'])}",
+                                )
                                 inventory_deducted = True
                             else:
                                 st.error(
@@ -434,5 +470,4 @@ def render(ctx):
 
                     if st.session_state.get("last_recipe_saved", False):
                         st.caption("This recipe has already been saved. Recalculate to save a new entry.")
-
 

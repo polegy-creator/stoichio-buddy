@@ -32,6 +32,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Save notes with recipe and target-density history entries
 - Delete individual history items or clear a whole history group
 - Inventory tables flag recipe shortages and stock below 10 g
+- Inventory ledger records manual edits, recipe deductions, and powder deletion stock changes
 - CSV export for recipes, powders, inventory, target lifecycle, and history
 
 ## Run locally
@@ -77,6 +78,7 @@ const TOKEN_PROPERTY = "STOICHIO_TOKEN";
 const TAB_BY_PATH = {
   "powders.json": "powders",
   "inventory.json": "inventory",
+  "inventory_log.json": "inventory_log",
   "history.json": "history",
   "material_densities.json": "material_densities",
 };
@@ -175,7 +177,7 @@ apps_script_url = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
 apps_script_token = "the-same-long-random-password"
 ```
 
-On first connection, the app will create four tabs in the sheet if needed: `powders`, `inventory`, `history`, and `material_densities`. If those tabs are empty, it seeds them from the local JSON files in the repository.
+On first connection, the app will create tabs in the sheet if needed: `powders`, `inventory`, `inventory_log`, `history`, and `material_densities`. If those tabs are empty, it seeds them from the local JSON files in the repository.
 
 ## Google Sheets shared storage, service account
 
@@ -223,6 +225,7 @@ There is also a template at `.streamlit/secrets.example.toml`. Do not commit a r
 - `atomic_masses.json`: atomic masses used for molar mass calculation
 - `powders.json`: powder formulas and element compositions
 - `inventory.json`: available grams by powder
+- `inventory_log.json`: inventory transaction ledger
 - `material_densities.json`: target material theoretical densities and unit cell data
 - `history.json`: saved recipe calculations
 

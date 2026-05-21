@@ -14,6 +14,28 @@ def render(ctx):
         if not lifecycle_groups:
             st.info("No saved target records yet.")
         else:
+            lifecycle_summaries = [
+                target_lifecycle_summary(group_key, entries)
+                for group_key, entries in lifecycle_groups
+            ]
+            complete_count = sum(
+                1 for summary in lifecycle_summaries
+                if target_lifecycle_status(summary) == "Complete"
+            )
+            needs_density_count = sum(
+                1 for summary in lifecycle_summaries
+                if target_lifecycle_status(summary) == "Needs density"
+            )
+            needs_recipe_count = sum(
+                1 for summary in lifecycle_summaries
+                if target_lifecycle_status(summary) == "Needs recipe"
+            )
+            status_cols = st.columns(4)
+            status_cols[0].metric("Target groups", len(lifecycle_groups))
+            status_cols[1].metric("Complete", complete_count)
+            status_cols[2].metric("Need density", needs_density_count)
+            status_cols[3].metric("Need recipe", needs_recipe_count)
+
             search_col, owner_col, status_col = st.columns([1.45, 0.9, 0.85], gap="small")
             lifecycle_search = search_col.text_input(
                 "Search targets",
@@ -50,6 +72,10 @@ def render(ctx):
                             "</div>",
                             unsafe_allow_html=True,
                         )
+                        if target_lifecycle_status(summary) == "Needs density":
+                            st.warning("Recipe saved, but no after-sintering density is linked yet.")
+                        elif target_lifecycle_status(summary) == "Needs recipe":
+                            st.warning("Density saved, but no before-sintering recipe is linked yet.")
                         st.download_button(
                             "Download Target Report HTML",
                             data=target_traceability_report_html(group_key, summary),

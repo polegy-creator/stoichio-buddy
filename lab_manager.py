@@ -19,12 +19,14 @@ from formula_parser import molar_mass, normalize_formula, parse_formula
 
 POWDERS_FILE = "powders.json"
 INVENTORY_FILE = "inventory.json"
+INVENTORY_LOG_FILE = "inventory_log.json"
 HISTORY_FILE = "history.json"
 MATERIAL_DENSITIES_FILE = "material_densities.json"
 
 SHEET_TABS = {
     POWDERS_FILE: "powders",
     INVENTORY_FILE: "inventory",
+    INVENTORY_LOG_FILE: "inventory_log",
     HISTORY_FILE: "history",
     MATERIAL_DENSITIES_FILE: "material_densities",
 }
@@ -406,8 +408,17 @@ def delete_powder(powder, remove_inventory=True):
 
     if remove_inventory:
         inventory = load_inventory()
-        inventory.pop(key, None)
+        before = inventory.pop(key, None)
         save_inventory(inventory)
+        if before is not None:
+            log_inventory_transaction(
+                key,
+                -float(before),
+                before_g=float(before),
+                after_g=0.0,
+                action="delete powder",
+                reason="Powder deleted from database",
+            )
 
     return powders
 
@@ -446,7 +457,15 @@ def normalize_density_record(formula, record):
         "source": str(record.get("source", "")).strip(),
         "notes": str(record.get("notes", "")).strip(),
         "origin": str(record.get("origin", record.get("added_by", "Lab entry"))).strip() or "Lab entry",
+        "verification_status": str(record.get("verification_status", "")).strip(),
+        "verified_by": str(record.get("verified_by", "")).strip(),
+        "verified_date": str(record.get("verified_date", "")).strip(),
     }
+    if not normalized["verification_status"]:
+        if normalized["origin"].lower().startswith("codex"):
+            normalized["verification_status"] = "Codex seeded - verify before use"
+        else:
+            normalized["verification_status"] = "Lab entry - unverified"
 
     volume = record.get("unit_cell_volume_A3")
     if volume not in (None, ""):
@@ -520,6 +539,9 @@ def upsert_material_density(
     reported_density=None,
     density_delta=None,
     density_validation="",
+    verification_status="Lab entry - unverified",
+    verified_by="",
+    verified_date="",
 ):
     records = load_material_densities()
     key = normalize_formula(formula)
@@ -543,6 +565,9 @@ def upsert_material_density(
         "source": source,
         "notes": notes,
         "origin": origin,
+        "verification_status": verification_status,
+        "verified_by": verified_by,
+        "verified_date": verified_date,
     }
     normalized = normalize_density_record(key, record)
     records[normalized["record_id"]] = normalized
@@ -584,26 +609,85 @@ def save_inventory(inventory):
     save_json(INVENTORY_FILE, inventory)
 
 
+def load_inventory_log():
+    raw_log = load_json(INVENTORY_LOG_FILE, [])
+    if not isinstance(raw_log, list):
+        return []
+    return [dict(entry) for entry in raw_log if isinstance(entry, dict)]
+
+
+def save_inventory_log(log_entries):
+    save_json(INVENTORY_LOG_FILE, log_entries)
+
+
+def log_inventory_transaction(
+    powder,
+    change_g,
+    before_g=None,
+    after_g=None,
+    action="manual update",
+    reason="",
+    recipe_id="",
+    notes="",
+):
+    key = normalize_powder(powder)
+    entry = {
+        "entry_id": uuid.uuid4().hex,
+        "time": datetime.datetime.now().isoformat(timespec="seconds"),
+        "powder": key,
+        "change_g": round(float(change_g), 6),
+        "before_g": None if before_g is None else round(float(before_g), 6),
+        "after_g": None if after_g is None else round(float(after_g), 6),
+        "action": str(action or "").strip(),
+        "reason": str(reason or "").strip(),
+        "recipe_id": str(recipe_id or "").strip(),
+        "notes": str(notes or "").strip(),
+    }
+    log_entries = load_inventory_log()
+    log_entries.append(entry)
+    save_inventory_log(log_entries)
+    return entry
+
+
 def add_to_inventory(powder, grams):
     inventory = load_inventory()
     key = normalize_powder(powder)
-
-    inventory[key] = inventory.get(key, 0.0) + float(grams)
+    before = inventory.get(key, 0.0)
+    inventory[key] = before + float(grams)
 
     save_inventory(inventory)
+    log_inventory_transaction(
+        key,
+        float(grams),
+        before_g=before,
+        after_g=inventory[key],
+        action="add inventory",
+    )
     return inventory
 
 
-def set_inventory_quantity(powder, grams):
+def set_inventory_quantity(powder, grams, reason="manual quantity set"):
     inventory = load_inventory()
     key = normalize_powder(powder)
+    before = inventory.get(key, 0.0)
 
     if grams <= 0:
         inventory.pop(key, None)
+        after = 0.0
     else:
         inventory[key] = float(grams)
+        after = float(grams)
 
     save_inventory(inventory)
+    if round(after - before, 6) != 0:
+        log_inventory_transaction(
+            key,
+            after - before,
+            before_g=before,
+            after_g=after,
+            action="set quantity",
+            reason=reason,
+        )
     return inventory
 
 # =========================
@@ -625,16 +709,29 @@ def check_stock(inventory, recipe):
     return len(missing) == 0, missing
 
 
-def consume_stock(inventory, recipe):
+def consume_stock(inventory, recipe, reason="recipe deduction", recipe_id=""):
+    transactions = []
     for powder, amount in recipe.items():
         key = normalize_powder(powder)
 
         if key in inventory:
+            before = float(inventory[key])
             inventory[key] -= amount
             if inventory[key] < 0:
                 inventory[key] = 0
+            transactions.append((key, -float(amount), before, float(inventory[key])))
 
     save_inventory(inventory)
+    for key, change, before, after in transactions:
+        log_inventory_transaction(
+            key,
+            change,
+            before_g=before,
+            after_g=after,
+            action="recipe deduction",
+            reason=reason,
+            recipe_id=recipe_id,
+        )
     return inventory
 
 # =========================
@@ -944,6 +1041,14 @@ def validate_backup_data(backup):
             if not isinstance(entry, dict):
                 errors.append(f"History entry {index} must be an object")
 
+    inventory_log = backup.get("inventory_log", [])
+    if not isinstance(inventory_log, list):
+        errors.append("inventory_log must be a list")
+    else:
+        for index, entry in enumerate(inventory_log, start=1):
+            if not isinstance(entry, dict):
+                errors.append(f"Inventory log entry {index} must be an object")
+
     return errors
 
 
@@ -965,15 +1070,18 @@ def restore_backup_data(backup):
         normalized_record = normalize_density_record(record_key, record)
         material_densities[normalized_record["record_id"]] = normalized_record
     history = [dict(entry) for entry in backup.get("history", [])]
+    inventory_log = [dict(entry) for entry in backup.get("inventory_log", [])]
 
     save_powders(powders)
     save_inventory(inventory)
+    save_inventory_log(inventory_log)
     save_material_densities(material_densities)
     save_history(history)
 
     return {
         "powders": len(powders),
         "inventory": len(inventory),
+        "inventory_log": len(inventory_log),
         "material_densities": len(material_densities),
         "history": len(history),
     }
