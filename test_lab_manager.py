@@ -148,6 +148,76 @@ class LabManagerMaterialDensityTests(unittest.TestCase):
         self.assertEqual(record["verified_by"], "Daniel")
         self.assertEqual(record["verified_date"], "2026-05-21")
 
+    def test_only_one_density_record_is_preferred_per_formula(self):
+        hematite_key, _ = lab_manager.upsert_material_density(
+            "Fe2O3",
+            phase="hematite",
+            theoretical_density=5.25,
+            verification_status="Preferred for formula",
+            verified_by="Daniel",
+            verified_date="2026-05-21",
+        )
+        corundum_key, records = lab_manager.upsert_material_density(
+            "Fe2O3",
+            phase="corundum check",
+            theoretical_density=5.24,
+            verification_status="Preferred for formula",
+            verified_by="Maya",
+            verified_date="2026-05-22",
+        )
+
+        self.assertEqual(records[corundum_key]["verification_status"], "Preferred for formula")
+        self.assertEqual(records[hematite_key]["verification_status"], "Lab checked")
+
+    def test_review_status_helpers_update_and_prefer_records(self):
+        rutile_key, _ = lab_manager.upsert_material_density(
+            "TiO2",
+            phase="rutile",
+            theoretical_density=4.25,
+            verification_status="Codex seeded - verify before use",
+        )
+        anatase_key, _ = lab_manager.upsert_material_density(
+            "TiO2",
+            phase="anatase",
+            theoretical_density=3.89,
+            verification_status="Lab entry - unverified",
+        )
+
+        _, records = lab_manager.update_material_density_review_status(
+            rutile_key,
+            "Lab checked",
+            verified_by="Daniel",
+            verified_date="2026-05-21",
+        )
+        self.assertEqual(records[rutile_key]["verification_status"], "Lab checked")
+        self.assertEqual(records[rutile_key]["verified_by"], "Daniel")
+
+        _, records = lab_manager.set_preferred_material_density(
+            anatase_key,
+            verified_by="Maya",
+            verified_date="2026-05-22",
+        )
+        self.assertEqual(records[anatase_key]["verification_status"], "Preferred for formula")
+        self.assertEqual(records[rutile_key]["verification_status"], "Lab checked")
+
+    def test_related_density_records_prefer_reviewed_sources(self):
+        records = {
+            "Fe2O3__codex": {
+                "formula": "Fe2O3",
+                "phase": "codex",
+                "verification_status": "Codex seeded - verify before use",
+            },
+            "Fe2O3__preferred": {
+                "formula": "Fe2O3",
+                "phase": "preferred",
+                "verification_status": "Preferred for formula",
+            },
+        }
+
+        related = lab_manager.related_material_density_records("Fe1.98Ti0.02O3", records)
+
+        self.assertEqual(related[0][0], "Fe2O3__preferred")
+
 
 class LabManagerInventoryLogTests(unittest.TestCase):
     def setUp(self):

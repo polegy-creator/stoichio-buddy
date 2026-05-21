@@ -41,9 +41,11 @@ from lab_manager import (
     log_target_density,
     related_material_density_records,
     restore_backup_data,
+    set_preferred_material_density,
     set_inventory_quantity,
     storage_error,
     storage_label,
+    update_material_density_review_status,
     upsert_material_density,
     validate_backup_data,
 )
@@ -801,7 +803,9 @@ def density_record_is_blocked(record):
 
 def density_record_sort_key(record_key, record):
     status = density_trust_status(record).lower()
-    if "preferred" in status:
+    if "do not use" in status:
+        trust_rank = 99
+    elif "preferred" in status:
         trust_rank = 0
     elif "checked" in status:
         trust_rank = 1

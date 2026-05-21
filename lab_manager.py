@@ -23,6 +23,12 @@ INVENTORY_LOG_FILE = "inventory_log.json"
 HISTORY_FILE = "history.json"
 MATERIAL_DENSITIES_FILE = "material_densities.json"
 
+PREFERRED_DENSITY_STATUS = "Preferred for formula"
+LAB_CHECKED_DENSITY_STATUS = "Lab checked"
+LAB_UNVERIFIED_DENSITY_STATUS = "Lab entry - unverified"
+CODEX_UNVERIFIED_DENSITY_STATUS = "Codex seeded - verify before use"
+BLOCKED_DENSITY_STATUS = "Do not use"
+
 SHEET_TABS = {
     POWDERS_FILE: "powders",
     INVENTORY_FILE: "inventory",
@@ -56,6 +62,30 @@ def formula_cation_elements(formula):
     return {element for element in composition if element != "O"}
 
 
+def material_density_status(record):
+    status = str(record.get("verification_status", "")).strip()
+    if status:
+        return status
+    if str(record.get("origin", "")).lower().startswith("codex"):
+        return CODEX_UNVERIFIED_DENSITY_STATUS
+    return LAB_UNVERIFIED_DENSITY_STATUS
+
+
+def material_density_trust_rank(record):
+    status = material_density_status(record).lower()
+    if "do not use" in status:
+        return 99
+    if "preferred" in status:
+        return 0
+    if "checked" in status:
+        return 1
+    if "lab entry" in status:
+        return 2
+    if "codex" in status:
+        return 3
+    return 4
+
+
 def related_material_density_records(target, material_densities):
     try:
         target_elements = formula_cation_elements(target)
@@ -80,6 +110,7 @@ def related_material_density_records(target, material_densities):
             (
                 -len(overlap),
                 len(record_elements - target_elements),
+                material_density_trust_rank(record),
                 record.get("formula", record_key),
                 record.get("phase", ""),
                 record.get("display_name", record_key),
@@ -519,6 +550,61 @@ def save_material_densities(records):
     save_json(MATERIAL_DENSITIES_FILE, records)
 
 
+def resolve_material_density_key(identifier, records):
+    key = str(identifier).strip()
+    if key not in records:
+        key = material_density_record_key(identifier)
+    if key not in records:
+        raise ValueError(f"Material density not found: {identifier}")
+    return key
+
+
+def demote_other_preferred_material_densities(records, preferred_key):
+    preferred_formula = records[preferred_key].get("formula")
+    if not preferred_formula:
+        return records
+
+    for record_key, record in records.items():
+        if record_key == preferred_key:
+            continue
+        if record.get("formula") != preferred_formula:
+            continue
+        if "preferred" in material_density_status(record).lower():
+            record["verification_status"] = LAB_CHECKED_DENSITY_STATUS
+    return records
+
+
+def set_preferred_material_density(identifier, verified_by="", verified_date=""):
+    records = load_material_densities()
+    key = resolve_material_density_key(identifier, records)
+    record = dict(records[key])
+    record["verification_status"] = PREFERRED_DENSITY_STATUS
+    record["verified_by"] = str(verified_by or record.get("verified_by", "")).strip()
+    record["verified_date"] = str(verified_date or record.get("verified_date", "")).strip()
+    records[key] = normalize_density_record(key, record)
+    demote_other_preferred_material_densities(records, key)
+    save_material_densities(records)
+    return key, records
+
+
+def update_material_density_review_status(identifier, verification_status, verified_by="", verified_date=""):
+    status = str(verification_status or "").strip()
+    if not status:
+        raise ValueError("Choose a density review status")
+    if "preferred" in status.lower():
+        return set_preferred_material_density(identifier, verified_by, verified_date)
+
+    records = load_material_densities()
+    key = resolve_material_density_key(identifier, records)
+    record = dict(records[key])
+    record["verification_status"] = status
+    record["verified_by"] = str(verified_by or record.get("verified_by", "")).strip()
+    record["verified_date"] = str(verified_date or record.get("verified_date", "")).strip()
+    records[key] = normalize_density_record(key, record)
+    save_material_densities(records)
+    return key, records
+
+
 def upsert_material_density(
     formula,
     phase="",
@@ -571,17 +657,15 @@ def upsert_material_density(
     }
     normalized = normalize_density_record(key, record)
     records[normalized["record_id"]] = normalized
+    if "preferred" in material_density_status(normalized).lower():
+        demote_other_preferred_material_densities(records, normalized["record_id"])
     save_material_densities(records)
     return normalized["record_id"], records
 
 
 def delete_material_density(identifier):
     records = load_material_densities()
-    key = str(identifier).strip()
-    if key not in records:
-        key = material_density_record_key(identifier)
-    if key not in records:
-        raise ValueError(f"Material density not found: {identifier}")
+    key = resolve_material_density_key(identifier, records)
     records.pop(key)
     save_material_densities(records)
     return records

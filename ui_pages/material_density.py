@@ -165,6 +165,90 @@ def render(ctx):
                 st.error(str(exc))
 
         st.divider()
+        st.markdown("#### Review density sources")
+        review_scope = st.radio(
+            "Review list",
+            ["Needs review", "All records"],
+            horizontal=True,
+            key="density_review_scope",
+        )
+        if review_scope == "Needs review":
+            review_records = [
+                (record_key, record)
+                for record_key, record in material_densities.items()
+                if not density_record_is_verified(record) and not density_record_is_blocked(record)
+            ]
+        else:
+            review_records = sorted(
+                material_densities.items(),
+                key=lambda item: density_record_sort_key(item[0], item[1]),
+            )
+
+        if not review_records:
+            st.info("No density records need review.")
+        else:
+            review_target = st.selectbox(
+                "Density record",
+                [record_key for record_key, _ in review_records],
+                format_func=lambda value: density_record_label(value, material_densities[value]),
+                key="density_review_target",
+            )
+            review_record = material_densities[review_target]
+            st.caption(
+                f"Formula: {review_record.get('formula', review_target)}"
+                f" | phase: {review_record.get('phase') or 'none'}"
+                f" | source: {review_record.get('source') or review_record.get('density_source') or 'not listed'}"
+            )
+            reviewer_cols = st.columns([1, 1], gap="small")
+            density_reviewer = reviewer_cols[0].text_input(
+                "Reviewed by",
+                placeholder="Name",
+                key="density_review_by",
+            )
+            density_review_date = reviewer_cols[1].text_input(
+                "Review date",
+                value=datetime.now().date().isoformat(),
+                placeholder="YYYY-MM-DD",
+                key="density_review_date",
+            )
+            action_cols = st.columns(3, gap="small")
+            if action_cols[0].button("Mark Checked", width="stretch"):
+                try:
+                    update_material_density_review_status(
+                        review_target,
+                        "Lab checked",
+                        verified_by=density_reviewer,
+                        verified_date=density_review_date,
+                    )
+                    clear_data_cache()
+                    st.rerun()
+                except ValueError as exc:
+                    st.error(str(exc))
+            if action_cols[1].button("Make Preferred", width="stretch"):
+                try:
+                    set_preferred_material_density(
+                        review_target,
+                        verified_by=density_reviewer,
+                        verified_date=density_review_date,
+                    )
+                    clear_data_cache()
+                    st.rerun()
+                except ValueError as exc:
+                    st.error(str(exc))
+            if action_cols[2].button("Do Not Use", width="stretch"):
+                try:
+                    update_material_density_review_status(
+                        review_target,
+                        "Do not use",
+                        verified_by=density_reviewer,
+                        verified_date=density_review_date,
+                    )
+                    clear_data_cache()
+                    st.rerun()
+                except ValueError as exc:
+                    st.error(str(exc))
+
+        st.divider()
         st.markdown("#### Delete target density")
         density_delete_target = st.selectbox(
             "Density record to delete",
@@ -183,6 +267,35 @@ def render(ctx):
                 st.error(str(exc))
 
     with table_col:
+        preferred_records = {
+            record_key: record
+            for record_key, record in material_densities.items()
+            if "preferred" in density_trust_status(record).lower()
+        }
+        if preferred_records:
+            st.markdown("#### Preferred defaults")
+            preferred_df = material_density_dataframe(preferred_records)
+            display_dataframe(
+                preferred_df[
+                    [
+                        "Record",
+                        "Formula",
+                        "Phase",
+                        "Theoretical density (g/cm3)",
+                        "Verified by",
+                        "Verified date",
+                        "Reference",
+                    ]
+                ],
+                theme_mode,
+                row_class_func=lambda row: "codex-seeded"
+                if str(row.get("Reference", "")).lower().startswith("codex")
+                else "",
+                width="stretch",
+                hide_index=True,
+            )
+            st.caption("These are the first records chosen automatically for exact formula matches.")
+
         st.markdown("#### Known densities")
         density_df = material_density_dataframe(material_densities)
         if density_df.empty:
@@ -244,4 +357,3 @@ def render(ctx):
                 mime="text/csv",
                 width="stretch",
             )
-
