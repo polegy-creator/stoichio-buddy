@@ -8,6 +8,7 @@ from types import SimpleNamespace
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from stoichio.chemistry.density_engine import (
     DEFAULT_DIE_DIAMETER_MM,
@@ -81,9 +82,9 @@ DATA_CACHE_TTL_SECONDS = 20
 LOW_STOCK_THRESHOLD_G = 10.0
 
 
-def apply_theme(mode):
+def theme_colors(mode):
     if mode == "Dark":
-        colors = {
+        return {
             "accent": "#f59f3a",
             "accent_soft": "#3a2a17",
             "background": "#0d151b",
@@ -103,27 +104,31 @@ def apply_theme(mode):
             "table_bg": "#10212c",
             "table_header": "#183442",
         }
-    else:
-        colors = {
-            "accent": "#f59f3a",
-            "accent_soft": "#fff2df",
-            "background": "#ffffff",
-            "surface": "#ffffff",
-            "panel": "#f7fafb",
-            "sidebar": "#f7fafb",
-            "border": "#d7dee4",
-            "text": "#16232e",
-            "muted": "#5d6b78",
-            "input": "#ffffff",
-            "control_bg": "#ffffff",
-            "control_text": "#16232e",
-            "control_border": "#d7dee4",
-            "button_bg": "#f59f3a",
-            "button_text": "#1f1308",
-            "primary_text": "#1f1308",
-            "table_bg": "#edf7fb",
-            "table_header": "#d5eaf2",
-        }
+
+    return {
+        "accent": "#f59f3a",
+        "accent_soft": "#fff2df",
+        "background": "#ffffff",
+        "surface": "#ffffff",
+        "panel": "#f7fafb",
+        "sidebar": "#f7fafb",
+        "border": "#d7dee4",
+        "text": "#16232e",
+        "muted": "#5d6b78",
+        "input": "#ffffff",
+        "control_bg": "#ffffff",
+        "control_text": "#16232e",
+        "control_border": "#d7dee4",
+        "button_bg": "#f59f3a",
+        "button_text": "#1f1308",
+        "primary_text": "#1f1308",
+        "table_bg": "#edf7fb",
+        "table_header": "#d5eaf2",
+    }
+
+
+def apply_theme(mode):
+    colors = theme_colors(mode)
 
     css = """
     <style>
@@ -448,6 +453,7 @@ def apply_theme(mode):
         border: 1px solid var(--sb-border);
         border-radius: 8px;
         background: var(--sb-table-bg);
+        cursor: grab;
         margin-bottom: 0.75rem;
     }
 
@@ -2145,21 +2151,208 @@ def backup_counts(backup):
 
 
 def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
+    colors = theme_colors(theme_mode)
+    row_count = len(df.index)
+    frame_height = min(720, max(150, 44 * (row_count + 1) + 18))
+    scroll_height = max(120, frame_height - 12)
+
     table_rows = []
-    headers = "".join(f"<th>{html.escape(str(column))}</th>" for column in df.columns)
+    headers = "".join(
+        f'<th title="{html.escape(str(column), quote=True)}">{html.escape(str(column))}</th>'
+        for column in df.columns
+    )
     table_rows.append(f"<tr>{headers}</tr>")
 
     for _, row in df.iterrows():
         row_class = row_class_func(row) if row_class_func else ""
         class_attr = f' class="{html.escape(row_class)}"' if row_class else ""
-        cells = "".join(f"<td>{html.escape(str(value))}</td>" for value in row)
+        cells = "".join(
+            f'<td title="{html.escape(str(value), quote=True)}">{html.escape(str(value))}</td>'
+            for value in row
+        )
         table_rows.append(f"<tr{class_attr}>{cells}</tr>")
 
-    st.markdown(
-        '<div class="sb-table-wrap"><table class="sb-table">'
-        + "".join(table_rows)
-        + "</table></div>",
-        unsafe_allow_html=True,
+    table_html = "".join(table_rows)
+    components.html(
+        f"""
+        <!doctype html>
+        <html>
+        <head>
+        <style>
+            :root {{
+                --sb-accent: {colors["accent"]};
+                --sb-bg: {colors["background"]};
+                --sb-border: {colors["border"]};
+                --sb-panel: {colors["panel"]};
+                --sb-table-bg: {colors["table_bg"]};
+                --sb-table-header: {colors["table_header"]};
+                --sb-text: {colors["text"]};
+            }}
+
+            html,
+            body {{
+                margin: 0;
+                padding: 0;
+                background: transparent;
+                color: var(--sb-text);
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                overflow: hidden;
+            }}
+
+            .sb-table-wrap {{
+                width: 100%;
+                max-height: {scroll_height}px;
+                overflow: auto;
+                overscroll-behavior: contain;
+                border: 1px solid var(--sb-border);
+                border-radius: 8px;
+                background: var(--sb-table-bg);
+                cursor: grab;
+                scrollbar-width: auto;
+                scrollbar-color: var(--sb-accent) var(--sb-panel);
+                scrollbar-gutter: stable;
+                box-sizing: border-box;
+            }}
+
+            .sb-table-wrap.dragging,
+            .sb-table-wrap.dragging * {{
+                cursor: grabbing !important;
+                user-select: none !important;
+                -webkit-user-select: none !important;
+            }}
+
+            .sb-table-wrap::-webkit-scrollbar {{
+                width: 14px;
+                height: 14px;
+            }}
+
+            .sb-table-wrap::-webkit-scrollbar-track {{
+                background: var(--sb-panel);
+                border-radius: 999px;
+            }}
+
+            .sb-table-wrap::-webkit-scrollbar-thumb {{
+                background: var(--sb-accent);
+                border: 3px solid var(--sb-panel);
+                border-radius: 999px;
+            }}
+
+            .sb-table {{
+                min-width: 100%;
+                border-collapse: collapse;
+                background: var(--sb-table-bg);
+                color: var(--sb-text);
+                font-size: 0.92rem;
+            }}
+
+            .sb-table th {{
+                background: var(--sb-table-header);
+                color: var(--sb-text);
+                font-weight: 750;
+                text-align: left;
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                padding: 0.65rem 0.75rem;
+                border-bottom: 1px solid var(--sb-border);
+                white-space: nowrap;
+            }}
+
+            .sb-table td {{
+                background: var(--sb-table-bg);
+                color: var(--sb-text);
+                padding: 0.6rem 0.75rem;
+                border-bottom: 1px solid var(--sb-border);
+                white-space: nowrap;
+            }}
+
+            .sb-table tr:last-child td {{
+                border-bottom: 0;
+            }}
+
+            .sb-table tr.stock-low td {{
+                background: color-mix(in srgb, var(--sb-accent) 18%, var(--sb-table-bg)) !important;
+                border-left: 3px solid var(--sb-accent);
+            }}
+
+            .sb-table tr.stock-short td,
+            .sb-table tr.stock-empty td,
+            .sb-table tr.stock-missing td {{
+                background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
+                border-left: 3px solid #d64a4a;
+            }}
+
+            .sb-table tr.codex-seeded td {{
+                background: color-mix(in srgb, #2f80ed 18%, var(--sb-table-bg)) !important;
+                border-left: 3px solid #2f80ed;
+            }}
+        </style>
+        </head>
+        <body>
+            <div class="sb-table-wrap" aria-label="Scrollable data table">
+                <table class="sb-table">{table_html}</table>
+            </div>
+            <script>
+            (() => {{
+                const wrap = document.querySelector(".sb-table-wrap");
+                let drag = null;
+                let suppressClick = false;
+
+                wrap.addEventListener("mousedown", (event) => {{
+                    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey) {{
+                        return;
+                    }}
+                    drag = {{
+                        startX: event.clientX,
+                        startY: event.clientY,
+                        scrollLeft: wrap.scrollLeft,
+                        scrollTop: wrap.scrollTop,
+                        moved: false
+                    }};
+                    wrap.classList.add("dragging");
+                    event.preventDefault();
+                }});
+
+                window.addEventListener("mousemove", (event) => {{
+                    if (!drag) {{
+                        return;
+                    }}
+                    const dx = event.clientX - drag.startX;
+                    const dy = event.clientY - drag.startY;
+                    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {{
+                        drag.moved = true;
+                        suppressClick = true;
+                    }}
+                    wrap.scrollLeft = drag.scrollLeft - dx;
+                    wrap.scrollTop = drag.scrollTop - dy;
+                    event.preventDefault();
+                }});
+
+                function endDrag() {{
+                    drag = null;
+                    wrap.classList.remove("dragging");
+                    setTimeout(() => {{
+                        suppressClick = false;
+                    }}, 0);
+                }}
+
+                window.addEventListener("mouseup", endDrag);
+                window.addEventListener("mouseleave", endDrag);
+                wrap.addEventListener("click", (event) => {{
+                    if (!suppressClick) {{
+                        return;
+                    }}
+                    suppressClick = false;
+                    event.preventDefault();
+                    event.stopPropagation();
+                }}, true);
+            }})();
+            </script>
+        </body>
+        </html>
+        """,
+        height=frame_height,
+        scrolling=False,
     )
 
 
