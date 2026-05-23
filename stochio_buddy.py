@@ -500,6 +500,14 @@ def apply_theme(mode):
         overflow-wrap: anywhere;
     }
 
+    .sb-table th.sb-cell-full,
+    .sb-table td.sb-cell-full {
+        min-width: 260px;
+        max-width: none;
+        white-space: nowrap;
+        overflow-wrap: normal;
+    }
+
     .sb-table td .sb-cell-content {
         display: block;
     }
@@ -510,6 +518,18 @@ def apply_theme(mode):
         overflow: hidden;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
+    }
+
+    .sb-table td.sb-cell-full .sb-cell-content {
+        display: block;
+        max-height: none;
+        overflow: visible;
+        -webkit-line-clamp: unset;
+    }
+
+    .sb-table td.sb-cell-full a {
+        white-space: nowrap;
+        overflow-wrap: normal;
     }
 
     .sb-table td.sb-cell-wrap a {
@@ -2193,7 +2213,8 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     colors = theme_colors(theme_mode)
     row_count = len(df.index)
     content_height = 74 * (row_count + 1) + 28
-    frame_height = min(9000, max(220, content_height))
+    frame_height = min(12000, max(220, content_height))
+    full_text_column_terms = ("reference", "source")
     wrap_column_terms = (
         "check",
         "composition",
@@ -2209,8 +2230,14 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
         "warning",
     )
 
+    def is_full_text_column(column):
+        column_text = str(column).strip().lower()
+        return any(term in column_text for term in full_text_column_terms)
+
     def column_class(column):
         column_text = str(column).strip().lower()
+        if is_full_text_column(column):
+            return "sb-cell-full"
         if any(term in column_text for term in wrap_column_terms):
             return "sb-cell-wrap"
         return "sb-cell-compact"
@@ -2403,6 +2430,14 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 overflow-wrap: anywhere;
             }}
 
+            .sb-table th.sb-cell-full,
+            .sb-table td.sb-cell-full {{
+                min-width: 260px;
+                max-width: none;
+                white-space: nowrap;
+                overflow-wrap: normal;
+            }}
+
             .sb-table td .sb-cell-content {{
                 display: block;
             }}
@@ -2413,6 +2448,18 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 overflow: hidden;
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 3;
+            }}
+
+            .sb-table td.sb-cell-full .sb-cell-content {{
+                display: block;
+                max-height: none;
+                overflow: visible;
+                -webkit-line-clamp: unset;
+            }}
+
+            .sb-table td.sb-cell-full a {{
+                white-space: nowrap;
+                overflow-wrap: normal;
             }}
 
             .sb-table td.sb-cell-wrap a {{
