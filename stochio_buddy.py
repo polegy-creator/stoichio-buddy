@@ -154,6 +154,44 @@ def apply_theme(mode):
         color: var(--sb-text);
     }
 
+    html,
+    body,
+    .stApp,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="stSidebarContent"],
+    .sb-table-wrap {
+        scrollbar-width: auto;
+        scrollbar-color: var(--sb-accent) var(--sb-panel);
+        scrollbar-gutter: stable;
+    }
+
+    ::-webkit-scrollbar {
+        width: 14px;
+        height: 14px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--sb-panel);
+        border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: color-mix(in srgb, var(--sb-accent) 82%, var(--sb-border));
+        border: 3px solid var(--sb-panel);
+        border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--sb-accent);
+    }
+
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    [data-testid="stSidebarContent"] {
+        overflow-y: auto;
+    }
+
     .block-container {
         max-width: 1180px;
         padding-top: 1.6rem;
@@ -404,7 +442,9 @@ def apply_theme(mode):
 
     .sb-table-wrap {
         width: 100%;
-        overflow-x: auto;
+        max-height: min(72vh, 720px);
+        overflow: auto;
+        overscroll-behavior: contain;
         border: 1px solid var(--sb-border);
         border-radius: 8px;
         background: var(--sb-table-bg);
@@ -412,7 +452,7 @@ def apply_theme(mode):
     }
 
     .sb-table {
-        width: 100%;
+        min-width: 100%;
         border-collapse: collapse;
         background: var(--sb-table-bg);
         color: var(--sb-text);
@@ -424,6 +464,9 @@ def apply_theme(mode):
         color: var(--sb-text);
         font-weight: 750;
         text-align: left;
+        position: sticky;
+        top: 0;
+        z-index: 2;
         padding: 0.65rem 0.75rem;
         border-bottom: 1px solid var(--sb-border);
     }
