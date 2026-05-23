@@ -518,12 +518,12 @@ def apply_theme(mode):
 
     .sb-table td:first-child,
     .sb-table th:first-child {
-        padding-left: 2.1rem;
+        padding-left: 1rem;
     }
 
     .sb-table td:last-child,
     .sb-table th:last-child {
-        padding-right: 2.1rem;
+        padding-right: 1rem;
     }
 
     .sb-table tr:last-child td {
@@ -534,28 +534,14 @@ def apply_theme(mode):
         background: color-mix(in srgb, var(--sb-accent) 18%, var(--sb-table-bg)) !important;
     }
 
-    .sb-table tr.stock-low td:first-child {
-        border-left: 3px solid var(--sb-accent);
-    }
-
     .sb-table tr.stock-short td,
     .sb-table tr.stock-empty td,
     .sb-table tr.stock-missing td {
         background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
     }
 
-    .sb-table tr.stock-short td:first-child,
-    .sb-table tr.stock-empty td:first-child,
-    .sb-table tr.stock-missing td:first-child {
-        border-left: 3px solid #d64a4a;
-    }
-
     .sb-table tr.codex-seeded td {
         background: color-mix(in srgb, #2f80ed 18%, var(--sb-table-bg)) !important;
-    }
-
-    .sb-table tr.codex-seeded td:first-child {
-        border-left: 3px solid #2f80ed;
     }
 
     .history-item {
@@ -2302,6 +2288,11 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
             .sb-table-shell {{
                 position: relative;
                 width: 100%;
+                padding: 0 12px;
+                border: 1px solid var(--sb-border);
+                border-radius: 8px;
+                background: var(--sb-table-bg);
+                box-sizing: border-box;
             }}
 
             .sb-table-wrap {{
@@ -2309,8 +2300,8 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 max-height: none;
                 overflow: auto;
                 overscroll-behavior: contain;
-                border: 1px solid var(--sb-border);
-                border-radius: 8px;
+                border: 0;
+                border-radius: 0;
                 background: var(--sb-table-bg);
                 scrollbar-width: thin;
                 scrollbar-color: color-mix(in srgb, var(--sb-accent) 42%, transparent) transparent;
@@ -2318,76 +2309,25 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 box-sizing: border-box;
             }}
 
-            .sb-table-drag-edge {{
+            .sb-table-pan-zone {{
                 position: absolute;
-                top: 1px;
-                bottom: 9px;
-                width: 32px;
+                top: 0;
+                bottom: 8px;
+                width: 18px;
                 z-index: 10;
                 cursor: grab;
                 background: transparent;
-                border-radius: 7px;
-                transition: background 120ms ease, box-shadow 120ms ease;
             }}
 
-            .sb-table-drag-edge.left {{
-                left: 1px;
-                box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sb-accent) 55%, transparent);
+            .sb-table-pan-zone.left {{
+                left: 0;
             }}
 
-            .sb-table-drag-edge.right {{
-                right: 9px;
-                box-shadow: inset -3px 0 0 color-mix(in srgb, var(--sb-accent) 55%, transparent);
+            .sb-table-pan-zone.right {{
+                right: 0;
             }}
 
-            .sb-table-drag-edge:hover,
-            .sb-table-drag-edge.dragging {{
-                background: color-mix(in srgb, var(--sb-accent) 16%, transparent);
-                box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent);
-            }}
-
-            .sb-table-drag-edge.left:hover,
-            .sb-table-drag-edge.left.dragging {{
-                box-shadow:
-                    inset 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent),
-                    inset 4px 0 0 var(--sb-accent);
-            }}
-
-            .sb-table-drag-edge.right:hover,
-            .sb-table-drag-edge.right.dragging {{
-                box-shadow:
-                    inset 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent),
-                    inset -4px 0 0 var(--sb-accent);
-            }}
-
-            .sb-table-drag-edge::before {{
-                content: "";
-                position: absolute;
-                top: 50%;
-                width: 4px;
-                height: min(72px, 32%);
-                min-height: 42px;
-                transform: translateY(-50%);
-                border-radius: 999px;
-                background: var(--sb-accent);
-                opacity: 0.48;
-                box-shadow: 0 0 0 1px color-mix(in srgb, var(--sb-bg) 45%, transparent);
-            }}
-
-            .sb-table-drag-edge.left::before {{
-                left: 11px;
-            }}
-
-            .sb-table-drag-edge.right::before {{
-                right: 11px;
-            }}
-
-            .sb-table-drag-edge:hover::before,
-            .sb-table-drag-edge.dragging::before {{
-                opacity: 0.92;
-            }}
-
-            .sb-table-drag-edge.dragging {{
+            .sb-table-pan-zone.dragging {{
                 cursor: grabbing !important;
                 user-select: none !important;
                 -webkit-user-select: none !important;
@@ -2481,12 +2421,12 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
 
             .sb-table td:first-child,
             .sb-table th:first-child {{
-                padding-left: 2.2rem;
+                padding-left: 1rem;
             }}
 
             .sb-table td:last-child,
             .sb-table th:last-child {{
-                padding-right: 2.2rem;
+                padding-right: 1rem;
             }}
 
             .sb-table tr:last-child td {{
@@ -2497,28 +2437,14 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 background: color-mix(in srgb, var(--sb-accent) 18%, var(--sb-table-bg)) !important;
             }}
 
-            .sb-table tr.stock-low td:first-child {{
-                border-left: 3px solid var(--sb-accent);
-            }}
-
             .sb-table tr.stock-short td,
             .sb-table tr.stock-empty td,
             .sb-table tr.stock-missing td {{
                 background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
             }}
 
-            .sb-table tr.stock-short td:first-child,
-            .sb-table tr.stock-empty td:first-child,
-            .sb-table tr.stock-missing td:first-child {{
-                border-left: 3px solid #d64a4a;
-            }}
-
             .sb-table tr.codex-seeded td {{
                 background: color-mix(in srgb, #2f80ed 18%, var(--sb-table-bg)) !important;
-            }}
-
-            .sb-table tr.codex-seeded td:first-child {{
-                border-left: 3px solid #2f80ed;
             }}
         </style>
         </head>
@@ -2527,17 +2453,17 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 <div class="sb-table-wrap" aria-label="Scrollable data table">
                     <table class="sb-table">{table_html}</table>
                 </div>
-                <div class="sb-table-drag-edge left" title="Drag the table edge to move" aria-label="Drag table left edge"></div>
-                <div class="sb-table-drag-edge right" title="Drag the table edge to move" aria-label="Drag table right edge"></div>
+                <div class="sb-table-pan-zone left" title="Drag the table frame to move" aria-label="Drag table left frame"></div>
+                <div class="sb-table-pan-zone right" title="Drag the table frame to move" aria-label="Drag table right frame"></div>
             </div>
             <script>
             (() => {{
                 const wrap = document.querySelector(".sb-table-wrap");
-                const dragEdges = document.querySelectorAll(".sb-table-drag-edge");
+                const panZones = document.querySelectorAll(".sb-table-pan-zone");
                 let drag = null;
                 let suppressClick = false;
 
-                dragEdges.forEach((dragEdge) => dragEdge.addEventListener("mousedown", (event) => {{
+                panZones.forEach((panZone) => panZone.addEventListener("mousedown", (event) => {{
                     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey) {{
                         return;
                     }}
@@ -2547,9 +2473,9 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                         scrollLeft: wrap.scrollLeft,
                         scrollTop: wrap.scrollTop,
                         moved: false,
-                        dragEdge
+                        panZone
                     }};
-                    dragEdge.classList.add("dragging");
+                    panZone.classList.add("dragging");
                     event.preventDefault();
                 }}));
 
@@ -2569,8 +2495,8 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 }});
 
                 function endDrag() {{
-                    if (drag && drag.dragEdge) {{
-                        drag.dragEdge.classList.remove("dragging");
+                    if (drag && drag.panZone) {{
+                        drag.panZone.classList.remove("dragging");
                     }}
                     drag = null;
                     setTimeout(() => {{
@@ -2580,7 +2506,7 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
 
                 window.addEventListener("mouseup", endDrag);
                 window.addEventListener("mouseleave", endDrag);
-                dragEdges.forEach((dragEdge) => dragEdge.addEventListener("click", (event) => {{
+                panZones.forEach((panZone) => panZone.addEventListener("click", (event) => {{
                     if (!suppressClick) {{
                         return;
                     }}
