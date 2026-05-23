@@ -1,6 +1,7 @@
 import json
 import html
 import hashlib
+import re
 from collections import defaultdict
 from datetime import datetime
 from io import StringIO
@@ -2153,8 +2154,34 @@ def backup_counts(backup):
 def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     colors = theme_colors(theme_mode)
     row_count = len(df.index)
-    frame_height = min(720, max(150, 44 * (row_count + 1) + 18))
-    scroll_height = max(120, frame_height - 12)
+    content_height = 46 * (row_count + 1) + 72
+    frame_height = content_height if row_count <= 50 else min(1800, max(320, content_height))
+    scroll_height = max(220, frame_height - 46)
+
+    def linkify_text(text):
+        parts = []
+        position = 0
+        for match in re.finditer(r"https?://[^\s<>\"]+", text):
+            url = match.group(0)
+            parts.append(html.escape(text[position:match.start()]))
+            parts.append(
+                f'<a href="{html.escape(url, quote=True)}" '
+                f'target="_blank" rel="noopener noreferrer">{html.escape(url)}</a>'
+            )
+            position = match.end()
+        parts.append(html.escape(text[position:]))
+        return "".join(parts)
+
+    def cell_html(column, value):
+        text = str(value)
+        title = html.escape(text, quote=True)
+        escaped = (
+            linkify_text(text)
+            if column in {"Reference", "Source"} or "http://" in text or "https://" in text
+            else html.escape(text)
+        )
+
+        return f'<td title="{title}">{escaped}</td>'
 
     table_rows = []
     headers = "".join(
@@ -2167,8 +2194,8 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
         row_class = row_class_func(row) if row_class_func else ""
         class_attr = f' class="{html.escape(row_class)}"' if row_class else ""
         cells = "".join(
-            f'<td title="{html.escape(str(value), quote=True)}">{html.escape(str(value))}</td>'
-            for value in row
+            cell_html(column, row[column])
+            for column in df.columns
         )
         table_rows.append(f"<tr{class_attr}>{cells}</tr>")
 
@@ -2207,15 +2234,28 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 border: 1px solid var(--sb-border);
                 border-radius: 8px;
                 background: var(--sb-table-bg);
-                cursor: grab;
                 scrollbar-width: auto;
                 scrollbar-color: var(--sb-accent) var(--sb-panel);
                 scrollbar-gutter: stable;
                 box-sizing: border-box;
             }}
 
-            .sb-table-wrap.dragging,
-            .sb-table-wrap.dragging * {{
+            .sb-table-grabbar {{
+                height: 18px;
+                cursor: grab;
+                background:
+                    linear-gradient(90deg, transparent 0, transparent calc(50% - 42px), var(--sb-accent) calc(50% - 42px), var(--sb-accent) calc(50% + 42px), transparent calc(50% + 42px)),
+                    repeating-linear-gradient(90deg, color-mix(in srgb, var(--sb-accent) 40%, transparent) 0 10px, transparent 10px 18px),
+                    var(--sb-panel);
+                border-bottom: 1px solid var(--sb-border);
+            }}
+
+            .sb-table-grabbar.bottom {{
+                border-top: 1px solid var(--sb-border);
+                border-bottom: 0;
+            }}
+
+            .sb-table-grabbar.dragging {{
                 cursor: grabbing !important;
                 user-select: none !important;
                 -webkit-user-select: none !important;
@@ -2243,6 +2283,13 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 background: var(--sb-table-bg);
                 color: var(--sb-text);
                 font-size: 0.92rem;
+            }}
+
+            .sb-table a {{
+                color: var(--sb-accent);
+                font-weight: 700;
+                text-decoration: underline;
+                text-underline-offset: 2px;
             }}
 
             .sb-table th {{
@@ -2290,15 +2337,18 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
         </head>
         <body>
             <div class="sb-table-wrap" aria-label="Scrollable data table">
+                <div class="sb-table-grabbar" title="Drag here to move the table" aria-label="Drag table"></div>
                 <table class="sb-table">{table_html}</table>
+                <div class="sb-table-grabbar bottom" title="Drag here to move the table" aria-label="Drag table"></div>
             </div>
             <script>
             (() => {{
                 const wrap = document.querySelector(".sb-table-wrap");
+                const grabBars = document.querySelectorAll(".sb-table-grabbar");
                 let drag = null;
                 let suppressClick = false;
 
-                wrap.addEventListener("mousedown", (event) => {{
+                grabBars.forEach((grabBar) => grabBar.addEventListener("mousedown", (event) => {{
                     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey) {{
                         return;
                     }}
@@ -2307,11 +2357,12 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                         startY: event.clientY,
                         scrollLeft: wrap.scrollLeft,
                         scrollTop: wrap.scrollTop,
-                        moved: false
+                        moved: false,
+                        grabBar
                     }};
-                    wrap.classList.add("dragging");
+                    grabBar.classList.add("dragging");
                     event.preventDefault();
-                }});
+                }}));
 
                 window.addEventListener("mousemove", (event) => {{
                     if (!drag) {{
@@ -2329,8 +2380,10 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 }});
 
                 function endDrag() {{
+                    if (drag && drag.grabBar) {{
+                        drag.grabBar.classList.remove("dragging");
+                    }}
                     drag = null;
-                    wrap.classList.remove("dragging");
                     setTimeout(() => {{
                         suppressClick = false;
                     }}, 0);
@@ -2338,14 +2391,14 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
 
                 window.addEventListener("mouseup", endDrag);
                 window.addEventListener("mouseleave", endDrag);
-                wrap.addEventListener("click", (event) => {{
+                grabBars.forEach((grabBar) => grabBar.addEventListener("click", (event) => {{
                     if (!suppressClick) {{
                         return;
                     }}
                     suppressClick = false;
                     event.preventDefault();
                     event.stopPropagation();
-                }}, true);
+                }}, true));
             }})();
             </script>
         </body>
