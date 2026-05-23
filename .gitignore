@@ -5,3 +5,4 @@ __pycache__/
 .DS_Store
 Open Stoichio Buddy.command
 *.json.lock
+backups/

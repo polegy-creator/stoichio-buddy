@@ -231,6 +231,39 @@ class LabManagerMaterialDensityTests(unittest.TestCase):
         self.assertEqual(record["verified_by"], "Daniel")
         self.assertEqual(record["verified_date"], "2026-05-21")
 
+    def test_material_density_records_keep_structured_source_fields(self):
+        record_key, records = lab_manager.upsert_material_density(
+            "Fe2O3",
+            phase="hematite",
+            theoretical_density=5.25,
+            source="Hematite refinement. COD 1011241. https://doi.org/10.1000/example",
+            source_url="https://www.crystallography.net/cod/1011241.html",
+            doi="10.1000/example",
+            cod_id="1011241",
+            paper_title="Hematite structural refinement",
+        )
+
+        record = records[record_key]
+
+        self.assertEqual(record["source_url"], "https://www.crystallography.net/cod/1011241.html")
+        self.assertEqual(record["doi"], "10.1000/example")
+        self.assertEqual(record["cod_id"], "1011241")
+        self.assertEqual(record["paper_title"], "Hematite structural refinement")
+
+    def test_material_density_records_extract_source_url_doi_and_cod_id(self):
+        record = lab_manager.normalize_density_record(
+            "Fe2O3",
+            {
+                "formula": "Fe2O3",
+                "theoretical_density_g_cm3": 5.25,
+                "source": "Paper COD 1011241 https://doi.org/10.1000/example",
+            },
+        )
+
+        self.assertEqual(record["source_url"], "https://doi.org/10.1000/example")
+        self.assertEqual(record["doi"], "10.1000/example")
+        self.assertEqual(record["cod_id"], "1011241")
+
     def test_only_one_density_record_is_preferred_per_formula(self):
         hematite_key, _ = lab_manager.upsert_material_density(
             "Fe2O3",
@@ -346,6 +379,27 @@ class LabManagerInventoryLogTests(unittest.TestCase):
         self.assertEqual(log_entries[-1]["recipe_id"], "R001")
         self.assertEqual(log_entries[-1]["before_g"], 20)
         self.assertEqual(log_entries[-1]["after_g"], 17.5)
+
+
+class LabManagerBackupTests(unittest.TestCase):
+    def setUp(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.path = f"{self.tempdir.name}/history.json"
+
+    def tearDown(self):
+        self.tempdir.cleanup()
+
+    def test_save_json_file_rotates_previous_file_into_backup(self):
+        lab_manager.save_json_file(self.path, [{"entry_id": "first"}])
+        lab_manager.save_json_file(self.path, [{"entry_id": "second"}])
+
+        backup_dir = f"{self.tempdir.name}/backups"
+        backups = lab_manager.os.listdir(backup_dir)
+
+        self.assertEqual(len(backups), 1)
+        self.assertTrue(backups[0].startswith("history_"))
+        backup_data = lab_manager.load_json_file(f"{backup_dir}/{backups[0]}", [])
+        self.assertEqual(backup_data, [{"entry_id": "first"}])
 
 
 if __name__ == "__main__":

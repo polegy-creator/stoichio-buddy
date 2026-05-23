@@ -2,7 +2,28 @@
 
 
 def render(ctx):
-    globals().update(ctx.__dict__)
+    clear_data_cache = ctx.clear_data_cache
+    density_source_control = ctx.density_source_control
+    display_dataframe = ctx.display_dataframe
+    format_target_id = ctx.format_target_id
+    history = ctx.history
+    linked_recipe_target_label = ctx.linked_recipe_target_label
+    linked_recipe_targets = ctx.linked_recipe_targets
+    load_history = ctx.load_history
+    log_target_density = ctx.log_target_density
+    mass_basis_label = ctx.mass_basis_label
+    material_densities = ctx.material_densities
+    measured_density = ctx.measured_density
+    next_target_number = ctx.next_target_number
+    normalize_formula = ctx.normalize_formula
+    recipe_dataframe = ctx.recipe_dataframe
+    recipe_link_snapshot = ctx.recipe_link_snapshot
+    relative_density_percent = ctx.relative_density_percent
+    st = ctx.st
+    target_density_lab_summary = ctx.target_density_lab_summary
+    target_density_signature = ctx.target_density_signature
+    theme_mode = ctx.theme_mode
+    widget_key = ctx.widget_key
 
     st.subheader("Target density after sintering")
     st.caption("Use the final measured dimensions after sintering, not the 25.05 mm die diameter.")
@@ -283,4 +304,3 @@ def render(ctx):
 
             if st.session_state.get("last_target_density_saved", False):
                 st.caption("This target density has already been saved. Recalculate to save a new entry.")
-

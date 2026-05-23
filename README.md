@@ -13,6 +13,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Update inventory quantities
 - Delete powders added by mistake
 - Save theoretical densities for target materials
+- Store structured density references: source URL, DOI, COD ID, paper title, verification status, reviewer, and notes
 - Calculate theoretical density from full lattice parameters (`a`, `b`, `c`, `alpha`, `beta`, `gamma`) and `Z`
 - Calculate precursor masses from the original target-formula mass basis or desired target height with a 25.05 mm die
 - Preserve old lab recipe outputs exactly while still tracking total precursor powder separately
@@ -26,6 +27,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Copy-friendly lab notebook summaries for recipe and target-density results, with TXT downloads
 - Full JSON data backup download for powders, saved powder sets, inventory, densities, and history
 - Safe JSON data backup restore with validation and confirmation
+- Automatic local JSON backup rotation before overwrites, deletes, and restores
 - Stoichiometry audit tables for precursor coefficients and element balance
 - Saved recipes keep calculation metadata for later audit and CSV export
 - Recipe history grouped by target formula, with manual save after calculation
@@ -185,9 +187,15 @@ On first connection, the app will create tabs in the sheet if needed: `powders`,
 
 - `stochio_buddy.py`: Streamlit app entry point and shared UI helpers
 - `stoichio/chemistry/`: formula parsing, stoichiometry solver, and density math
-- `stoichio/lab_manager.py`: JSON/shared-storage persistence, inventory, history, density records, and saved powder sets
+- `stoichio/ui_components.py`: reusable table renderer and copy-friendly linked table output
+- `stoichio/theme.py`: shared light/dark color tokens
+- `stoichio/app_context.py`: explicit page-render dependency container
+- `stoichio/storage.py`, `stoichio/inventory.py`, `stoichio/history.py`, `stoichio/density_records.py`, and `stoichio/powder_sets.py`: domain-facing modules for persistence, stock, logs, density records, and saved powder sets
+- `stoichio/lab_manager.py`: compatibility layer and remaining shared implementation for JSON/shared-storage persistence
 - `stoichio/ui_pages/`: individual Streamlit page renderers
 - Top-level `formula_parser.py`, `density_engine.py`, `stoich_engine.py`, and `lab_manager.py` are compatibility wrappers for older imports.
+
+Local backups are written under `backups/` beside the JSON files and are ignored by git.
 
 ## Google Sheets shared storage, service account
 

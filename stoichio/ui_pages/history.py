@@ -2,7 +2,32 @@
 
 
 def render(ctx):
-    globals().update(ctx.__dict__)
+    cached_load_history = ctx.cached_load_history
+    clear_history_for_target = ctx.clear_history_for_target
+    clear_history_for_target_id = ctx.clear_history_for_target_id
+    clear_target_density_history_for_person = ctx.clear_target_density_history_for_person
+    csv_bytes = ctx.csv_bytes
+    delete_history_entry = ctx.delete_history_entry
+    filter_target_lifecycle_groups = ctx.filter_target_lifecycle_groups
+    grouped_history = ctx.grouped_history
+    grouped_target_density_history = ctx.grouped_target_density_history
+    history = ctx.history
+    history_dataframe = ctx.history_dataframe
+    html = ctx.html
+    recipe_history = ctx.recipe_history
+    recipe_history_summary = ctx.recipe_history_summary
+    safe_filename = ctx.safe_filename
+    st = ctx.st
+    target_density_dataframe = ctx.target_density_dataframe
+    target_density_history_summary = ctx.target_density_history_summary
+    target_density_records = ctx.target_density_records
+    target_lifecycle_dataframe = ctx.target_lifecycle_dataframe
+    target_lifecycle_groups = ctx.target_lifecycle_groups
+    target_lifecycle_status = ctx.target_lifecycle_status
+    target_lifecycle_summary = ctx.target_lifecycle_summary
+    target_traceability_report_html = ctx.target_traceability_report_html
+    trash_button = ctx.trash_button
+    widget_key = ctx.widget_key
 
     st.subheader("History")
 

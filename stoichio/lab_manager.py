@@ -23,6 +23,8 @@ INVENTORY_LOG_FILE = "inventory_log.json"
 HISTORY_FILE = "history.json"
 MATERIAL_DENSITIES_FILE = "material_densities.json"
 POWDER_SETS_FILE = "powder_sets.json"
+BACKUP_DIR_NAME = "backups"
+BACKUP_LIMIT_PER_FILE = 30
 
 PREFERRED_DENSITY_STATUS = "Preferred for formula"
 LAB_CHECKED_DENSITY_STATUS = "Lab checked"
@@ -58,6 +60,28 @@ def material_density_record_key(formula, phase=""):
     if not phase_key:
         return formula_key
     return f"{formula_key}__{phase_key}"
+
+
+def first_url(value):
+    match = re.search(r"https?://[^\s<>\"]+", str(value or ""))
+    return match.group(0) if match else ""
+
+
+def first_doi(value):
+    text = str(value or "").strip()
+    doi_match = re.search(r"(10\.\d{4,9}/[^\s<>\"]+)", text, flags=re.IGNORECASE)
+    if doi_match:
+        return doi_match.group(1).rstrip(".,;)")
+
+    doi_url_match = re.search(r"doi\.org/(10\.\d{4,9}/[^\s<>\"]+)", text, flags=re.IGNORECASE)
+    if doi_url_match:
+        return doi_url_match.group(1).rstrip(".,;)")
+    return ""
+
+
+def first_cod_id(value):
+    match = re.search(r"\bCOD\s*[:#]?\s*(\d{5,})\b", str(value or ""), flags=re.IGNORECASE)
+    return match.group(1) if match else ""
 
 
 def formula_cation_elements(formula):
@@ -372,12 +396,48 @@ def load_json_file(path, default):
 
 def save_json_file(path, data):
     with json_file_lock(path):
+        backup_json_file(path)
         directory = os.path.dirname(os.path.abspath(path)) or "."
         with tempfile.NamedTemporaryFile("w", dir=directory, delete=False) as f:
             json.dump(data, f, indent=4)
             f.write("\n")
             temp_path = f.name
         os.replace(temp_path, path)
+
+
+def backup_json_file(path):
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
+        return None
+
+    directory = os.path.dirname(os.path.abspath(path)) or "."
+    backup_dir = os.path.join(directory, BACKUP_DIR_NAME)
+    os.makedirs(backup_dir, exist_ok=True)
+
+    base_name = os.path.basename(path)
+    stem, extension = os.path.splitext(base_name)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    backup_path = os.path.join(backup_dir, f"{stem}_{timestamp}{extension or '.json'}")
+
+    with open(path, "rb") as source, open(backup_path, "wb") as destination:
+        destination.write(source.read())
+
+    prune_json_backups(backup_dir, stem, extension or ".json")
+    return backup_path
+
+
+def prune_json_backups(backup_dir, stem, extension):
+    prefix = f"{stem}_"
+    backups = sorted(
+        os.path.join(backup_dir, name)
+        for name in os.listdir(backup_dir)
+        if name.startswith(prefix) and name.endswith(extension)
+    )
+    excess = len(backups) - BACKUP_LIMIT_PER_FILE
+    for backup_path in backups[:max(0, excess)]:
+        try:
+            os.remove(backup_path)
+        except OSError:
+            pass
 
 
 @contextmanager
@@ -698,12 +758,22 @@ def normalize_density_record(formula, record):
         "density_delta_g_cm3": None,
         "density_validation": str(record.get("density_validation", "")).strip(),
         "source": str(record.get("source", "")).strip(),
+        "source_url": str(record.get("source_url", "")).strip(),
+        "doi": str(record.get("doi", "")).strip(),
+        "cod_id": str(record.get("cod_id", "")).strip(),
+        "paper_title": str(record.get("paper_title", "")).strip(),
         "notes": str(record.get("notes", "")).strip(),
         "origin": str(record.get("origin", record.get("added_by", "Lab entry"))).strip() or "Lab entry",
         "verification_status": str(record.get("verification_status", "")).strip(),
         "verified_by": str(record.get("verified_by", "")).strip(),
         "verified_date": str(record.get("verified_date", "")).strip(),
     }
+    if not normalized["source_url"]:
+        normalized["source_url"] = first_url(normalized["source"])
+    if not normalized["doi"]:
+        normalized["doi"] = first_doi(normalized["source"])
+    if not normalized["cod_id"]:
+        normalized["cod_id"] = first_cod_id(normalized["source"])
     if not normalized["verification_status"]:
         if normalized["origin"].lower().startswith("codex"):
             normalized["verification_status"] = "Codex seeded - verify before use"
@@ -832,6 +902,10 @@ def upsert_material_density(
     beta=None,
     gamma=None,
     source="",
+    source_url="",
+    doi="",
+    cod_id="",
+    paper_title="",
     notes="",
     origin="Lab entry",
     reported_density=None,
@@ -861,6 +935,10 @@ def upsert_material_density(
         "density_delta_g_cm3": density_delta,
         "density_validation": density_validation,
         "source": source,
+        "source_url": source_url,
+        "doi": doi,
+        "cod_id": cod_id,
+        "paper_title": paper_title,
         "notes": notes,
         "origin": origin,
         "verification_status": verification_status,

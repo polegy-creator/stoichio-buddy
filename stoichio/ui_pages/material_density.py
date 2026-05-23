@@ -2,7 +2,27 @@
 
 
 def render(ctx):
-    globals().update(ctx.__dict__)
+    clear_data_cache = ctx.clear_data_cache
+    csv_bytes = ctx.csv_bytes
+    datetime = ctx.datetime
+    delete_material_density = ctx.delete_material_density
+    density_record_is_blocked = ctx.density_record_is_blocked
+    density_record_is_verified = ctx.density_record_is_verified
+    density_record_label = ctx.density_record_label
+    density_record_sort_key = ctx.density_record_sort_key
+    density_trust_status = ctx.density_trust_status
+    display_dataframe = ctx.display_dataframe
+    lattice_parameter_inputs = ctx.lattice_parameter_inputs
+    material_densities = ctx.material_densities
+    material_density_dataframe = ctx.material_density_dataframe
+    normalize_formula = ctx.normalize_formula
+    set_preferred_material_density = ctx.set_preferred_material_density
+    st = ctx.st
+    theme_mode = ctx.theme_mode
+    theoretical_density_from_cell = ctx.theoretical_density_from_cell
+    unit_cell_volume_from_lattice = ctx.unit_cell_volume_from_lattice
+    update_material_density_review_status = ctx.update_material_density_review_status
+    upsert_material_density = ctx.upsert_material_density
 
     st.subheader("Material density database")
     st.caption("Known target densities are used for pellet-height planning and post-sintering relative density.")
@@ -127,6 +147,11 @@ def render(ctx):
             placeholder="YYYY-MM-DD",
         )
         reference = st.text_input("Source / reference", placeholder="XRD refinement, paper, manual")
+        source_url = st.text_input("Source URL (optional)", placeholder="https://doi.org/... or COD link")
+        source_cols = st.columns([1, 1], gap="small")
+        doi = source_cols[0].text_input("DOI (optional)", placeholder="10.xxxx/...")
+        cod_id = source_cols[1].text_input("COD ID (optional)", placeholder="1010486")
+        paper_title = st.text_input("Paper title (optional)", placeholder="Full paper or database record title")
         notes = st.text_area("Notes", height=90)
 
         save_density = st.button("Save Material Density", type="primary", width="stretch")
@@ -151,6 +176,10 @@ def render(ctx):
                     beta=lattice_params["beta"],
                     gamma=lattice_params["gamma"],
                     source=reference,
+                    source_url=source_url,
+                    doi=doi,
+                    cod_id=cod_id,
+                    paper_title=paper_title,
                     notes=notes,
                     verification_status=verification_status,
                     verified_by=verified_by,

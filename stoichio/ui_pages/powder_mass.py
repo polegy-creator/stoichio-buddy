@@ -2,7 +2,52 @@
 
 
 def render(ctx):
-    globals().update(ctx.__dict__)
+    DEFAULT_DIE_DIAMETER_MM = ctx.DEFAULT_DIE_DIAMETER_MM
+    LOW_STOCK_THRESHOLD_G = ctx.LOW_STOCK_THRESHOLD_G
+    MASS_BASIS_TARGET_FORMULA = ctx.MASS_BASIS_TARGET_FORMULA
+    check_stock = ctx.check_stock
+    clear_data_cache = ctx.clear_data_cache
+    compute_recipe = ctx.compute_recipe
+    consume_stock = ctx.consume_stock
+    csv_bytes = ctx.csv_bytes
+    database_dataframe = ctx.database_dataframe
+    db = ctx.db
+    delete_powder_set = ctx.delete_powder_set
+    density_source_control = ctx.density_source_control
+    display_dataframe = ctx.display_dataframe
+    format_target_id = ctx.format_target_id
+    hashlib = ctx.hashlib
+    history = ctx.history
+    infer_target_mass_from_recipe = ctx.infer_target_mass_from_recipe
+    inventory = ctx.inventory
+    known_recipe_height_check_dataframe = ctx.known_recipe_height_check_dataframe
+    load_history = ctx.load_history
+    load_inventory = ctx.load_inventory
+    log_synthesis = ctx.log_synthesis
+    matching_powder_sets_for_target = ctx.matching_powder_sets_for_target
+    material_densities = ctx.material_densities
+    next_target_number = ctx.next_target_number
+    normalize_formula = ctx.normalize_formula
+    powder_sets = ctx.powder_sets
+    recipe_balance_dataframe = ctx.recipe_balance_dataframe
+    recipe_basis_audit_dataframe = ctx.recipe_basis_audit_dataframe
+    recipe_calculation_metadata = ctx.recipe_calculation_metadata
+    recipe_coefficients_dataframe = ctx.recipe_coefficients_dataframe
+    recipe_dataframe = ctx.recipe_dataframe
+    recipe_input_signature = ctx.recipe_input_signature
+    recipe_lab_summary = ctx.recipe_lab_summary
+    recipe_report_html = ctx.recipe_report_html
+    recipe_validation_warnings = ctx.recipe_validation_warnings
+    record_powder_set_use = ctx.record_powder_set_use
+    relevant_powders_for_target = ctx.relevant_powders_for_target
+    safe_filename = ctx.safe_filename
+    save_powder_set = ctx.save_powder_set
+    st = ctx.st
+    stock_row_class = ctx.stock_row_class
+    target_height_from_mass = ctx.target_height_from_mass
+    target_mass_from_height = ctx.target_mass_from_height
+    theme_mode = ctx.theme_mode
+    widget_key = ctx.widget_key
 
     left, right = st.columns([0.95, 1.05], gap="large")
 

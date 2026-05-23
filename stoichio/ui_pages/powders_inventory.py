@@ -2,7 +2,26 @@
 
 
 def render(ctx):
-    globals().update(ctx.__dict__)
+    LOW_STOCK_THRESHOLD_G = ctx.LOW_STOCK_THRESHOLD_G
+    active_recipe_masses = ctx.active_recipe_masses
+    add_powder = ctx.add_powder
+    check_stock = ctx.check_stock
+    clear_data_cache = ctx.clear_data_cache
+    csv_bytes = ctx.csv_bytes
+    database_dataframe = ctx.database_dataframe
+    db = ctx.db
+    delete_powder = ctx.delete_powder
+    display_dataframe = ctx.display_dataframe
+    inventory = ctx.inventory
+    inventory_dataframe = ctx.inventory_dataframe
+    inventory_log = ctx.inventory_log
+    inventory_log_dataframe = ctx.inventory_log_dataframe
+    normalize_formula = ctx.normalize_formula
+    set_inventory_quantity = ctx.set_inventory_quantity
+    st = ctx.st
+    stock_row_class = ctx.stock_row_class
+    theme_mode = ctx.theme_mode
+    unknown_inventory_items = ctx.unknown_inventory_items
 
     st.subheader("Powders & inventory")
 
