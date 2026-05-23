@@ -464,7 +464,7 @@ def apply_theme(mode):
         border-collapse: collapse;
         background: var(--sb-table-bg);
         color: var(--sb-text);
-        font-size: 0.92rem;
+        font-size: 0.94rem;
     }
 
     .sb-table th {
@@ -475,15 +475,55 @@ def apply_theme(mode):
         position: sticky;
         top: 0;
         z-index: 2;
-        padding: 0.65rem 0.75rem;
+        padding: 0.8rem 0.95rem;
         border-bottom: 1px solid var(--sb-border);
+        line-height: 1.35;
+        vertical-align: top;
+        white-space: nowrap;
     }
 
     .sb-table td {
         background: var(--sb-table-bg);
         color: var(--sb-text);
-        padding: 0.6rem 0.75rem;
+        padding: 0.85rem 0.95rem;
         border-bottom: 1px solid var(--sb-border);
+        line-height: 1.45;
+        vertical-align: top;
+        white-space: nowrap;
+    }
+
+    .sb-table th.sb-cell-wrap,
+    .sb-table td.sb-cell-wrap {
+        min-width: 180px;
+        max-width: 520px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .sb-table td .sb-cell-content {
+        display: block;
+    }
+
+    .sb-table td.sb-cell-wrap .sb-cell-content {
+        display: -webkit-box;
+        max-height: 4.35em;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+
+    .sb-table td.sb-cell-wrap a {
+        overflow-wrap: anywhere;
+    }
+
+    .sb-table td:first-child,
+    .sb-table th:first-child {
+        padding-left: 2.1rem;
+    }
+
+    .sb-table td:last-child,
+    .sb-table th:last-child {
+        padding-right: 2.1rem;
     }
 
     .sb-table tr:last-child td {
@@ -492,6 +532,9 @@ def apply_theme(mode):
 
     .sb-table tr.stock-low td {
         background: color-mix(in srgb, var(--sb-accent) 18%, var(--sb-table-bg)) !important;
+    }
+
+    .sb-table tr.stock-low td:first-child {
         border-left: 3px solid var(--sb-accent);
     }
 
@@ -499,11 +542,19 @@ def apply_theme(mode):
     .sb-table tr.stock-empty td,
     .sb-table tr.stock-missing td {
         background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
+    }
+
+    .sb-table tr.stock-short td:first-child,
+    .sb-table tr.stock-empty td:first-child,
+    .sb-table tr.stock-missing td:first-child {
         border-left: 3px solid #d64a4a;
     }
 
     .sb-table tr.codex-seeded td {
         background: color-mix(in srgb, #2f80ed 18%, var(--sb-table-bg)) !important;
+    }
+
+    .sb-table tr.codex-seeded td:first-child {
         border-left: 3px solid #2f80ed;
     }
 
@@ -2155,8 +2206,28 @@ def backup_counts(backup):
 def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     colors = theme_colors(theme_mode)
     row_count = len(df.index)
-    content_height = 46 * (row_count + 1) + 22
+    content_height = 74 * (row_count + 1) + 28
     frame_height = min(9000, max(220, content_height))
+    wrap_column_terms = (
+        "check",
+        "composition",
+        "density source",
+        "note",
+        "origin",
+        "phase",
+        "reason",
+        "record",
+        "reference",
+        "source",
+        "status",
+        "warning",
+    )
+
+    def column_class(column):
+        column_text = str(column).strip().lower()
+        if any(term in column_text for term in wrap_column_terms):
+            return "sb-cell-wrap"
+        return "sb-cell-compact"
 
     def linkify_text(text):
         parts = []
@@ -2175,17 +2246,19 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     def cell_html(column, value):
         text = str(value)
         title = html.escape(text, quote=True)
+        cell_class = column_class(column)
         escaped = (
             linkify_text(text)
             if column in {"Reference", "Source"} or "http://" in text or "https://" in text
             else html.escape(text)
         )
 
-        return f'<td title="{title}">{escaped}</td>'
+        return f'<td class="{cell_class}" title="{title}"><span class="sb-cell-content">{escaped}</span></td>'
 
     table_rows = []
     headers = "".join(
-        f'<th title="{html.escape(str(column), quote=True)}">{html.escape(str(column))}</th>'
+        f'<th class="{column_class(column)}" title="{html.escape(str(column), quote=True)}">'
+        f'{html.escape(str(column))}</th>'
         for column in df.columns
     )
     table_rows.append(f"<tr>{headers}</tr>")
@@ -2249,23 +2322,69 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 position: absolute;
                 top: 1px;
                 bottom: 9px;
-                width: 10px;
-                z-index: 5;
+                width: 32px;
+                z-index: 10;
                 cursor: grab;
                 background: transparent;
+                border-radius: 7px;
+                transition: background 120ms ease, box-shadow 120ms ease;
             }}
 
             .sb-table-drag-edge.left {{
                 left: 1px;
+                box-shadow: inset 3px 0 0 color-mix(in srgb, var(--sb-accent) 55%, transparent);
             }}
 
             .sb-table-drag-edge.right {{
                 right: 9px;
+                box-shadow: inset -3px 0 0 color-mix(in srgb, var(--sb-accent) 55%, transparent);
             }}
 
             .sb-table-drag-edge:hover,
             .sb-table-drag-edge.dragging {{
-                background: color-mix(in srgb, var(--sb-accent) 14%, transparent);
+                background: color-mix(in srgb, var(--sb-accent) 16%, transparent);
+                box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent);
+            }}
+
+            .sb-table-drag-edge.left:hover,
+            .sb-table-drag-edge.left.dragging {{
+                box-shadow:
+                    inset 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent),
+                    inset 4px 0 0 var(--sb-accent);
+            }}
+
+            .sb-table-drag-edge.right:hover,
+            .sb-table-drag-edge.right.dragging {{
+                box-shadow:
+                    inset 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent),
+                    inset -4px 0 0 var(--sb-accent);
+            }}
+
+            .sb-table-drag-edge::before {{
+                content: "";
+                position: absolute;
+                top: 50%;
+                width: 4px;
+                height: min(72px, 32%);
+                min-height: 42px;
+                transform: translateY(-50%);
+                border-radius: 999px;
+                background: var(--sb-accent);
+                opacity: 0.48;
+                box-shadow: 0 0 0 1px color-mix(in srgb, var(--sb-bg) 45%, transparent);
+            }}
+
+            .sb-table-drag-edge.left::before {{
+                left: 11px;
+            }}
+
+            .sb-table-drag-edge.right::before {{
+                right: 11px;
+            }}
+
+            .sb-table-drag-edge:hover::before,
+            .sb-table-drag-edge.dragging::before {{
+                opacity: 0.92;
             }}
 
             .sb-table-drag-edge.dragging {{
@@ -2301,7 +2420,7 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 border-collapse: collapse;
                 background: var(--sb-table-bg);
                 color: var(--sb-text);
-                font-size: 0.92rem;
+                font-size: 0.94rem;
             }}
 
             .sb-table a {{
@@ -2319,17 +2438,55 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 position: sticky;
                 top: 0;
                 z-index: 2;
-                padding: 0.65rem 0.75rem;
+                padding: 0.8rem 0.95rem;
                 border-bottom: 1px solid var(--sb-border);
+                line-height: 1.35;
+                vertical-align: top;
                 white-space: nowrap;
             }}
 
             .sb-table td {{
                 background: var(--sb-table-bg);
                 color: var(--sb-text);
-                padding: 0.6rem 0.75rem;
+                padding: 0.85rem 0.95rem;
                 border-bottom: 1px solid var(--sb-border);
+                line-height: 1.45;
+                vertical-align: top;
                 white-space: nowrap;
+            }}
+
+            .sb-table th.sb-cell-wrap,
+            .sb-table td.sb-cell-wrap {{
+                min-width: 180px;
+                max-width: 520px;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }}
+
+            .sb-table td .sb-cell-content {{
+                display: block;
+            }}
+
+            .sb-table td.sb-cell-wrap .sb-cell-content {{
+                display: -webkit-box;
+                max-height: 4.35em;
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+            }}
+
+            .sb-table td.sb-cell-wrap a {{
+                overflow-wrap: anywhere;
+            }}
+
+            .sb-table td:first-child,
+            .sb-table th:first-child {{
+                padding-left: 2.2rem;
+            }}
+
+            .sb-table td:last-child,
+            .sb-table th:last-child {{
+                padding-right: 2.2rem;
             }}
 
             .sb-table tr:last-child td {{
@@ -2338,6 +2495,9 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
 
             .sb-table tr.stock-low td {{
                 background: color-mix(in srgb, var(--sb-accent) 18%, var(--sb-table-bg)) !important;
+            }}
+
+            .sb-table tr.stock-low td:first-child {{
                 border-left: 3px solid var(--sb-accent);
             }}
 
@@ -2345,11 +2505,19 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
             .sb-table tr.stock-empty td,
             .sb-table tr.stock-missing td {{
                 background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
+            }}
+
+            .sb-table tr.stock-short td:first-child,
+            .sb-table tr.stock-empty td:first-child,
+            .sb-table tr.stock-missing td:first-child {{
                 border-left: 3px solid #d64a4a;
             }}
 
             .sb-table tr.codex-seeded td {{
                 background: color-mix(in srgb, #2f80ed 18%, var(--sb-table-bg)) !important;
+            }}
+
+            .sb-table tr.codex-seeded td:first-child {{
                 border-left: 3px solid #2f80ed;
             }}
         </style>
