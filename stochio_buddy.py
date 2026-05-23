@@ -456,7 +456,6 @@ def apply_theme(mode):
         border: 1px solid var(--sb-border);
         border-radius: 8px;
         background: var(--sb-table-bg);
-        cursor: grab;
         margin-bottom: 0.75rem;
     }
 
@@ -2156,9 +2155,8 @@ def backup_counts(backup):
 def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
     colors = theme_colors(theme_mode)
     row_count = len(df.index)
-    content_height = 46 * (row_count + 1) + 72
-    frame_height = content_height if row_count <= 50 else min(1800, max(320, content_height))
-    scroll_height = max(220, frame_height - 46)
+    content_height = 46 * (row_count + 1) + 22
+    frame_height = min(9000, max(220, content_height))
 
     def linkify_text(text):
         parts = []
@@ -2228,9 +2226,14 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 overflow: hidden;
             }}
 
+            .sb-table-shell {{
+                position: relative;
+                width: 100%;
+            }}
+
             .sb-table-wrap {{
                 width: 100%;
-                max-height: {scroll_height}px;
+                max-height: none;
                 overflow: auto;
                 overscroll-behavior: contain;
                 border: 1px solid var(--sb-border);
@@ -2242,22 +2245,30 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 box-sizing: border-box;
             }}
 
-            .sb-table-grabbar {{
-                height: 18px;
+            .sb-table-drag-edge {{
+                position: absolute;
+                top: 1px;
+                bottom: 9px;
+                width: 10px;
+                z-index: 5;
                 cursor: grab;
-                background:
-                    linear-gradient(90deg, transparent 0, transparent calc(50% - 42px), var(--sb-accent) calc(50% - 42px), var(--sb-accent) calc(50% + 42px), transparent calc(50% + 42px)),
-                    repeating-linear-gradient(90deg, color-mix(in srgb, var(--sb-accent) 40%, transparent) 0 10px, transparent 10px 18px),
-                    var(--sb-panel);
-                border-bottom: 1px solid var(--sb-border);
+                background: transparent;
             }}
 
-            .sb-table-grabbar.bottom {{
-                border-top: 1px solid var(--sb-border);
-                border-bottom: 0;
+            .sb-table-drag-edge.left {{
+                left: 1px;
             }}
 
-            .sb-table-grabbar.dragging {{
+            .sb-table-drag-edge.right {{
+                right: 9px;
+            }}
+
+            .sb-table-drag-edge:hover,
+            .sb-table-drag-edge.dragging {{
+                background: color-mix(in srgb, var(--sb-accent) 14%, transparent);
+            }}
+
+            .sb-table-drag-edge.dragging {{
                 cursor: grabbing !important;
                 user-select: none !important;
                 -webkit-user-select: none !important;
@@ -2344,19 +2355,21 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
         </style>
         </head>
         <body>
-            <div class="sb-table-wrap" aria-label="Scrollable data table">
-                <div class="sb-table-grabbar" title="Drag here to move the table" aria-label="Drag table"></div>
-                <table class="sb-table">{table_html}</table>
-                <div class="sb-table-grabbar bottom" title="Drag here to move the table" aria-label="Drag table"></div>
+            <div class="sb-table-shell">
+                <div class="sb-table-wrap" aria-label="Scrollable data table">
+                    <table class="sb-table">{table_html}</table>
+                </div>
+                <div class="sb-table-drag-edge left" title="Drag the table edge to move" aria-label="Drag table left edge"></div>
+                <div class="sb-table-drag-edge right" title="Drag the table edge to move" aria-label="Drag table right edge"></div>
             </div>
             <script>
             (() => {{
                 const wrap = document.querySelector(".sb-table-wrap");
-                const grabBars = document.querySelectorAll(".sb-table-grabbar");
+                const dragEdges = document.querySelectorAll(".sb-table-drag-edge");
                 let drag = null;
                 let suppressClick = false;
 
-                grabBars.forEach((grabBar) => grabBar.addEventListener("mousedown", (event) => {{
+                dragEdges.forEach((dragEdge) => dragEdge.addEventListener("mousedown", (event) => {{
                     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey) {{
                         return;
                     }}
@@ -2366,9 +2379,9 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                         scrollLeft: wrap.scrollLeft,
                         scrollTop: wrap.scrollTop,
                         moved: false,
-                        grabBar
+                        dragEdge
                     }};
-                    grabBar.classList.add("dragging");
+                    dragEdge.classList.add("dragging");
                     event.preventDefault();
                 }}));
 
@@ -2388,8 +2401,8 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 }});
 
                 function endDrag() {{
-                    if (drag && drag.grabBar) {{
-                        drag.grabBar.classList.remove("dragging");
+                    if (drag && drag.dragEdge) {{
+                        drag.dragEdge.classList.remove("dragging");
                     }}
                     drag = null;
                     setTimeout(() => {{
@@ -2399,7 +2412,7 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
 
                 window.addEventListener("mouseup", endDrag);
                 window.addEventListener("mouseleave", endDrag);
-                grabBars.forEach((grabBar) => grabBar.addEventListener("click", (event) => {{
+                dragEdges.forEach((dragEdge) => dragEdge.addEventListener("click", (event) => {{
                     if (!suppressClick) {{
                         return;
                     }}

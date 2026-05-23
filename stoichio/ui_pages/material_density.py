@@ -7,7 +7,8 @@ def render(ctx):
     st.subheader("Material density database")
     st.caption("Known target densities are used for pellet-height planning and post-sintering relative density.")
 
-    entry_col, table_col = st.columns([0.95, 1.05], gap="large")
+    entry_col = st.container()
+    table_col = st.container()
 
     with entry_col:
         st.markdown("#### Add or update target")
