@@ -167,29 +167,31 @@ def apply_theme(mode):
     [data-testid="stMain"],
     [data-testid="stSidebarContent"],
     .sb-table-wrap {
-        scrollbar-width: auto;
-        scrollbar-color: var(--sb-accent) var(--sb-panel);
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--sb-accent) 42%, transparent) transparent;
         scrollbar-gutter: stable;
     }
 
     ::-webkit-scrollbar {
-        width: 14px;
-        height: 14px;
+        width: 8px;
+        height: 8px;
     }
 
     ::-webkit-scrollbar-track {
-        background: var(--sb-panel);
+        background: transparent;
         border-radius: 999px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: color-mix(in srgb, var(--sb-accent) 82%, var(--sb-border));
-        border: 3px solid var(--sb-panel);
+        background: color-mix(in srgb, var(--sb-accent) 36%, transparent);
+        border: 2px solid transparent;
+        background-clip: padding-box;
         border-radius: 999px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--sb-accent);
+        background: color-mix(in srgb, var(--sb-accent) 72%, transparent);
+        background-clip: padding-box;
     }
 
     [data-testid="stAppViewContainer"],
@@ -2234,8 +2236,8 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
                 border: 1px solid var(--sb-border);
                 border-radius: 8px;
                 background: var(--sb-table-bg);
-                scrollbar-width: auto;
-                scrollbar-color: var(--sb-accent) var(--sb-panel);
+                scrollbar-width: thin;
+                scrollbar-color: color-mix(in srgb, var(--sb-accent) 42%, transparent) transparent;
                 scrollbar-gutter: stable;
                 box-sizing: border-box;
             }}
@@ -2262,19 +2264,25 @@ def display_dataframe(df, theme_mode, row_class_func=None, **kwargs):
             }}
 
             .sb-table-wrap::-webkit-scrollbar {{
-                width: 14px;
-                height: 14px;
+                width: 8px;
+                height: 8px;
             }}
 
             .sb-table-wrap::-webkit-scrollbar-track {{
-                background: var(--sb-panel);
+                background: transparent;
                 border-radius: 999px;
             }}
 
             .sb-table-wrap::-webkit-scrollbar-thumb {{
-                background: var(--sb-accent);
-                border: 3px solid var(--sb-panel);
+                background: color-mix(in srgb, var(--sb-accent) 38%, transparent);
+                border: 2px solid transparent;
+                background-clip: padding-box;
                 border-radius: 999px;
+            }}
+
+            .sb-table-wrap::-webkit-scrollbar-thumb:hover {{
+                background: color-mix(in srgb, var(--sb-accent) 76%, transparent);
+                background-clip: padding-box;
             }}
 
             .sb-table {{
