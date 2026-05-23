@@ -1,8 +1,8 @@
 import unittest
 
-from density_engine import target_height_from_mass, target_mass_from_height, theoretical_density_from_cell
-from formula_parser import parse_formula
-from stoich_engine import (
+from stoichio.chemistry.density_engine import target_height_from_mass, target_mass_from_height, theoretical_density_from_cell
+from stoichio.chemistry.formula_parser import parse_formula
+from stoichio.chemistry.stoich_engine import (
     MASS_BASIS_TARGET_FORMULA,
     MASS_BASIS_TOTAL_PRECURSOR,
     compute_recipe,

@@ -6,6 +6,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 
 - Light and dark display modes
 - User-selected precursor powders only
+- Target-aware powder filtering, with optional saved powder sets for common systems
 - Non-negative deterministic stoichiometry solver, with no automatic powder picking
 - Formula parsing for decimals, grouped salts such as `Ba(NO3)2`, and hydrates using `·` or `*`
 - Add a powder and its starting inventory in one workflow
@@ -23,7 +24,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Printable HTML reports for recipes and target lifecycle records
 - Search and filter target lifecycle history by owner, formula, target ID, status, powders, and notes
 - Copy-friendly lab notebook summaries for recipe and target-density results, with TXT downloads
-- Full JSON data backup download for powders, inventory, densities, and history
+- Full JSON data backup download for powders, saved powder sets, inventory, densities, and history
 - Safe JSON data backup restore with validation and confirmation
 - Stoichiometry audit tables for precursor coefficients and element balance
 - Saved recipes keep calculation metadata for later audit and CSV export
@@ -81,6 +82,7 @@ const TAB_BY_PATH = {
   "inventory_log.json": "inventory_log",
   "history.json": "history",
   "material_densities.json": "material_densities",
+  "powder_sets.json": "powder_sets",
 };
 
 function jsonResponse(payload) {
@@ -177,7 +179,15 @@ apps_script_url = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
 apps_script_token = "the-same-long-random-password"
 ```
 
-On first connection, the app will create tabs in the sheet if needed: `powders`, `inventory`, `inventory_log`, `history`, and `material_densities`. If those tabs are empty, it seeds them from the local JSON files in the repository.
+On first connection, the app will create tabs in the sheet if needed: `powders`, `inventory`, `inventory_log`, `history`, `material_densities`, and `powder_sets`. If those tabs are empty, it seeds them from the local JSON files in the repository.
+
+## Code layout
+
+- `stochio_buddy.py`: Streamlit app entry point and shared UI helpers
+- `stoichio/chemistry/`: formula parsing, stoichiometry solver, and density math
+- `stoichio/lab_manager.py`: JSON/shared-storage persistence, inventory, history, density records, and saved powder sets
+- `stoichio/ui_pages/`: individual Streamlit page renderers
+- Top-level `formula_parser.py`, `density_engine.py`, `stoich_engine.py`, and `lab_manager.py` are compatibility wrappers for older imports.
 
 ## Google Sheets shared storage, service account
 
@@ -227,6 +237,7 @@ There is also a template at `.streamlit/secrets.example.toml`. Do not commit a r
 - `inventory.json`: available grams by powder
 - `inventory_log.json`: inventory transaction ledger
 - `material_densities.json`: target material theoretical densities and unit cell data
+- `powder_sets.json`: saved powder-set templates by target cation family
 - `history.json`: saved recipe calculations
 
 Local JSON writes use small `.json.lock` files to avoid partially written data if two browser sessions save at the same time.

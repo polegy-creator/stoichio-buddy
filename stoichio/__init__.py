@@ -1,0 +1,1 @@
+"""Stoichio Buddy application package."""

@@ -1,6 +1,6 @@
 import unittest
 
-from formula_parser import molar_mass, parse_formula
+from stoichio.chemistry.formula_parser import molar_mass, parse_formula
 
 
 class FormulaParserTests(unittest.TestCase):

@@ -1,8 +1,8 @@
 import unittest
 
-from density_engine import target_height_from_mass, target_mass_from_height
-from formula_parser import parse_formula
-from stoich_engine import MASS_BASIS_TARGET_FORMULA, compute_recipe
+from stoichio.chemistry.density_engine import target_height_from_mass, target_mass_from_height
+from stoichio.chemistry.formula_parser import parse_formula
+from stoichio.chemistry.stoich_engine import MASS_BASIS_TARGET_FORMULA, compute_recipe
 
 
 TEST_DENSITY_G_CM3 = 5.0

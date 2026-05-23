@@ -125,6 +125,58 @@ def render(ctx):
             if selected_powders_state != st.session_state.selected_recipe_powders:
                 st.session_state.selected_recipe_powders = selected_powders_state
 
+        powder_set_message = st.session_state.pop("powder_set_message", None)
+        if powder_set_message:
+            st.success(powder_set_message)
+
+        matching_sets = matching_powder_sets_for_target(target, powder_sets) if target.strip() else []
+        if matching_sets:
+            st.markdown("##### Saved powder sets")
+            powder_set_choice = st.selectbox(
+                "Powder set",
+                [""] + [record_id for record_id, _ in matching_sets],
+                format_func=lambda value: (
+                    "Choose saved set"
+                    if not value
+                    else f"{powder_sets[value]['name']} ({', '.join(powder_sets[value]['powders'])})"
+                ),
+                key="recipe_powder_set_choice",
+                help="Saved sets are grouped by target cations. Applying a set still leaves you in control of the final powder choices.",
+            )
+            set_cols = st.columns(2, gap="small")
+            if set_cols[0].button("Apply Powder Set", width="stretch", disabled=not powder_set_choice):
+                chosen_set = powder_sets[powder_set_choice]
+                available_set_powders = [
+                    powder
+                    for powder in chosen_set.get("powders", [])
+                    if powder in db and (show_all_powders or powder in powder_options)
+                ]
+                skipped_powders = [
+                    powder
+                    for powder in chosen_set.get("powders", [])
+                    if powder not in available_set_powders
+                ]
+                if not available_set_powders:
+                    st.error("This powder set has no powders available for the current target/filter.")
+                else:
+                    st.session_state.selected_recipe_powders = available_set_powders
+                    record_powder_set_use(powder_set_choice)
+                    clear_data_cache()
+                    st.session_state.powder_set_message = (
+                        f"Applied {chosen_set['name']}."
+                        + (f" Skipped unavailable powders: {', '.join(skipped_powders)}." if skipped_powders else "")
+                    )
+                    st.rerun()
+
+            if set_cols[1].button("Delete Powder Set", width="stretch", disabled=not powder_set_choice):
+                if powder_set_choice:
+                    delete_powder_set(powder_set_choice)
+                    clear_data_cache()
+                    st.session_state.powder_set_message = "Powder set deleted."
+                    st.rerun()
+        elif target_powder_elements:
+            st.caption("No saved powder set for this target family yet.")
+
         selected = st.multiselect(
             "Selected powders",
             powder_options,
@@ -136,6 +188,42 @@ def render(ctx):
             for powder in powder_options
             if powder in db
         }
+
+        with st.expander("Save selected powders as a set", expanded=False):
+            default_set_name = (
+                f"{'-'.join(sorted(target_powder_elements))} powder set"
+                if target_powder_elements
+                else "Powder set"
+            )
+            powder_set_key = hashlib.sha1(default_set_name.encode("utf-8")).hexdigest()[:10]
+            powder_set_name = st.text_input(
+                "Set name",
+                value=default_set_name,
+                key=f"new_powder_set_name_{powder_set_key}",
+            )
+            powder_set_notes = st.text_area(
+                "Set notes",
+                placeholder="Example: standard Fe-Ti precursor set",
+                height=70,
+                key=f"new_powder_set_notes_{powder_set_key}",
+            )
+            if st.button(
+                "Save Powder Set",
+                width="stretch",
+                disabled=not selected or not target_powder_elements,
+            ):
+                try:
+                    save_powder_set(
+                        target,
+                        selected,
+                        name=powder_set_name,
+                        notes=powder_set_notes,
+                    )
+                    clear_data_cache()
+                    st.session_state.powder_set_message = "Powder set saved."
+                    st.rerun()
+                except ValueError as exc:
+                    st.error(str(exc))
 
         with st.expander("Check height from known powder masses", expanded=False):
             st.caption(

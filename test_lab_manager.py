@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 
-import lab_manager
+from stoichio import lab_manager
 
 
 class LabManagerPowderRelevanceTests(unittest.TestCase):
@@ -46,6 +46,45 @@ class LabManagerPowderRelevanceTests(unittest.TestCase):
         self.assertEqual(hidden, [])
         self.assertEqual(target_elements, set())
         self.assertIsNotNone(error)
+
+
+class LabManagerPowderSetTests(unittest.TestCase):
+    def setUp(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.old_powder_sets_file = lab_manager.POWDER_SETS_FILE
+        self.old_storage_backend = lab_manager._storage_backend
+        lab_manager.POWDER_SETS_FILE = f"{self.tempdir.name}/powder_sets.json"
+        lab_manager._storage_backend = None
+
+    def tearDown(self):
+        lab_manager.POWDER_SETS_FILE = self.old_powder_sets_file
+        lab_manager._storage_backend = self.old_storage_backend
+        self.tempdir.cleanup()
+
+    def test_save_and_match_powder_set_by_target_family(self):
+        record_id, records = lab_manager.save_powder_set(
+            "FeTiO3",
+            ["Fe2O3", "TiO2"],
+            name="Fe-Ti standard",
+        )
+
+        matches = lab_manager.matching_powder_sets_for_target("Fe1.98Ti0.02O3", records)
+
+        self.assertEqual(matches[0][0], record_id)
+        self.assertEqual(records[record_id]["family"], "Fe-Ti")
+        self.assertEqual(records[record_id]["powders"], ["Fe2O3", "TiO2"])
+
+    def test_record_powder_set_use_updates_usage(self):
+        record_id, _ = lab_manager.save_powder_set(
+            "BaTiO3",
+            ["BaCO3", "TiO2"],
+            name="Ba-Ti carbonate set",
+        )
+
+        _, records = lab_manager.record_powder_set_use(record_id)
+
+        self.assertEqual(records[record_id]["use_count"], 1)
+        self.assertTrue(records[record_id]["last_used_at"])
 
 
 class LabManagerHistoryTests(unittest.TestCase):

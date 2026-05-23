@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pandas as pd
 import streamlit as st
 
-from density_engine import (
+from stoichio.chemistry.density_engine import (
     DEFAULT_DIE_DIAMETER_MM,
     measured_density,
     relative_density_percent,
@@ -18,8 +18,8 @@ from density_engine import (
     theoretical_density_from_cell,
     unit_cell_volume_from_lattice,
 )
-from formula_parser import normalize_formula, parse_formula
-from lab_manager import (
+from stoichio.chemistry.formula_parser import normalize_formula, parse_formula
+from stoichio.lab_manager import (
     add_powder,
     check_stock,
     clear_history_for_target,
@@ -31,17 +31,22 @@ from lab_manager import (
     delete_history_entry,
     delete_material_density,
     delete_powder,
+    delete_powder_set,
     format_target_id,
     load_history,
     load_inventory,
     load_inventory_log,
     load_material_densities,
     load_powders,
+    load_powder_sets,
     log_synthesis,
     log_target_density,
+    matching_powder_sets_for_target,
     related_material_density_records,
     relevant_powders_for_target,
+    record_powder_set_use,
     restore_backup_data,
+    save_powder_set,
     set_preferred_material_density,
     set_inventory_quantity,
     storage_error,
@@ -50,14 +55,14 @@ from lab_manager import (
     upsert_material_density,
     validate_backup_data,
 )
-from ui_pages import (
+from stoichio.ui_pages import (
     history as history_page,
     material_density as material_density_page,
     powder_mass as powder_mass_page,
     powders_inventory as powders_inventory_page,
     target_density as target_density_page,
 )
-from stoich_engine import (
+from stoichio.chemistry.stoich_engine import (
     MASS_BASIS_TARGET_FORMULA,
     MASS_BASIS_TOTAL_PRECURSOR,
     compute_recipe,
@@ -572,12 +577,18 @@ def cached_load_material_densities(storage_status):
     return load_material_densities()
 
 
+@st.cache_data(ttl=DATA_CACHE_TTL_SECONDS, show_spinner=False)
+def cached_load_powder_sets(storage_status):
+    return load_powder_sets()
+
+
 def clear_data_cache():
     cached_load_powders.clear()
     cached_load_inventory.clear()
     cached_load_inventory_log.clear()
     cached_load_history.clear()
     cached_load_material_densities.clear()
+    cached_load_powder_sets.clear()
 
 
 def load_app_state(storage_status):
@@ -2056,7 +2067,7 @@ def csv_bytes(df):
     return buffer.getvalue()
 
 
-def data_backup_json(powders, inventory, material_densities, history, inventory_log=None):
+def data_backup_json(powders, inventory, material_densities, history, inventory_log=None, powder_sets=None):
     backup = {
         "exported_at": datetime.now().isoformat(timespec="seconds"),
         "app": "Stoichio Buddy",
@@ -2064,6 +2075,7 @@ def data_backup_json(powders, inventory, material_densities, history, inventory_
         "inventory": inventory,
         "inventory_log": inventory_log or [],
         "material_densities": material_densities,
+        "powder_sets": powder_sets or {},
         "history": history,
     }
     return json.dumps(backup, indent=2, ensure_ascii=False)
@@ -2084,6 +2096,7 @@ def backup_counts(backup):
         "inventory": len(backup.get("inventory", {})),
         "inventory_log": len(backup.get("inventory_log", [])),
         "material_densities": len(backup.get("material_densities", {})),
+        "powder_sets": len(backup.get("powder_sets", {})),
         "history": len(backup.get("history", [])),
     }
 
@@ -2200,6 +2213,7 @@ history = cached_load_history(storage_status)
 recipe_history = synthesis_history(history)
 target_density_records = target_density_history(history)
 material_densities = cached_load_material_densities(storage_status)
+powder_sets = cached_load_powder_sets(storage_status)
 storage_status = storage_label()
 storage_problem = storage_error()
 
@@ -2224,6 +2238,7 @@ with st.sidebar:
     st.metric("Inventory items", len(inventory))
     st.metric("Inventory log", len(inventory_log))
     st.metric("Material densities", len(material_densities))
+    st.metric("Powder sets", len(powder_sets))
     st.metric("Saved recipes", len(recipe_history))
     st.metric("Target density logs", len(target_density_records))
 
@@ -2234,7 +2249,7 @@ with st.sidebar:
         st.rerun()
     st.download_button(
         "Download Data Backup JSON",
-        data=data_backup_json(db, inventory, material_densities, history, inventory_log),
+        data=data_backup_json(db, inventory, material_densities, history, inventory_log, powder_sets),
         file_name=f"stoichio_buddy_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
         mime="application/json",
         width="stretch",
@@ -2256,7 +2271,8 @@ with st.sidebar:
                     f"{counts['powders']} powders, "
                     f"{counts['inventory']} inventory entries, "
                     f"{counts['inventory_log']} inventory log entries, "
-                    f"{counts['material_densities']} material densities, and "
+                    f"{counts['material_densities']} material densities, "
+                    f"{counts['powder_sets']} powder sets, and "
                     f"{counts['history']} history entries."
                 )
                 confirm_restore = st.checkbox(
@@ -2277,6 +2293,7 @@ with st.sidebar:
                             f"{restored_counts['inventory']} inventory entries, "
                             f"{restored_counts['inventory_log']} inventory log entries, "
                             f"{restored_counts['material_densities']} material densities, "
+                            f"{restored_counts['powder_sets']} powder sets, "
                             f"{restored_counts['history']} history entries."
                         )
                         st.rerun()

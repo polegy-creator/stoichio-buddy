@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import unittest
 
-from density_engine import (
+from stoichio.chemistry.density_engine import (
     AVOGADRO,
     ANGSTROM3_TO_CM3,
     cylinder_volume_cm3,
@@ -13,7 +13,7 @@ from density_engine import (
     theoretical_density_from_cell,
     unit_cell_volume_from_lattice,
 )
-from formula_parser import molar_mass, parse_formula
+from stoichio.chemistry.formula_parser import molar_mass, parse_formula
 
 
 MATERIAL_DENSITIES_FILE = Path(__file__).with_name("material_densities.json")
