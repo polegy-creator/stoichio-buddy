@@ -131,18 +131,13 @@ const els = {
   latticeBeta: $("#latticeBeta"),
   latticeGamma: $("#latticeGamma"),
   unitCellVolume: $("#unitCellVolume"),
+  zField: $("#zField"),
   zValue: $("#zValue"),
   manualMaterialDensity: $("#manualMaterialDensity"),
   materialDensityPreview: $("#materialDensityPreview"),
-  densityTrustStatus: $("#densityTrustStatus"),
-  densityVerifiedBy: $("#densityVerifiedBy"),
-  densityVerifiedDate: $("#densityVerifiedDate"),
-  densitySource: $("#densitySource"),
   densitySourceUrl: $("#densitySourceUrl"),
-  densityDoi: $("#densityDoi"),
-  densityCod: $("#densityCod"),
-  densityPaperTitle: $("#densityPaperTitle"),
   densityRecordNotes: $("#densityRecordNotes"),
+  densityVerifiedCheck: $("#densityVerifiedCheck"),
   densitySearch: $("#densitySearch"),
   densityReviewScope: $("#densityReviewScope"),
   materialDensityTableBody: $("#materialDensityTable tbody"),
@@ -813,6 +808,7 @@ function toggleDensityEntryMode() {
   els.latticeFields.hidden = mode !== "From lattice parameters";
   els.unitCellFields.hidden = mode !== "From unit cell volume";
   els.manualDensityFields.hidden = mode !== "Manual theoretical density";
+  els.zField.hidden = mode === "Manual theoretical density";
   previewMaterialDensity().catch(() => {});
 }
 
@@ -827,7 +823,7 @@ function densityCellPayload() {
     beta_deg: numberOrNull(els.latticeBeta.value),
     gamma_deg: numberOrNull(els.latticeGamma.value),
     unit_cell_volume_A3: numberOrNull(els.unitCellVolume.value),
-    z: Number(els.zValue.value),
+    z: Number(els.zValue.value || 1),
   };
 }
 
@@ -861,20 +857,21 @@ async function saveMaterialDensity(event) {
   const done = setBusy(event.submitter, "Saving...");
   try {
     const mode = els.densityEntryMode.value;
+    const verified = els.densityVerifiedCheck.checked;
     const payload = {
       ...densityCellPayload(),
       phase: els.materialPhase.value,
       theoretical_density_g_cm3: mode === "Manual theoretical density" ? Number(els.manualMaterialDensity.value) : null,
       density_source: mode === "Manual theoretical density" ? "manual" : mode === "From unit cell volume" ? "unit cell" : "lattice parameters",
-      source: els.densitySource.value,
+      source: els.densitySourceUrl.value || "Lab density entry",
       source_url: els.densitySourceUrl.value,
-      doi: els.densityDoi.value,
-      cod_id: els.densityCod.value,
-      paper_title: els.densityPaperTitle.value,
+      doi: "",
+      cod_id: "",
+      paper_title: "",
       notes: els.densityRecordNotes.value,
-      verification_status: els.densityTrustStatus.value,
-      verified_by: els.densityVerifiedBy.value,
-      verified_date: els.densityVerifiedDate.value,
+      verification_status: verified ? "Lab checked" : "Lab entry - unverified",
+      verified_by: "",
+      verified_date: verified ? new Date().toISOString().slice(0, 10) : "",
     };
     if (mode === "From lattice parameters") payload.unit_cell_volume_A3 = null;
     const data = await api.send("/api/densities", "POST", payload);

@@ -313,31 +313,12 @@
           <div id="unitCellFields" hidden>
             <label>Unit cell volume (A3) <input id="unitCellVolume" type="number" min="0" step="0.000001"></label>
           </div>
-          <label>Z, formula units per unit cell <input id="zValue" type="number" min="0" step="0.000001" value="1"></label>
+          <label id="zField">Z, formula units per unit cell <input id="zValue" type="number" min="0" step="0.000001" value="1"></label>
           <label id="manualDensityFields" hidden>Manual theoretical density (g/cm3) <input id="manualMaterialDensity" type="number" min="0" step="0.000001"></label>
           <div id="materialDensityPreview" class="hint"></div>
-          <label>
-            Trust status
-            <select id="densityTrustStatus">
-              <option>Lab checked</option>
-              <option>Preferred for formula</option>
-              <option selected>Lab entry - unverified</option>
-              <option>Codex seeded - verify before use</option>
-              <option>Do not use</option>
-            </select>
-          </label>
-          <div class="row">
-            <label>Verified by optional <input id="densityVerifiedBy" placeholder="Name"></label>
-            <label>Verified date optional <input id="densityVerifiedDate" placeholder="YYYY-MM-DD"></label>
-          </div>
-          <label>Source / reference <input id="densitySource" placeholder="XRD refinement, paper, manual"></label>
           <label>Source URL optional <input id="densitySourceUrl" placeholder="https://doi.org/... or COD link"></label>
-          <div class="row">
-            <label>DOI optional <input id="densityDoi" placeholder="10.xxxx/..."></label>
-            <label>COD ID optional <input id="densityCod" placeholder="1010486"></label>
-          </div>
-          <label>Paper title optional <input id="densityPaperTitle"></label>
           <label>Notes <textarea id="densityRecordNotes" rows="4"></textarea></label>
+          <label class="check"><input id="densityVerifiedCheck" type="checkbox"> Lab verified</label>
           <button type="submit" class="primary">Save Material Density</button>
         </form>
 
