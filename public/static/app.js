@@ -137,6 +137,7 @@ const els = {
   materialDensityPreview: $("#materialDensityPreview"),
   densitySourceUrl: $("#densitySourceUrl"),
   densityRecordNotes: $("#densityRecordNotes"),
+  densityVerifiedBy: $("#densityVerifiedBy"),
   densityVerifiedCheck: $("#densityVerifiedCheck"),
   densitySearch: $("#densitySearch"),
   densityReviewScope: $("#densityReviewScope"),
@@ -870,7 +871,7 @@ async function saveMaterialDensity(event) {
       paper_title: "",
       notes: els.densityRecordNotes.value,
       verification_status: verified ? "Lab checked" : "Lab entry - unverified",
-      verified_by: "",
+      verified_by: els.densityVerifiedBy.value,
       verified_date: verified ? new Date().toISOString().slice(0, 10) : "",
     };
     if (mode === "From lattice parameters") payload.unit_cell_volume_A3 = null;
