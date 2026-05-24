@@ -572,28 +572,23 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   const previous = select.value || state.savedDensityChoices[select.id] || "";
   const expanded = state.densityPickerExpanded[select.id] === true;
   const exact = (data.exact || []).slice().sort((a, b) => Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)));
-  const related = (data.related || []).slice().sort((a, b) => (
-    Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)) ||
-    Number(isTrustedDensity(b)) - Number(isTrustedDensity(a)) ||
-    String(a.formula).localeCompare(String(b.formula))
-  ));
-  const trustedRelated = related.filter(isTrustedDensity);
-  const otherRelated = related.filter((record) => !isTrustedDensity(record));
-  const visibleOther = expanded ? otherRelated : otherRelated.slice(0, 6);
-  const hiddenOther = Math.max(0, otherRelated.length - visibleOther.length);
+  const related = data.related || [];
+  const visibleRelated = expanded ? related : related.slice(0, 6);
+  const hiddenRelated = Math.max(0, related.length - visibleRelated.length);
 
   select.innerHTML = `<option value="__manual__">Manual theoretical density</option>`;
   for (const record of exact) {
     select.insertAdjacentHTML("beforeend", densityOptionHtml(record, isPreferredDensity(record) ? "Preferred exact - " : "Exact - "));
   }
-  for (const record of trustedRelated) {
+  for (const record of visibleRelated) {
+    if (!isTrustedDensity(record)) {
+      select.insertAdjacentHTML("beforeend", densityOptionHtml(record, "Related - "));
+      continue;
+    }
     select.insertAdjacentHTML("beforeend", densityOptionHtml(record, isPreferredDensity(record) ? "Preferred related - " : "Checked related - "));
   }
-  for (const record of visibleOther) {
-    select.insertAdjacentHTML("beforeend", densityOptionHtml(record, "Related - "));
-  }
-  if (hiddenOther > 0) {
-    select.insertAdjacentHTML("beforeend", `<option value="__show_more__">Show ${hiddenOther} more related density record(s)</option>`);
+  if (hiddenRelated > 0) {
+    select.insertAdjacentHTML("beforeend", `<option value="__show_more__">Show ${hiddenRelated} more related density record(s)</option>`);
   }
   if (previous !== "__show_more__" && [...select.options].some((option) => option.value === previous)) {
     select.value = previous;

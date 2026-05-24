@@ -213,6 +213,49 @@ class LabManagerMaterialDensityTests(unittest.TestCase):
         self.assertIn("BaTiO3__tetragonal-perovskite", related_keys)
         self.assertNotIn("ZnO__zincite-wurtzite", related_keys)
 
+    def test_related_material_density_records_rank_by_cation_fraction(self):
+        records = {
+            "TiO2__rutile": {
+                "formula": "TiO2",
+                "phase": "rutile",
+                "verification_status": "Preferred for formula",
+            },
+            "FeTiO3__ilmenite": {
+                "formula": "FeTiO3",
+                "phase": "ilmenite",
+                "verification_status": "Lab checked",
+            },
+            "Fe2O3__hematite-alpha": {
+                "formula": "Fe2O3",
+                "phase": "hematite alpha",
+                "verification_status": "Codex seeded - verify before use",
+            },
+            "Fe3O4__magnetite": {
+                "formula": "Fe3O4",
+                "phase": "magnetite",
+                "verification_status": "Lab checked",
+            },
+            "BaFe12O19__hexaferrite": {
+                "formula": "BaFe12O19",
+                "phase": "hexaferrite",
+                "verification_status": "Lab checked",
+            },
+        }
+
+        related = lab_manager.related_material_density_records("Fe1.98Ti0.02O3", records)
+        related_keys = [record_key for record_key, _ in related]
+
+        self.assertEqual(related_keys[:4], [
+            "Fe2O3__hematite-alpha",
+            "Fe3O4__magnetite",
+            "FeTiO3__ilmenite",
+            "TiO2__rutile",
+        ])
+        self.assertGreater(
+            related_keys.index("BaFe12O19__hexaferrite"),
+            related_keys.index("TiO2__rutile"),
+        )
+
     def test_material_density_records_keep_trust_status(self):
         record_key, records = lab_manager.upsert_material_density(
             "Fe2O3",

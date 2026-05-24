@@ -2,9 +2,8 @@
 
 import re
 
-from stoichio.chemistry.formula_parser import normalize_formula
+from stoichio.chemistry.formula_parser import normalize_formula, parse_formula
 from stoichio import storage
-from stoichio.powders import formula_cation_elements
 
 PREFERRED_DENSITY_STATUS = "Preferred for formula"
 LAB_CHECKED_DENSITY_STATUS = "Lab checked"
@@ -67,38 +66,94 @@ def material_density_trust_rank(record):
     return 4
 
 
+def _density_composition_profile(formula):
+    composition = parse_formula(normalize_formula(formula))
+    cations = {
+        element: float(amount)
+        for element, amount in composition.items()
+        if element != "O" and float(amount) > 0
+    }
+    cation_total = sum(cations.values())
+    if cation_total <= 0:
+        return None
+
+    return {
+        "fractions": {
+            element: amount / cation_total
+            for element, amount in cations.items()
+        },
+        "elements": set(cations),
+        "oxygen_per_cation": float(composition.get("O", 0.0)) / cation_total,
+    }
+
+
+def _density_similarity_sort_key(target_profile, record_formula, record):
+    try:
+        record_profile = _density_composition_profile(record_formula)
+    except ValueError:
+        return None
+    if not record_profile:
+        return None
+
+    target_elements = target_profile["elements"]
+    record_elements = record_profile["elements"]
+    overlap = target_elements & record_elements
+    if not overlap:
+        return None
+
+    target_fractions = target_profile["fractions"]
+    record_fractions = record_profile["fractions"]
+    union = target_elements | record_elements
+
+    cation_distance = sum(
+        abs(target_fractions.get(element, 0.0) - record_fractions.get(element, 0.0))
+        for element in union
+    )
+    missing_target_fraction = sum(
+        target_fractions[element]
+        for element in target_elements - record_elements
+    )
+    extra_record_fraction = sum(
+        record_fractions[element]
+        for element in record_elements - target_elements
+    )
+    oxygen_distance = abs(
+        target_profile["oxygen_per_cation"] - record_profile["oxygen_per_cation"]
+    )
+
+    extra_cation_count = len(record_elements - target_elements)
+
+    return (
+        extra_cation_count,
+        round(cation_distance, 12),
+        round(missing_target_fraction, 12),
+        len(target_elements - record_elements),
+        round(extra_record_fraction, 12),
+        round(oxygen_distance, 12),
+        material_density_trust_rank(record),
+        record.get("formula", record_formula),
+        record.get("phase", ""),
+        record.get("display_name", record_formula),
+    )
+
+
 def related_material_density_records(target, material_densities):
     try:
-        target_elements = formula_cation_elements(target)
+        target_profile = _density_composition_profile(target)
     except ValueError:
         return []
 
-    if not target_elements:
+    if not target_profile:
         return []
 
     matches = []
     for record_key, record in material_densities.items():
-        try:
-            record_elements = formula_cation_elements(record.get("formula", record_key))
-        except ValueError:
+        record_formula = record.get("formula", record_key)
+        similarity_key = _density_similarity_sort_key(target_profile, record_formula, record)
+        if similarity_key is None:
             continue
 
-        overlap = target_elements & record_elements
-        if not overlap:
-            continue
-
-        matches.append(
-            (
-                -len(overlap),
-                len(record_elements - target_elements),
-                material_density_trust_rank(record),
-                record.get("formula", record_key),
-                record.get("phase", ""),
-                record.get("display_name", record_key),
-                record_key,
-                record,
-            )
-        )
+        matches.append((*similarity_key, record_key, record))
 
     matches.sort()
     return [(record_key, record) for *_, record_key, record in matches]
