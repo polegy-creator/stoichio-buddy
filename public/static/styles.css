@@ -596,6 +596,37 @@ p:empty {
   color: var(--bad);
 }
 
+.review-panel {
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  margin: 0.75rem 0 0.9rem;
+  padding: 0.85rem;
+}
+
+.review-panel .section-head {
+  margin-bottom: 0.5rem;
+}
+
+.review-details {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  color: var(--muted);
+  display: grid;
+  gap: 0.38rem;
+  margin: 0.65rem 0;
+  padding: 0.72rem 0.8rem;
+}
+
+.review-details strong {
+  color: var(--text);
+}
+
+.review-details a {
+  color: var(--accent-hover);
+  overflow-wrap: anywhere;
+}
+
 .metric-row {
   display: grid;
   gap: 0.6rem;

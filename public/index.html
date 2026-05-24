@@ -359,12 +359,33 @@
               <option>Verified/preferred</option>
             </select>
           </label>
+          <section id="densityReviewPanel" class="review-panel">
+            <div class="section-head">
+              <div>
+                <h3>Review theoretical density</h3>
+              </div>
+            </div>
+            <label>
+              Density record
+              <select id="densityReviewRecord"></select>
+            </label>
+            <div id="densityReviewDetails" class="review-details"></div>
+            <div class="row">
+              <label>Reviewed by <input id="densityReviewBy" placeholder="Name"></label>
+              <label>Review date <input id="densityReviewDate" type="date"></label>
+            </div>
+            <div class="inline-actions">
+              <button id="densityMarkChecked" type="button" class="secondary">Mark Checked</button>
+              <button id="densityMakePreferred" type="button" class="primary">Make Preferred</button>
+              <button id="densityDoNotUse" type="button" class="danger">Do Not Use</button>
+            </div>
+          </section>
           <div class="table-wrap density-table">
             <table id="materialDensityTable">
               <thead>
                 <tr>
                   <th>Formula</th><th>Phase</th><th>Density</th><th>V (Å³)</th><th>Z</th>
-                  <th>Status</th><th>Source</th><th></th>
+                  <th>Status</th><th>Source</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody></tbody>

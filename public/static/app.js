@@ -38,6 +38,7 @@ const state = {
   lastRecipeMass: null,
   lastDensityResult: null,
   densityTargetAutoSynced: true,
+  selectedDensityReviewKey: "",
   densityPickerExpanded: {
     heightDensityChoice: false,
     relativeDensityChoice: false,
@@ -163,6 +164,13 @@ const els = {
   densityVerifiedCheck: $("#densityVerifiedCheck"),
   densitySearch: $("#densitySearch"),
   densityReviewScope: $("#densityReviewScope"),
+  densityReviewRecord: $("#densityReviewRecord"),
+  densityReviewDetails: $("#densityReviewDetails"),
+  densityReviewBy: $("#densityReviewBy"),
+  densityReviewDate: $("#densityReviewDate"),
+  densityMarkChecked: $("#densityMarkChecked"),
+  densityMakePreferred: $("#densityMakePreferred"),
+  densityDoNotUse: $("#densityDoNotUse"),
   materialDensityTableBody: $("#materialDensityTable tbody"),
 
   historySearch: $("#historySearch"),
@@ -288,6 +296,15 @@ function displayDensityStatus(record) {
   if (status.includes("do not use")) return "Do not use";
   if (status.includes("codex") || status.includes("unverified")) return "Needs review";
   return record.verification_status || "";
+}
+
+function densityNeedsReview(record) {
+  const status = densityStatus(record);
+  return !status.includes("checked") && !status.includes("preferred") && !status.includes("do not use");
+}
+
+function densityRecordId(record) {
+  return record.record_key || record.record_id || record.formula || "";
 }
 
 function densityChoiceValue(select) {
@@ -1469,19 +1486,75 @@ async function saveMaterialDensity(event) {
   }
 }
 
-function renderMaterialDensityTable() {
+function densitySourceHtml(record) {
+  if (record.source_url) {
+    return `<a href="${escapeHtml(record.source_url)}" target="_blank" rel="noopener">${escapeHtml(record.source_url)}</a>`;
+  }
+  return escapeHtml(record.doi || record.source || record.paper_title || "");
+}
+
+function filteredDensityRecords() {
   const search = els.densitySearch.value.trim().toLowerCase();
   const scope = els.densityReviewScope.value;
-  const rows = Object.values(state.densities)
+  return Object.values(state.densities)
     .filter((record) => {
       const text = JSON.stringify(record).toLowerCase();
       if (search && !text.includes(search)) return false;
-      const status = String(record.verification_status || "").toLowerCase();
-      if (scope === "Needs review") return !status.includes("checked") && !status.includes("preferred") && !status.includes("do not use");
-      if (scope === "Verified/preferred") return status.includes("checked") || status.includes("preferred");
+      if (scope === "Needs review") return densityNeedsReview(record);
+      if (scope === "Verified/preferred") return isTrustedDensity(record);
       return true;
     })
-    .sort((a, b) => String(a.formula).localeCompare(String(b.formula)) || String(a.phase).localeCompare(String(b.phase)));
+    .sort((a, b) => (
+      Number(densityNeedsReview(b)) - Number(densityNeedsReview(a)) ||
+      String(a.formula).localeCompare(String(b.formula)) ||
+      String(a.phase).localeCompare(String(b.phase))
+    ));
+}
+
+function renderDensityReviewPanel(rows) {
+  const reviewCandidates = rows.filter(densityNeedsReview);
+  const choices = reviewCandidates.length ? reviewCandidates : rows;
+  const previous = state.selectedDensityReviewKey || els.densityReviewRecord.value;
+  const selectedRecord = choices.find((record) => densityRecordId(record) === previous) || choices[0] || null;
+  const selectedKey = selectedRecord ? densityRecordId(selectedRecord) : "";
+  state.selectedDensityReviewKey = selectedKey;
+
+  els.densityReviewRecord.innerHTML = "";
+  if (!choices.length) {
+    els.densityReviewRecord.insertAdjacentHTML("beforeend", `<option value="">No density records to review</option>`);
+    els.densityReviewDetails.innerHTML = "No matching density records.";
+  } else {
+    for (const record of choices.slice(0, 300)) {
+      const reviewLabel = densityNeedsReview(record) ? "Needs review" : displayDensityStatus(record);
+      els.densityReviewRecord.insertAdjacentHTML(
+        "beforeend",
+        `<option value="${escapeHtml(densityRecordId(record))}">${escapeHtml(record.display_name || record.formula)} - ${escapeHtml(reviewLabel)}</option>`,
+      );
+    }
+    els.densityReviewRecord.value = selectedKey;
+  }
+
+  [els.densityMarkChecked, els.densityMakePreferred, els.densityDoNotUse].forEach((button) => {
+    button.disabled = !selectedRecord;
+  });
+
+  if (!selectedRecord) return;
+
+  const source = densitySourceHtml(selectedRecord) || "No source recorded.";
+  els.densityReviewDetails.innerHTML = `
+    <div><strong>${escapeHtml(selectedRecord.display_name || selectedRecord.formula)}</strong></div>
+    <div>Formula: ${escapeHtml(selectedRecord.formula)}${selectedRecord.phase ? ` | Phase: ${escapeHtml(selectedRecord.phase)}` : ""}</div>
+    <div>Density: ${formatNumber(selectedRecord.theoretical_density_g_cm3, 5)} g/cm³ | V: ${formatNumber(selectedRecord.unit_cell_volume_A3, 5)} Å³ | Z: ${formatNumber(selectedRecord.z, 4)}</div>
+    <div>Status: ${escapeHtml(displayDensityStatus(selectedRecord) || "Unreviewed")}</div>
+    <div>Source: ${source}</div>
+    ${selectedRecord.doi ? `<div>DOI: ${escapeHtml(selectedRecord.doi)}</div>` : ""}
+    ${selectedRecord.notes ? `<div>Notes: ${escapeHtml(selectedRecord.notes)}</div>` : ""}
+  `;
+}
+
+function renderMaterialDensityTable() {
+  const rows = filteredDensityRecords();
+  renderDensityReviewPanel(rows);
 
   els.materialDensityTableBody.innerHTML = "";
   if (!rows.length) {
@@ -1496,9 +1569,8 @@ function renderMaterialDensityTable() {
       status.includes("do not use") ? "blocked" : "",
       status.includes("preferred") ? "preferred" : "",
     ].join(" ").trim();
-    const sourceLink = record.source_url
-      ? `<a href="${escapeHtml(record.source_url)}" target="_blank" rel="noopener">${escapeHtml(record.source_url)}</a>`
-      : escapeHtml(record.doi || record.source || record.paper_title || "");
+    const sourceLink = densitySourceHtml(record);
+    const recordKey = escapeHtml(densityRecordId(record));
     tr.innerHTML = `
       <td>${escapeHtml(record.formula)}</td>
       <td>${escapeHtml(record.phase || "")}</td>
@@ -1508,14 +1580,30 @@ function renderMaterialDensityTable() {
       <td class="wrap">${escapeHtml(displayDensityStatus(record))}</td>
       <td class="wrap">${sourceLink}</td>
       <td class="row-actions">
-        <button class="icon" title="Mark as preferred for this formula" data-prefer-density="${escapeHtml(record.record_key || record.record_id)}">&#9733;</button>
-        <button class="icon" title="Delete density record" data-delete-density="${escapeHtml(record.record_key || record.record_id)}">&#128465;</button>
+        <button class="icon" title="Select for review" data-review-density="${recordKey}">&#128269;</button>
+        <button class="icon" title="Mark as checked" data-check-density="${recordKey}">&#10003;</button>
+        <button class="icon" title="Mark as preferred for this formula" data-prefer-density="${recordKey}">&#9733;</button>
+        <button class="icon" title="Do not use this density" data-block-density="${recordKey}">&#10005;</button>
+        <button class="icon" title="Delete density record" data-delete-density="${recordKey}">&#128465;</button>
       </td>
     `;
     els.materialDensityTableBody.appendChild(tr);
   }
+  els.materialDensityTableBody.querySelectorAll("[data-review-density]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.selectedDensityReviewKey = button.dataset.reviewDensity;
+      renderMaterialDensityTable();
+      els.densityReviewRecord.focus();
+    });
+  });
+  els.materialDensityTableBody.querySelectorAll("[data-check-density]").forEach((button) => {
+    button.addEventListener("click", () => updateDensityReviewStatus(button.dataset.checkDensity, "Lab checked", button));
+  });
   els.materialDensityTableBody.querySelectorAll("[data-prefer-density]").forEach((button) => {
-    button.addEventListener("click", () => markPreferredDensity(button.dataset.preferDensity));
+    button.addEventListener("click", () => updateDensityReviewStatus(button.dataset.preferDensity, "Preferred for formula", button));
+  });
+  els.materialDensityTableBody.querySelectorAll("[data-block-density]").forEach((button) => {
+    button.addEventListener("click", () => updateDensityReviewStatus(button.dataset.blockDensity, "Do not use", button));
   });
   els.materialDensityTableBody.querySelectorAll("[data-delete-density]").forEach((button) => {
     button.addEventListener("click", async () => {
@@ -1538,18 +1626,38 @@ function renderMaterialDensityTable() {
 }
 
 async function markPreferredDensity(identifier) {
+  return updateDensityReviewStatus(identifier, "Preferred for formula");
+}
+
+async function updateDensityReviewStatus(identifier, verificationStatus, button = null) {
   if (!identifier) return;
+  const status = String(verificationStatus || "").trim();
+  if (!status) return;
+  if (status === "Do not use") {
+    const accepted = await confirmDanger(
+      "Mark density as Do Not Use?",
+      "This keeps the record in the database but blocks it from trusted use until someone reviews it again.",
+      "Do Not Use",
+    );
+    if (!accepted) return;
+  }
+  const reviewer = els.densityReviewBy.value.trim() || els.densityVerifiedBy.value.trim() || "Lab";
+  const reviewDate = els.densityReviewDate.value || new Date().toISOString().slice(0, 10);
+  const done = button ? setBusy(button, "Saving...") : () => {};
   try {
     const data = await api.send(`/api/densities/${encodeURIComponent(identifier)}/status`, "PATCH", {
-      verification_status: "Preferred for formula",
-      verified_by: els.densityVerifiedBy.value || "Lab",
-      verified_date: new Date().toISOString().slice(0, 10),
+      verification_status: status,
+      verified_by: reviewer,
+      verified_date: reviewDate,
     });
     state.densities = data.records || state.densities;
+    state.selectedDensityReviewKey = "";
     renderEverything();
-    flash("Preferred density updated.");
+    flash(`Density marked ${status}.`);
   } catch (error) {
     flash(error.message, "error");
+  } finally {
+    done();
   }
 }
 
@@ -1849,7 +1957,24 @@ function setupEvents() {
   ].forEach((input) => input.addEventListener("input", debounce(() => previewMaterialDensity(), 260)));
   els.materialDensityForm.addEventListener("submit", saveMaterialDensity);
   els.densitySearch.addEventListener("input", renderMaterialDensityTable);
-  els.densityReviewScope.addEventListener("change", renderMaterialDensityTable);
+  els.densityReviewDate.value = new Date().toISOString().slice(0, 10);
+  els.densityReviewScope.addEventListener("change", () => {
+    state.selectedDensityReviewKey = "";
+    renderMaterialDensityTable();
+  });
+  els.densityReviewRecord.addEventListener("change", () => {
+    state.selectedDensityReviewKey = els.densityReviewRecord.value;
+    renderMaterialDensityTable();
+  });
+  els.densityMarkChecked.addEventListener("click", () => (
+    updateDensityReviewStatus(els.densityReviewRecord.value, "Lab checked", els.densityMarkChecked)
+  ));
+  els.densityMakePreferred.addEventListener("click", () => (
+    updateDensityReviewStatus(els.densityReviewRecord.value, "Preferred for formula", els.densityMakePreferred)
+  ));
+  els.densityDoNotUse.addEventListener("click", () => (
+    updateDensityReviewStatus(els.densityReviewRecord.value, "Do not use", els.densityDoNotUse)
+  ));
   els.historySearch.addEventListener("input", renderHistory);
   els.historyOwnerFilter.addEventListener("change", renderHistory);
   els.historyStatusFilter.addEventListener("change", renderHistory);
