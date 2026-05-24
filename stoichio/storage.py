@@ -1,10 +1,14 @@
 """Storage backends and JSON persistence helpers."""
 
 import datetime
+import base64
 import json
 import os
 import re
 import tempfile
+import urllib.error
+import urllib.parse
+import urllib.request
 from contextlib import contextmanager
 
 try:
@@ -176,6 +180,108 @@ class AppsScriptStore:
         self._request("save", path, data=data)
 
 
+class GitHubJsonStore:
+    """Tiny JSON document store backed by GitHub repository files.
+
+    This is meant for the Vercel lab website: the deployed app cannot persist
+    local file writes, so JSON documents are committed to a data branch instead.
+    """
+
+    def __init__(self, repo, token, branch="lab-data", path_prefix=""):
+        if not repo or "/" not in repo:
+            raise RuntimeError("GITHUB_DATA_REPO must look like owner/repository")
+        if not token:
+            raise RuntimeError("GITHUB_DATA_TOKEN is required for GitHub JSON storage")
+
+        self.repo = repo.strip()
+        self.token = token.strip()
+        self.branch = str(branch or "lab-data").strip()
+        self.path_prefix = str(path_prefix or "").strip().strip("/")
+        self.api_root = f"https://api.github.com/repos/{self.repo}/contents"
+
+    def _repo_path(self, path):
+        base_name = os.path.basename(path)
+        if self.path_prefix:
+            return f"{self.path_prefix}/{base_name}"
+        return base_name
+
+    def _request(self, method, url, payload=None, allow_404=False):
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {self.token}",
+            "User-Agent": "stoichio-buddy",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+        data = None
+        if payload is not None:
+            headers["Content-Type"] = "application/json"
+            data = json.dumps(payload).encode("utf-8")
+
+        request = urllib.request.Request(url, data=data, headers=headers, method=method)
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                content = response.read().decode("utf-8")
+                return json.loads(content) if content else {}
+        except urllib.error.HTTPError as exc:
+            if allow_404 and exc.code == 404:
+                return None
+            try:
+                error_payload = json.loads(exc.read().decode("utf-8"))
+                message = error_payload.get("message", str(exc))
+            except Exception:
+                message = str(exc)
+            raise RuntimeError(f"GitHub storage HTTP {exc.code}: {message}") from exc
+        except urllib.error.URLError as exc:
+            raise RuntimeError(f"GitHub storage request failed: {exc}") from exc
+
+    def _content_url(self, path):
+        repo_path = urllib.parse.quote(self._repo_path(path), safe="/")
+        return f"{self.api_root}/{repo_path}?ref={urllib.parse.quote(self.branch)}"
+
+    def _put_url(self, path):
+        repo_path = urllib.parse.quote(self._repo_path(path), safe="/")
+        return f"{self.api_root}/{repo_path}"
+
+    def _load_content_record(self, path, allow_404=False):
+        return self._request("GET", self._content_url(path), allow_404=allow_404)
+
+    def load(self, path, default):
+        record = self._load_content_record(path, allow_404=True)
+        if record is None:
+            return default
+        content = record.get("content", "")
+        if not content:
+            return default
+        try:
+            decoded = base64.b64decode(content).decode("utf-8").strip()
+            return json.loads(decoded) if decoded else default
+        except (ValueError, json.JSONDecodeError):
+            return default
+
+    def save(self, path, data):
+        repo_path = self._repo_path(path)
+        payload_text = json.dumps(data, indent=4)
+        content = base64.b64encode((payload_text + "\n").encode("utf-8")).decode("ascii")
+        existing = self._load_content_record(path, allow_404=True)
+        payload = {
+            "message": f"Update Stoichio Buddy data: {os.path.basename(path)}",
+            "content": content,
+            "branch": self.branch,
+        }
+        if existing and existing.get("sha"):
+            payload["sha"] = existing["sha"]
+
+        try:
+            self._request("PUT", self._put_url(path), payload=payload)
+        except RuntimeError as exc:
+            # Retry once with a fresh SHA in case two lab users saved near the same time.
+            if "409" not in str(exc):
+                raise
+            existing = self._load_content_record(path, allow_404=False)
+            payload["sha"] = existing["sha"]
+            self._request("PUT", self._put_url(path), payload=payload)
+
+
 def configure_google_sheets(credentials_info, spreadsheet_id=None, spreadsheet_name=None):
     global _storage_backend, _storage_label, _storage_error
     _storage_backend = GoogleSheetsStore(
@@ -197,6 +303,18 @@ def configure_apps_script(web_app_url, token):
     _storage_error = None
 
 
+def configure_github_json(repo, token, branch="lab-data", path_prefix=""):
+    global _storage_backend, _storage_label, _storage_error
+    _storage_backend = GitHubJsonStore(
+        repo=repo,
+        token=token,
+        branch=branch,
+        path_prefix=path_prefix,
+    )
+    _storage_label = f"GitHub JSON: {repo}@{branch}"
+    _storage_error = None
+
+
 def disable_shared_storage(exc):
     global _storage_backend, _storage_label, _storage_error
     _storage_backend = None
@@ -210,6 +328,10 @@ def storage_label():
 
 def storage_error():
     return _storage_error
+
+
+def has_shared_storage():
+    return _storage_backend is not None
 
 
 def load_json_file(path, default):

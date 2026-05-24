@@ -7,3 +7,5 @@ Open Stoichio Buddy.command
 *.json.lock
 backups/
 dist/
+stochio logo.png
+stoichio icon.png

@@ -49,10 +49,10 @@ streamlit run stochio_buddy.py
 
 Stoichio Buddy now has two runnable versions:
 
-- Full lab app: `streamlit run stochio_buddy.py`
-- Fast non-Streamlit site: `uvicorn fast_site.app:app --reload --host 0.0.0.0 --port 8701`
+- Local Streamlit lab app: `streamlit run stochio_buddy.py`
+- Vercel lab website: `uvicorn fast_site.app:app --reload --host 0.0.0.0 --port 8701`
 
-The fast site is a smaller FastAPI/static frontend that reuses the same locked chemistry engine. See `docs/FAST_SITE_VERSION.md`.
+The Vercel lab website is the non-Streamlit version. It reuses the same locked chemistry engine and supports editable GitHub-backed JSON storage for hosted lab use. See `docs/FAST_SITE_VERSION.md`.
 
 For a lab-computer shortcut with the Stoichio Buddy icon, run:
 
@@ -70,20 +70,31 @@ streamlit run stochio_buddy.py --server.address 0.0.0.0
 
 People on the same network can open the Network URL printed by Streamlit.
 
-This is the recommended setup for a fast lab tool: one lab computer runs the app, and everyone on the same network opens that computer's Streamlit URL. Data stays in the local JSON files on that computer.
+This is still useful for one lab computer, but the Vercel website is the preferred hosted version.
 
 ## Deploy for everyone
 
-The simplest free hosted path is Streamlit Community Cloud plus Google Sheets for shared lab data:
+The preferred hosted path is Vercel plus GitHub-backed JSON storage:
 
-1. Put this folder in a GitHub repository.
-2. Go to Streamlit Community Cloud and create a new app from the repository.
-3. Set the main file to `stochio_buddy.py`.
-4. Add Google Sheets secrets if you want shared persistent powder, inventory, density, and history data.
+1. Import this GitHub repository into Vercel.
+2. Deploy the root `app.py` FastAPI entry point.
+3. Create or push a `lab-data` branch with the JSON data files.
+4. Add Vercel environment variables:
 
-Shared Google Sheets storage is disabled by default because it is much slower than local JSON. If Google Sheets is not explicitly enabled, the app uses local JSON files. This is good for local/offline use, but local writes on Streamlit Community Cloud are not reliable after app restarts.
+```text
+GITHUB_DATA_REPO=polegy-creator/stoichio-buddy
+GITHUB_DATA_BRANCH=lab-data
+GITHUB_DATA_TOKEN=your_github_fine_grained_token
+STOICHIO_ADMIN_PIN=choose_a_lab_edit_pin
+```
 
-## Google Sheets shared storage, no Google Cloud
+Without the GitHub data variables, Vercel can read the committed JSON seed data and calculate recipes, but editing is disabled because Vercel does not persist local file writes.
+
+## Legacy Google Sheets shared storage
+
+The old Google Sheets options are kept below for reference, but they are no longer the recommended hosted setup.
+
+### Google Sheets shared storage, no Google Cloud
 
 This option uses a normal Google Sheet plus a small Google Apps Script web app. It avoids Google Cloud service accounts.
 

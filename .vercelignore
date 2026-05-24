@@ -11,9 +11,5 @@ dist
 docs
 Open Stoichio Buddy.command
 stochio_buddy.py
-history.json
-inventory.json
-inventory_log.json
-powder_sets.json
 stochio logo.png
 stoichio icon.png

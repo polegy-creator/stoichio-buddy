@@ -12,5 +12,255 @@
             "Ti": 1.0,
             "O": 2.0
         }
+    },
+    "ZnO": {
+        "molar_mass": 81.37899999999999,
+        "elements": {
+            "Zn": 1.0,
+            "O": 1.0
+        }
+    },
+    "Co3O4": {
+        "molar_mass": 240.79500000000002,
+        "elements": {
+            "Co": 3.0,
+            "O": 4.0
+        }
+    },
+    "NiO": {
+        "molar_mass": 74.692,
+        "elements": {
+            "Ni": 1.0,
+            "O": 1.0
+        }
+    },
+    "HfO2": {
+        "molar_mass": 210.488,
+        "elements": {
+            "Hf": 1.0,
+            "O": 2.0
+        }
+    },
+    "CuO": {
+        "molar_mass": 79.545,
+        "elements": {
+            "Cu": 1.0,
+            "O": 1.0
+        }
+    },
+    "Ta2O5": {
+        "molar_mass": 441.895,
+        "elements": {
+            "Ta": 2.0,
+            "O": 5.0
+        }
+    },
+    "BaCO3": {
+        "molar_mass": 197.33800000000002,
+        "elements": {
+            "Ba": 1.0,
+            "C": 1.0,
+            "O": 3.0
+        }
+    },
+    "MgO": {
+        "molar_mass": 40.304,
+        "elements": {
+            "Mg": 1.0,
+            "O": 1.0
+        }
+    },
+    "MnO2": {
+        "molar_mass": 86.936,
+        "elements": {
+            "Mn": 1.0,
+            "O": 2.0
+        }
+    },
+    "Al2O3": {
+        "molar_mass": 101.961,
+        "elements": {
+            "Al": 2.0,
+            "O": 3.0
+        }
+    },
+    "Nb2O5": {
+        "molar_mass": 265.807,
+        "elements": {
+            "Nb": 2.0,
+            "O": 5.0
+        }
+    },
+    "CoO": {
+        "molar_mass": 74.932,
+        "elements": {
+            "Co": 1.0,
+            "O": 1.0
+        }
+    },
+    "MoO3": {
+        "molar_mass": 143.947,
+        "elements": {
+            "Mo": 1.0,
+            "O": 3.0
+        }
+    },
+    "Sc2O3": {
+        "molar_mass": 137.909,
+        "elements": {
+            "Sc": 2.0,
+            "O": 3.0
+        }
+    },
+    "BaTiO3": {
+        "molar_mass": 233.19400000000002,
+        "elements": {
+            "Ba": 1.0,
+            "Ti": 1.0,
+            "O": 3.0
+        }
+    },
+    "Cr2O3": {
+        "molar_mass": 151.989,
+        "elements": {
+            "Cr": 2.0,
+            "O": 3.0
+        }
+    },
+    "Sb2O3": {
+        "molar_mass": 291.517,
+        "elements": {
+            "Sb": 2.0,
+            "O": 3.0
+        }
+    },
+    "Tb4O7": {
+        "molar_mass": 747.7130000000001,
+        "elements": {
+            "Tb": 4.0,
+            "O": 7.0
+        }
+    },
+    "CaCO3": {
+        "molar_mass": 100.086,
+        "elements": {
+            "Ca": 1.0,
+            "C": 1.0,
+            "O": 3.0
+        }
+    },
+    "ZrO2": {
+        "molar_mass": 123.22200000000001,
+        "elements": {
+            "Zr": 1.0,
+            "O": 2.0
+        }
+    },
+    "Tm2O3": {
+        "molar_mass": 385.857,
+        "elements": {
+            "Tm": 2.0,
+            "O": 3.0
+        }
+    },
+    "SnO2": {
+        "molar_mass": 150.708,
+        "elements": {
+            "Sn": 1.0,
+            "O": 2.0
+        }
+    },
+    "La2O3": {
+        "molar_mass": 325.817,
+        "elements": {
+            "La": 2.0,
+            "O": 3.0
+        }
+    },
+    "SrCO3": {
+        "molar_mass": 147.62800000000001,
+        "elements": {
+            "Sr": 1.0,
+            "C": 1.0,
+            "O": 3.0
+        }
+    },
+    "RuO2": {
+        "molar_mass": 133.06799999999998,
+        "elements": {
+            "Ru": 1.0,
+            "O": 2.0
+        }
+    },
+    "Y2O3": {
+        "molar_mass": 225.80900000000003,
+        "elements": {
+            "Y": 2.0,
+            "O": 3.0
+        }
+    },
+    "Pr6O11": {
+        "molar_mass": 1021.4490000000001,
+        "elements": {
+            "Pr": 6.0,
+            "O": 11.0
+        }
+    },
+    "BiVO4": {
+        "molar_mass": 323.918,
+        "elements": {
+            "Bi": 1.0,
+            "V": 1.0,
+            "O": 4.0
+        }
+    },
+    "Gd2O3": {
+        "molar_mass": 362.497,
+        "elements": {
+            "Gd": 2.0,
+            "O": 3.0
+        }
+    },
+    "Er2O3": {
+        "molar_mass": 382.517,
+        "elements": {
+            "Er": 2.0,
+            "O": 3.0
+        }
+    },
+    "CeO2": {
+        "molar_mass": 172.118,
+        "elements": {
+            "Ce": 1.0,
+            "O": 2.0
+        }
+    },
+    "V2O3": {
+        "molar_mass": 149.881,
+        "elements": {
+            "V": 2.0,
+            "O": 3.0
+        }
+    },
+    "WO3": {
+        "molar_mass": 231.837,
+        "elements": {
+            "W": 1.0,
+            "O": 3.0
+        }
+    },
+    "Yb2O3": {
+        "molar_mass": 394.09700000000004,
+        "elements": {
+            "Yb": 2.0,
+            "O": 3.0
+        }
+    },
+    "Bi2O3": {
+        "molar_mass": 465.957,
+        "elements": {
+            "Bi": 2.0,
+            "O": 3.0
+        }
     }
 }

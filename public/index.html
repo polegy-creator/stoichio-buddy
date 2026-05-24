@@ -9,113 +9,380 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="side-brand">
-      <img src="/assets/stoichio_icon_app.png" alt="">
-      <strong>Stoichio Buddy</strong>
+    <div class="brand">
+      <img src="/assets/stoichio_logo_header.png" alt="Stoichio Buddy">
     </div>
-    <nav>
-      <a href="#recipe">Powder Mass</a>
-      <a href="#target-density">Target Density</a>
-      <a href="#inventory">Inventory</a>
+    <nav class="nav" aria-label="Main pages">
+      <button class="nav-item active" data-page="powder-mass">Powder Mass Calculation</button>
+      <button class="nav-item" data-page="target-density">Target Density</button>
+      <button class="nav-item" data-page="powders-inventory">Powder & Inventory</button>
+      <button class="nav-item" data-page="material-density">Material Density</button>
+      <button class="nav-item" data-page="history">History</button>
     </nav>
-    <div class="status" id="serviceStatus">Loading...</div>
+    <section class="sidebar-card">
+      <div class="muted small">Storage</div>
+      <div id="serviceStatus" class="status-text">Loading...</div>
+      <label class="pin-box">
+        Admin PIN
+        <input id="adminPin" type="password" autocomplete="current-password" placeholder="Optional">
+      </label>
+      <button id="savePin" type="button" class="secondary">Save PIN</button>
+    </section>
+    <section class="sidebar-card">
+      <button id="themeToggle" type="button" class="secondary">Light mode</button>
+      <a class="download-link" href="/api/backup" download="stoichio_lab_backup.json">Export All Lab Data</a>
+    </section>
   </aside>
 
-  <main>
-    <header class="hero">
-      <img src="/assets/stoichio_logo_header.png" alt="Stoichio Buddy">
-      <p>Cation-first recipe math in a faster non-Streamlit interface.</p>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">Powder Mass Calculation</h1>
+        <p id="pageSubtitle">Same locked lab math, now as the Vercel web app.</p>
+      </div>
+      <div class="top-metrics">
+        <div><span id="powderCount">0</span><small>powders</small></div>
+        <div><span id="densityCount">0</span><small>densities</small></div>
+        <div><span id="historyCount">0</span><small>history</small></div>
+      </div>
     </header>
 
-    <section id="recipe" class="grid">
-      <form class="panel" id="recipeForm">
-        <h1>Powder Mass Calculation</h1>
-        <label>
-          Target formula
-          <input id="targetFormula" name="target" placeholder="Fe1.98Ti0.02O3" value="Fe1.98Ti0.02O3">
-        </label>
-        <div class="row">
-          <label>
-            Amount mode
-            <select id="amountMode">
-              <option value="mass">Target formula mass</option>
-              <option value="height">Pellet height</option>
-            </select>
-          </label>
-          <label id="massField">
-            Target formula mass (g)
-            <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
-          </label>
-          <label id="heightField" hidden>
-            Desired height (mm)
-            <input id="targetHeight" type="number" min="0" step="0.0001" value="1.0">
-          </label>
-          <label id="densityField" hidden>
-            Theoretical density (g/cm3)
-            <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
-          </label>
-        </div>
-        <div class="hint" id="powderFilterHint"></div>
-        <div class="powder-list" id="powderList"></div>
-        <button type="submit">Calculate Recipe</button>
-      </form>
+    <section id="globalMessage" class="message" hidden></section>
 
-      <section class="panel">
-        <h2>Recipe Result</h2>
-        <div id="recipeMessage" class="message">Enter a target and select powders.</div>
-        <div class="table-wrap">
-          <table id="recipeTable">
-            <thead>
-              <tr><th>Powder</th><th>Mass (g)</th><th>Available (g)</th><th>After recipe (g)</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="details" id="recipeDetails"></div>
-      </section>
+    <section id="page-powder-mass" class="page active">
+      <div class="two-col">
+        <form id="recipeForm" class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Powder mass setup</h2>
+              <p>Only selected powders are used. Oxygen is handled like the lab calculation.</p>
+            </div>
+          </div>
+
+          <label>
+            Target formula
+            <input id="targetFormula" placeholder="Fe1.98Ti0.02O3" value="Fe1.98Ti0.02O3">
+          </label>
+
+          <label>
+            Target for optional
+            <input id="recipeTargetFor" placeholder="Person or project name">
+          </label>
+          <div id="recipeTargetPreview" class="hint"></div>
+
+          <fieldset class="segmented">
+            <legend>Target amount mode</legend>
+            <label><input type="radio" name="amountMode" value="mass" checked> Target formula mass</label>
+            <label><input type="radio" name="amountMode" value="height"> Pellet height</label>
+          </fieldset>
+
+          <div id="massModeFields">
+            <label>
+              Target formula mass (g)
+              <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
+            </label>
+          </div>
+
+          <div id="heightModeFields" hidden>
+            <div class="row">
+              <label>
+                Desired target height (mm)
+                <input id="targetHeight" type="number" min="0" step="0.0001" value="1">
+              </label>
+              <label>
+                Die diameter (mm)
+                <input id="targetDiameter" type="number" min="0" step="0.0001" value="25.05">
+              </label>
+            </div>
+            <label>
+              Theoretical density source
+              <select id="heightDensityChoice"></select>
+            </label>
+            <label id="manualHeightDensityWrap">
+              Manual theoretical density (g/cm3)
+              <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
+            </label>
+            <div id="heightMassPreview" class="hint"></div>
+          </div>
+
+          <div class="inline-actions">
+            <label class="check"><input id="showAllPowders" type="checkbox"> Show all powders</label>
+            <button id="reloadPowders" type="button" class="secondary">Refresh powders</button>
+          </div>
+          <div id="powderFilterHint" class="hint"></div>
+          <div id="powderSetBox" class="compact-box" hidden></div>
+          <div id="powderList" class="selector-list"></div>
+
+          <button type="submit" class="primary">Calculate Recipe</button>
+        </form>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Recipe result</h2>
+              <p id="recipeDetails">Enter a target and select powders.</p>
+            </div>
+          </div>
+          <div id="recipeMessage" class="message">Waiting for calculation.</div>
+          <div class="metric-row" id="recipeMetrics"></div>
+          <div class="table-wrap">
+            <table id="recipeTable">
+              <thead>
+                <tr>
+                  <th>Powder</th>
+                  <th>Mass (g)</th>
+                  <th>Available (g)</th>
+                  <th>After recipe (g)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <label>
+            Recipe notes
+            <textarea id="recipeNotes" rows="4" placeholder="pressed at 3 tons, calcined 900C, ball milled 2h"></textarea>
+          </label>
+          <div class="inline-actions">
+            <button id="saveRecipe" type="button" class="primary">Save Recipe</button>
+            <button id="deductInventory" type="button" class="secondary">Confirm Inventory Deduction</button>
+          </div>
+          <pre id="recipeSummary" class="copy-box"></pre>
+        </section>
+      </div>
     </section>
 
-    <section id="target-density" class="grid">
-      <form class="panel" id="densityForm">
-        <h2>Target Density</h2>
-        <div class="row">
+    <section id="page-target-density" class="page">
+      <div class="two-col">
+        <form id="densityForm" class="panel">
+          <h2>Target density after sintering</h2>
+          <p>Use the measured final dimensions after sintering, not the 25.05 mm die.</p>
+
           <label>
-            Final mass (g)
+            Saved recipe target optional
+            <select id="linkedRecipe"></select>
+          </label>
+          <div id="linkedRecipeInfo" class="hint"></div>
+
+          <label>
+            Target formula
+            <input id="densityTargetFormula" placeholder="Fe1.98Ti0.02O3">
+          </label>
+          <label>
+            Target for optional
+            <input id="densityTargetFor" placeholder="Person or project name">
+          </label>
+          <div id="densityTargetPreview" class="hint"></div>
+
+          <div class="row">
+            <label>
+              Measured final diameter (mm)
+              <input id="finalDiameter" type="number" min="0" step="0.0001">
+            </label>
+            <label>
+              Measured final height (mm)
+              <input id="finalHeight" type="number" min="0" step="0.0001">
+            </label>
+          </div>
+          <label>
+            Measured final mass (g)
             <input id="finalMass" type="number" min="0" step="0.000001">
           </label>
           <label>
-            Final diameter (mm)
-            <input id="finalDiameter" type="number" min="0" step="0.0001">
+            Theoretical density source
+            <select id="relativeDensityChoice"></select>
           </label>
-          <label>
-            Final height (mm)
-            <input id="finalHeight" type="number" min="0" step="0.0001">
-          </label>
-          <label>
-            Theoretical density (g/cm3)
+          <label id="manualRelativeDensityWrap">
+            Manual theoretical density (g/cm3)
             <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
           </label>
-        </div>
-        <button type="submit">Calculate Target Density</button>
-      </form>
+          <button type="submit" class="primary">Calculate Target Density</button>
+        </form>
+
+        <section class="panel">
+          <h2>Density result</h2>
+          <div id="densityResult" class="message">Enter final target measurements.</div>
+          <div id="densityMetrics" class="metric-row"></div>
+          <label>
+            Target density notes
+            <textarea id="densityNotes" rows="4" placeholder="sintering temperature, cracks, polish state, measurement notes"></textarea>
+          </label>
+          <button id="saveDensityHistory" type="button" class="primary">Save Target Density</button>
+          <pre id="densitySummary" class="copy-box"></pre>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-powders-inventory" class="page">
+      <div class="three-col">
+        <form id="addPowderForm" class="panel">
+          <h2>Add powder</h2>
+          <label>Powder formula <input id="newPowderFormula" placeholder="Fe2O3"></label>
+          <label>Initial inventory grams <input id="newPowderGrams" type="number" min="0" step="0.0001" value="0"></label>
+          <button type="submit" class="primary">Add Powder & Stock</button>
+          <p class="hint">Molar masses are recalculated from atomic_masses.json.</p>
+        </form>
+
+        <form id="inventoryForm" class="panel">
+          <h2>Set quantity</h2>
+          <label>Powder <select id="inventoryPowder"></select></label>
+          <label>Available grams <input id="inventoryGrams" type="number" min="0" step="0.0001" value="0"></label>
+          <button type="submit" class="primary">Save Quantity</button>
+          <p class="hint">Set quantity to 0 to remove a powder from inventory.</p>
+        </form>
+
+        <form id="deletePowderForm" class="panel">
+          <h2>Delete powder</h2>
+          <label>Powder <select id="deletePowder"></select></label>
+          <label class="check"><input id="removeDeletedStock" type="checkbox" checked> Also remove inventory entry</label>
+          <button type="submit" class="danger">Delete Powder</button>
+          <p class="hint">History entries are kept unchanged.</p>
+        </form>
+      </div>
+
+      <div class="two-col">
+        <section class="panel">
+          <h2>Powder database</h2>
+          <div class="table-wrap tall">
+            <table id="powderDatabaseTable">
+              <thead><tr><th>Powder</th><th>Molar mass</th><th>Elements</th><th>Stock</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Current inventory</h2>
+          <div id="lowStockDashboard" class="message"></div>
+          <div class="table-wrap tall">
+            <table id="inventoryTable">
+              <thead><tr><th>Powder</th><th>Available (g)</th><th>Last recipe needs</th><th>After recipe</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
 
       <section class="panel">
-        <h2>Density Result</h2>
-        <div id="densityResult" class="message">Enter final pellet measurements.</div>
+        <h2>Inventory ledger</h2>
+        <div class="table-wrap">
+          <table id="ledgerTable">
+            <thead><tr><th>Time</th><th>Powder</th><th>Change</th><th>Before</th><th>After</th><th>Action</th><th>Reason</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </section>
     </section>
 
-    <section id="inventory" class="panel">
-      <div class="section-head">
-        <h2>Inventory Snapshot</h2>
-        <button id="refreshInventory" type="button">Refresh</button>
+    <section id="page-material-density" class="page">
+      <div class="two-col">
+        <form id="materialDensityForm" class="panel">
+          <h2>Add or update target</h2>
+          <label>Target formula <input id="materialFormula" placeholder="Fe1.98Ti0.02O3"></label>
+          <label>Phase / polymorph optional <input id="materialPhase" placeholder="rutile, anatase, hematite"></label>
+          <label>
+            Density entry mode
+            <select id="densityEntryMode">
+              <option>From lattice parameters</option>
+              <option>From unit cell volume</option>
+              <option>Manual theoretical density</option>
+            </select>
+          </label>
+          <div id="latticeFields">
+            <label>
+              Crystal system
+              <select id="crystalSystem">
+                <option>Cubic</option><option>Tetragonal</option><option>Orthorhombic</option>
+                <option>Hexagonal</option><option>Rhombohedral</option><option>Monoclinic</option><option>Triclinic</option>
+              </select>
+            </label>
+            <div class="row">
+              <label>a (A) <input id="latticeA" type="number" min="0" step="0.000001"></label>
+              <label>b (A) <input id="latticeB" type="number" min="0" step="0.000001"></label>
+              <label>c (A) <input id="latticeC" type="number" min="0" step="0.000001"></label>
+            </div>
+            <div class="row">
+              <label>alpha (deg) <input id="latticeAlpha" type="number" min="0" max="180" step="0.0001"></label>
+              <label>beta (deg) <input id="latticeBeta" type="number" min="0" max="180" step="0.0001"></label>
+              <label>gamma (deg) <input id="latticeGamma" type="number" min="0" max="180" step="0.0001"></label>
+            </div>
+          </div>
+          <div id="unitCellFields" hidden>
+            <label>Unit cell volume (A3) <input id="unitCellVolume" type="number" min="0" step="0.000001"></label>
+          </div>
+          <label>Z, formula units per unit cell <input id="zValue" type="number" min="0" step="0.000001" value="1"></label>
+          <label id="manualDensityFields" hidden>Manual theoretical density (g/cm3) <input id="manualMaterialDensity" type="number" min="0" step="0.000001"></label>
+          <div id="materialDensityPreview" class="hint"></div>
+          <label>
+            Trust status
+            <select id="densityTrustStatus">
+              <option>Lab checked</option>
+              <option>Preferred for formula</option>
+              <option selected>Lab entry - unverified</option>
+              <option>Codex seeded - verify before use</option>
+              <option>Do not use</option>
+            </select>
+          </label>
+          <div class="row">
+            <label>Verified by optional <input id="densityVerifiedBy" placeholder="Name"></label>
+            <label>Verified date optional <input id="densityVerifiedDate" placeholder="YYYY-MM-DD"></label>
+          </div>
+          <label>Source / reference <input id="densitySource" placeholder="XRD refinement, paper, manual"></label>
+          <label>Source URL optional <input id="densitySourceUrl" placeholder="https://doi.org/... or COD link"></label>
+          <div class="row">
+            <label>DOI optional <input id="densityDoi" placeholder="10.xxxx/..."></label>
+            <label>COD ID optional <input id="densityCod" placeholder="1010486"></label>
+          </div>
+          <label>Paper title optional <input id="densityPaperTitle"></label>
+          <label>Notes <textarea id="densityRecordNotes" rows="4"></textarea></label>
+          <button type="submit" class="primary">Save Material Density</button>
+        </form>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Density sources</h2>
+              <p>Codex seeded rows are color coded so the lab can verify before use.</p>
+            </div>
+          </div>
+          <label>Search <input id="densitySearch" placeholder="formula, phase, DOI, source"></label>
+          <label>
+            Review list
+            <select id="densityReviewScope">
+              <option>All records</option>
+              <option>Needs review</option>
+              <option>Verified/preferred</option>
+            </select>
+          </label>
+          <div class="table-wrap density-table">
+            <table id="materialDensityTable">
+              <thead>
+                <tr>
+                  <th>Formula</th><th>Phase</th><th>Density</th><th>V (A3)</th><th>Z</th>
+                  <th>Status</th><th>Source</th><th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
       </div>
-      <div class="table-wrap">
-        <table id="inventoryTable">
-          <thead><tr><th>Powder</th><th>Available (g)</th><th>Status</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
+    </section>
+
+    <section id="page-history" class="page">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>History</h2>
+            <p>Compact lab log grouped by person, target number, formula, recipe and density records.</p>
+          </div>
+        </div>
+        <div class="filters">
+          <label>Search <input id="historySearch" placeholder="formula, person, powder, date, target number"></label>
+          <label>Target for <select id="historyOwnerFilter"></select></label>
+          <label>Status <select id="historyStatusFilter"><option>All</option><option>Complete</option><option>Needs density</option><option>Needs recipe</option></select></label>
+        </div>
+        <div id="historyLog" class="history-log"></div>
+      </section>
     </section>
   </main>
 

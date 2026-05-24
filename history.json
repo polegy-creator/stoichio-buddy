@@ -1,242 +1,40 @@
 [
     {
-        "time": "2026-05-18T20:29:07.510631",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.5,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.343337,
-            "TiO2": 0.13379
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:29:36.989498",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:29:49.127618",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:29:50.493649",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:29:50.910752",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:29:51.244299",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:29:51.452934",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:30:03.093129",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:30:14.926859",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.457174,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:30:19.673298",
-        "target": "Fe1.98Ti0.02O3",
+        "time": "2026-05-19T10:49:38",
+        "target": "Fe1.96Zn0.04O3",
         "mass": 15.6,
         "selected_powders": [
-            "Fe2O3",
-            "TiO2"
+            "ZnO",
+            "Fe2O3"
         ],
         "recipe": {
-            "Fe2O3": 15.442326,
-            "TiO2": 0.134654
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:40:04.015558",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.458142,
-            "TiO2": 0.134783
-        },
-        "warning": "Approximate solution (no exact stoichiometric match possible)",
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:45:30.318913",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.474312,
-            "TiO2": 0.156348
+            "ZnO": 0.317242,
+            "Fe2O3": 15.251573
         },
         "warning": null,
-        "inventory_deducted": false
+        "inventory_deducted": false,
+        "entry_id": "62015688870c4335a12e73f3315e265d",
+        "recipe_number": 1,
+        "recipe_id": "R001"
     },
     {
-        "time": "2026-05-18T20:51:29.580124",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.615,
+        "time": "2026-05-19T10:54:12",
+        "target": "CoFe1.99Ti0.01O4",
+        "mass": 15.485,
         "selected_powders": [
             "Fe2O3",
-            "TiO2"
+            "TiO2",
+            "Co3O4"
         ],
         "recipe": {
-            "Fe2O3": 15.474312,
-            "TiO2": 0.156348
+            "Fe2O3": 10.490311,
+            "TiO2": 0.052729,
+            "Co3O4": 5.299342
         },
         "warning": null,
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:51:38.140867",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.6,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.459447,
-            "TiO2": 0.156198
-        },
-        "warning": null,
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:51:56.195546",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.62,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.479267,
-            "TiO2": 0.156398
-        },
-        "warning": null,
-        "inventory_deducted": false
-    },
-    {
-        "time": "2026-05-18T20:52:05.745382",
-        "target": "Fe1.98Ti0.02O3",
-        "mass": 15.6,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2"
-        ],
-        "recipe": {
-            "Fe2O3": 15.459447,
-            "TiO2": 0.156198
-        },
-        "warning": null,
-        "inventory_deducted": false
+        "inventory_deducted": false,
+        "entry_id": "1c4128d7dd97444c95ab60376cba1996",
+        "recipe_number": 2,
+        "recipe_id": "R002"
     }
 ]
