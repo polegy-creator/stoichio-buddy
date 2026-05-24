@@ -1,0 +1,288 @@
+:root {
+  color-scheme: dark;
+  --bg: #081017;
+  --panel: #101d27;
+  --panel-2: #142633;
+  --line: #284252;
+  --text: #f3f7f6;
+  --muted: #9bb1bc;
+  --accent: #f6a13f;
+  --accent-2: #ffba66;
+  --bad: #ff6f61;
+  --warn: #f3c969;
+  --good: #6ed7a2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.sidebar {
+  background: #071019;
+  border-right: 1px solid var(--line);
+  bottom: 0;
+  left: 0;
+  padding: 1.2rem;
+  position: fixed;
+  top: 0;
+  width: 230px;
+}
+
+.side-brand {
+  align-items: center;
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 1.3rem;
+}
+
+.side-brand img {
+  border-radius: 10px;
+  height: 42px;
+  width: 42px;
+}
+
+nav {
+  display: grid;
+  gap: 0.45rem;
+}
+
+nav a {
+  border-radius: 7px;
+  color: var(--text);
+  padding: 0.55rem 0.65rem;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background: var(--panel-2);
+}
+
+.status {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+}
+
+main {
+  margin-left: 230px;
+  max-width: 1220px;
+  padding: 2rem 2.5rem 4rem;
+}
+
+.hero {
+  margin: 0 0 1.6rem;
+}
+
+.hero img {
+  display: block;
+  max-width: 620px;
+  width: 100%;
+}
+
+.hero p {
+  color: var(--muted);
+  margin: 0.45rem 0 0;
+}
+
+.grid {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(340px, 0.95fr) minmax(420px, 1.05fr);
+  margin-bottom: 1.2rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.1rem;
+}
+
+h1,
+h2 {
+  font-size: 1.35rem;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+label {
+  color: var(--muted);
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  margin-bottom: 0.85rem;
+}
+
+input,
+select {
+  background: #142633;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--text);
+  min-height: 2.45rem;
+  padding: 0.55rem 0.7rem;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.row {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+button {
+  background: var(--accent);
+  border: 0;
+  border-radius: 7px;
+  color: #111;
+  cursor: pointer;
+  font-weight: 760;
+  min-height: 2.45rem;
+  padding: 0.55rem 0.9rem;
+}
+
+button:hover {
+  background: var(--accent-2);
+}
+
+.hint,
+.message,
+.details {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0.75rem 0;
+}
+
+.message.error {
+  color: var(--bad);
+}
+
+.message.warning {
+  color: var(--warn);
+}
+
+.message.good {
+  color: var(--good);
+}
+
+.powder-list {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 0.8rem 0 1rem;
+  max-height: 260px;
+  overflow: auto;
+  padding: 0.45rem;
+}
+
+.powder-option {
+  align-items: center;
+  border-radius: 6px;
+  display: flex;
+  gap: 0.55rem;
+  justify-content: space-between;
+  padding: 0.42rem 0.5rem;
+}
+
+.powder-option:hover {
+  background: var(--panel-2);
+}
+
+.powder-option label {
+  align-items: center;
+  color: var(--text);
+  display: flex;
+  flex: 1;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.powder-option input {
+  min-height: auto;
+}
+
+.pill {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #183042;
+  color: var(--text);
+  position: sticky;
+  top: 0;
+}
+
+tr.low td {
+  color: var(--warn);
+}
+
+tr.short td {
+  color: var(--bad);
+}
+
+.section-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    border-bottom: 1px solid var(--line);
+    border-right: 0;
+    position: static;
+    width: auto;
+  }
+
+  main {
+    margin-left: 0;
+    padding: 1.2rem;
+  }
+
+  .grid,
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -41,9 +41,26 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 ## Run locally
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-lab.txt
 streamlit run stochio_buddy.py
 ```
+
+## Two app versions
+
+Stoichio Buddy now has two runnable versions:
+
+- Full lab app: `streamlit run stochio_buddy.py`
+- Fast non-Streamlit site: `uvicorn fast_site.app:app --reload --host 0.0.0.0 --port 8701`
+
+The fast site is a smaller FastAPI/static frontend that reuses the same locked chemistry engine. See `docs/FAST_SITE_VERSION.md`.
+
+For a lab-computer shortcut with the Stoichio Buddy icon, run:
+
+```bash
+python3 tools/create_lab_launcher.py
+```
+
+See `docs/LAB_COMPUTER_VERSION.md`.
 
 ## Share on a local network
 
@@ -185,13 +202,18 @@ On first connection, the app will create tabs in the sheet if needed: `powders`,
 
 ## Code layout
 
-- `stochio_buddy.py`: Streamlit app entry point and shared UI helpers
+- `stochio_buddy.py`: Streamlit app entry point, cache setup, storage setup, theme application, and page routing
 - `stoichio/chemistry/`: formula parsing, stoichiometry solver, and density math
 - `stoichio/ui_components.py`: reusable table renderer and copy-friendly linked table output
+- `stoichio/ui_models.py`: dataframe builders, history grouping, inventory row classes, and display labels
+- `stoichio/density_ui.py`: Streamlit controls for choosing theoretical-density sources and lattice inputs
+- `stoichio/lab_reports.py`: printable recipe and target traceability HTML reports
+- `stoichio/backup_data.py` and `stoichio/backup_export.py`: backup validation, restore, import, and export helpers
+- `stoichio/app_utils.py` and `stoichio/config.py`: small app utilities and shared constants
 - `stoichio/theme.py`: shared light/dark color tokens
 - `stoichio/app_context.py`: explicit page-render dependency container
-- `stoichio/storage.py`, `stoichio/inventory.py`, `stoichio/history.py`, `stoichio/density_records.py`, and `stoichio/powder_sets.py`: domain-facing modules for persistence, stock, logs, density records, and saved powder sets
-- `stoichio/lab_manager.py`: compatibility layer and remaining shared implementation for JSON/shared-storage persistence
+- `stoichio/storage.py`, `stoichio/powders.py`, `stoichio/inventory.py`, `stoichio/history.py`, `stoichio/density_records.py`, and `stoichio/powder_sets.py`: focused domain modules for persistence, powders, stock, logs, density records, and saved powder sets
+- `stoichio/lab_manager.py`: compatibility facade for older imports
 - `stoichio/ui_pages/`: individual Streamlit page renderers
 - Top-level `formula_parser.py`, `density_engine.py`, `stoich_engine.py`, and `lab_manager.py` are compatibility wrappers for older imports.
 

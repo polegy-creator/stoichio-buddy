@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stoichio Buddy</title>
+  <link rel="icon" href="/assets/stoichio_icon_app.png">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="side-brand">
+      <img src="/assets/stoichio_icon_app.png" alt="">
+      <strong>Stoichio Buddy</strong>
+    </div>
+    <nav>
+      <a href="#recipe">Powder Mass</a>
+      <a href="#target-density">Target Density</a>
+      <a href="#inventory">Inventory</a>
+    </nav>
+    <div class="status" id="serviceStatus">Loading...</div>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <img src="/assets/stoichio_logo_header.png" alt="Stoichio Buddy">
+      <p>Cation-first recipe math in a faster non-Streamlit interface.</p>
+    </header>
+
+    <section id="recipe" class="grid">
+      <form class="panel" id="recipeForm">
+        <h1>Powder Mass Calculation</h1>
+        <label>
+          Target formula
+          <input id="targetFormula" name="target" placeholder="Fe1.98Ti0.02O3" value="Fe1.98Ti0.02O3">
+        </label>
+        <div class="row">
+          <label>
+            Amount mode
+            <select id="amountMode">
+              <option value="mass">Target formula mass</option>
+              <option value="height">Pellet height</option>
+            </select>
+          </label>
+          <label id="massField">
+            Target formula mass (g)
+            <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
+          </label>
+          <label id="heightField" hidden>
+            Desired height (mm)
+            <input id="targetHeight" type="number" min="0" step="0.0001" value="1.0">
+          </label>
+          <label id="densityField" hidden>
+            Theoretical density (g/cm3)
+            <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
+          </label>
+        </div>
+        <div class="hint" id="powderFilterHint"></div>
+        <div class="powder-list" id="powderList"></div>
+        <button type="submit">Calculate Recipe</button>
+      </form>
+
+      <section class="panel">
+        <h2>Recipe Result</h2>
+        <div id="recipeMessage" class="message">Enter a target and select powders.</div>
+        <div class="table-wrap">
+          <table id="recipeTable">
+            <thead>
+              <tr><th>Powder</th><th>Mass (g)</th><th>Available (g)</th><th>After recipe (g)</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="details" id="recipeDetails"></div>
+      </section>
+    </section>
+
+    <section id="target-density" class="grid">
+      <form class="panel" id="densityForm">
+        <h2>Target Density</h2>
+        <div class="row">
+          <label>
+            Final mass (g)
+            <input id="finalMass" type="number" min="0" step="0.000001">
+          </label>
+          <label>
+            Final diameter (mm)
+            <input id="finalDiameter" type="number" min="0" step="0.0001">
+          </label>
+          <label>
+            Final height (mm)
+            <input id="finalHeight" type="number" min="0" step="0.0001">
+          </label>
+          <label>
+            Theoretical density (g/cm3)
+            <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
+          </label>
+        </div>
+        <button type="submit">Calculate Target Density</button>
+      </form>
+
+      <section class="panel">
+        <h2>Density Result</h2>
+        <div id="densityResult" class="message">Enter final pellet measurements.</div>
+      </section>
+    </section>
+
+    <section id="inventory" class="panel">
+      <div class="section-head">
+        <h2>Inventory Snapshot</h2>
+        <button id="refreshInventory" type="button">Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table id="inventoryTable">
+          <thead><tr><th>Powder</th><th>Available (g)</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+-r requirements.txt
+streamlit>=1.57
+pandas>=3.0
+gspread>=6.0
+google-auth>=2.0
+requests>=2.32
+pillow>=11.0

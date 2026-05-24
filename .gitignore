@@ -6,3 +6,4 @@ __pycache__/
 Open Stoichio Buddy.command
 *.json.lock
 backups/
+dist/
