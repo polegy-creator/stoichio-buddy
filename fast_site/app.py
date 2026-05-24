@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Header, HTTPException, Query, Request
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -73,12 +73,15 @@ WRITE_PIN = os.environ.get("STOICHIO_ADMIN_PIN", "").strip()
 os.chdir(ROOT)
 
 if os.environ.get("GITHUB_DATA_REPO") and os.environ.get("GITHUB_DATA_TOKEN"):
-    storage.configure_github_json(
-        repo=os.environ["GITHUB_DATA_REPO"],
-        token=os.environ["GITHUB_DATA_TOKEN"],
-        branch=os.environ.get("GITHUB_DATA_BRANCH", "lab-data"),
-        path_prefix=os.environ.get("GITHUB_DATA_PATH_PREFIX", ""),
-    )
+    try:
+        storage.configure_github_json(
+            repo=os.environ["GITHUB_DATA_REPO"],
+            token=os.environ["GITHUB_DATA_TOKEN"],
+            branch=os.environ.get("GITHUB_DATA_BRANCH", "lab-data"),
+            path_prefix=os.environ.get("GITHUB_DATA_PATH_PREFIX", ""),
+        )
+    except Exception as exc:
+        storage.disable_shared_storage(exc)
 
 app = FastAPI(
     title="Stoichio Buddy",
@@ -322,6 +325,13 @@ def linked_recipe_options(history: list[dict]) -> list[dict]:
 
 @app.get("/")
 def index():
+    if IS_VERCEL:
+        return RedirectResponse("/index.html", status_code=307)
+    if not (PUBLIC_DIR / "index.html").exists():
+        return HTMLResponse(
+            "<h1>Stoichio Buddy</h1><p>public/index.html was not found.</p>",
+            status_code=500,
+        )
     return FileResponse(PUBLIC_DIR / "index.html")
 
 
