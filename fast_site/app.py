@@ -628,6 +628,43 @@ def save_recipe(payload: RecipeSaveRequest, x_stoichio_pin: str | None = Header(
     }
 
 
+@app.post("/api/history/recipe-and-deduct")
+def save_recipe_and_deduct(payload: RecipeSaveRequest, x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    result = payload.result or {}
+    recipe_masses = result.get("recipe")
+    if not recipe_masses:
+        raise HTTPException(status_code=400, detail="Calculate a valid recipe before saving.")
+
+    history = log_synthesis(
+        result.get("normalized_target") or normalize_formula(payload.target),
+        payload.mass_g,
+        recipe_masses,
+        selected_powders=payload.selected_powders,
+        warning=result.get("warning"),
+        inventory_deducted=True,
+        notes=payload.notes,
+        target_for=payload.target_for,
+        target_number=payload.target_number,
+        target_id=payload.target_id,
+        calculation=result,
+    )
+    saved_entry = history[-1] if history else None
+    inventory = consume_stock(
+        load_inventory(),
+        recipe_masses,
+        reason="Saved recipe and deducted inventory from Vercel lab website",
+        recipe_id=(saved_entry or {}).get("recipe_id") or result.get("normalized_target") or "",
+    )
+    return {
+        "history": history,
+        "linked_recipes": linked_recipe_options(history),
+        "saved_entry": saved_entry,
+        "inventory": inventory,
+        "inventory_log": load_inventory_log(),
+    }
+
+
 @app.get("/api/history")
 def history():
     records = load_history()

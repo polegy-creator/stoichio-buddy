@@ -30,6 +30,10 @@
     </section>
     <section class="sidebar-card">
       <button id="themeToggle" type="button" class="secondary">Light mode</button>
+      <label class="check">
+        <input id="quickMode" type="checkbox">
+        Quick calculation mode
+      </label>
       <a class="download-link" href="/api/backup" download="stoichio_lab_backup.json">Export All Lab Data</a>
     </section>
   </aside>
@@ -64,11 +68,11 @@
             <input id="targetFormula" placeholder="Fe1.98Ti0.02O3" value="Fe1.98Ti0.02O3">
           </label>
 
-          <label>
+          <label class="advanced-only">
             Target for optional
             <input id="recipeTargetFor" placeholder="Person or project name">
           </label>
-          <div id="recipeTargetPreview" class="hint"></div>
+          <div id="recipeTargetPreview" class="hint advanced-only"></div>
 
           <fieldset class="segmented">
             <legend>Target amount mode</legend>
@@ -138,13 +142,15 @@
               <tbody></tbody>
             </table>
           </div>
-          <label>
+          <label class="advanced-only">
             Recipe notes
             <textarea id="recipeNotes" rows="4" placeholder="pressed at 3 tons, calcined 900C, ball milled 2h"></textarea>
           </label>
           <div class="inline-actions">
-            <button id="saveRecipe" type="button" class="primary">Save Recipe</button>
+            <button id="saveRecipe" type="button" class="secondary advanced-only">Save Recipe</button>
+            <button id="saveAndDeductRecipe" type="button" class="primary advanced-only">Save Recipe + Deduct Inventory</button>
             <button id="deductInventory" type="button" class="secondary">Confirm Inventory Deduction</button>
+            <button id="printRecipeLabel" type="button" class="secondary">Print Recipe Label</button>
           </div>
           <pre id="recipeSummary" class="copy-box"></pre>
         </section>
@@ -157,21 +163,21 @@
           <h2>Target density after sintering</h2>
           <p>Use the measured final dimensions after sintering, not the 25.05 mm die.</p>
 
-          <label>
+          <label class="advanced-only">
             Saved recipe target optional
             <select id="linkedRecipe"></select>
           </label>
-          <div id="linkedRecipeInfo" class="hint"></div>
+          <div id="linkedRecipeInfo" class="hint advanced-only"></div>
 
           <label>
             Target formula
             <input id="densityTargetFormula" placeholder="Fe1.98Ti0.02O3">
           </label>
-          <label>
+          <label class="advanced-only">
             Target for optional
             <input id="densityTargetFor" placeholder="Person or project name">
           </label>
-          <div id="densityTargetPreview" class="hint"></div>
+          <div id="densityTargetPreview" class="hint advanced-only"></div>
 
           <div class="row">
             <label>
@@ -202,17 +208,27 @@
           <h2>Density result</h2>
           <div id="densityResult" class="message">Enter final target measurements.</div>
           <div id="densityMetrics" class="metric-row"></div>
-          <label>
+          <label class="advanced-only">
             Target density notes
             <textarea id="densityNotes" rows="4" placeholder="sintering temperature, cracks, polish state, measurement notes"></textarea>
           </label>
-          <button id="saveDensityHistory" type="button" class="primary">Save Target Density</button>
+          <button id="saveDensityHistory" type="button" class="primary advanced-only">Save Target Density</button>
           <pre id="densitySummary" class="copy-box"></pre>
         </section>
       </div>
     </section>
 
     <section id="page-powders-inventory" class="page">
+      <section class="panel advanced-only">
+        <div class="section-head">
+          <div>
+            <h2>Data health</h2>
+            <p>Fast lab checks for low stock, missing stock rows, density review, and incomplete target logs.</p>
+          </div>
+        </div>
+        <div id="dataHealthGrid" class="health-grid"></div>
+      </section>
+
       <div class="three-col">
         <form id="addPowderForm" class="panel">
           <h2>Add powder</h2>
@@ -371,6 +387,17 @@
       </section>
     </section>
   </main>
+
+  <div id="confirmModal" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 id="confirmTitle">Confirm action</h2>
+      <p id="confirmMessage">This will change lab data.</p>
+      <div class="inline-actions">
+        <button id="confirmCancel" type="button" class="secondary">Cancel</button>
+        <button id="confirmAccept" type="button" class="danger">Confirm</button>
+      </div>
+    </section>
+  </div>
 
   <script src="/static/app.js"></script>
 </body>

@@ -34,6 +34,10 @@ const state = {
   lastRecipe: null,
   lastRecipeMass: null,
   lastDensityResult: null,
+  densityPickerExpanded: {
+    heightDensityChoice: false,
+    relativeDensityChoice: false,
+  },
 };
 
 const pageMeta = {
@@ -49,6 +53,7 @@ const els = {
   adminPin: $("#adminPin"),
   savePin: $("#savePin"),
   themeToggle: $("#themeToggle"),
+  quickMode: $("#quickMode"),
   globalMessage: $("#globalMessage"),
   pageTitle: $("#pageTitle"),
   pageSubtitle: $("#pageSubtitle"),
@@ -78,7 +83,9 @@ const els = {
   recipeDetails: $("#recipeDetails"),
   recipeNotes: $("#recipeNotes"),
   saveRecipe: $("#saveRecipe"),
+  saveAndDeductRecipe: $("#saveAndDeductRecipe"),
   deductInventory: $("#deductInventory"),
+  printRecipeLabel: $("#printRecipeLabel"),
   recipeSummary: $("#recipeSummary"),
 
   linkedRecipe: $("#linkedRecipe"),
@@ -112,6 +119,7 @@ const els = {
   deletePowder: $("#deletePowder"),
   removeDeletedStock: $("#removeDeletedStock"),
   powderDatabaseTableBody: $("#powderDatabaseTable tbody"),
+  dataHealthGrid: $("#dataHealthGrid"),
   lowStockDashboard: $("#lowStockDashboard"),
   inventoryTableBody: $("#inventoryTable tbody"),
   ledgerTableBody: $("#ledgerTable tbody"),
@@ -147,6 +155,12 @@ const els = {
   historyOwnerFilter: $("#historyOwnerFilter"),
   historyStatusFilter: $("#historyStatusFilter"),
   historyLog: $("#historyLog"),
+
+  confirmModal: $("#confirmModal"),
+  confirmTitle: $("#confirmTitle"),
+  confirmMessage: $("#confirmMessage"),
+  confirmCancel: $("#confirmCancel"),
+  confirmAccept: $("#confirmAccept"),
 };
 
 async function errorMessage(response) {
@@ -196,6 +210,40 @@ function setBusy(button, busyText = "Working...") {
   };
 }
 
+function confirmDanger(title, message, confirmText = "Confirm") {
+  return new Promise((resolve) => {
+    els.confirmTitle.textContent = title;
+    els.confirmMessage.textContent = message;
+    els.confirmAccept.textContent = confirmText;
+    els.confirmModal.hidden = false;
+    document.body.classList.add("modal-open");
+
+    const finish = (accepted) => {
+      els.confirmModal.hidden = true;
+      document.body.classList.remove("modal-open");
+      els.confirmCancel.removeEventListener("click", onCancel);
+      els.confirmAccept.removeEventListener("click", onAccept);
+      els.confirmModal.removeEventListener("click", onBackdrop);
+      document.removeEventListener("keydown", onKey);
+      resolve(accepted);
+    };
+    const onCancel = () => finish(false);
+    const onAccept = () => finish(true);
+    const onBackdrop = (event) => {
+      if (event.target === els.confirmModal) finish(false);
+    };
+    const onKey = (event) => {
+      if (event.key === "Escape") finish(false);
+    };
+
+    els.confirmCancel.addEventListener("click", onCancel);
+    els.confirmAccept.addEventListener("click", onAccept);
+    els.confirmModal.addEventListener("click", onBackdrop);
+    document.addEventListener("keydown", onKey);
+    els.confirmCancel.focus();
+  });
+}
+
 function selectedAmountMode() {
   return $("input[name='amountMode']:checked").value;
 }
@@ -206,9 +254,22 @@ function densityRecordLabel(record, prefix = "") {
   return `${prefix}${record.display_name || record.formula}${phase}: ${formatNumber(record.theoretical_density_g_cm3, 5)} g/cm3${status}`;
 }
 
+function densityStatus(record) {
+  return String(record.verification_status || "").toLowerCase();
+}
+
+function isPreferredDensity(record) {
+  return densityStatus(record).includes("preferred");
+}
+
+function isTrustedDensity(record) {
+  const status = densityStatus(record);
+  return status.includes("preferred") || status.includes("checked") || status.includes("verified");
+}
+
 function densityChoiceValue(select) {
   const key = select.value;
-  if (!key || key === "__manual__") return null;
+  if (!key || key === "__manual__" || key === "__show_more__") return null;
   return state.densities[key] || null;
 }
 
@@ -262,6 +323,7 @@ function renderEverything() {
   renderInventorySelectors();
   renderPowderDatabase();
   renderInventoryTables();
+  renderDataHealth();
   renderDensityChoices();
   renderLinkedRecipes();
   renderMaterialDensityTable();
@@ -350,6 +412,12 @@ function renderPowderSets(matchingSets) {
   });
   els.powderSetBox.querySelectorAll("[data-delete-set]").forEach((button) => {
     button.addEventListener("click", async () => {
+      const accepted = await confirmDanger(
+        "Delete powder set?",
+        "This removes the saved powder combination. Powder database and inventory stay unchanged.",
+        "Delete Set",
+      );
+      if (!accepted) return;
       await api.send(`/api/powder-sets/${encodeURIComponent(button.dataset.deleteSet)}`, "DELETE");
       flash("Powder set deleted.");
       await loadAll();
@@ -357,18 +425,40 @@ function renderPowderSets(matchingSets) {
   });
 }
 
+function densityOptionHtml(record, prefix) {
+  return `<option value="${escapeHtml(record.record_key)}">${escapeHtml(densityRecordLabel(record, prefix))}</option>`;
+}
+
 async function updateDensityChoicesForTarget(target, select, manualWrap) {
   const data = await api.get(`/api/densities?target=${encodeURIComponent(target || "")}`);
   state.densities = data.records || state.densities;
   const previous = select.value;
+  const expanded = state.densityPickerExpanded[select.id] === true;
+  const exact = (data.exact || []).slice().sort((a, b) => Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)));
+  const related = (data.related || []).slice().sort((a, b) => (
+    Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)) ||
+    Number(isTrustedDensity(b)) - Number(isTrustedDensity(a)) ||
+    String(a.formula).localeCompare(String(b.formula))
+  ));
+  const trustedRelated = related.filter(isTrustedDensity);
+  const otherRelated = related.filter((record) => !isTrustedDensity(record));
+  const visibleOther = expanded ? otherRelated : otherRelated.slice(0, 6);
+  const hiddenOther = Math.max(0, otherRelated.length - visibleOther.length);
+
   select.innerHTML = `<option value="__manual__">Manual theoretical density</option>`;
-  for (const record of data.exact || []) {
-    select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(record.record_key)}">${escapeHtml(densityRecordLabel(record, "Exact - "))}</option>`);
+  for (const record of exact) {
+    select.insertAdjacentHTML("beforeend", densityOptionHtml(record, isPreferredDensity(record) ? "Preferred exact - " : "Exact - "));
   }
-  for (const record of data.related || []) {
-    select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(record.record_key)}">${escapeHtml(densityRecordLabel(record, "Related - "))}</option>`);
+  for (const record of trustedRelated) {
+    select.insertAdjacentHTML("beforeend", densityOptionHtml(record, isPreferredDensity(record) ? "Preferred related - " : "Checked related - "));
   }
-  if ([...select.options].some((option) => option.value === previous)) {
+  for (const record of visibleOther) {
+    select.insertAdjacentHTML("beforeend", densityOptionHtml(record, "Related - "));
+  }
+  if (hiddenOther > 0) {
+    select.insertAdjacentHTML("beforeend", `<option value="__show_more__">Show ${hiddenOther} more related density record(s)</option>`);
+  }
+  if (previous !== "__show_more__" && [...select.options].some((option) => option.value === previous)) {
     select.value = previous;
   } else if (select.options.length > 1) {
     select.selectedIndex = 1;
@@ -524,11 +614,52 @@ async function saveRecipe() {
   }
 }
 
+async function saveRecipeAndDeductInventory() {
+  if (!state.lastRecipe?.result?.recipe) {
+    flash("Calculate a recipe before saving and deducting inventory.", "warning");
+    return;
+  }
+  const shortage = (state.lastRecipe.stock_messages || []).join(" ");
+  const message = shortage
+    ? `This will save the recipe and deduct inventory. Stock warning: ${shortage}`
+    : "This will save the recipe and immediately deduct the powder masses from inventory.";
+  const accepted = await confirmDanger("Save recipe and deduct inventory?", message, "Save + Deduct");
+  if (!accepted) return;
+
+  const done = setBusy(els.saveAndDeductRecipe, "Saving...");
+  try {
+    const data = await api.send("/api/history/recipe-and-deduct", "POST", {
+      ...state.lastRecipe.payload,
+      mass_g: state.lastRecipeMass,
+      result: state.lastRecipe.result,
+      notes: els.recipeNotes.value,
+      target_for: els.recipeTargetFor.value,
+      inventory_deducted: true,
+    });
+    state.history = data.history || state.history;
+    state.linkedRecipes = data.linked_recipes || state.linkedRecipes;
+    state.inventory = data.inventory || state.inventory;
+    state.inventoryLog = data.inventory_log || state.inventoryLog;
+    renderEverything();
+    flash(`Saved recipe and deducted inventory ${data.saved_entry?.recipe_id || ""}`.trim());
+  } catch (error) {
+    flash(error.message, "error");
+  } finally {
+    done();
+  }
+}
+
 async function deductInventory() {
   if (!state.lastRecipe?.result?.recipe) {
     flash("Calculate a recipe before deducting inventory.", "warning");
     return;
   }
+  const accepted = await confirmDanger(
+    "Deduct inventory?",
+    "This will subtract the current recipe powder masses from inventory without saving a new recipe record.",
+    "Deduct Inventory",
+  );
+  if (!accepted) return;
   const done = setBusy(els.deductInventory, "Deducting...");
   try {
     const data = await api.send("/api/inventory/deduct", "POST", {
@@ -545,6 +676,64 @@ async function deductInventory() {
   } finally {
     done();
   }
+}
+
+function printRecipeLabel() {
+  if (!state.lastRecipe?.result?.recipe) {
+    flash("Calculate a recipe before printing.", "warning");
+    return;
+  }
+  const result = state.lastRecipe.result;
+  const owner = normalizeOwner(els.recipeTargetFor.value) || "Quick calculation";
+  const date = niceTime(new Date().toISOString());
+  const rows = Object.entries(result.recipe || {})
+    .map(([powder, grams]) => {
+      const available = state.inventory[powder];
+      const after = available === undefined ? "" : formatNumber(Number(available) - Number(grams), 3);
+      const warn = available !== undefined && Number(available) < Number(grams) ? "short" : "";
+      return `<tr class="${warn}"><td>${escapeHtml(powder)}</td><td>${formatNumber(grams, 6)} g</td><td>${available === undefined ? "not tracked" : `${formatNumber(available, 3)} g`}</td><td>${after ? `${after} g` : ""}</td></tr>`;
+    })
+    .join("");
+  const notes = els.recipeNotes.value.trim();
+  const popup = window.open("", "_blank", "width=780,height=900");
+  if (!popup) {
+    flash("The browser blocked the print window.", "warning");
+    return;
+  }
+  popup.document.write(`
+    <!doctype html>
+    <html>
+    <head>
+      <title>Stoichio recipe label</title>
+      <style>
+        body { color: #111; font-family: Arial, sans-serif; margin: 24px; }
+        h1 { font-size: 24px; margin: 0 0 8px; }
+        .meta { color: #444; margin-bottom: 18px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #bbb; padding: 8px; text-align: left; }
+        th { background: #eef3f5; }
+        tr.short td { background: #ffe2df; }
+        .box { border: 1px solid #bbb; margin-top: 14px; padding: 10px; white-space: pre-wrap; }
+        @media print { button { display: none; } body { margin: 10mm; } }
+      </style>
+    </head>
+    <body>
+      <button onclick="window.print()">Print</button>
+      <h1>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</h1>
+      <div class="meta">${escapeHtml(owner)} | ${escapeHtml(date)} | target formula mass ${formatNumber(state.lastRecipeMass, 6)} g</div>
+      <table>
+        <thead><tr><th>Powder</th><th>Mass</th><th>Available before</th><th>After recipe</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="box">Total precursor powder: ${formatNumber(result.powder_basis, 6)} g
+Stoichiometry: ${result.exact ? "Exact" : "Approx"}
+Residual: ${formatNumber(result.residual, 10)}</div>
+      ${notes ? `<div class="box"><strong>Notes</strong><br>${escapeHtml(notes)}</div>` : ""}
+    </body>
+    </html>
+  `);
+  popup.document.close();
+  popup.focus();
 }
 
 function renderLinkedRecipes() {
@@ -564,6 +753,7 @@ function onLinkedRecipeChange() {
   els.densityTargetFormula.value = linked.target || "";
   els.densityTargetFor.value = linked.target_for || "";
   els.linkedRecipeInfo.textContent = `After-sintering density will be linked to ${linked.target_id || linked.recipe_id}.`;
+  state.densityPickerExpanded.relativeDensityChoice = false;
   updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap).catch(() => {});
 }
 
@@ -727,6 +917,47 @@ function renderInventoryTables() {
   }
 }
 
+function renderDataHealth() {
+  if (!els.dataHealthGrid) return;
+  const powderNames = Object.keys(state.powders);
+  const inventoryNames = Object.keys(state.inventory);
+  const lowStock = inventoryNames
+    .filter((powder) => Number(state.inventory[powder]) < 10)
+    .sort((a, b) => Number(state.inventory[a]) - Number(state.inventory[b]));
+  const missingStock = powderNames.filter((powder) => state.inventory[powder] === undefined).sort();
+  const unknownStock = inventoryNames.filter((powder) => !state.powders[powder]).sort();
+  const densityNeedsReview = Object.values(state.densities)
+    .filter((record) => {
+      const status = densityStatus(record);
+      return !status.includes("checked") && !status.includes("preferred") && !status.includes("do not use");
+    });
+  const groups = targetLifecycleGroups();
+  const needsDensity = groups.filter((group) => (
+    group.entries.some((entry) => (entry.entry_type || "synthesis") === "synthesis") &&
+    !group.entries.some((entry) => entry.entry_type === "target_density")
+  ));
+  const needsRecipe = groups.filter((group) => (
+    group.entries.some((entry) => entry.entry_type === "target_density") &&
+    !group.entries.some((entry) => (entry.entry_type || "synthesis") === "synthesis")
+  ));
+
+  const card = (title, value, note, kind = "") => `
+    <div class="health-card ${kind}">
+      <strong>${escapeHtml(value)}</strong>
+      <span>${escapeHtml(title)}</span>
+      <small>${escapeHtml(note)}</small>
+    </div>
+  `;
+  els.dataHealthGrid.innerHTML = [
+    card("Low stock below 10 g", lowStock.length, lowStock.slice(0, 6).join(", ") || "All stocked powders are above threshold.", lowStock.length ? "warning" : "good"),
+    card("Powders with no stock row", missingStock.length, missingStock.slice(0, 6).join(", ") || "Every powder has an inventory row.", missingStock.length ? "warning" : "good"),
+    card("Unknown inventory rows", unknownStock.length, unknownStock.slice(0, 6).join(", ") || "Inventory matches the powder database.", unknownStock.length ? "warning" : "good"),
+    card("Density records needing review", densityNeedsReview.length, densityNeedsReview.slice(0, 5).map((r) => r.formula).join(", ") || "All density rows are reviewed or intentionally blocked.", densityNeedsReview.length ? "warning" : "good"),
+    card("Saved targets needing density", needsDensity.length, needsDensity.slice(0, 5).map((g) => g.targetId).join(", ") || "Saved recipes are linked to density results.", needsDensity.length ? "warning" : "good"),
+    card("Density rows needing recipe link", needsRecipe.length, needsRecipe.slice(0, 5).map((g) => g.targetId).join(", ") || "Density records have matching recipes.", needsRecipe.length ? "warning" : "good"),
+  ].join("");
+}
+
 async function addPowder(event) {
   event.preventDefault();
   const done = setBusy(event.submitter, "Adding...");
@@ -760,6 +991,14 @@ async function adjustInventory(direction, button) {
   }
 
   const current = Number(state.inventory[powder] || 0);
+  if (direction === "remove" && amount >= current && current > 0) {
+    const accepted = await confirmDanger(
+      `Remove all ${powder} stock?`,
+      `This will clamp ${powder} inventory from ${formatNumber(current, 4)} g to 0 g.`,
+      "Remove Stock",
+    );
+    if (!accepted) return;
+  }
   const next = direction === "add"
     ? current + amount
     : Math.max(0, current - amount);
@@ -788,6 +1027,14 @@ async function removePowder(event) {
     flash("Choose a powder.", "warning");
     return;
   }
+  const accepted = await confirmDanger(
+    `Delete ${powder}?`,
+    els.removeDeletedStock.checked
+      ? "This removes the powder from the database and removes its inventory row. History records stay unchanged."
+      : "This removes the powder from the database but keeps the inventory row.",
+    "Delete Powder",
+  );
+  if (!accepted) return;
   const done = setBusy(event.submitter, "Deleting...");
   try {
     const params = new URLSearchParams({ remove_inventory: String(els.removeDeletedStock.checked) });
@@ -907,6 +1154,7 @@ function renderMaterialDensityTable() {
     tr.className = [
       String(record.origin || "").toLowerCase().startsWith("codex") ? "codex" : "",
       status.includes("do not use") ? "blocked" : "",
+      status.includes("preferred") ? "preferred" : "",
     ].join(" ").trim();
     const sourceLink = record.source_url
       ? `<a href="${escapeHtml(record.source_url)}" target="_blank" rel="noopener">${escapeHtml(record.source_url)}</a>`
@@ -919,13 +1167,25 @@ function renderMaterialDensityTable() {
       <td>${formatNumber(record.z, 4)}</td>
       <td class="wrap">${escapeHtml(record.verification_status || "")}</td>
       <td class="wrap">${sourceLink}</td>
-      <td><button class="icon" title="Delete density record" data-delete-density="${escapeHtml(record.record_key || record.record_id)}">&#128465;</button></td>
+      <td class="row-actions">
+        <button class="icon" title="Mark as preferred for this formula" data-prefer-density="${escapeHtml(record.record_key || record.record_id)}">&#9733;</button>
+        <button class="icon" title="Delete density record" data-delete-density="${escapeHtml(record.record_key || record.record_id)}">&#128465;</button>
+      </td>
     `;
     els.materialDensityTableBody.appendChild(tr);
   }
+  els.materialDensityTableBody.querySelectorAll("[data-prefer-density]").forEach((button) => {
+    button.addEventListener("click", () => markPreferredDensity(button.dataset.preferDensity));
+  });
   els.materialDensityTableBody.querySelectorAll("[data-delete-density]").forEach((button) => {
     button.addEventListener("click", async () => {
       try {
+        const accepted = await confirmDanger(
+          "Delete density record?",
+          "This removes the selected theoretical density source from the lab database.",
+          "Delete Density",
+        );
+        if (!accepted) return;
         const data = await api.send(`/api/densities/${encodeURIComponent(button.dataset.deleteDensity)}`, "DELETE");
         state.densities = data.records || state.densities;
         renderEverything();
@@ -935,6 +1195,22 @@ function renderMaterialDensityTable() {
       }
     });
   });
+}
+
+async function markPreferredDensity(identifier) {
+  if (!identifier) return;
+  try {
+    const data = await api.send(`/api/densities/${encodeURIComponent(identifier)}/status`, "PATCH", {
+      verification_status: "Preferred for formula",
+      verified_by: els.densityVerifiedBy.value || "Lab",
+      verified_date: new Date().toISOString().slice(0, 10),
+    });
+    state.densities = data.records || state.densities;
+    renderEverything();
+    flash("Preferred density updated.");
+  } catch (error) {
+    flash(error.message, "error");
+  }
 }
 
 function targetLifecycleGroups() {
@@ -1017,6 +1293,12 @@ function historyItemHtml(entry) {
 
 async function deleteHistoryItem(entryId) {
   try {
+    const accepted = await confirmDanger(
+      "Delete history item?",
+      "This removes one saved recipe or target-density record from the lab log.",
+      "Delete Item",
+    );
+    if (!accepted) return;
     const data = await api.send(`/api/history/${encodeURIComponent(entryId)}`, "DELETE");
     state.history = data.history || state.history;
     state.linkedRecipes = data.linked_recipes || state.linkedRecipes;
@@ -1029,6 +1311,12 @@ async function deleteHistoryItem(entryId) {
 
 async function clearTargetGroup(targetId) {
   try {
+    const accepted = await confirmDanger(
+      `Clear ${targetId}?`,
+      "This removes every history record in this target group.",
+      "Clear Group",
+    );
+    if (!accepted) return;
     const data = await api.send(`/api/history/groups/target-id/${encodeURIComponent(targetId)}`, "DELETE");
     state.history = data.history || state.history;
     state.linkedRecipes = data.linked_recipes || state.linkedRecipes;
@@ -1099,6 +1387,17 @@ function setupTheme() {
   });
 }
 
+function setupQuickMode() {
+  const savedQuick = localStorage.getItem("stoichioQuickMode") === "1";
+  els.quickMode.checked = savedQuick;
+  document.body.classList.toggle("quick", savedQuick);
+  els.quickMode.addEventListener("change", () => {
+    document.body.classList.toggle("quick", els.quickMode.checked);
+    localStorage.setItem("stoichioQuickMode", els.quickMode.checked ? "1" : "0");
+    flash(els.quickMode.checked ? "Quick calculation mode on." : "Full lab mode on.");
+  });
+}
+
 function setupEvents() {
   els.adminPin.value = localStorage.getItem("stoichioAdminPin") || "";
   els.savePin.addEventListener("click", () => {
@@ -1107,6 +1406,7 @@ function setupEvents() {
   });
   $$("input[name='amountMode']").forEach((input) => input.addEventListener("change", toggleAmountMode));
   els.targetFormula.addEventListener("input", debounce(async () => {
+    state.densityPickerExpanded.heightDensityChoice = false;
     await loadPowderOptions();
     await updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap);
     previewHeightMass().catch(() => {});
@@ -1117,18 +1417,31 @@ function setupEvents() {
   els.reloadPowders.addEventListener("click", () => loadPowderOptions().catch((error) => flash(error.message, "error")));
   [els.targetHeight, els.targetDiameter, els.heightDensity, els.heightDensityChoice].forEach((input) => {
     input.addEventListener("input", () => previewHeightMass().catch(() => {}));
-    input.addEventListener("change", () => {
+    input.addEventListener("change", async () => {
+      if (input === els.heightDensityChoice && input.value === "__show_more__") {
+        state.densityPickerExpanded.heightDensityChoice = true;
+        await updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap);
+      }
       els.manualHeightDensityWrap.hidden = els.heightDensityChoice.value !== "__manual__";
       previewHeightMass().catch(() => {});
     });
   });
   els.recipeForm.addEventListener("submit", calculateRecipe);
   els.saveRecipe.addEventListener("click", saveRecipe);
+  els.saveAndDeductRecipe.addEventListener("click", saveRecipeAndDeductInventory);
   els.deductInventory.addEventListener("click", deductInventory);
+  els.printRecipeLabel.addEventListener("click", printRecipeLabel);
 
   els.linkedRecipe.addEventListener("change", onLinkedRecipeChange);
-  els.densityTargetFormula.addEventListener("input", debounce(() => updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap), 220));
-  els.relativeDensityChoice.addEventListener("change", () => {
+  els.densityTargetFormula.addEventListener("input", debounce(() => {
+    state.densityPickerExpanded.relativeDensityChoice = false;
+    updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap);
+  }, 220));
+  els.relativeDensityChoice.addEventListener("change", async () => {
+    if (els.relativeDensityChoice.value === "__show_more__") {
+      state.densityPickerExpanded.relativeDensityChoice = true;
+      await updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap);
+    }
     els.manualRelativeDensityWrap.hidden = els.relativeDensityChoice.value !== "__manual__";
   });
   els.densityForm.addEventListener("submit", calculateDensity);
@@ -1165,6 +1478,7 @@ function debounce(fn, wait) {
 
 setupNavigation();
 setupTheme();
+setupQuickMode();
 setupEvents();
 toggleAmountMode();
 toggleDensityEntryMode();
