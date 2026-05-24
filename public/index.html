@@ -64,59 +64,75 @@
             </div>
           </div>
 
-          <label>
-            Target formula
-            <input id="targetFormula" placeholder="Fe1.98Ti0.02O3" value="Fe1.98Ti0.02O3">
-          </label>
-
-          <label class="advanced-only">
-            Target for optional
-            <input id="recipeTargetFor" placeholder="Person or project name">
-          </label>
-          <div id="recipeTargetPreview" class="hint advanced-only"></div>
-
-          <fieldset class="segmented">
-            <legend>Target amount mode</legend>
-            <label><input type="radio" name="amountMode" value="mass" checked> Target formula mass</label>
-            <label><input type="radio" name="amountMode" value="height"> Pellet height</label>
-          </fieldset>
-
-          <div id="massModeFields">
-            <label>
-              Target formula mass (g)
-              <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
-            </label>
+          <div class="flow-steps" aria-label="Recipe calculation steps">
+            <span>1 Target</span>
+            <span>2 Amount</span>
+            <span>3 Powders</span>
+            <span>4 Calculate</span>
           </div>
 
-          <div id="heightModeFields" hidden>
-            <div class="row">
+          <section class="setup-step">
+            <div class="step-label">1 Target</div>
+            <label>
+              Target formula
+              <input id="targetFormula" placeholder="Fe1.98Ti0.02O3" value="Fe1.98Ti0.02O3">
+            </label>
+
+            <label class="advanced-only">
+              Target for optional
+              <input id="recipeTargetFor" placeholder="Person or project name">
+            </label>
+            <div id="recipeTargetPreview" class="hint advanced-only"></div>
+          </section>
+
+          <section class="setup-step">
+            <div class="step-label">2 Amount</div>
+            <fieldset class="segmented">
+              <legend>Target amount mode</legend>
+              <label><input type="radio" name="amountMode" value="mass" checked> Target formula mass</label>
+              <label><input type="radio" name="amountMode" value="height"> Pellet height</label>
+            </fieldset>
+
+            <div id="massModeFields">
               <label>
-                Desired target height (mm)
-                <input id="targetHeight" type="number" min="0" step="0.0001" value="1">
-              </label>
-              <label>
-                Die diameter (mm)
-                <input id="targetDiameter" type="number" min="0" step="0.0001" value="25.05">
+                Target formula mass (g)
+                <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
               </label>
             </div>
-            <label>
-              Theoretical density source
-              <select id="heightDensityChoice"></select>
-            </label>
-            <label id="manualHeightDensityWrap">
-              Manual theoretical density (g/cm3)
-              <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
-            </label>
-            <div id="heightMassPreview" class="hint"></div>
-          </div>
 
-          <div class="inline-actions">
-            <label class="check"><input id="showAllPowders" type="checkbox"> Show all powders</label>
-            <button id="reloadPowders" type="button" class="secondary">Refresh powders</button>
-          </div>
-          <div id="powderFilterHint" class="hint"></div>
-          <div id="powderSetBox" class="compact-box" hidden></div>
-          <div id="powderList" class="selector-list"></div>
+            <div id="heightModeFields" hidden>
+              <div class="row">
+                <label>
+                  Desired target height (mm)
+                  <input id="targetHeight" type="number" min="0" step="0.0001" value="1">
+                </label>
+                <label>
+                  Die diameter (mm)
+                  <input id="targetDiameter" type="number" min="0" step="0.0001" value="25.05">
+                </label>
+              </div>
+              <label>
+                Theoretical density source
+                <select id="heightDensityChoice"></select>
+              </label>
+              <label id="manualHeightDensityWrap">
+                Manual theoretical density (g/cm3)
+                <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
+              </label>
+              <div id="heightMassPreview" class="hint"></div>
+            </div>
+          </section>
+
+          <section class="setup-step">
+            <div class="step-label">3 Powders</div>
+            <div class="inline-actions">
+              <label class="check"><input id="showAllPowders" type="checkbox"> Show all powders</label>
+              <button id="reloadPowders" type="button" class="secondary">Refresh powders</button>
+            </div>
+            <div id="powderFilterHint" class="hint"></div>
+            <div id="powderSetBox" class="compact-box" hidden></div>
+            <div id="powderList" class="selector-list"></div>
+          </section>
 
           <button type="submit" class="primary">Calculate Recipe</button>
         </form>
@@ -129,6 +145,7 @@
             </div>
           </div>
           <div id="recipeMessage" class="message">Waiting for calculation.</div>
+          <div id="recipeQuickSummary" class="recipe-summary-card empty">Calculate a recipe to see the lab-ready summary.</div>
           <div class="metric-row" id="recipeMetrics"></div>
           <div class="table-wrap">
             <table id="recipeTable">
@@ -151,6 +168,7 @@
             <button id="saveRecipe" type="button" class="secondary advanced-only">Save Recipe</button>
             <button id="saveAndDeductRecipe" type="button" class="primary advanced-only">Save Recipe + Deduct Inventory</button>
             <button id="deductInventory" type="button" class="secondary">Confirm Inventory Deduction</button>
+            <button id="copyRecipeNotebook" type="button" class="secondary">Copy to Lab Notebook</button>
             <button id="printRecipeLabel" type="button" class="secondary">Print Recipe Label</button>
           </div>
           <pre id="recipeSummary" class="copy-box"></pre>

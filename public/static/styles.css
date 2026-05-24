@@ -364,6 +364,36 @@ p {
   padding: 1rem;
 }
 
+.flow-steps {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 0.95rem;
+}
+
+.flow-steps span,
+.step-label {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 760;
+  padding: 0.28rem 0.5rem;
+  text-align: center;
+}
+
+.setup-step {
+  border-top: 1px solid var(--line-soft);
+  padding: 0.82rem 0 0;
+}
+
+.step-label {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  text-align: left;
+}
+
 .section-head {
   align-items: start;
   display: flex;
@@ -446,7 +476,7 @@ p {
   border-radius: 6px;
   display: grid;
   gap: 0.55rem;
-  grid-template-columns: minmax(120px, 1fr) auto auto;
+  grid-template-columns: auto minmax(120px, 1fr) auto auto auto;
   padding: 0.45rem 0.55rem;
 }
 
@@ -471,6 +501,15 @@ p {
   font-size: 0.76rem;
   padding: 0.16rem 0.48rem;
   white-space: nowrap;
+}
+
+.pill.comfort {
+  border-color: rgba(242, 164, 68, 0.34);
+  color: var(--accent-hover);
+}
+
+.favorite-toggle.active {
+  color: var(--accent-hover);
 }
 
 .compact-box {
@@ -526,6 +565,51 @@ p {
   margin: 0.8rem 0;
 }
 
+.recipe-summary-card {
+  background: var(--surface);
+  border: 1px solid rgba(116, 215, 163, 0.34);
+  border-radius: 8px;
+  color: var(--text);
+  display: grid;
+  gap: 0.45rem;
+  margin: 0 0 0.85rem;
+  padding: 0.78rem 0.85rem;
+}
+
+.recipe-summary-card.empty {
+  border-color: var(--line-soft);
+  color: var(--muted);
+}
+
+.recipe-summary-card.warning {
+  border-color: rgba(240, 202, 106, 0.45);
+}
+
+.summary-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.summary-badge {
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 760;
+  padding: 0.14rem 0.45rem;
+}
+
+.summary-badge.good {
+  border-color: rgba(116, 215, 163, 0.36);
+  color: var(--good);
+}
+
+.summary-badge.warning {
+  border-color: rgba(240, 202, 106, 0.42);
+  color: var(--warn);
+}
+
 .table-wrap {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -567,6 +651,13 @@ body.light th {
 
 td {
   color: var(--text);
+}
+
+td.empty-table,
+.empty-state {
+  color: var(--muted);
+  padding: 0.9rem;
+  text-align: center;
 }
 
 td.wrap {
@@ -782,6 +873,6 @@ body.quick .advanced-only {
   }
 
   .selector-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto 1fr;
   }
 }

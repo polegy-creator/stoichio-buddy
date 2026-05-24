@@ -31,6 +31,9 @@ const state = {
   linkedRecipes: [],
   powderSets: {},
   selectedPowders: new Set(["Fe2O3", "TiO2"]),
+  favoritePowders: new Set(),
+  recentPowdersByTarget: {},
+  savedDensityChoices: {},
   lastRecipe: null,
   lastRecipeMass: null,
   lastDensityResult: null,
@@ -79,6 +82,7 @@ const els = {
   powderList: $("#powderList"),
   recipeForm: $("#recipeForm"),
   recipeMessage: $("#recipeMessage"),
+  recipeQuickSummary: $("#recipeQuickSummary"),
   recipeMetrics: $("#recipeMetrics"),
   recipeTableBody: $("#recipeTable tbody"),
   recipeDetails: $("#recipeDetails"),
@@ -86,6 +90,7 @@ const els = {
   saveRecipe: $("#saveRecipe"),
   saveAndDeductRecipe: $("#saveAndDeductRecipe"),
   deductInventory: $("#deductInventory"),
+  copyRecipeNotebook: $("#copyRecipeNotebook"),
   printRecipeLabel: $("#printRecipeLabel"),
   recipeSummary: $("#recipeSummary"),
 
@@ -301,6 +306,102 @@ function normalizeOwner(value) {
   return String(value || "").trim();
 }
 
+function loadJsonSetting(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveJsonSetting(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function currentTargetKey() {
+  return els.targetFormula.value.trim().toLowerCase() || "__blank__";
+}
+
+function recentPowdersForCurrentTarget() {
+  return Array.isArray(state.recentPowdersByTarget[currentTargetKey()])
+    ? state.recentPowdersByTarget[currentTargetKey()]
+    : [];
+}
+
+function persistPowderComfortSettings() {
+  saveJsonSetting("stoichioFavoritePowders", Array.from(state.favoritePowders));
+  saveJsonSetting("stoichioRecentPowdersByTarget", state.recentPowdersByTarget);
+}
+
+function rememberRecentPowders(powders) {
+  const key = currentTargetKey();
+  const previous = Array.isArray(state.recentPowdersByTarget[key]) ? state.recentPowdersByTarget[key] : [];
+  const next = [...powders, ...previous]
+    .filter((powder, index, list) => powder && list.indexOf(powder) === index)
+    .slice(0, 8);
+  state.recentPowdersByTarget[key] = next;
+  persistPowderComfortSettings();
+}
+
+function sortPowderOptions(options) {
+  const recent = recentPowdersForCurrentTarget();
+  return [...options].sort((a, b) => {
+    const favoriteRank = Number(!state.favoritePowders.has(a)) - Number(!state.favoritePowders.has(b));
+    if (favoriteRank !== 0) return favoriteRank;
+    const recentA = recent.includes(a) ? recent.indexOf(a) : 999;
+    const recentB = recent.includes(b) ? recent.indexOf(b) : 999;
+    if (recentA !== recentB) return recentA - recentB;
+    const selectedRank = Number(!state.selectedPowders.has(a)) - Number(!state.selectedPowders.has(b));
+    if (selectedRank !== 0) return selectedRank;
+    return a.localeCompare(b);
+  });
+}
+
+function persistRecipeSettings() {
+  const checkedAmountMode = $("input[name='amountMode']:checked");
+  saveJsonSetting("stoichioRecipeSettings", {
+    targetFormula: els.targetFormula.value,
+    recipeTargetFor: els.recipeTargetFor.value,
+    targetMass: els.targetMass.value,
+    targetHeight: els.targetHeight.value,
+    targetDiameter: els.targetDiameter.value,
+    heightDensity: els.heightDensity.value,
+    recipeNotes: els.recipeNotes.value,
+    showAllPowders: els.showAllPowders.checked,
+    amountMode: checkedAmountMode ? checkedAmountMode.value : "mass",
+    selectedPowders: Array.from(state.selectedPowders),
+    densityChoices: {
+      heightDensityChoice: els.heightDensityChoice.value,
+      relativeDensityChoice: els.relativeDensityChoice.value,
+    },
+  });
+}
+
+function restoreRecipeSettings() {
+  state.favoritePowders = new Set(loadJsonSetting("stoichioFavoritePowders", []));
+  state.recentPowdersByTarget = loadJsonSetting("stoichioRecentPowdersByTarget", {});
+  const settings = loadJsonSetting("stoichioRecipeSettings", null);
+  if (!settings) return;
+
+  if (settings.targetFormula) els.targetFormula.value = settings.targetFormula;
+  if (settings.recipeTargetFor) els.recipeTargetFor.value = settings.recipeTargetFor;
+  if (settings.targetMass) els.targetMass.value = settings.targetMass;
+  if (settings.targetHeight) els.targetHeight.value = settings.targetHeight;
+  if (settings.targetDiameter) els.targetDiameter.value = settings.targetDiameter;
+  if (settings.heightDensity) els.heightDensity.value = settings.heightDensity;
+  if (settings.recipeNotes) els.recipeNotes.value = settings.recipeNotes;
+  els.showAllPowders.checked = Boolean(settings.showAllPowders);
+  if (Array.isArray(settings.selectedPowders) && settings.selectedPowders.length) {
+    state.selectedPowders = new Set(settings.selectedPowders);
+  }
+  if (settings.amountMode) {
+    const amountMode = $(`input[name='amountMode'][value="${settings.amountMode}"]`);
+    if (amountMode) amountMode.checked = true;
+  }
+  state.savedDensityChoices = settings.densityChoices || {};
+}
+
 async function loadAll() {
   const data = await api.get("/api/bootstrap");
   applyData(data);
@@ -361,6 +462,7 @@ async function loadPowderOptions() {
 
 function renderPowderList(options, data) {
   els.powderList.innerHTML = "";
+  const orderedOptions = sortPowderOptions(options);
   if (data.filter_error) {
     els.powderFilterHint.textContent = `Formula filter error: ${data.filter_error}. Showing all powders.`;
   } else if (els.showAllPowders.checked) {
@@ -368,27 +470,44 @@ function renderPowderList(options, data) {
   } else {
     const elements = (data.target_elements || []).join(", ");
     els.powderFilterHint.textContent = elements
-      ? `Showing ${options.length} relevant powder(s) for ${elements}. Hidden: ${(data.hidden || []).length}.`
-      : `Showing ${options.length} powder(s).`;
+      ? `Showing ${orderedOptions.length} relevant powder(s) for ${elements}. Favorites and recent choices stay on top. Hidden: ${(data.hidden || []).length}.`
+      : `Showing ${orderedOptions.length} powder(s).`;
   }
 
-  for (const powder of options) {
+  if (!orderedOptions.length) {
+    els.powderList.innerHTML = `<div class="empty-state">No powder options match this target yet.</div>`;
+    return;
+  }
+
+  const recent = recentPowdersForCurrentTarget();
+  for (const powder of orderedOptions) {
     const record = state.powders[powder] || {};
+    const favorite = state.favoritePowders.has(powder);
+    const isRecent = recent.includes(powder);
     const row = document.createElement("div");
     row.className = "selector-row";
     row.innerHTML = `
+      <button type="button" class="icon favorite-toggle ${favorite ? "active" : ""}" data-favorite-powder="${escapeHtml(powder)}" title="${favorite ? "Remove favorite powder" : "Favorite this powder"}">${favorite ? "&#9733;" : "&#9734;"}</button>
       <label>
         <input type="checkbox" value="${escapeHtml(powder)}">
         <span>${escapeHtml(powder)}</span>
       </label>
       <span class="pill">${formatNumber(record.molar_mass_g_mol, 3)} g/mol</span>
       <span class="pill">${record.available_g === null || record.available_g === undefined ? "no stock" : `${formatNumber(record.available_g, 3)} g`}</span>
+      ${favorite ? `<span class="pill comfort">favorite</span>` : isRecent ? `<span class="pill comfort">recent</span>` : ""}
     `;
     const checkbox = row.querySelector("input");
     checkbox.checked = state.selectedPowders.has(powder);
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) state.selectedPowders.add(powder);
       else state.selectedPowders.delete(powder);
+      persistRecipeSettings();
+    });
+    row.querySelector("[data-favorite-powder]").addEventListener("click", () => {
+      if (state.favoritePowders.has(powder)) state.favoritePowders.delete(powder);
+      else state.favoritePowders.add(powder);
+      persistPowderComfortSettings();
+      renderPowderList(options, data);
     });
     els.powderList.appendChild(row);
   }
@@ -440,7 +559,7 @@ function densityOptionHtml(record, prefix) {
 async function updateDensityChoicesForTarget(target, select, manualWrap) {
   const data = await api.get(`/api/densities?target=${encodeURIComponent(target || "")}`);
   state.densities = data.records || state.densities;
-  const previous = select.value;
+  const previous = select.value || state.savedDensityChoices[select.id] || "";
   const expanded = state.densityPickerExpanded[select.id] === true;
   const exact = (data.exact || []).slice().sort((a, b) => Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)));
   const related = (data.related || []).slice().sort((a, b) => (
@@ -471,6 +590,7 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   } else if (select.options.length > 1) {
     select.selectedIndex = 1;
   }
+  state.savedDensityChoices[select.id] = select.value;
   manualWrap.hidden = select.value !== "__manual__";
 }
 
@@ -522,9 +642,11 @@ async function currentTargetMass() {
 async function calculateRecipe(event) {
   event.preventDefault();
   setMessage(els.recipeMessage, "Calculating...");
-  els.recipeTableBody.innerHTML = "";
+  renderRecipeEmptyState("Calculating powder masses...");
   els.recipeMetrics.innerHTML = "";
   els.recipeSummary.textContent = "";
+  els.recipeQuickSummary.textContent = "Calculating...";
+  els.recipeQuickSummary.className = "recipe-summary-card empty";
 
   try {
     const mass = await currentTargetMass();
@@ -536,16 +658,32 @@ async function calculateRecipe(event) {
     const data = await api.send("/api/recipe", "POST", payload);
     state.lastRecipe = { payload, result: data.result, stock_ok: data.stock_ok, stock_messages: data.stock_messages };
     state.lastRecipeMass = mass;
+    rememberRecentPowders(payload.selected_powders);
+    persistRecipeSettings();
     renderRecipeResult(data, mass);
   } catch (error) {
     setMessage(els.recipeMessage, error.message, "error");
+    renderRecipeEmptyState("No recipe table yet.");
+    els.recipeQuickSummary.textContent = "Recipe calculation failed.";
+    els.recipeQuickSummary.className = "recipe-summary-card empty";
   }
+}
+
+function renderRecipeEmptyState(text = "Calculate a recipe to see powder masses.") {
+  els.recipeTableBody.innerHTML = `
+    <tr>
+      <td colspan="4" class="empty-table">${escapeHtml(text)}</td>
+    </tr>
+  `;
 }
 
 function renderRecipeResult(data, mass) {
   const result = data.result || {};
   if (!result.recipe) {
     setMessage(els.recipeMessage, result.warning || "No recipe generated", "error");
+    renderRecipeEmptyState("No powder recipe could be generated.");
+    els.recipeQuickSummary.textContent = result.warning || "No recipe generated.";
+    els.recipeQuickSummary.className = "recipe-summary-card empty";
     return;
   }
 
@@ -562,6 +700,8 @@ function renderRecipeResult(data, mass) {
     <div class="metric-card"><strong>${formatNumber(result.powder_basis, 6)}</strong><small>total precursor powder g</small></div>
     <div class="metric-card"><strong>${result.exact ? "Exact" : "Approx"}</strong><small>stoichiometry</small></div>
   `;
+  els.recipeQuickSummary.className = `recipe-summary-card ${data.stock_ok ? "" : "warning"}`.trim();
+  els.recipeQuickSummary.innerHTML = recipeOneLineSummaryHtml(result, mass, data.stock_ok);
 
   els.recipeTableBody.innerHTML = "";
   for (const [powder, grams] of Object.entries(result.recipe)) {
@@ -581,6 +721,20 @@ function renderRecipeResult(data, mass) {
   els.recipeSummary.textContent = recipeSummaryText(result, mass);
 }
 
+function recipeOneLineSummaryHtml(result, mass, stockOk) {
+  const powders = Object.entries(result.recipe || {})
+    .map(([powder, grams]) => `${powder} ${formatNumber(grams, 6)} g`)
+    .join(" | ");
+  const badges = [
+    `<span class="summary-badge ${result.exact ? "good" : "warning"}">${result.exact ? "Exact" : "Approx"}</span>`,
+    stockOk ? `<span class="summary-badge good">Stock OK</span>` : `<span class="summary-badge warning">Stock warning</span>`,
+  ].join("");
+  return `
+    <div><strong>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</strong> | ${formatNumber(mass, 6)} g target | ${escapeHtml(powders)}</div>
+    <div class="summary-badges">${badges}</div>
+  `;
+}
+
 function recipeSummaryText(result, mass) {
   const lines = [
     `Target: ${result.normalized_target || els.targetFormula.value.trim()}`,
@@ -594,6 +748,65 @@ function recipeSummaryText(result, mass) {
   }
   if (els.recipeNotes.value.trim()) lines.push(`Notes: ${els.recipeNotes.value.trim()}`);
   return lines.join("\n");
+}
+
+function recipeNotebookText(result, mass) {
+  const lines = [
+    `Stoichio Buddy recipe`,
+    `Date: ${niceTime(new Date().toISOString())}`,
+    `Target: ${result.normalized_target || els.targetFormula.value.trim()}`,
+    `Target for: ${normalizeOwner(els.recipeTargetFor.value) || "quick calculation"}`,
+    `Target formula mass: ${formatNumber(mass, 6)} g`,
+    `Total precursor powder: ${formatNumber(result.powder_basis, 6)} g`,
+    `Stoichiometry: ${result.exact ? "Exact" : "Approx"}`,
+    `Residual: ${formatNumber(result.residual, 10)}`,
+    `Powders:`,
+  ];
+  for (const [powder, grams] of Object.entries(result.recipe || {})) {
+    const available = state.inventory[powder];
+    const after = available === undefined ? "" : `, after recipe ${formatNumber(Number(available) - Number(grams), 3)} g`;
+    lines.push(`- ${powder}: ${formatNumber(grams, 6)} g${available === undefined ? " (not tracked in inventory)" : `, available ${formatNumber(available, 3)} g${after}`}`);
+  }
+  if (state.lastRecipe?.stock_messages?.length) {
+    lines.push(`Inventory warning: ${state.lastRecipe.stock_messages.join("; ")}`);
+  }
+  if (els.recipeNotes.value.trim()) lines.push(`Notes: ${els.recipeNotes.value.trim()}`);
+  return lines.join("\n");
+}
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Fall through to the textarea copy path, which is more forgiving in some browsers.
+    }
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) throw new Error("Browser clipboard permission was not available.");
+}
+
+async function copyRecipeToNotebook() {
+  if (!state.lastRecipe?.result?.recipe) {
+    flash("Calculate a recipe before copying.", "warning");
+    return;
+  }
+  const text = recipeNotebookText(state.lastRecipe.result, state.lastRecipeMass);
+  try {
+    await copyTextToClipboard(text);
+    flash("Recipe copied for the lab notebook.");
+  } catch (error) {
+    els.recipeSummary.textContent = text;
+    flash("Clipboard was blocked, so the lab-notebook text is ready in the summary box below.", "warning");
+  }
 }
 
 async function saveRecipe() {
@@ -895,6 +1108,9 @@ function renderInventoryTables() {
   els.lowStockDashboard.className = `message ${low.length ? "warning" : "good"}`;
 
   els.inventoryTableBody.innerHTML = "";
+  if (!rows.length) {
+    els.inventoryTableBody.innerHTML = `<tr><td colspan="4" class="empty-table">No inventory rows yet. Add stock from the form above.</td></tr>`;
+  }
   for (const [powder, grams] of rows) {
     const need = recipe[powder];
     const after = need === undefined ? null : Number(grams) - Number(need);
@@ -910,7 +1126,11 @@ function renderInventoryTables() {
   }
 
   els.ledgerTableBody.innerHTML = "";
-  for (const entry of [...state.inventoryLog].reverse().slice(0, 200)) {
+  const ledgerRows = [...state.inventoryLog].reverse().slice(0, 200);
+  if (!ledgerRows.length) {
+    els.ledgerTableBody.innerHTML = `<tr><td colspan="7" class="empty-table">No inventory changes logged yet.</td></tr>`;
+  }
+  for (const entry of ledgerRows) {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${niceTime(entry.time)}</td>
@@ -1235,6 +1455,10 @@ function renderMaterialDensityTable() {
     .sort((a, b) => String(a.formula).localeCompare(String(b.formula)) || String(a.phase).localeCompare(String(b.phase)));
 
   els.materialDensityTableBody.innerHTML = "";
+  if (!rows.length) {
+    els.materialDensityTableBody.innerHTML = `<tr><td colspan="8" class="empty-table">No density records match this search.</td></tr>`;
+    return;
+  }
   for (const record of rows.slice(0, 600)) {
     const tr = document.createElement("tr");
     const status = String(record.verification_status || "").toLowerCase();
@@ -1326,6 +1550,7 @@ function renderHistory() {
   const statusFilter = els.historyStatusFilter.value;
 
   els.historyLog.innerHTML = "";
+  let renderedGroups = 0;
   for (const group of groups) {
     const recipes = group.entries.filter((entry) => (entry.entry_type || "synthesis") === "synthesis");
     const densities = group.entries.filter((entry) => entry.entry_type === "target_density");
@@ -1348,6 +1573,11 @@ function renderHistory() {
       ${group.entries.slice().reverse().map((entry) => historyItemHtml(entry)).join("")}
     `;
     els.historyLog.appendChild(node);
+    renderedGroups += 1;
+  }
+
+  if (!renderedGroups) {
+    els.historyLog.innerHTML = `<div class="empty-state">No history records match this view yet.</div>`;
   }
 
   els.historyLog.querySelectorAll("[data-delete-history]").forEach((button) => {
@@ -1486,22 +1716,36 @@ function setupQuickMode() {
 }
 
 function setupEvents() {
+  restoreRecipeSettings();
   els.adminPin.value = localStorage.getItem("stoichioAdminPin") || "";
   els.savePin.addEventListener("click", () => {
     localStorage.setItem("stoichioAdminPin", els.adminPin.value.trim());
     flash("Admin PIN saved in this browser.");
   });
-  $$("input[name='amountMode']").forEach((input) => input.addEventListener("change", toggleAmountMode));
+  $$("input[name='amountMode']").forEach((input) => input.addEventListener("change", () => {
+    toggleAmountMode();
+    persistRecipeSettings();
+  }));
   els.targetFormula.addEventListener("input", debounce(async () => {
     state.densityPickerExpanded.heightDensityChoice = false;
     await loadPowderOptions();
     await updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap);
     previewHeightMass().catch(() => {});
+    persistRecipeSettings();
   }, 220));
-  els.recipeTargetFor.addEventListener("input", () => updateTargetPreview(els.recipeTargetFor, els.recipeTargetPreview));
+  els.recipeTargetFor.addEventListener("input", () => {
+    updateTargetPreview(els.recipeTargetFor, els.recipeTargetPreview);
+    persistRecipeSettings();
+  });
   els.densityTargetFor.addEventListener("input", () => updateTargetPreview(els.densityTargetFor, els.densityTargetPreview));
-  els.showAllPowders.addEventListener("change", () => loadPowderOptions().catch((error) => flash(error.message, "error")));
+  els.showAllPowders.addEventListener("change", () => {
+    persistRecipeSettings();
+    loadPowderOptions().catch((error) => flash(error.message, "error"));
+  });
   els.reloadPowders.addEventListener("click", () => loadPowderOptions().catch((error) => flash(error.message, "error")));
+  [els.targetMass, els.targetHeight, els.targetDiameter, els.heightDensity, els.recipeNotes].forEach((input) => {
+    input.addEventListener("input", debounce(persistRecipeSettings, 200));
+  });
   [els.targetHeight, els.targetDiameter, els.heightDensity, els.heightDensityChoice].forEach((input) => {
     input.addEventListener("input", () => previewHeightMass().catch(() => {}));
     input.addEventListener("change", async () => {
@@ -1510,6 +1754,8 @@ function setupEvents() {
         await updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap);
       }
       els.manualHeightDensityWrap.hidden = els.heightDensityChoice.value !== "__manual__";
+      state.savedDensityChoices.heightDensityChoice = els.heightDensityChoice.value;
+      persistRecipeSettings();
       previewHeightMass().catch(() => {});
     });
   });
@@ -1517,6 +1763,7 @@ function setupEvents() {
   els.saveRecipe.addEventListener("click", saveRecipe);
   els.saveAndDeductRecipe.addEventListener("click", saveRecipeAndDeductInventory);
   els.deductInventory.addEventListener("click", deductInventory);
+  els.copyRecipeNotebook.addEventListener("click", copyRecipeToNotebook);
   els.printRecipeLabel.addEventListener("click", printRecipeLabel);
 
   els.linkedRecipe.addEventListener("change", onLinkedRecipeChange);
@@ -1530,6 +1777,8 @@ function setupEvents() {
       await updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap);
     }
     els.manualRelativeDensityWrap.hidden = els.relativeDensityChoice.value !== "__manual__";
+    state.savedDensityChoices.relativeDensityChoice = els.relativeDensityChoice.value;
+    persistRecipeSettings();
   });
   els.densityForm.addEventListener("submit", calculateDensity);
   els.saveDensityHistory.addEventListener("click", saveDensityHistory);
@@ -1573,6 +1822,7 @@ setupQuickMode();
 setupEvents();
 toggleAmountMode();
 toggleDensityEntryMode();
+renderRecipeEmptyState();
 loadAll().catch((error) => {
   els.serviceStatus.textContent = error.message;
   flash(error.message, "error");
