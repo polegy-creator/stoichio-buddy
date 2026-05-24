@@ -45,6 +45,7 @@ const pageMeta = {
   "target-density": ["Target Density", "Measure the sintered target and compare it to a theoretical density."],
   "powders-inventory": ["Powder & Inventory", "Add powders, edit stock, delete mistakes, and review low inventory."],
   "material-density": ["Material Density", "Store theoretical density records, unit cells, sources, and verification status."],
+  "data-health": ["Data Health", "Check low stock, missing records, and incomplete recipe-to-density links."],
   history: ["History", "Trace recipes and after-sintering density records by person and target number."],
 };
 
@@ -132,12 +133,19 @@ const els = {
   unitCellFields: $("#unitCellFields"),
   manualDensityFields: $("#manualDensityFields"),
   crystalSystem: $("#crystalSystem"),
+  latticeAWrap: $("#latticeAWrap"),
+  latticeBWrap: $("#latticeBWrap"),
+  latticeCWrap: $("#latticeCWrap"),
+  latticeAlphaWrap: $("#latticeAlphaWrap"),
+  latticeBetaWrap: $("#latticeBetaWrap"),
+  latticeGammaWrap: $("#latticeGammaWrap"),
   latticeA: $("#latticeA"),
   latticeB: $("#latticeB"),
   latticeC: $("#latticeC"),
   latticeAlpha: $("#latticeAlpha"),
   latticeBeta: $("#latticeBeta"),
   latticeGamma: $("#latticeGamma"),
+  latticeSystemHint: $("#latticeSystemHint"),
   unitCellVolume: $("#unitCellVolume"),
   zField: $("#zField"),
   zValue: $("#zValue"),
@@ -1057,20 +1065,99 @@ function toggleDensityEntryMode() {
   els.unitCellFields.hidden = mode !== "From unit cell volume";
   els.manualDensityFields.hidden = mode !== "Manual theoretical density";
   els.zField.hidden = mode === "Manual theoretical density";
+  syncLatticeFields();
   previewMaterialDensity().catch(() => {});
 }
 
-function densityCellPayload() {
+function latticeRules(system) {
+  const key = String(system || "").toLowerCase();
+  const rules = {
+    cubic: {
+      show: ["a"],
+      hint: "Cubic uses b = c = a and alpha = beta = gamma = 90 degrees.",
+      resolve: ({ a }) => ({ a, b: a, c: a, alpha: 90, beta: 90, gamma: 90 }),
+    },
+    tetragonal: {
+      show: ["a", "c"],
+      hint: "Tetragonal uses b = a and alpha = beta = gamma = 90 degrees.",
+      resolve: ({ a, c }) => ({ a, b: a, c, alpha: 90, beta: 90, gamma: 90 }),
+    },
+    orthorhombic: {
+      show: ["a", "b", "c"],
+      hint: "Orthorhombic uses alpha = beta = gamma = 90 degrees.",
+      resolve: ({ a, b, c }) => ({ a, b, c, alpha: 90, beta: 90, gamma: 90 }),
+    },
+    hexagonal: {
+      show: ["a", "c"],
+      hint: "Hexagonal uses b = a, alpha = beta = 90 degrees, and gamma = 120 degrees.",
+      resolve: ({ a, c }) => ({ a, b: a, c, alpha: 90, beta: 90, gamma: 120 }),
+    },
+    rhombohedral: {
+      show: ["a", "alpha"],
+      hint: "Rhombohedral uses b = c = a and beta = gamma = alpha.",
+      resolve: ({ a, alpha }) => ({ a, b: a, c: a, alpha, beta: alpha, gamma: alpha }),
+    },
+    monoclinic: {
+      show: ["a", "b", "c", "beta"],
+      hint: "Monoclinic uses alpha = gamma = 90 degrees.",
+      resolve: ({ a, b, c, beta }) => ({ a, b, c, alpha: 90, beta, gamma: 90 }),
+    },
+    triclinic: {
+      show: ["a", "b", "c", "alpha", "beta", "gamma"],
+      hint: "Triclinic needs all three lengths and all three angles.",
+      resolve: ({ a, b, c, alpha, beta, gamma }) => ({ a, b, c, alpha, beta, gamma }),
+    },
+  };
+  return rules[key] || rules.triclinic;
+}
+
+function syncLatticeFields() {
+  if (els.densityEntryMode.value !== "From lattice parameters") return;
+  const rules = latticeRules(els.crystalSystem.value);
+  const shown = new Set(rules.show);
+  const fieldMap = {
+    a: els.latticeAWrap,
+    b: els.latticeBWrap,
+    c: els.latticeCWrap,
+    alpha: els.latticeAlphaWrap,
+    beta: els.latticeBetaWrap,
+    gamma: els.latticeGammaWrap,
+  };
+  Object.entries(fieldMap).forEach(([name, wrap]) => {
+    wrap.hidden = !shown.has(name);
+  });
+  els.latticeSystemHint.textContent = rules.hint;
+}
+
+function latticeInputValues() {
+  return {
+    a: numberOrNull(els.latticeA.value),
+    b: numberOrNull(els.latticeB.value),
+    c: numberOrNull(els.latticeC.value),
+    alpha: numberOrNull(els.latticeAlpha.value),
+    beta: numberOrNull(els.latticeBeta.value),
+    gamma: numberOrNull(els.latticeGamma.value),
+  };
+}
+
+function resolvedLatticeValues() {
+  return latticeRules(els.crystalSystem.value).resolve(latticeInputValues());
+}
+
+function densityCellPayload(mode = els.densityEntryMode.value) {
+  const lattice = mode === "From lattice parameters"
+    ? resolvedLatticeValues()
+    : { a: null, b: null, c: null, alpha: null, beta: null, gamma: null };
   return {
     formula: els.materialFormula.value.trim(),
     crystal_system: els.crystalSystem.value,
-    a_A: numberOrNull(els.latticeA.value),
-    b_A: numberOrNull(els.latticeB.value),
-    c_A: numberOrNull(els.latticeC.value),
-    alpha_deg: numberOrNull(els.latticeAlpha.value),
-    beta_deg: numberOrNull(els.latticeBeta.value),
-    gamma_deg: numberOrNull(els.latticeGamma.value),
-    unit_cell_volume_A3: numberOrNull(els.unitCellVolume.value),
+    a_A: lattice.a,
+    b_A: lattice.b,
+    c_A: lattice.c,
+    alpha_deg: lattice.alpha,
+    beta_deg: lattice.beta,
+    gamma_deg: lattice.gamma,
+    unit_cell_volume_A3: mode === "From unit cell volume" ? numberOrNull(els.unitCellVolume.value) : null,
     z: Number(els.zValue.value || 1),
   };
 }
@@ -1091,7 +1178,7 @@ async function previewMaterialDensity() {
     return;
   }
   try {
-    const payload = densityCellPayload();
+    const payload = densityCellPayload(mode);
     if (mode === "From lattice parameters") payload.unit_cell_volume_A3 = null;
     const data = await api.send("/api/density-from-cell", "POST", payload);
     els.materialDensityPreview.textContent = `Unit cell volume: ${formatNumber(data.unit_cell_volume_A3, 5)} A3; theoretical density: ${formatNumber(data.theoretical_density_g_cm3, 5)} g/cm3.`;
@@ -1107,7 +1194,7 @@ async function saveMaterialDensity(event) {
     const mode = els.densityEntryMode.value;
     const verified = els.densityVerifiedCheck.checked;
     const payload = {
-      ...densityCellPayload(),
+      ...densityCellPayload(mode),
       phase: els.materialPhase.value,
       theoretical_density_g_cm3: mode === "Manual theoretical density" ? Number(els.manualMaterialDensity.value) : null,
       density_source: mode === "Manual theoretical density" ? "manual" : mode === "From unit cell volume" ? "unit cell" : "lattice parameters",
@@ -1455,8 +1542,12 @@ function setupEvents() {
   els.deletePowderForm.addEventListener("submit", removePowder);
 
   els.densityEntryMode.addEventListener("change", toggleDensityEntryMode);
+  els.crystalSystem.addEventListener("change", () => {
+    syncLatticeFields();
+    previewMaterialDensity().catch(() => {});
+  });
   [
-    els.materialFormula, els.crystalSystem, els.latticeA, els.latticeB, els.latticeC,
+    els.materialFormula, els.latticeA, els.latticeB, els.latticeC,
     els.latticeAlpha, els.latticeBeta, els.latticeGamma, els.unitCellVolume,
     els.zValue, els.manualMaterialDensity,
   ].forEach((input) => input.addEventListener("input", debounce(() => previewMaterialDensity(), 260)));

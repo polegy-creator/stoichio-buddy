@@ -382,6 +382,10 @@ p {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.lattice-row {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
+}
+
 .inline-actions,
 .filters {
   align-items: end;

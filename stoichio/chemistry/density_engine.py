@@ -18,9 +18,7 @@ def unit_cell_volume_from_lattice(
     gamma_deg=None,
 ):
     system = str(crystal_system).strip().lower()
-    a = float(a_a)
-    if a <= 0:
-        raise ValueError("Lattice parameter a must be positive")
+    a = _positive_lattice_value(a_a, "a")
 
     if system == "cubic":
         b = a

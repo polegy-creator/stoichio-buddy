@@ -79,6 +79,10 @@ class DensityEngineTests(unittest.TestCase):
         self.assertAlmostEqual(unit_cell_volume_from_lattice("Cubic", 2.0), 8.0)
         self.assertAlmostEqual(unit_cell_volume_from_lattice("Hexagonal", 2.0, c_a=4.0), 13.8564064606)
 
+    def test_missing_lattice_a_is_clear_user_error(self):
+        with self.assertRaisesRegex(ValueError, "Lattice parameter a is required"):
+            unit_cell_volume_from_lattice("Cubic", None)
+
     def test_theoretical_density_from_cell(self):
         density = theoretical_density_from_cell("Fe2O3", 302.0, 6)
         expected = 6 * molar_mass(parse_formula("Fe2O3")) / AVOGADRO / (302.0 * ANGSTROM3_TO_CM3)

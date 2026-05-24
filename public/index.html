@@ -17,6 +17,7 @@
       <button class="nav-item" data-page="target-density">Target Density</button>
       <button class="nav-item" data-page="powders-inventory">Powder & Inventory</button>
       <button class="nav-item" data-page="material-density">Material Density</button>
+      <button class="nav-item" data-page="data-health">Data Health</button>
       <button class="nav-item" data-page="history">History</button>
     </nav>
     <section class="sidebar-card">
@@ -219,16 +220,6 @@
     </section>
 
     <section id="page-powders-inventory" class="page">
-      <section class="panel advanced-only">
-        <div class="section-head">
-          <div>
-            <h2>Data health</h2>
-            <p>Fast lab checks for low stock, missing stock rows, density review, and incomplete target logs.</p>
-          </div>
-        </div>
-        <div id="dataHealthGrid" class="health-grid"></div>
-      </section>
-
       <div class="three-col">
         <form id="addPowderForm" class="panel">
           <h2>Add powder</h2>
@@ -315,16 +306,17 @@
                 <option>Hexagonal</option><option>Rhombohedral</option><option>Monoclinic</option><option>Triclinic</option>
               </select>
             </label>
-            <div class="row">
-              <label>a (A) <input id="latticeA" type="number" min="0" step="0.000001"></label>
-              <label>b (A) <input id="latticeB" type="number" min="0" step="0.000001"></label>
-              <label>c (A) <input id="latticeC" type="number" min="0" step="0.000001"></label>
+            <div class="row lattice-row">
+              <label id="latticeAWrap">a (A) <input id="latticeA" type="number" min="0" step="0.000001"></label>
+              <label id="latticeBWrap">b (A) <input id="latticeB" type="number" min="0" step="0.000001"></label>
+              <label id="latticeCWrap">c (A) <input id="latticeC" type="number" min="0" step="0.000001"></label>
             </div>
-            <div class="row">
-              <label>alpha (deg) <input id="latticeAlpha" type="number" min="0" max="180" step="0.0001"></label>
-              <label>beta (deg) <input id="latticeBeta" type="number" min="0" max="180" step="0.0001"></label>
-              <label>gamma (deg) <input id="latticeGamma" type="number" min="0" max="180" step="0.0001"></label>
+            <div class="row lattice-row">
+              <label id="latticeAlphaWrap">alpha (deg) <input id="latticeAlpha" type="number" min="0" max="180" step="0.0001"></label>
+              <label id="latticeBetaWrap">beta (deg) <input id="latticeBeta" type="number" min="0" max="180" step="0.0001"></label>
+              <label id="latticeGammaWrap">gamma (deg) <input id="latticeGamma" type="number" min="0" max="180" step="0.0001"></label>
             </div>
+            <div id="latticeSystemHint" class="hint"></div>
           </div>
           <div id="unitCellFields" hidden>
             <label>Unit cell volume (A3) <input id="unitCellVolume" type="number" min="0" step="0.000001"></label>
@@ -368,6 +360,18 @@
           </div>
         </section>
       </div>
+    </section>
+
+    <section id="page-data-health" class="page">
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Data health</h2>
+            <p>Fast lab checks for low stock, missing stock rows, density review, and incomplete target logs.</p>
+          </div>
+        </div>
+        <div id="dataHealthGrid" class="health-grid"></div>
+      </section>
     </section>
 
     <section id="page-history" class="page">
