@@ -1,4 +1,4 @@
-"""Target Density page for Stoichio Buddy."""
+"""Target Density % page for Stoichio Buddy."""
 
 
 def render(ctx):
@@ -126,7 +126,7 @@ def render(ctx):
             target_id=linked_target_id,
             linked_recipe_entry_id=linked_target.get("entry_id") if linked_target else None,
         )
-        calculate_density = st.button("Calculate Target Density", type="primary", width="stretch")
+        calculate_density = st.button("Calculate Target Density %", type="primary", width="stretch")
 
         if calculate_density:
             try:
@@ -264,7 +264,7 @@ def render(ctx):
                 inputs_changed
                 or st.session_state.get("last_target_density_saved", False)
             )
-            if st.button("Save Target Density to History", type="primary", width="stretch", disabled=save_disabled):
+            if st.button("Save Target Density % to History", type="primary", width="stretch", disabled=save_disabled):
                 assigned_target_number = last_density.get("target_number")
                 if not assigned_target_number and current_target_owner:
                     latest_history = load_history()

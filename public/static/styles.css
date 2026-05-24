@@ -149,6 +149,12 @@ button.icon:hover {
   color: var(--bad);
 }
 
+button.quantity-button {
+  font-size: 1.22rem;
+  min-width: 3rem;
+  padding-inline: 0.85rem;
+}
+
 input,
 select,
 textarea {

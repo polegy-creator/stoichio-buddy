@@ -37,6 +37,7 @@ const state = {
   lastRecipe: null,
   lastRecipeMass: null,
   lastDensityResult: null,
+  densityTargetAutoSynced: true,
   densityPickerExpanded: {
     heightDensityChoice: false,
     relativeDensityChoice: false,
@@ -45,9 +46,9 @@ const state = {
 
 const pageMeta = {
   "powder-mass": ["Powder Mass Calculation", ""],
-  "target-density": ["Target Density", ""],
+  "target-density": ["Target Density %", ""],
   "powders-inventory": ["Powder & Inventory", ""],
-  "material-density": ["Material Density", ""],
+  "material-density": ["Theoretical Density", ""],
   "data-health": ["Data Health", ""],
   history: ["History", ""],
 };
@@ -603,11 +604,24 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   manualWrap.hidden = select.value !== "__manual__";
 }
 
+function targetDensityFormulaForChoices() {
+  return els.densityTargetFormula.value.trim() || els.targetFormula.value.trim();
+}
+
+function syncTargetDensityFormulaFromRecipeTarget({ force = false } = {}) {
+  const recipeTarget = els.targetFormula.value.trim();
+  if (recipeTarget && (force || state.densityTargetAutoSynced || !els.densityTargetFormula.value.trim())) {
+    els.densityTargetFormula.value = recipeTarget;
+    state.densityTargetAutoSynced = true;
+  }
+  return targetDensityFormulaForChoices();
+}
+
 function renderDensityChoices() {
   updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap)
     .then(previewHeightMass)
     .catch(() => {});
-  updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap)
+  updateDensityChoicesForTarget(syncTargetDensityFormulaFromRecipeTarget(), els.relativeDensityChoice, els.manualRelativeDensityWrap)
     .catch(() => {});
 }
 
@@ -978,9 +992,16 @@ function onLinkedRecipeChange() {
   const linked = linkedRecipeById(els.linkedRecipe.value);
   if (!linked) {
     els.linkedRecipeInfo.textContent = "";
+    state.densityPickerExpanded.relativeDensityChoice = false;
+    updateDensityChoicesForTarget(
+      syncTargetDensityFormulaFromRecipeTarget(),
+      els.relativeDensityChoice,
+      els.manualRelativeDensityWrap,
+    ).catch(() => {});
     return;
   }
   els.densityTargetFormula.value = linked.target || "";
+  state.densityTargetAutoSynced = false;
   els.densityTargetFor.value = linked.target_for || "";
   els.linkedRecipeInfo.textContent = `After-sintering density will be linked to ${linked.target_id || linked.recipe_id}.`;
   state.densityPickerExpanded.relativeDensityChoice = false;
@@ -989,6 +1010,7 @@ function onLinkedRecipeChange() {
 
 async function calculateDensity(event) {
   event.preventDefault();
+  syncTargetDensityFormulaFromRecipeTarget();
   try {
     const theoretical = theoreticalDensityFromSelect(els.relativeDensityChoice, els.relativeTheoreticalDensity);
     const payload = {
@@ -1020,7 +1042,7 @@ function renderDensityResult(data, theoretical) {
     <div class="metric-card"><strong>${formatNumber(relative, 2)}%</strong><small>relative density</small></div>
   `;
   els.densitySummary.textContent = [
-    `Target: ${els.densityTargetFormula.value.trim()}`,
+    `Target: ${targetDensityFormulaForChoices()}`,
     `Target for: ${normalizeOwner(els.densityTargetFor.value) || "quick calculation"}`,
     `Measured density: ${formatNumber(data.measured_density_g_cm3, 5)} g/cm³`,
     `Theoretical density: ${formatNumber(theoretical, 5)} g/cm³`,
@@ -1040,7 +1062,7 @@ async function saveDensityHistory() {
   try {
     const payload = {
       ...state.lastDensityResult.payload,
-      target: els.densityTargetFormula.value.trim(),
+      target: targetDensityFormulaForChoices(),
       target_for: els.densityTargetFor.value.trim(),
       density_source: densitySourceFromSelect(els.relativeDensityChoice),
       notes: els.densityNotes.value,
@@ -1700,6 +1722,14 @@ function setupNavigation() {
       els.pageTitle.textContent = title;
       els.pageSubtitle.textContent = subtitle;
       els.pageSubtitle.hidden = !subtitle;
+      if (button.dataset.page === "target-density") {
+        state.densityPickerExpanded.relativeDensityChoice = false;
+        updateDensityChoicesForTarget(
+          syncTargetDensityFormulaFromRecipeTarget(),
+          els.relativeDensityChoice,
+          els.manualRelativeDensityWrap,
+        ).catch(() => {});
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
@@ -1743,6 +1773,14 @@ function setupEvents() {
     state.densityPickerExpanded.heightDensityChoice = false;
     await loadPowderOptions();
     await updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap);
+    if (state.densityTargetAutoSynced || !els.densityTargetFormula.value.trim()) {
+      state.densityPickerExpanded.relativeDensityChoice = false;
+      await updateDensityChoicesForTarget(
+        syncTargetDensityFormulaFromRecipeTarget(),
+        els.relativeDensityChoice,
+        els.manualRelativeDensityWrap,
+      );
+    }
     previewHeightMass().catch(() => {});
     persistRecipeSettings();
   }, 220));
@@ -1781,13 +1819,14 @@ function setupEvents() {
 
   els.linkedRecipe.addEventListener("change", onLinkedRecipeChange);
   els.densityTargetFormula.addEventListener("input", debounce(() => {
+    state.densityTargetAutoSynced = !els.densityTargetFormula.value.trim();
     state.densityPickerExpanded.relativeDensityChoice = false;
-    updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap);
+    updateDensityChoicesForTarget(targetDensityFormulaForChoices(), els.relativeDensityChoice, els.manualRelativeDensityWrap);
   }, 220));
   els.relativeDensityChoice.addEventListener("change", async () => {
     if (els.relativeDensityChoice.value === "__show_more__") {
       state.densityPickerExpanded.relativeDensityChoice = true;
-      await updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap);
+      await updateDensityChoicesForTarget(targetDensityFormulaForChoices(), els.relativeDensityChoice, els.manualRelativeDensityWrap);
     }
     els.manualRelativeDensityWrap.hidden = els.relativeDensityChoice.value !== "__manual__";
     state.savedDensityChoices.relativeDensityChoice = els.relativeDensityChoice.value;

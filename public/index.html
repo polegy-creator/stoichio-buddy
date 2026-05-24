@@ -14,9 +14,9 @@
     </div>
     <nav class="nav" aria-label="Main pages">
       <button class="nav-item active" data-page="powder-mass">Powder Mass Calculation</button>
-      <button class="nav-item" data-page="target-density">Target Density</button>
+      <button class="nav-item" data-page="target-density">Target Density %</button>
       <button class="nav-item" data-page="powders-inventory">Powder & Inventory</button>
-      <button class="nav-item" data-page="material-density">Material Density</button>
+      <button class="nav-item" data-page="material-density">Theoretical Density</button>
       <button class="nav-item" data-page="data-health">Data Health</button>
       <button class="nav-item" data-page="history">History</button>
     </nav>
@@ -218,7 +218,7 @@
             Manual theoretical density (g/cm³)
             <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
           </label>
-          <button type="submit" class="primary">Calculate Target Density</button>
+          <button type="submit" class="primary">Calculate Target Density %</button>
         </form>
 
         <section class="panel">
@@ -229,7 +229,7 @@
             Target density notes
             <textarea id="densityNotes" rows="4" placeholder="sintering temperature, cracks, polish state, measurement notes"></textarea>
           </label>
-          <button id="saveDensityHistory" type="button" class="primary advanced-only">Save Target Density</button>
+          <button id="saveDensityHistory" type="button" class="primary advanced-only">Save Target Density %</button>
           <pre id="densitySummary" class="copy-box"></pre>
         </section>
       </div>
@@ -250,8 +250,8 @@
           <div id="inventoryCurrent" class="message">Choose a powder to see current stock.</div>
           <label>Change amount (g) <input id="inventoryGrams" type="number" min="0" step="0.0001" value="0"></label>
           <div class="inline-actions">
-            <button id="inventoryAdd" type="button" class="primary">Add Grams</button>
-            <button id="inventoryRemove" type="button" class="secondary">Remove Grams</button>
+            <button id="inventoryAdd" type="button" class="primary quantity-button" aria-label="Add grams" title="Add grams">+</button>
+            <button id="inventoryRemove" type="button" class="secondary quantity-button" aria-label="Remove grams" title="Remove grams">−</button>
           </div>
         </form>
 
@@ -300,7 +300,7 @@
     <section id="page-material-density" class="page">
       <div class="two-col">
         <form id="materialDensityForm" class="panel">
-          <h2>Add or update target</h2>
+          <h2>Add or update theoretical density</h2>
           <label>Target formula <input id="materialFormula" placeholder="Fe1.98Ti0.02O3"></label>
           <label>Phase / polymorph optional <input id="materialPhase" placeholder="rutile, anatase, hematite"></label>
           <label>
@@ -341,13 +341,13 @@
           <label>Notes <textarea id="densityRecordNotes" rows="4"></textarea></label>
           <label>Verified by optional <input id="densityVerifiedBy" placeholder="Name"></label>
           <label class="check"><input id="densityVerifiedCheck" type="checkbox"> Lab verified</label>
-          <button type="submit" class="primary">Save Material Density</button>
+          <button type="submit" class="primary">Save Theoretical Density</button>
         </form>
 
         <section class="panel">
           <div class="section-head">
             <div>
-              <h2>Density sources</h2>
+              <h2>Theoretical density sources</h2>
             </div>
           </div>
           <label>Search <input id="densitySearch" placeholder="formula, phase, DOI, source"></label>

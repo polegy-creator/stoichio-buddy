@@ -18,12 +18,12 @@ from stoichio.ui_models import (
 def density_source_control(target, material_densities, key_prefix):
     source_mode = st.radio(
         "Theoretical density source",
-        ["Known material density", "Use another density record", "Manual density"],
+        ["Known theoretical density", "Use another density record", "Manual density"],
         horizontal=True,
         key=f"{key_prefix}_density_source",
     )
 
-    if source_mode == "Known material density":
+    if source_mode == "Known theoretical density":
         normalized_target, density_records, error = density_records_for_formula(target, material_densities)
         if density_records:
             if len(density_records) > 1:
@@ -55,11 +55,11 @@ def density_source_control(target, material_densities, key_prefix):
             if record.get("source") or record.get("density_source"):
                 st.caption(
                     "Source: "
-                    + (record.get("source") or record.get("density_source") or "saved material density")
+                    + (record.get("source") or record.get("density_source") or "saved theoretical density")
                 )
             st.session_state[f"{key_prefix}_density_verified"] = density_record_is_verified(record)
             st.session_state[f"{key_prefix}_density_record_key"] = selected_record_key
-            return density, f"Known material density: {density_record_label(selected_record_key, record, False)}"
+            return density, f"Known theoretical density: {density_record_label(selected_record_key, record, False)}"
         else:
             related_records = related_material_density_records(target, material_densities)
             if related_records and normalized_target:
@@ -96,7 +96,7 @@ def density_source_control(target, material_densities, key_prefix):
                         st.session_state[f"{key_prefix}_density_record_key"] = selected_record_key
                         return (
                             density,
-                            f"Related material density: {density_record_label(selected_record_key, source_record, False)}",
+                            f"Related theoretical density: {density_record_label(selected_record_key, source_record, False)}",
                         )
                     except ValueError as exc:
                         st.warning(str(exc))
@@ -133,11 +133,11 @@ def density_source_control(target, material_densities, key_prefix):
         source_target = st.selectbox(
             "Density record to use",
             [""] + [record_key for record_key, _ in record_choices],
-            format_func=lambda value: density_record_label(value, material_densities[value]) if value else "Choose saved material",
+            format_func=lambda value: density_record_label(value, material_densities[value]) if value else "Choose saved theoretical density",
             key=f"{key_prefix}_density_record",
         )
         if not source_target:
-            st.warning("Choose a saved material density record")
+            st.warning("Choose a saved theoretical density record")
             return None, source_mode
 
         try:

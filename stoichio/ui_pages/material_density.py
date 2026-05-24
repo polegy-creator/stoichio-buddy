@@ -1,4 +1,4 @@
-"""Material Density page for Stoichio Buddy."""
+"""Theoretical Density page for Stoichio Buddy."""
 
 
 def render(ctx):
@@ -24,14 +24,14 @@ def render(ctx):
     update_material_density_review_status = ctx.update_material_density_review_status
     upsert_material_density = ctx.upsert_material_density
 
-    st.subheader("Material density database")
+    st.subheader("Theoretical density database")
     st.caption("Known target densities are used for pellet-height planning and post-sintering relative density.")
 
     entry_col = st.container()
     table_col = st.container()
 
     with entry_col:
-        st.markdown("#### Add or update target")
+        st.markdown("#### Add or update theoretical density")
         density_formula = st.text_input("Target formula", placeholder="Fe1.98Ti0.02O3")
         density_phase = st.text_input("Phase / polymorph (optional)", placeholder="rutile, anatase, hematite")
         density_entry_mode = st.radio(
@@ -154,7 +154,7 @@ def render(ctx):
         paper_title = st.text_input("Paper title (optional)", placeholder="Full paper or database record title")
         notes = st.text_area("Notes", height=90)
 
-        save_density = st.button("Save Material Density", type="primary", width="stretch")
+        save_density = st.button("Save Theoretical Density", type="primary", width="stretch")
         if save_density:
             try:
                 if not density_formula:
@@ -279,7 +279,7 @@ def render(ctx):
                     st.error(str(exc))
 
         st.divider()
-        st.markdown("#### Delete target density")
+        st.markdown("#### Delete theoretical density")
         density_delete_target = st.selectbox(
             "Density record to delete",
             [""] + list(material_densities.keys()),
@@ -329,7 +329,7 @@ def render(ctx):
         st.markdown("#### Known densities")
         density_df = material_density_dataframe(material_densities)
         if density_df.empty:
-            st.info("No material densities saved yet.")
+            st.info("No theoretical densities saved yet.")
         else:
             filter_cols = st.columns([1, 1], gap="small")
             trust_filter = filter_cols[0].selectbox(
@@ -381,7 +381,7 @@ def render(ctx):
                 hide_index=True,
             )
             st.download_button(
-                "Download Material Density CSV",
+                "Download Theoretical Density CSV",
                 data=csv_bytes(density_df),
                 file_name="material_densities.csv",
                 mime="text/csv",

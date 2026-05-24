@@ -929,9 +929,9 @@ with st.sidebar:
         "Navigation",
         [
             "Powder Mass Calculation",
-            "Target Density",
+            "Target Density %",
             "Powders & Inventory",
-            "Material Density",
+            "Theoretical Density",
             "History",
         ],
         label_visibility="collapsed",
@@ -942,7 +942,7 @@ with st.sidebar:
     unknown_stock = unknown_inventory_items(inventory, db)
     st.metric("Inventory items", len(inventory))
     st.metric("Inventory log", len(inventory_log))
-    st.metric("Material densities", len(material_densities))
+    st.metric("Theoretical densities", len(material_densities))
     st.metric("Powder sets", len(powder_sets))
     st.metric("Saved recipes", len(recipe_history))
     st.metric("Target density logs", len(target_density_records))
@@ -1022,9 +1022,9 @@ if storage_problem:
 
 PAGE_RENDERERS = {
     "Powder Mass Calculation": powder_mass_page,
-    "Target Density": target_density_page,
+    "Target Density %": target_density_page,
     "Powders & Inventory": powders_inventory_page,
-    "Material Density": material_density_page,
+    "Theoretical Density": material_density_page,
     "History": history_page,
 }
 

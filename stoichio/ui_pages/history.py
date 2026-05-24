@@ -31,7 +31,7 @@ def render(ctx):
 
     st.subheader("History")
 
-    target_tab, recipe_tab, density_tab, raw_tab = st.tabs(["Targets", "Recipes", "Target Density", "Raw Log"])
+    target_tab, recipe_tab, density_tab, raw_tab = st.tabs(["Targets", "Recipes", "Target Density %", "Raw Log"])
 
     with target_tab:
         st.markdown("#### Target lifecycle")
@@ -278,7 +278,7 @@ def render(ctx):
                         st.rerun()
 
             st.download_button(
-                "Download Target Density CSV",
+                "Download Target Density % CSV",
                 data=csv_bytes(density_history_df),
                 file_name="stoichio_target_density_history.csv",
                 mime="text/csv",
