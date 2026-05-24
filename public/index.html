@@ -223,11 +223,15 @@
         </form>
 
         <form id="inventoryForm" class="panel">
-          <h2>Set quantity</h2>
+          <h2>Adjust quantity</h2>
           <label>Powder <select id="inventoryPowder"></select></label>
-          <label>Available grams <input id="inventoryGrams" type="number" min="0" step="0.0001" value="0"></label>
-          <button type="submit" class="primary">Save Quantity</button>
-          <p class="hint">Set quantity to 0 to remove a powder from inventory.</p>
+          <div id="inventoryCurrent" class="message">Choose a powder to see current stock.</div>
+          <label>Change amount (g) <input id="inventoryGrams" type="number" min="0" step="0.0001" value="0"></label>
+          <div class="inline-actions">
+            <button id="inventoryAdd" type="button" class="primary">Add Grams</button>
+            <button id="inventoryRemove" type="button" class="secondary">Remove Grams</button>
+          </div>
+          <p class="hint">Removing grams is clamped at 0, so inventory cannot become negative.</p>
         </form>
 
         <form id="deletePowderForm" class="panel">

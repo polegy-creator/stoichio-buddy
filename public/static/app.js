@@ -104,7 +104,10 @@ const els = {
   newPowderGrams: $("#newPowderGrams"),
   inventoryForm: $("#inventoryForm"),
   inventoryPowder: $("#inventoryPowder"),
+  inventoryCurrent: $("#inventoryCurrent"),
   inventoryGrams: $("#inventoryGrams"),
+  inventoryAdd: $("#inventoryAdd"),
+  inventoryRemove: $("#inventoryRemove"),
   deletePowderForm: $("#deletePowderForm"),
   deletePowder: $("#deletePowder"),
   removeDeletedStock: $("#removeDeletedStock"),
@@ -649,6 +652,21 @@ function renderInventorySelectors() {
     }
     if (powderNames.includes(previous)) select.value = previous;
   }
+  renderInventoryAdjustment();
+}
+
+function renderInventoryAdjustment() {
+  const powder = els.inventoryPowder.value;
+  if (!powder) {
+    setMessage(els.inventoryCurrent, "Choose a powder to see current stock.");
+    return;
+  }
+  const current = Number(state.inventory[powder] || 0);
+  setMessage(
+    els.inventoryCurrent,
+    `${powder} current stock: ${formatNumber(current, 4)} g`,
+    current < 10 ? "warning" : "good",
+  );
 }
 
 function renderPowderDatabase() {
@@ -733,23 +751,33 @@ async function addPowder(event) {
   }
 }
 
-async function saveInventory(event) {
-  event.preventDefault();
+async function adjustInventory(direction, button) {
   const powder = els.inventoryPowder.value;
   if (!powder) {
     flash("Choose a powder.", "warning");
     return;
   }
-  const done = setBusy(event.submitter, "Saving...");
+  const amount = Number(els.inventoryGrams.value);
+  if (!(amount > 0)) {
+    flash("Enter grams greater than 0.", "warning");
+    return;
+  }
+
+  const current = Number(state.inventory[powder] || 0);
+  const next = direction === "add"
+    ? current + amount
+    : Math.max(0, current - amount);
+  const verb = direction === "add" ? "Added" : "Removed";
+  const done = setBusy(button, direction === "add" ? "Adding..." : "Removing...");
   try {
     const data = await api.send(`/api/inventory/${encodeURIComponent(powder)}`, "PATCH", {
-      grams: Number(els.inventoryGrams.value),
-      reason: "Manual inventory edit from Vercel lab website",
+      grams: next,
+      reason: `${verb} ${formatNumber(amount, 4)} g from Vercel lab website`,
     });
     state.inventory = data.inventory || state.inventory;
     state.inventoryLog = data.inventory_log || state.inventoryLog;
     renderEverything();
-    flash(`Updated ${powder}.`);
+    flash(`${verb} ${formatNumber(amount, 4)} g for ${powder}. New stock: ${formatNumber(next, 4)} g.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {
@@ -1109,7 +1137,10 @@ function setupEvents() {
   els.saveDensityHistory.addEventListener("click", saveDensityHistory);
 
   els.addPowderForm.addEventListener("submit", addPowder);
-  els.inventoryForm.addEventListener("submit", saveInventory);
+  els.inventoryForm.addEventListener("submit", (event) => event.preventDefault());
+  els.inventoryPowder.addEventListener("change", renderInventoryAdjustment);
+  els.inventoryAdd.addEventListener("click", () => adjustInventory("add", els.inventoryAdd));
+  els.inventoryRemove.addEventListener("click", () => adjustInventory("remove", els.inventoryRemove));
   els.deletePowderForm.addEventListener("submit", removePowder);
 
   els.densityEntryMode.addEventListener("change", toggleDensityEntryMode);
