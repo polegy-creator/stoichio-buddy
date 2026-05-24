@@ -44,12 +44,12 @@ const state = {
 };
 
 const pageMeta = {
-  "powder-mass": ["Powder Mass Calculation", "Choose the exact powders and calculate deterministic precursor masses."],
-  "target-density": ["Target Density", "Measure the sintered target and compare it to a theoretical density."],
-  "powders-inventory": ["Powder & Inventory", "Add powders, edit stock, delete mistakes, and review low inventory."],
-  "material-density": ["Material Density", "Store theoretical density records, unit cells, sources, and verification status."],
-  "data-health": ["Data Health", "Check low stock, missing records, and incomplete recipe-to-density links."],
-  history: ["History", "Trace recipes and after-sintering density records by person and target number."],
+  "powder-mass": ["Powder Mass Calculation", ""],
+  "target-density": ["Target Density", ""],
+  "powders-inventory": ["Powder & Inventory", ""],
+  "material-density": ["Material Density", ""],
+  "data-health": ["Data Health", ""],
+  history: ["History", ""],
 };
 
 const els = {
@@ -264,7 +264,7 @@ function selectedAmountMode() {
 function densityRecordLabel(record, prefix = "") {
   const phase = record.phase ? `, ${record.phase}` : "";
   const status = record.verification_status ? ` - ${record.verification_status}` : "";
-  return `${prefix}${record.display_name || record.formula}${phase}: ${formatNumber(record.theoretical_density_g_cm3, 5)} g/cm3${status}`;
+  return `${prefix}${record.display_name || record.formula}${phase}: ${formatNumber(record.theoretical_density_g_cm3, 5)} g/cm³${status}`;
 }
 
 function densityStatus(record) {
@@ -278,6 +278,15 @@ function isPreferredDensity(record) {
 function isTrustedDensity(record) {
   const status = densityStatus(record);
   return status.includes("preferred") || status.includes("checked") || status.includes("verified");
+}
+
+function displayDensityStatus(record) {
+  const status = densityStatus(record);
+  if (status.includes("preferred")) return "Preferred";
+  if (status.includes("checked") || status.includes("verified")) return "Verified";
+  if (status.includes("do not use")) return "Do not use";
+  if (status.includes("codex") || status.includes("unverified")) return "Needs review";
+  return record.verification_status || "";
 }
 
 function densityChoiceValue(select) {
@@ -464,18 +473,18 @@ function renderPowderList(options, data) {
   els.powderList.innerHTML = "";
   const orderedOptions = sortPowderOptions(options);
   if (data.filter_error) {
-    els.powderFilterHint.textContent = `Formula filter error: ${data.filter_error}. Showing all powders.`;
+    els.powderFilterHint.textContent = `Filter error: ${data.filter_error}`;
   } else if (els.showAllPowders.checked) {
-    els.powderFilterHint.textContent = `Showing all ${Object.keys(state.powders).length} powders. Relevant filter is off.`;
+    els.powderFilterHint.textContent = `${Object.keys(state.powders).length} powders`;
   } else {
     const elements = (data.target_elements || []).join(", ");
     els.powderFilterHint.textContent = elements
-      ? `Showing ${orderedOptions.length} relevant powder(s) for ${elements}. Favorites and recent choices stay on top. Hidden: ${(data.hidden || []).length}.`
-      : `Showing ${orderedOptions.length} powder(s).`;
+      ? `${orderedOptions.length} relevant · ${elements} · ${(data.hidden || []).length} hidden`
+      : `${orderedOptions.length} powders`;
   }
 
   if (!orderedOptions.length) {
-    els.powderList.innerHTML = `<div class="empty-state">No powder options match this target yet.</div>`;
+    els.powderList.innerHTML = `<div class="empty-state">No matching powders.</div>`;
     return;
   }
 
@@ -620,7 +629,7 @@ async function previewHeightMass() {
       height_mm: height,
       diameter_mm: diameter,
     });
-    els.heightMassPreview.textContent = `Calculated target formula mass: ${formatNumber(data.target_mass_g, 6)} g from ${formatNumber(data.volume_cm3, 6)} cm3.`;
+    els.heightMassPreview.textContent = `m = ${formatNumber(data.target_mass_g, 6)} g · V = ${formatNumber(data.volume_cm3, 6)} cm³`;
   } catch (error) {
     els.heightMassPreview.textContent = error.message;
   }
@@ -642,7 +651,7 @@ async function currentTargetMass() {
 async function calculateRecipe(event) {
   event.preventDefault();
   setMessage(els.recipeMessage, "Calculating...");
-  renderRecipeEmptyState("Calculating powder masses...");
+  renderRecipeEmptyState("Calculating...");
   els.recipeMetrics.innerHTML = "";
   els.recipeSummary.textContent = "";
   els.recipeQuickSummary.textContent = "Calculating...";
@@ -663,13 +672,13 @@ async function calculateRecipe(event) {
     renderRecipeResult(data, mass);
   } catch (error) {
     setMessage(els.recipeMessage, error.message, "error");
-    renderRecipeEmptyState("No recipe table yet.");
+    renderRecipeEmptyState("No recipe.");
     els.recipeQuickSummary.textContent = "Recipe calculation failed.";
     els.recipeQuickSummary.className = "recipe-summary-card empty";
   }
 }
 
-function renderRecipeEmptyState(text = "Calculate a recipe to see powder masses.") {
+function renderRecipeEmptyState(text = "No powder masses yet.") {
   els.recipeTableBody.innerHTML = `
     <tr>
       <td colspan="4" class="empty-table">${escapeHtml(text)}</td>
@@ -682,7 +691,7 @@ function renderRecipeResult(data, mass) {
   if (!result.recipe) {
     setMessage(els.recipeMessage, result.warning || "No recipe generated", "error");
     renderRecipeEmptyState("No powder recipe could be generated.");
-    els.recipeQuickSummary.textContent = result.warning || "No recipe generated.";
+    els.recipeQuickSummary.textContent = result.warning || "No recipe.";
     els.recipeQuickSummary.className = "recipe-summary-card empty";
     return;
   }
@@ -1006,17 +1015,17 @@ function renderDensityResult(data, theoretical) {
     relative > 100 ? "warning" : "good",
   );
   els.densityMetrics.innerHTML = `
-    <div class="metric-card"><strong>${formatNumber(data.measured_density_g_cm3, 5)}</strong><small>measured density g/cm3</small></div>
-    <div class="metric-card"><strong>${formatNumber(theoretical, 5)}</strong><small>theoretical density g/cm3</small></div>
+    <div class="metric-card"><strong>${formatNumber(data.measured_density_g_cm3, 5)}</strong><small>measured density g/cm³</small></div>
+    <div class="metric-card"><strong>${formatNumber(theoretical, 5)}</strong><small>theoretical density g/cm³</small></div>
     <div class="metric-card"><strong>${formatNumber(relative, 2)}%</strong><small>relative density</small></div>
   `;
   els.densitySummary.textContent = [
     `Target: ${els.densityTargetFormula.value.trim()}`,
     `Target for: ${normalizeOwner(els.densityTargetFor.value) || "quick calculation"}`,
-    `Measured density: ${formatNumber(data.measured_density_g_cm3, 5)} g/cm3`,
-    `Theoretical density: ${formatNumber(theoretical, 5)} g/cm3`,
+    `Measured density: ${formatNumber(data.measured_density_g_cm3, 5)} g/cm³`,
+    `Theoretical density: ${formatNumber(theoretical, 5)} g/cm³`,
     `Relative density: ${formatNumber(relative, 2)}%`,
-    `Final volume: ${formatNumber(data.final_volume_cm3, 6)} cm3`,
+    `Final volume: ${formatNumber(data.final_volume_cm3, 6)} cm³`,
     `Density source: ${densitySourceFromSelect(els.relativeDensityChoice)}`,
     els.densityNotes.value.trim() ? `Notes: ${els.densityNotes.value.trim()}` : "",
   ].filter(Boolean).join("\n");
@@ -1294,37 +1303,37 @@ function latticeRules(system) {
   const rules = {
     cubic: {
       show: ["a"],
-      hint: "Cubic uses b = c = a and alpha = beta = gamma = 90 degrees.",
+      hint: "b = c = a; α = β = γ = 90°",
       resolve: ({ a }) => ({ a, b: a, c: a, alpha: 90, beta: 90, gamma: 90 }),
     },
     tetragonal: {
       show: ["a", "c"],
-      hint: "Tetragonal uses b = a and alpha = beta = gamma = 90 degrees.",
+      hint: "b = a; α = β = γ = 90°",
       resolve: ({ a, c }) => ({ a, b: a, c, alpha: 90, beta: 90, gamma: 90 }),
     },
     orthorhombic: {
       show: ["a", "b", "c"],
-      hint: "Orthorhombic uses alpha = beta = gamma = 90 degrees.",
+      hint: "α = β = γ = 90°",
       resolve: ({ a, b, c }) => ({ a, b, c, alpha: 90, beta: 90, gamma: 90 }),
     },
     hexagonal: {
       show: ["a", "c"],
-      hint: "Hexagonal uses b = a, alpha = beta = 90 degrees, and gamma = 120 degrees.",
+      hint: "b = a; α = β = 90°; γ = 120°",
       resolve: ({ a, c }) => ({ a, b: a, c, alpha: 90, beta: 90, gamma: 120 }),
     },
     rhombohedral: {
       show: ["a", "alpha"],
-      hint: "Rhombohedral uses b = c = a and beta = gamma = alpha.",
+      hint: "b = c = a; β = γ = α",
       resolve: ({ a, alpha }) => ({ a, b: a, c: a, alpha, beta: alpha, gamma: alpha }),
     },
     monoclinic: {
       show: ["a", "b", "c", "beta"],
-      hint: "Monoclinic uses alpha = gamma = 90 degrees.",
+      hint: "α = γ = 90°",
       resolve: ({ a, b, c, beta }) => ({ a, b, c, alpha: 90, beta, gamma: 90 }),
     },
     triclinic: {
       show: ["a", "b", "c", "alpha", "beta", "gamma"],
-      hint: "Triclinic needs all three lengths and all three angles.",
+      hint: "a, b, c; α, β, γ",
       resolve: ({ a, b, c, alpha, beta, gamma }) => ({ a, b, c, alpha, beta, gamma }),
     },
   };
@@ -1346,7 +1355,10 @@ function syncLatticeFields() {
   Object.entries(fieldMap).forEach(([name, wrap]) => {
     wrap.hidden = !shown.has(name);
   });
-  els.latticeSystemHint.textContent = rules.hint;
+  els.latticeSystemHint.innerHTML = `
+    <span>Symmetry constraint</span>
+    <strong>${escapeHtml(rules.hint)}</strong>
+  `;
 }
 
 function latticeInputValues() {
@@ -1394,14 +1406,14 @@ async function previewMaterialDensity() {
     return;
   }
   if (mode === "Manual theoretical density") {
-    els.materialDensityPreview.textContent = `Manual density: ${formatNumber(els.manualMaterialDensity.value, 5)} g/cm3`;
+    els.materialDensityPreview.textContent = `ρ = ${formatNumber(els.manualMaterialDensity.value, 5)} g/cm³`;
     return;
   }
   try {
     const payload = densityCellPayload(mode);
     if (mode === "From lattice parameters") payload.unit_cell_volume_A3 = null;
     const data = await api.send("/api/density-from-cell", "POST", payload);
-    els.materialDensityPreview.textContent = `Unit cell volume: ${formatNumber(data.unit_cell_volume_A3, 5)} A3; theoretical density: ${formatNumber(data.theoretical_density_g_cm3, 5)} g/cm3.`;
+    els.materialDensityPreview.textContent = `V = ${formatNumber(data.unit_cell_volume_A3, 5)} Å³; ρ = ${formatNumber(data.theoretical_density_g_cm3, 5)} g/cm³`;
   } catch (error) {
     els.materialDensityPreview.textContent = error.message;
   }
@@ -1476,7 +1488,7 @@ function renderMaterialDensityTable() {
       <td>${formatNumber(record.theoretical_density_g_cm3, 5)}</td>
       <td>${formatNumber(record.unit_cell_volume_A3, 5)}</td>
       <td>${formatNumber(record.z, 4)}</td>
-      <td class="wrap">${escapeHtml(record.verification_status || "")}</td>
+      <td class="wrap">${escapeHtml(displayDensityStatus(record))}</td>
       <td class="wrap">${sourceLink}</td>
       <td class="row-actions">
         <button class="icon" title="Mark as preferred for this formula" data-prefer-density="${escapeHtml(record.record_key || record.record_id)}">&#9733;</button>
@@ -1595,7 +1607,7 @@ function historyItemHtml(entry) {
     : `Density ${formatNumber(entry.relative_density_percent, 2)}%`;
   const meta = type === "Before sintering"
     ? `${niceTime(entry.time)} | powders: ${Object.entries(entry.recipe || {}).map(([p, g]) => `${p} ${formatNumber(g, 6)} g`).join(", ")}`
-    : `${niceTime(entry.time)} | measured ${formatNumber(entry.measured_density_g_cm3, 5)} g/cm3, theoretical ${formatNumber(entry.theoretical_density_g_cm3, 5)} g/cm3`;
+    : `${niceTime(entry.time)} | measured ${formatNumber(entry.measured_density_g_cm3, 5)} g/cm³, theoretical ${formatNumber(entry.theoretical_density_g_cm3, 5)} g/cm³`;
   return `
     <div class="history-item">
       <div>
@@ -1687,6 +1699,7 @@ function setupNavigation() {
       const [title, subtitle] = pageMeta[button.dataset.page];
       els.pageTitle.textContent = title;
       els.pageSubtitle.textContent = subtitle;
+      els.pageSubtitle.hidden = !subtitle;
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });

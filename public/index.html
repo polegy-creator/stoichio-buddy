@@ -43,7 +43,7 @@
     <header class="topbar">
       <div>
         <h1 id="pageTitle">Powder Mass Calculation</h1>
-        <p id="pageSubtitle">Same locked lab math, now as the Vercel web app.</p>
+        <p id="pageSubtitle" hidden></p>
       </div>
       <div class="top-metrics">
         <div><span id="powderCount">0</span><small>powders</small></div>
@@ -60,7 +60,6 @@
           <div class="section-head">
             <div>
               <h2>Powder mass setup</h2>
-              <p>Only selected powders are used. Oxygen is handled like the lab calculation.</p>
             </div>
           </div>
 
@@ -116,7 +115,7 @@
                 <select id="heightDensityChoice"></select>
               </label>
               <label id="manualHeightDensityWrap">
-                Manual theoretical density (g/cm3)
+                Manual theoretical density (g/cm³)
                 <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
               </label>
               <div id="heightMassPreview" class="hint"></div>
@@ -141,11 +140,11 @@
           <div class="section-head">
             <div>
               <h2>Recipe result</h2>
-              <p id="recipeDetails">Enter a target and select powders.</p>
+              <p id="recipeDetails"></p>
             </div>
           </div>
-          <div id="recipeMessage" class="message">Waiting for calculation.</div>
-          <div id="recipeQuickSummary" class="recipe-summary-card empty">Calculate a recipe to see the lab-ready summary.</div>
+          <div id="recipeMessage" class="message">Ready.</div>
+          <div id="recipeQuickSummary" class="recipe-summary-card empty">No recipe yet.</div>
           <div class="metric-row" id="recipeMetrics"></div>
           <div class="table-wrap">
             <table id="recipeTable">
@@ -180,7 +179,6 @@
       <div class="two-col">
         <form id="densityForm" class="panel">
           <h2>Target density after sintering</h2>
-          <p>Use the measured final dimensions after sintering, not the 25.05 mm die.</p>
 
           <label class="advanced-only">
             Saved recipe target optional
@@ -217,7 +215,7 @@
             <select id="relativeDensityChoice"></select>
           </label>
           <label id="manualRelativeDensityWrap">
-            Manual theoretical density (g/cm3)
+            Manual theoretical density (g/cm³)
             <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
           </label>
           <button type="submit" class="primary">Calculate Target Density</button>
@@ -244,7 +242,6 @@
           <label>Powder formula <input id="newPowderFormula" placeholder="Fe2O3"></label>
           <label>Initial inventory grams <input id="newPowderGrams" type="number" min="0" step="0.0001" value="0"></label>
           <button type="submit" class="primary">Add Powder & Stock</button>
-          <p class="hint">Molar masses are recalculated from atomic_masses.json.</p>
         </form>
 
         <form id="inventoryForm" class="panel">
@@ -256,7 +253,6 @@
             <button id="inventoryAdd" type="button" class="primary">Add Grams</button>
             <button id="inventoryRemove" type="button" class="secondary">Remove Grams</button>
           </div>
-          <p class="hint">Removing grams is clamped at 0, so inventory cannot become negative.</p>
         </form>
 
         <form id="deletePowderForm" class="panel">
@@ -264,7 +260,6 @@
           <label>Powder <select id="deletePowder"></select></label>
           <label class="check"><input id="removeDeletedStock" type="checkbox" checked> Also remove inventory entry</label>
           <button type="submit" class="danger">Delete Powder</button>
-          <p class="hint">History entries are kept unchanged.</p>
         </form>
       </div>
 
@@ -325,22 +320,22 @@
               </select>
             </label>
             <div class="row lattice-row">
-              <label id="latticeAWrap">a (A) <input id="latticeA" type="number" min="0" step="0.000001"></label>
-              <label id="latticeBWrap">b (A) <input id="latticeB" type="number" min="0" step="0.000001"></label>
-              <label id="latticeCWrap">c (A) <input id="latticeC" type="number" min="0" step="0.000001"></label>
+              <label id="latticeAWrap">a (Å) <input id="latticeA" type="number" min="0" step="0.000001"></label>
+              <label id="latticeBWrap">b (Å) <input id="latticeB" type="number" min="0" step="0.000001"></label>
+              <label id="latticeCWrap">c (Å) <input id="latticeC" type="number" min="0" step="0.000001"></label>
             </div>
             <div class="row lattice-row">
-              <label id="latticeAlphaWrap">alpha (deg) <input id="latticeAlpha" type="number" min="0" max="180" step="0.0001"></label>
-              <label id="latticeBetaWrap">beta (deg) <input id="latticeBeta" type="number" min="0" max="180" step="0.0001"></label>
-              <label id="latticeGammaWrap">gamma (deg) <input id="latticeGamma" type="number" min="0" max="180" step="0.0001"></label>
+              <label id="latticeAlphaWrap">α (°) <input id="latticeAlpha" type="number" min="0" max="180" step="0.0001"></label>
+              <label id="latticeBetaWrap">β (°) <input id="latticeBeta" type="number" min="0" max="180" step="0.0001"></label>
+              <label id="latticeGammaWrap">γ (°) <input id="latticeGamma" type="number" min="0" max="180" step="0.0001"></label>
             </div>
-            <div id="latticeSystemHint" class="hint"></div>
+            <div id="latticeSystemHint" class="constraint-card"></div>
           </div>
           <div id="unitCellFields" hidden>
-            <label>Unit cell volume (A3) <input id="unitCellVolume" type="number" min="0" step="0.000001"></label>
+            <label>Unit cell volume (Å³) <input id="unitCellVolume" type="number" min="0" step="0.000001"></label>
           </div>
           <label id="zField">Z, formula units per unit cell <input id="zValue" type="number" min="0" step="0.000001" value="1"></label>
-          <label id="manualDensityFields" hidden>Manual theoretical density (g/cm3) <input id="manualMaterialDensity" type="number" min="0" step="0.000001"></label>
+          <label id="manualDensityFields" hidden>Manual theoretical density (g/cm³) <input id="manualMaterialDensity" type="number" min="0" step="0.000001"></label>
           <div id="materialDensityPreview" class="hint"></div>
           <label>Source URL optional <input id="densitySourceUrl" placeholder="https://doi.org/... or COD link"></label>
           <label>Notes <textarea id="densityRecordNotes" rows="4"></textarea></label>
@@ -353,7 +348,6 @@
           <div class="section-head">
             <div>
               <h2>Density sources</h2>
-              <p>Codex seeded rows are color coded so the lab can verify before use.</p>
             </div>
           </div>
           <label>Search <input id="densitySearch" placeholder="formula, phase, DOI, source"></label>
@@ -369,7 +363,7 @@
             <table id="materialDensityTable">
               <thead>
                 <tr>
-                  <th>Formula</th><th>Phase</th><th>Density</th><th>V (A3)</th><th>Z</th>
+                  <th>Formula</th><th>Phase</th><th>Density</th><th>V (Å³)</th><th>Z</th>
                   <th>Status</th><th>Source</th><th></th>
                 </tr>
               </thead>
@@ -385,7 +379,6 @@
         <div class="section-head">
           <div>
             <h2>Data health</h2>
-            <p>Fast lab checks for low stock, missing stock rows, density review, and incomplete target logs.</p>
           </div>
         </div>
         <div id="dataHealthGrid" class="health-grid"></div>
@@ -397,7 +390,6 @@
         <div class="section-head">
           <div>
             <h2>History</h2>
-            <p>Compact lab log grouped by person, target number, formula, recipe and density records.</p>
           </div>
         </div>
         <div class="filters">
