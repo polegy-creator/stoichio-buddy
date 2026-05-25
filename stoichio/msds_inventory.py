@@ -173,7 +173,11 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
 
 
 def load_msds_inventory(include_file_data: bool = False) -> list[dict[str, Any]]:
-    store = _load_store()
+    try:
+        store = _load_store()
+    except Exception as exc:
+        storage.record_shared_storage_error(exc)
+        store = _empty_store()
     changed = False
     normalized = []
     seen_ids = set()
@@ -195,7 +199,10 @@ def load_msds_inventory(include_file_data: bool = False) -> list[dict[str, Any]]
         changed = True
 
     if changed:
-        _save_store(store)
+        try:
+            _save_store(store)
+        except Exception as exc:
+            storage.record_shared_storage_error(exc)
 
     return [item_payload(item, include_file_data=include_file_data) for item in store["items"]]
 
