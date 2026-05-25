@@ -23,6 +23,7 @@ INVENTORY_LOG_FILE = "inventory_log.json"
 HISTORY_FILE = "history.json"
 MATERIAL_DENSITIES_FILE = "material_densities.json"
 POWDER_SETS_FILE = "powder_sets.json"
+MSDS_INVENTORY_FILE = "msds_inventory.json"
 BACKUP_DIR_NAME = "backups"
 BACKUP_LIMIT_PER_FILE = 30
 
@@ -33,6 +34,7 @@ SHEET_TABS = {
     HISTORY_FILE: "history",
     MATERIAL_DENSITIES_FILE: "material_densities",
     POWDER_SETS_FILE: "powder_sets",
+    MSDS_INVENTORY_FILE: "msds_inventory",
 }
 
 _storage_backend = None

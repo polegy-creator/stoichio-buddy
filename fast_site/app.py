@@ -54,6 +54,16 @@ from stoichio.inventory import (
     load_inventory_log,
     set_inventory_quantity,
 )
+from stoichio.msds_inventory import (
+    attach_msds_pdf,
+    build_msds_binder_pdf,
+    closet_options,
+    delete_msds_inventory_item,
+    find_known_identity,
+    get_msds_pdf,
+    load_msds_inventory,
+    save_msds_inventory_item,
+)
 from stoichio.powder_sets import (
     delete_powder_set,
     load_powder_sets,
@@ -228,6 +238,16 @@ class DensityStatusRequest(BaseModel):
     verified_date: str = ""
 
 
+class MsdsInventoryRequest(BaseModel):
+    casNumber: str = ""
+    nameOrFormula: str = ""
+    purity: str = ""
+    closetNumber: int = Field(1, ge=1, le=4)
+    msdsExternalUrl: str = ""
+    company: str = ""
+    identityStatus: str = "needs verification"
+
+
 def powder_payload(powder: str, record: dict, inventory: dict | None = None) -> dict:
     inventory = inventory or {}
     return {
@@ -372,6 +392,8 @@ def bootstrap():
         },
         "inventory": inventory,
         "inventory_log": load_inventory_log(),
+        "msds_inventory": load_msds_inventory(),
+        "closets": closet_options(),
         "densities": {
             key: density_payload(key, record)
             for key, record in records.items()
@@ -447,6 +469,75 @@ def deduct_inventory(payload: InventoryDeductRequest, x_stoichio_pin: str | None
         recipe_id=payload.recipe_id,
     )
     return {"inventory": inventory, "inventory_log": load_inventory_log()}
+
+
+@app.get("/api/msds-inventory")
+def msds_inventory():
+    return {"items": load_msds_inventory(), "closets": closet_options()}
+
+
+@app.get("/api/msds-inventory/lookup")
+def lookup_msds_identity(cas_number: str = Query(default=""), name_or_formula: str = Query(default="")):
+    match = find_known_identity(cas_number=cas_number, name_or_formula=name_or_formula)
+    return {"match": match}
+
+
+@app.post("/api/msds-inventory")
+def create_msds_inventory_item(payload: MsdsInventoryRequest, x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    item, items = save_msds_inventory_item(payload.model_dump())
+    return {"item": item, "items": items, "closets": closet_options()}
+
+
+@app.patch("/api/msds-inventory/{item_id}")
+def update_msds_inventory_item(item_id: str, payload: MsdsInventoryRequest, x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    item, items = save_msds_inventory_item(payload.model_dump(), item_id=item_id)
+    return {"item": item, "items": items, "closets": closet_options()}
+
+
+@app.delete("/api/msds-inventory/{item_id}")
+def remove_msds_inventory_item(item_id: str, x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    removed, items = delete_msds_inventory_item(item_id)
+    return {"removed": removed, "items": items, "closets": closet_options()}
+
+
+@app.post("/api/msds-inventory/{item_id}/msds-file")
+async def upload_msds_file(item_id: str, request: Request, x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    form = await request.form()
+    upload = form.get("file")
+    if upload is None or not hasattr(upload, "read"):
+        raise HTTPException(status_code=400, detail="Choose an MSDS/SDS PDF to upload.")
+    pdf_bytes = await upload.read()
+    item, items = attach_msds_pdf(
+        item_id,
+        getattr(upload, "filename", "") or "msds.pdf",
+        getattr(upload, "content_type", "") or "application/pdf",
+        pdf_bytes,
+    )
+    return {"item": item, "items": items, "closets": closet_options()}
+
+
+@app.get("/api/msds-inventory/{item_id}/msds-file")
+def download_msds_file(item_id: str):
+    filename, content_type, pdf_bytes = get_msds_pdf(item_id)
+    safe_name = filename.replace('"', "")
+    return Response(
+        content=pdf_bytes,
+        media_type=content_type,
+        headers={"Content-Disposition": f'inline; filename="{safe_name}"'},
+    )
+
+
+@app.get("/api/msds-binder")
+def download_msds_binder():
+    return Response(
+        content=build_msds_binder_pdf(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="stoichio_msds_binder.pdf"'},
+    )
 
 
 @app.get("/api/densities")
@@ -818,6 +909,7 @@ def backup():
             load_history(),
             inventory_log=load_inventory_log(),
             powder_sets=load_powder_sets(),
+            msds_inventory=load_msds_inventory(include_file_data=True),
         ),
         media_type="application/json",
     )

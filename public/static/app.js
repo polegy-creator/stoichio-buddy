@@ -20,6 +20,14 @@ const api = {
     if (!response.ok) throw new Error(await errorMessage(response));
     return response.json();
   },
+  async upload(path, formData) {
+    const headers = {};
+    const pin = localStorage.getItem("stoichioAdminPin") || "";
+    if (pin) headers["X-Stoichio-Pin"] = pin;
+    const response = await fetch(path, { method: "POST", headers, body: formData });
+    if (!response.ok) throw new Error(await errorMessage(response));
+    return response.json();
+  },
 };
 
 const state = {
@@ -27,6 +35,8 @@ const state = {
   inventory: {},
   inventoryLog: [],
   densities: {},
+  msdsInventory: [],
+  closets: { 1: "Powders", 2: "Acids", 3: "Flammables", 4: "Fridge" },
   history: [],
   linkedRecipes: [],
   powderSets: {},
@@ -49,6 +59,7 @@ const pageMeta = {
   "powder-mass": ["Powder Mass Calculation", ""],
   "target-density": ["Target Density %", ""],
   "powders-inventory": ["Powder & Inventory", ""],
+  "inventory-msds": ["Inventory & MSDS", ""],
   "material-density": ["Theoretical Density", ""],
   "data-health": ["Data Health", ""],
   history: ["History", ""],
@@ -134,6 +145,24 @@ const els = {
   inventoryTableBody: $("#inventoryTable tbody"),
   ledgerTableBody: $("#ledgerTable tbody"),
 
+  msdsForm: $("#msdsForm"),
+  newMsdsMaterial: $("#newMsdsMaterial"),
+  msdsItemId: $("#msdsItemId"),
+  msdsFormMode: $("#msdsFormMode"),
+  msdsCasNumber: $("#msdsCasNumber"),
+  msdsNameFormula: $("#msdsNameFormula"),
+  msdsLookupStatus: $("#msdsLookupStatus"),
+  msdsPurity: $("#msdsPurity"),
+  msdsClosetNumber: $("#msdsClosetNumber"),
+  msdsExternalUrl: $("#msdsExternalUrl"),
+  msdsPdfFile: $("#msdsPdfFile"),
+  saveMsdsMaterial: $("#saveMsdsMaterial"),
+  uploadMsdsFile: $("#uploadMsdsFile"),
+  msdsBinderDownload: $("#msdsBinderDownload"),
+  msdsSearch: $("#msdsSearch"),
+  msdsClosetFilter: $("#msdsClosetFilter"),
+  msdsTableBody: $("#msdsTable tbody"),
+
   materialDensityForm: $("#materialDensityForm"),
   materialFormula: $("#materialFormula"),
   materialPhase: $("#materialPhase"),
@@ -209,6 +238,31 @@ function formatNumber(value, digits = 4) {
   const number = Number(value);
   if (!Number.isFinite(number)) return "";
   return number.toFixed(digits).replace(/\.?0+$/, "");
+}
+
+function closetLabel(closetNumber) {
+  const number = Number(closetNumber);
+  const name = state.closets[number] || "";
+  return name ? `${number} \u2014 ${name}` : "";
+}
+
+function closetOptionsHtml(includeAll = false) {
+  const options = includeAll ? [`<option value="">All closets</option>`] : [];
+  for (const number of [1, 2, 3, 4]) {
+    options.push(`<option value="${number}">${escapeHtml(closetLabel(number))}</option>`);
+  }
+  return options.join("");
+}
+
+function msdsStatus(item) {
+  if (item.msdsFileName || item.msdsStatus === "uploaded") return "uploaded";
+  if (item.msdsExternalUrl || item.msdsStatus === "link only") return "link only";
+  return "missing";
+}
+
+function statusPill(status) {
+  const kind = status === "uploaded" ? "good" : status === "link only" ? "warning" : "missing";
+  return `<span class="status-pill ${kind}">${escapeHtml(status)}</span>`;
 }
 
 function setMessage(element, text, kind = "") {
@@ -458,6 +512,8 @@ function applyData(data) {
   state.powders = data.powders || state.powders;
   state.inventory = data.inventory || state.inventory;
   state.inventoryLog = data.inventory_log || state.inventoryLog;
+  state.msdsInventory = data.msds_inventory || data.items || state.msdsInventory;
+  state.closets = data.closets || state.closets;
   state.densities = data.densities || state.densities;
   state.history = data.history || state.history;
   state.linkedRecipes = data.linked_recipes || state.linkedRecipes;
@@ -472,6 +528,7 @@ function renderEverything() {
   renderInventorySelectors();
   renderPowderDatabase();
   renderInventoryTables();
+  renderMsdsInventory();
   renderDataHealth();
   renderDensityChoices();
   renderLinkedRecipes();
@@ -1213,6 +1270,221 @@ function renderInventoryTables() {
   }
 }
 
+function renderMsdsInventory() {
+  if (!els.msdsTableBody) return;
+  renderMsdsClosetControls();
+  const rows = filteredMsdsItems();
+  els.msdsTableBody.innerHTML = "";
+  if (!rows.length) {
+    els.msdsTableBody.innerHTML = `<tr><td colspan="6" class="empty-table">No material records match this view.</td></tr>`;
+    return;
+  }
+
+  for (const item of rows) {
+    const status = msdsStatus(item);
+    const tr = document.createElement("tr");
+    tr.className = status === "missing" ? "low" : "";
+    tr.innerHTML = `
+      <td>${item.casNumber ? escapeHtml(item.casNumber) : `<span class="needs-verification">needs verification</span>`}</td>
+      <td>${item.nameOrFormula ? escapeHtml(item.nameOrFormula) : `<span class="needs-verification">needs verification</span>`}</td>
+      <td>${escapeHtml(item.purity || "")}</td>
+      <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
+      <td>${statusPill(status)}${item.msdsExternalUrl ? ` <a href="${escapeHtml(item.msdsExternalUrl)}" target="_blank" rel="noopener">link</a>` : ""}</td>
+      <td class="row-actions">
+        ${item.msdsFileUrl ? `<a class="icon-link" title="Open uploaded MSDS" href="${escapeHtml(item.msdsFileUrl)}" target="_blank" rel="noopener">&#128196;</a>` : ""}
+        <button class="icon" title="Edit material" data-edit-msds="${escapeHtml(item.id)}">&#9998;</button>
+        <button class="icon" title="Upload MSDS PDF" data-upload-msds="${escapeHtml(item.id)}">&#11014;</button>
+        <button class="icon" title="Delete material" data-delete-msds="${escapeHtml(item.id)}">&#128465;</button>
+      </td>
+    `;
+    els.msdsTableBody.appendChild(tr);
+  }
+
+  els.msdsTableBody.querySelectorAll("[data-edit-msds]").forEach((button) => {
+    button.addEventListener("click", () => editMsdsItem(button.dataset.editMsds));
+  });
+  els.msdsTableBody.querySelectorAll("[data-upload-msds]").forEach((button) => {
+    button.addEventListener("click", () => {
+      editMsdsItem(button.dataset.uploadMsds);
+      els.msdsPdfFile.focus();
+    });
+  });
+  els.msdsTableBody.querySelectorAll("[data-delete-msds]").forEach((button) => {
+    button.addEventListener("click", () => deleteMsdsItem(button.dataset.deleteMsds));
+  });
+}
+
+function renderMsdsClosetControls() {
+  if (!els.msdsClosetNumber || !els.msdsClosetFilter) return;
+  const previousFormCloset = els.msdsClosetNumber.value || "1";
+  const previousFilter = els.msdsClosetFilter.value;
+  els.msdsClosetNumber.innerHTML = closetOptionsHtml(false);
+  els.msdsClosetFilter.innerHTML = closetOptionsHtml(true);
+  els.msdsClosetNumber.value = ["1", "2", "3", "4"].includes(previousFormCloset) ? previousFormCloset : "1";
+  els.msdsClosetFilter.value = ["", "1", "2", "3", "4"].includes(previousFilter) ? previousFilter : "";
+}
+
+function filteredMsdsItems() {
+  const search = els.msdsSearch.value.trim().toLowerCase();
+  const closet = els.msdsClosetFilter.value;
+  return [...state.msdsInventory]
+    .filter((item) => {
+      if (closet && String(item.closetNumber) !== closet) return false;
+      if (!search) return true;
+      return [
+        item.casNumber,
+        item.nameOrFormula,
+        item.purity,
+        closetLabel(item.closetNumber),
+        item.msdsStatus,
+        item.msdsExternalUrl,
+        item.company,
+      ].join(" ").toLowerCase().includes(search);
+    })
+    .sort((a, b) => (
+      Number(a.closetNumber) - Number(b.closetNumber) ||
+      String(a.nameOrFormula || "").localeCompare(String(b.nameOrFormula || "")) ||
+      String(a.casNumber || "").localeCompare(String(b.casNumber || ""))
+    ));
+}
+
+function resetMsdsForm() {
+  els.msdsItemId.value = "";
+  els.msdsCasNumber.value = "";
+  els.msdsNameFormula.value = "";
+  els.msdsPurity.value = "";
+  els.msdsClosetNumber.value = "1";
+  els.msdsExternalUrl.value = "";
+  els.msdsPdfFile.value = "";
+  els.msdsLookupStatus.textContent = "";
+  setMessage(els.msdsFormMode, "New material.");
+  els.saveMsdsMaterial.textContent = "Save Material";
+}
+
+function editMsdsItem(itemId) {
+  const item = state.msdsInventory.find((record) => record.id === itemId);
+  if (!item) return;
+  els.msdsItemId.value = item.id;
+  els.msdsCasNumber.value = item.casNumber || "";
+  els.msdsNameFormula.value = item.nameOrFormula || "";
+  els.msdsPurity.value = item.purity || "";
+  els.msdsClosetNumber.value = String(item.closetNumber || 1);
+  els.msdsExternalUrl.value = item.msdsExternalUrl || "";
+  els.msdsPdfFile.value = "";
+  els.msdsLookupStatus.textContent = "";
+  setMessage(els.msdsFormMode, `Editing ${item.nameOrFormula || item.casNumber || "material"}.`, "good");
+  els.saveMsdsMaterial.textContent = "Save Changes";
+  els.msdsCasNumber.focus();
+}
+
+function msdsPayload() {
+  return {
+    casNumber: els.msdsCasNumber.value.trim(),
+    nameOrFormula: els.msdsNameFormula.value.trim(),
+    purity: els.msdsPurity.value.trim(),
+    closetNumber: Number(els.msdsClosetNumber.value || 1),
+    msdsExternalUrl: els.msdsExternalUrl.value.trim(),
+    company: "",
+    identityStatus: "needs verification",
+  };
+}
+
+async function saveMsdsMaterial(event, { keepForm = true } = {}) {
+  if (event) event.preventDefault();
+  const itemId = els.msdsItemId.value.trim();
+  const done = setBusy(els.saveMsdsMaterial, itemId ? "Saving..." : "Adding...");
+  try {
+    const data = await api.send(
+      itemId ? `/api/msds-inventory/${encodeURIComponent(itemId)}` : "/api/msds-inventory",
+      itemId ? "PATCH" : "POST",
+      msdsPayload(),
+    );
+    state.msdsInventory = data.items || state.msdsInventory;
+    let savedItem = data.item;
+    if (els.msdsPdfFile.files.length) {
+      savedItem = await uploadMsdsPdf(savedItem.id);
+    }
+    renderEverything();
+    if (keepForm) editMsdsItem(savedItem.id);
+    else resetMsdsForm();
+    flash("Material inventory saved.");
+    return savedItem;
+  } catch (error) {
+    flash(error.message, "error");
+    return null;
+  } finally {
+    done();
+  }
+}
+
+async function uploadMsdsPdf(itemId = els.msdsItemId.value.trim()) {
+  if (!els.msdsPdfFile.files.length) {
+    flash("Choose an MSDS/SDS PDF first.", "warning");
+    return null;
+  }
+  if (!itemId) {
+    const saved = await saveMsdsMaterial(null);
+    return saved;
+  }
+  const formData = new FormData();
+  formData.append("file", els.msdsPdfFile.files[0]);
+  const data = await api.upload(`/api/msds-inventory/${encodeURIComponent(itemId)}/msds-file`, formData);
+  state.msdsInventory = data.items || state.msdsInventory;
+  els.msdsPdfFile.value = "";
+  renderEverything();
+  flash("MSDS PDF uploaded.");
+  return data.item;
+}
+
+async function deleteMsdsItem(itemId) {
+  const item = state.msdsInventory.find((record) => record.id === itemId);
+  const label = item?.nameOrFormula || item?.casNumber || "material";
+  const accepted = await confirmDanger(
+    `Delete ${label}?`,
+    "This removes the material from the Inventory & MSDS tab. Powder recipes and powder inventory stay unchanged.",
+    "Delete Material",
+  );
+  if (!accepted) return;
+  try {
+    const data = await api.send(`/api/msds-inventory/${encodeURIComponent(itemId)}`, "DELETE");
+    state.msdsInventory = data.items || state.msdsInventory;
+    if (els.msdsItemId.value === itemId) resetMsdsForm();
+    renderEverything();
+    flash("Material deleted.");
+  } catch (error) {
+    flash(error.message, "error");
+  }
+}
+
+async function lookupMsdsIdentity(source) {
+  const cas = els.msdsCasNumber.value.trim();
+  const name = els.msdsNameFormula.value.trim();
+  if (!cas && !name) {
+    els.msdsLookupStatus.textContent = "";
+    return;
+  }
+  try {
+    const params = new URLSearchParams({ cas_number: cas, name_or_formula: name });
+    const data = await api.get(`/api/msds-inventory/lookup?${params.toString()}`);
+    const match = data.match;
+    if (!match) {
+      els.msdsLookupStatus.textContent = "No verified match in the lab database yet.";
+      return;
+    }
+    if (source === "cas" && !els.msdsNameFormula.value.trim()) {
+      els.msdsNameFormula.value = match.nameOrFormula || "";
+    }
+    if (source === "name" && !els.msdsCasNumber.value.trim()) {
+      els.msdsCasNumber.value = match.casNumber || "";
+    }
+    if (!els.msdsPurity.value.trim()) els.msdsPurity.value = match.purity || "";
+    if (!els.msdsExternalUrl.value.trim()) els.msdsExternalUrl.value = match.msdsExternalUrl || "";
+    els.msdsLookupStatus.textContent = `Matched existing record: ${match.nameOrFormula || match.casNumber}.`;
+  } catch (error) {
+    els.msdsLookupStatus.textContent = error.message;
+  }
+}
+
 function renderDataHealth() {
   if (!els.dataHealthGrid) return;
   const powderNames = Object.keys(state.powders);
@@ -1236,6 +1508,8 @@ function renderDataHealth() {
     group.entries.some((entry) => entry.entry_type === "target_density") &&
     !group.entries.some((entry) => (entry.entry_type || "synthesis") === "synthesis")
   ));
+  const missingMsds = state.msdsInventory.filter((item) => msdsStatus(item) === "missing");
+  const missingIdentity = state.msdsInventory.filter((item) => !item.casNumber || !item.nameOrFormula);
 
   const card = (title, value, note, kind = "") => `
     <div class="health-card ${kind}">
@@ -1249,6 +1523,8 @@ function renderDataHealth() {
     card("Powders with no stock row", missingStock.length, missingStock.slice(0, 6).join(", ") || "Every powder has an inventory row.", missingStock.length ? "warning" : "good"),
     card("Unknown inventory rows", unknownStock.length, unknownStock.slice(0, 6).join(", ") || "Inventory matches the powder database.", unknownStock.length ? "warning" : "good"),
     card("Density records needing review", densityNeedsReview.length, densityNeedsReview.slice(0, 5).map((r) => r.formula).join(", ") || "All density rows are reviewed or intentionally blocked.", densityNeedsReview.length ? "warning" : "good"),
+    card("Materials missing MSDS", missingMsds.length, missingMsds.slice(0, 5).map((item) => item.nameOrFormula || item.casNumber || "unnamed").join(", ") || "Every material has an uploaded PDF or link.", missingMsds.length ? "warning" : "good"),
+    card("Materials needing identity check", missingIdentity.length, missingIdentity.slice(0, 5).map((item) => item.nameOrFormula || item.casNumber || "unnamed").join(", ") || "CAS and name/formula are filled where known.", missingIdentity.length ? "warning" : "good"),
     card("Saved targets needing density", needsDensity.length, needsDensity.slice(0, 5).map((g) => g.targetId).join(", ") || "Saved recipes are linked to density results.", needsDensity.length ? "warning" : "good"),
     card("Density rows needing recipe link", needsRecipe.length, needsRecipe.slice(0, 5).map((g) => g.targetId).join(", ") || "Density records have matching recipes.", needsRecipe.length ? "warning" : "good"),
   ].join("");
@@ -1971,6 +2247,23 @@ function setupEvents() {
   els.inventoryRemove.addEventListener("click", () => adjustInventory("remove", els.inventoryRemove));
   els.deletePowderForm.addEventListener("submit", removePowder);
 
+  els.msdsForm.addEventListener("submit", (event) => saveMsdsMaterial(event));
+  els.newMsdsMaterial.addEventListener("click", resetMsdsForm);
+  els.uploadMsdsFile.addEventListener("click", async () => {
+    const done = setBusy(els.uploadMsdsFile, "Uploading...");
+    try {
+      await uploadMsdsPdf();
+    } catch (error) {
+      flash(error.message, "error");
+    } finally {
+      done();
+    }
+  });
+  els.msdsSearch.addEventListener("input", renderMsdsInventory);
+  els.msdsClosetFilter.addEventListener("change", renderMsdsInventory);
+  els.msdsCasNumber.addEventListener("input", debounce(() => lookupMsdsIdentity("cas"), 260));
+  els.msdsNameFormula.addEventListener("input", debounce(() => lookupMsdsIdentity("name"), 260));
+
   els.densityEntryMode.addEventListener("change", toggleDensityEntryMode);
   els.crystalSystem.addEventListener("change", () => {
     syncLatticeFields();
@@ -2020,6 +2313,8 @@ setupQuickMode();
 setupEvents();
 toggleAmountMode();
 toggleDensityEntryMode();
+renderMsdsClosetControls();
+resetMsdsForm();
 renderRecipeEmptyState();
 loadAll().catch((error) => {
   els.serviceStatus.textContent = error.message;

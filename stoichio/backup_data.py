@@ -3,6 +3,7 @@
 from stoichio.density_records import normalize_density_record, save_material_densities
 from stoichio.history import save_history
 from stoichio.inventory import save_inventory, save_inventory_log
+from stoichio.msds_inventory import normalize_item, save_msds_inventory_items
 from stoichio.powder_sets import normalize_powder_set_record, save_powder_sets
 from stoichio.powders import normalize_powder, normalize_powder_record, save_powders
 
@@ -84,6 +85,19 @@ def validate_backup_data(backup):
             if not isinstance(entry, dict):
                 errors.append(f"Inventory log entry {index} must be an object")
 
+    msds_inventory = backup.get("msds_inventory", [])
+    if not isinstance(msds_inventory, list):
+        errors.append("msds_inventory must be a list")
+    else:
+        for index, entry in enumerate(msds_inventory, start=1):
+            if not isinstance(entry, dict):
+                errors.append(f"MSDS inventory entry {index} must be an object")
+                continue
+            try:
+                normalize_item(entry)
+            except Exception as exc:
+                errors.append(f"MSDS inventory entry {index}: {exc}")
+
     return errors
 
 
@@ -110,11 +124,13 @@ def restore_backup_data(backup):
         powder_sets[normalized_set["record_id"]] = normalized_set
     history = [dict(entry) for entry in backup.get("history", [])]
     inventory_log = [dict(entry) for entry in backup.get("inventory_log", [])]
+    msds_inventory = [normalize_item(entry) for entry in backup.get("msds_inventory", [])]
 
     save_powders(powders)
     save_inventory(inventory)
     save_inventory_log(inventory_log)
     save_material_densities(material_densities)
+    save_msds_inventory_items(msds_inventory)
     save_powder_sets(powder_sets)
     save_history(history)
 
@@ -123,6 +139,7 @@ def restore_backup_data(backup):
         "inventory": len(inventory),
         "inventory_log": len(inventory_log),
         "material_densities": len(material_densities),
+        "msds_inventory": len(msds_inventory),
         "powder_sets": len(powder_sets),
         "history": len(history),
     }

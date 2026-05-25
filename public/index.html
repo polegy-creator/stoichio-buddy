@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260525-5">
+  <link rel="stylesheet" href="/static/styles.css?v=20260525-6">
 </head>
 <body>
   <aside class="sidebar">
@@ -16,6 +16,7 @@
       <button class="nav-item active" data-page="powder-mass">Powder Mass Calculation</button>
       <button class="nav-item" data-page="target-density">Target Density %</button>
       <button class="nav-item" data-page="powders-inventory">Powder & Inventory</button>
+      <button class="nav-item" data-page="inventory-msds">Inventory & MSDS</button>
       <button class="nav-item" data-page="material-density">Theoretical Density</button>
       <button class="nav-item" data-page="data-health">Data Health</button>
       <button class="nav-item" data-page="history">History</button>
@@ -399,6 +400,84 @@
       </div>
     </section>
 
+    <section id="page-inventory-msds" class="page">
+      <div class="two-col msds-layout">
+        <form id="msdsForm" class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Material inventory</h2>
+            </div>
+            <button id="newMsdsMaterial" type="button" class="secondary">Add Material</button>
+          </div>
+          <input id="msdsItemId" type="hidden">
+          <div id="msdsFormMode" class="message">New material.</div>
+
+          <label>
+            CAS number
+            <input id="msdsCasNumber" placeholder="1309-37-1">
+          </label>
+          <label>
+            Name / formula
+            <input id="msdsNameFormula" placeholder="Fe2O3">
+          </label>
+          <div id="msdsLookupStatus" class="hint"></div>
+
+          <div class="row">
+            <label>
+              Purity
+              <input id="msdsPurity" placeholder="99.9%">
+            </label>
+            <label>
+              Closet
+              <select id="msdsClosetNumber"></select>
+            </label>
+          </div>
+
+          <label>
+            MSDS/SDS link
+            <input id="msdsExternalUrl" type="url" placeholder="https://...">
+          </label>
+
+          <label>
+            Upload MSDS/SDS PDF
+            <input id="msdsPdfFile" type="file" accept="application/pdf">
+          </label>
+          <div class="inline-actions">
+            <button id="saveMsdsMaterial" type="submit" class="primary">Save Material</button>
+            <button id="uploadMsdsFile" type="button" class="secondary">Upload MSDS</button>
+          </div>
+        </form>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Inventory & MSDS</h2>
+            </div>
+            <a id="msdsBinderDownload" class="download-link" href="/api/msds-binder" download="stoichio_msds_binder.pdf">Download MSDS Binder</a>
+          </div>
+          <div class="filters msds-filters">
+            <label>Search <input id="msdsSearch" placeholder="CAS, formula, purity, closet, MSDS"></label>
+            <label>Closet <select id="msdsClosetFilter"></select></label>
+          </div>
+          <div class="table-wrap tall">
+            <table id="msdsTable">
+              <thead>
+                <tr>
+                  <th>CAS</th>
+                  <th>Name / Formula</th>
+                  <th>Purity</th>
+                  <th>Closet</th>
+                  <th>MSDS status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
     <section id="page-data-health" class="page">
       <section class="panel">
         <div class="section-head">
@@ -438,6 +517,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260525-5"></script>
+  <script src="/static/app.js?v=20260525-6"></script>
 </body>
 </html>

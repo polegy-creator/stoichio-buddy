@@ -143,10 +143,24 @@ button.icon {
   padding: 0.18rem 0.45rem;
 }
 
-button.icon:hover {
+button.icon:hover,
+.icon-link:hover {
   background: var(--panel-2);
   border-color: var(--line);
   color: var(--bad);
+}
+
+.icon-link {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--muted);
+  display: inline-flex;
+  font-weight: 760;
+  justify-content: center;
+  min-height: 1.9rem;
+  padding: 0.18rem 0.45rem;
+  text-decoration: none;
 }
 
 button.quantity-button {
@@ -471,6 +485,11 @@ p:empty {
   grid-template-columns: 1.4fr 0.8fr 0.8fr;
 }
 
+.msds-filters {
+  grid-template-columns: minmax(260px, 1fr) minmax(190px, 0.36fr);
+  margin-bottom: 0.85rem;
+}
+
 .segmented {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -544,6 +563,37 @@ p:empty {
 .pill.comfort {
   border-color: rgba(242, 164, 68, 0.34);
   color: var(--accent-hover);
+}
+
+.status-pill {
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 760;
+  margin-right: 0.32rem;
+  padding: 0.14rem 0.45rem;
+  white-space: nowrap;
+}
+
+.status-pill.good {
+  border-color: rgba(116, 215, 163, 0.42);
+  color: var(--good);
+}
+
+.status-pill.warning {
+  border-color: rgba(240, 202, 106, 0.45);
+  color: var(--warn);
+}
+
+.status-pill.missing,
+.needs-verification {
+  color: var(--bad);
+}
+
+.needs-verification {
+  font-size: 0.82rem;
+  font-weight: 720;
 }
 
 .favorite-toggle.active {
