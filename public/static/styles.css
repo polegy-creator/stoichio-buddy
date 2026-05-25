@@ -916,6 +916,14 @@ body.light .copy-box {
   border-color: rgba(240, 202, 106, 0.38);
 }
 
+.health-list {
+  margin-top: 0.9rem;
+}
+
+.health-list .message {
+  margin-bottom: 0;
+}
+
 .modal-open {
   overflow: hidden;
 }

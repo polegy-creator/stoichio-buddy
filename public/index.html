@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260525-6">
+  <link rel="stylesheet" href="/static/styles.css?v=20260525-7">
 </head>
 <body>
   <aside class="sidebar">
@@ -462,7 +462,7 @@
             <div>
               <h2>Inventory & MSDS</h2>
             </div>
-            <a id="msdsBinderDownload" class="download-link" href="/api/msds-binder" download="stoichio_msds_binder.zip">Download MSDS Binder ZIP</a>
+            <a id="msdsBinderDownload" class="download-link" href="/api/msds-binder" download="stoichio_msds_binder.pdf">Download MSDS Binder PDF</a>
           </div>
           <div class="filters msds-filters">
             <label>Search <input id="msdsSearch" placeholder="CAS, formula, purity, vendor, closet, MSDS"></label>
@@ -496,6 +496,7 @@
           </div>
         </div>
         <div id="dataHealthGrid" class="health-grid"></div>
+        <div id="msdsPdfHealthList" class="health-list"></div>
       </section>
     </section>
 
@@ -527,6 +528,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260525-7"></script>
+  <script src="/static/app.js?v=20260525-8"></script>
 </body>
 </html>

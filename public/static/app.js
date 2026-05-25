@@ -143,6 +143,7 @@ const els = {
   removeDeletedStock: $("#removeDeletedStock"),
   powderDatabaseTableBody: $("#powderDatabaseTable tbody"),
   dataHealthGrid: $("#dataHealthGrid"),
+  msdsPdfHealthList: $("#msdsPdfHealthList"),
   lowStockDashboard: $("#lowStockDashboard"),
   inventoryTableBody: $("#inventoryTable tbody"),
   ledgerTableBody: $("#ledgerTable tbody"),
@@ -258,9 +259,9 @@ function closetOptionsHtml(includeAll = false) {
 }
 
 function msdsStatus(item) {
-  if (item.msdsFileName || item.msdsStatus === "uploaded") return "uploaded";
-  if (item.msdsExternalUrl || item.msdsStatus === "link only") return "link only";
-  return "missing";
+  if (item.msdsFileName || item.msdsStatus === "uploaded") return "PDF uploaded";
+  if (item.msdsExternalUrl || item.msdsStatus === "link only") return "source only";
+  return "missing PDF";
 }
 
 function powderLabel(powder) {
@@ -272,7 +273,7 @@ function powderFormula(powder) {
 }
 
 function statusPill(status) {
-  const kind = status === "uploaded" ? "good" : status === "link only" ? "warning" : "missing";
+  const kind = status === "PDF uploaded" ? "good" : status === "source only" ? "warning" : "missing";
   return `<span class="status-pill ${kind}">${escapeHtml(status)}</span>`;
 }
 
@@ -1298,7 +1299,7 @@ function renderMsdsInventory() {
   for (const item of rows) {
     const status = msdsStatus(item);
     const tr = document.createElement("tr");
-    tr.className = status === "missing" ? "low" : "";
+    tr.className = status === "PDF uploaded" ? "" : "low";
     tr.innerHTML = `
       <td>${item.casNumber ? escapeHtml(item.casNumber) : `<span class="needs-verification">needs verification</span>`}</td>
       <td>${item.nameOrFormula ? escapeHtml(item.nameOrFormula) : `<span class="needs-verification">needs verification</span>`}</td>
@@ -1527,7 +1528,10 @@ function renderDataHealth() {
     group.entries.some((entry) => entry.entry_type === "target_density") &&
     !group.entries.some((entry) => (entry.entry_type || "synthesis") === "synthesis")
   ));
-  const missingMsds = state.msdsInventory.filter((item) => msdsStatus(item) === "missing");
+  const missingMsdsPdf = state.msdsInventory
+    .filter((item) => msdsStatus(item) !== "PDF uploaded")
+    .sort((a, b) => closetLabel(a.closetNumber).localeCompare(closetLabel(b.closetNumber))
+      || String(a.nameOrFormula || a.casNumber || "").localeCompare(String(b.nameOrFormula || b.casNumber || "")));
   const missingIdentity = state.msdsInventory.filter((item) => !item.casNumber || !item.nameOrFormula);
 
   const card = (title, value, note, kind = "") => `
@@ -1538,15 +1542,50 @@ function renderDataHealth() {
     </div>
   `;
   els.dataHealthGrid.innerHTML = [
+    card("Materials without MSDS PDF", missingMsdsPdf.length, `${Math.max(0, state.msdsInventory.length - missingMsdsPdf.length)} / ${state.msdsInventory.length} complete`, missingMsdsPdf.length ? "warning" : "good"),
     card("Low stock below 10 g", lowStock.length, lowStock.slice(0, 6).join(", ") || "All stocked powders are above threshold.", lowStock.length ? "warning" : "good"),
     card("Powders with no stock row", missingStock.length, missingStock.slice(0, 6).join(", ") || "Every powder has an inventory row.", missingStock.length ? "warning" : "good"),
     card("Unknown inventory rows", unknownStock.length, unknownStock.slice(0, 6).join(", ") || "Inventory matches the powder database.", unknownStock.length ? "warning" : "good"),
     card("Density records needing review", densityNeedsReview.length, densityNeedsReview.slice(0, 5).map((r) => r.formula).join(", ") || "All density rows are reviewed or intentionally blocked.", densityNeedsReview.length ? "warning" : "good"),
-    card("Materials missing MSDS", missingMsds.length, missingMsds.slice(0, 5).map((item) => item.nameOrFormula || item.casNumber || "unnamed").join(", ") || "Every material has an uploaded PDF or link.", missingMsds.length ? "warning" : "good"),
     card("Materials needing identity check", missingIdentity.length, missingIdentity.slice(0, 5).map((item) => item.nameOrFormula || item.casNumber || "unnamed").join(", ") || "CAS and name/formula are filled where known.", missingIdentity.length ? "warning" : "good"),
     card("Saved targets needing density", needsDensity.length, needsDensity.slice(0, 5).map((g) => g.targetId).join(", ") || "Saved recipes are linked to density results.", needsDensity.length ? "warning" : "good"),
     card("Density rows needing recipe link", needsRecipe.length, needsRecipe.slice(0, 5).map((g) => g.targetId).join(", ") || "Density records have matching recipes.", needsRecipe.length ? "warning" : "good"),
   ].join("");
+
+  if (els.msdsPdfHealthList) {
+    if (!missingMsdsPdf.length) {
+      els.msdsPdfHealthList.innerHTML = `<div class="message good">0 materials without MSDS PDF.</div>`;
+    } else {
+      els.msdsPdfHealthList.innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>CAS</th>
+                <th>Name / Formula</th>
+                <th>Purity</th>
+                <th>Vendor</th>
+                <th>Closet</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${missingMsdsPdf.map((item) => `
+                <tr class="low">
+                  <td>${escapeHtml(item.casNumber || "")}</td>
+                  <td>${escapeHtml(item.nameOrFormula || "")}</td>
+                  <td>${escapeHtml(item.purity || "")}</td>
+                  <td>${escapeHtml(item.company || "")}</td>
+                  <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
+                  <td>${item.msdsExternalUrl ? `<a href="${escapeHtml(item.msdsExternalUrl)}" target="_blank" rel="noopener">source</a>` : ""}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
 }
 
 async function addPowder(event) {

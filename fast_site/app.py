@@ -554,6 +554,15 @@ def download_msds_file(item_id: str):
 @app.get("/api/msds-binder")
 def download_msds_binder():
     return Response(
+        content=build_msds_binder_pdf(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="stoichio_msds_binder.pdf"'},
+    )
+
+
+@app.get("/api/msds-binder.zip")
+def download_msds_binder_archive():
+    return Response(
         content=build_msds_binder_archive(),
         media_type="application/zip",
         headers={"Content-Disposition": 'attachment; filename="stoichio_msds_binder.zip"'},

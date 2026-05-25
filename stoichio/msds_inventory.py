@@ -540,9 +540,9 @@ def build_msds_binder_pdf() -> bytes:
             except Exception as exc:
                 append_text_pages([[f"Could not append uploaded PDF for {heading}.", str(exc), "", *metadata]])
         elif item.get("msdsExternalUrl"):
-            append_text_pages([["MSDS/SDS link only", "", *metadata, "", item["msdsExternalUrl"]]])
+            append_text_pages([["Source link only - MSDS PDF not uploaded", "", *metadata, "", item["msdsExternalUrl"]]])
         else:
-            append_text_pages([["MSDS not uploaded yet", "", *metadata]])
+            append_text_pages([["MSDS PDF not uploaded yet", "", *metadata]])
 
     output = io.BytesIO()
     writer.write(output)
