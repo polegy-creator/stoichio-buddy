@@ -464,7 +464,7 @@ def configure_github_json(repo, token, branch="lab-data", path_prefix=""):
         branch=branch,
         path_prefix=path_prefix,
     )
-    _storage_label = f"GitHub JSON: {repo}@{branch}"
+    _storage_label = f"GitHub JSON: {_storage_backend.repo}@{_storage_backend.branch}"
     _storage_error = None
 
 
