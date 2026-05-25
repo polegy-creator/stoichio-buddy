@@ -56,6 +56,7 @@ from stoichio.inventory import (
 )
 from stoichio.msds_inventory import (
     attach_msds_pdf,
+    build_msds_binder_archive,
     build_msds_binder_pdf,
     closet_options,
     delete_msds_inventory_item,
@@ -552,6 +553,15 @@ def download_msds_file(item_id: str):
 
 @app.get("/api/msds-binder")
 def download_msds_binder():
+    return Response(
+        content=build_msds_binder_archive(),
+        media_type="application/zip",
+        headers={"Content-Disposition": 'attachment; filename="stoichio_msds_binder.zip"'},
+    )
+
+
+@app.get("/api/msds-binder.pdf")
+def download_msds_binder_pdf():
     return Response(
         content=build_msds_binder_pdf(),
         media_type="application/pdf",
