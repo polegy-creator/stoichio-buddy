@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css?v=20260525-4">
 </head>
 <body>
   <aside class="sidebar">
@@ -87,14 +87,15 @@
           <section class="setup-step">
             <div class="step-label">2 Amount</div>
             <fieldset class="segmented">
-              <legend>Target amount mode</legend>
-              <label><input type="radio" name="amountMode" value="mass" checked> Target formula mass</label>
+              <legend>Amount basis</legend>
+              <label><input type="radio" name="amountMode" value="powder" checked> Total precursor powder mass</label>
+              <label><input type="radio" name="amountMode" value="target"> Target formula mass</label>
               <label><input type="radio" name="amountMode" value="height"> Pellet height</label>
             </fieldset>
 
             <div id="massModeFields">
               <label>
-                Target formula mass (g)
+                <span id="targetMassLabel">Total precursor powder mass (g)</span>
                 <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
               </label>
             </div>
@@ -434,6 +435,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=20260525-4"></script>
 </body>
 </html>

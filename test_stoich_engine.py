@@ -158,6 +158,20 @@ class StoichEngineTests(unittest.TestCase):
         self.assertIsNone(result["recipe"])
         self.assertIn("Ti", result["warning"])
 
+    def test_carbonate_precursor_ignores_decomposition_carbon(self):
+        db = {
+            "BaCO3": {"elements": parse_formula("BaCO3")},
+            "TiO2": {"elements": parse_formula("TiO2")},
+        }
+
+        result = compute_recipe("BaTiO3", 10.0, db, ["BaCO3", "TiO2"])
+
+        self.assertIsNone(result["warning"])
+        self.assertTrue(result["exact"])
+        self.assertEqual(result["basis"], "cation balance")
+        self.assertEqual(result["ignored_elements"], ["C", "O"])
+        self.assertEqual(result["coefficients"], {"BaCO3": 1.0, "TiO2": 1.0})
+
 
 if __name__ == "__main__":
     unittest.main()

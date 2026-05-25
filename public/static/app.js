@@ -70,6 +70,7 @@ const els = {
   targetFormula: $("#targetFormula"),
   recipeTargetFor: $("#recipeTargetFor"),
   recipeTargetPreview: $("#recipeTargetPreview"),
+  targetMassLabel: $("#targetMassLabel"),
   targetMass: $("#targetMass"),
   targetHeight: $("#targetHeight"),
   targetDiameter: $("#targetDiameter"),
@@ -270,6 +271,16 @@ function selectedAmountMode() {
   return $("input[name='amountMode']:checked").value;
 }
 
+function selectedRecipeMassBasis() {
+  return selectedAmountMode() === "powder" ? "total_precursor_powder" : "target_formula_mass";
+}
+
+function recipeInputMassLabel(result = {}) {
+  return result.mass_basis === "total_precursor_powder"
+    ? "total precursor powder mass"
+    : "target formula mass";
+}
+
 function densityRecordLabel(record, prefix = "") {
   const phase = record.phase ? `, ${record.phase}` : "";
   const status = record.verification_status ? ` - ${record.verification_status}` : "";
@@ -423,7 +434,8 @@ function restoreRecipeSettings() {
     state.selectedPowders = new Set(settings.selectedPowders);
   }
   if (settings.amountMode) {
-    const amountMode = $(`input[name='amountMode'][value="${settings.amountMode}"]`);
+    const restoredAmountMode = settings.amountMode === "mass" ? "powder" : settings.amountMode;
+    const amountMode = $(`input[name='amountMode'][value="${restoredAmountMode}"]`);
     if (amountMode) amountMode.checked = true;
   }
   state.savedDensityChoices = settings.densityChoices || {};
@@ -586,6 +598,8 @@ function densityOptionHtml(record, prefix) {
 async function updateDensityChoicesForTarget(target, select, manualWrap) {
   const data = await api.get(`/api/densities?target=${encodeURIComponent(target || "")}`);
   state.densities = data.records || state.densities;
+  const targetKey = String(target || "").trim().toLowerCase();
+  const sameTargetAsLastRender = select.dataset.lastTarget === targetKey;
   const previous = select.value || state.savedDensityChoices[select.id] || "";
   const expanded = state.densityPickerExpanded[select.id] === true;
   const exact = (data.exact || []).slice().sort((a, b) => Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)));
@@ -607,11 +621,15 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   if (hiddenRelated > 0) {
     select.insertAdjacentHTML("beforeend", `<option value="__show_more__">Show ${hiddenRelated} more related density record(s)</option>`);
   }
-  if (previous !== "__show_more__" && [...select.options].some((option) => option.value === previous)) {
+  const previousIsSpecificRecord = previous && previous !== "__manual__" && previous !== "__show_more__";
+  if (sameTargetAsLastRender && previousIsSpecificRecord && [...select.options].some((option) => option.value === previous)) {
     select.value = previous;
+  } else if (sameTargetAsLastRender && previous === "__manual__") {
+    select.value = "__manual__";
   } else if (select.options.length > 1) {
     select.selectedIndex = 1;
   }
+  select.dataset.lastTarget = targetKey;
   state.savedDensityChoices[select.id] = select.value;
   manualWrap.hidden = select.value !== "__manual__";
 }
@@ -662,7 +680,7 @@ async function previewHeightMass() {
 }
 
 async function currentTargetMass() {
-  if (selectedAmountMode() === "mass") {
+  if (selectedAmountMode() !== "height") {
     return Number(els.targetMass.value);
   }
   const density = theoreticalDensityFromSelect(els.heightDensityChoice, els.heightDensity);
@@ -689,6 +707,7 @@ async function calculateRecipe(event) {
       target: els.targetFormula.value.trim(),
       mass_g: mass,
       selected_powders: Array.from(state.selectedPowders),
+      mass_basis: selectedRecipeMassBasis(),
     };
     const data = await api.send("/api/recipe", "POST", payload);
     state.lastRecipe = { payload, result: data.result, stock_ok: data.stock_ok, stock_messages: data.stock_messages };
@@ -728,8 +747,9 @@ function renderRecipeResult(data, mass) {
     data.stock_ok && !result.warning ? "good" : "warning",
   );
 
+  const inputMass = result.input_mass ?? mass;
   els.recipeDetails.textContent =
-    `Basis: ${result.basis}; residual: ${formatNumber(result.residual, 10)}; target formula mass: ${formatNumber(mass, 6)} g; total precursor powder: ${formatNumber(result.powder_basis, 6)} g.`;
+    `Basis: ${result.basis}; residual: ${formatNumber(result.residual, 10)}; ${recipeInputMassLabel(result)}: ${formatNumber(inputMass, 6)} g; estimated target formula mass: ${formatNumber(result.estimated_target_mass, 6)} g; total precursor powder: ${formatNumber(result.powder_basis, 6)} g.`;
   els.recipeMetrics.innerHTML = `
     <div class="metric-card"><strong>${formatNumber(result.estimated_target_mass, 6)}</strong><small>estimated target mass g</small></div>
     <div class="metric-card"><strong>${formatNumber(result.powder_basis, 6)}</strong><small>total precursor powder g</small></div>
@@ -760,21 +780,24 @@ function recipeOneLineSummaryHtml(result, mass, stockOk) {
   const powders = Object.entries(result.recipe || {})
     .map(([powder, grams]) => `${powder} ${formatNumber(grams, 6)} g`)
     .join(" | ");
+  const inputMass = result.input_mass ?? mass;
   const badges = [
     `<span class="summary-badge ${result.exact ? "good" : "warning"}">${result.exact ? "Exact" : "Approx"}</span>`,
     stockOk ? `<span class="summary-badge good">Stock OK</span>` : `<span class="summary-badge warning">Stock warning</span>`,
   ].join("");
   return `
-    <div><strong>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</strong> | ${formatNumber(mass, 6)} g target | ${escapeHtml(powders)}</div>
+    <div><strong>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</strong> | ${formatNumber(inputMass, 6)} g ${escapeHtml(recipeInputMassLabel(result))} | ${escapeHtml(powders)}</div>
     <div class="summary-badges">${badges}</div>
   `;
 }
 
 function recipeSummaryText(result, mass) {
+  const inputMass = result.input_mass ?? mass;
   const lines = [
     `Target: ${result.normalized_target || els.targetFormula.value.trim()}`,
     `Target for: ${normalizeOwner(els.recipeTargetFor.value) || "quick calculation"}`,
-    `Target formula mass: ${formatNumber(mass, 6)} g`,
+    `${recipeInputMassLabel(result)}: ${formatNumber(inputMass, 6)} g`,
+    `Estimated target formula mass: ${formatNumber(result.estimated_target_mass, 6)} g`,
     `Total precursor powder: ${formatNumber(result.powder_basis, 6)} g`,
     "Powders:",
   ];
@@ -786,12 +809,14 @@ function recipeSummaryText(result, mass) {
 }
 
 function recipeNotebookText(result, mass) {
+  const inputMass = result.input_mass ?? mass;
   const lines = [
     `Stoichio Buddy recipe`,
     `Date: ${niceTime(new Date().toISOString())}`,
     `Target: ${result.normalized_target || els.targetFormula.value.trim()}`,
     `Target for: ${normalizeOwner(els.recipeTargetFor.value) || "quick calculation"}`,
-    `Target formula mass: ${formatNumber(mass, 6)} g`,
+    `${recipeInputMassLabel(result)}: ${formatNumber(inputMass, 6)} g`,
+    `Estimated target formula mass: ${formatNumber(result.estimated_target_mass, 6)} g`,
     `Total precursor powder: ${formatNumber(result.powder_basis, 6)} g`,
     `Stoichiometry: ${result.exact ? "Exact" : "Approx"}`,
     `Residual: ${formatNumber(result.residual, 10)}`,
@@ -976,7 +1001,7 @@ function printRecipeLabel() {
     <body>
       <button onclick="window.print()">Print</button>
       <h1>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</h1>
-      <div class="meta">${escapeHtml(owner)} | ${escapeHtml(date)} | target formula mass ${formatNumber(state.lastRecipeMass, 6)} g</div>
+      <div class="meta">${escapeHtml(owner)} | ${escapeHtml(date)} | ${escapeHtml(recipeInputMassLabel(result))} ${formatNumber(result.input_mass ?? state.lastRecipeMass, 6)} g</div>
       <table>
         <thead><tr><th>Powder</th><th>Mass</th><th>Available before</th><th>After recipe</th></tr></thead>
         <tbody>${rows}</tbody>
@@ -1811,6 +1836,9 @@ function toggleAmountMode() {
   const heightMode = selectedAmountMode() === "height";
   $("#massModeFields").hidden = heightMode;
   $("#heightModeFields").hidden = !heightMode;
+  els.targetMassLabel.textContent = selectedAmountMode() === "target"
+    ? "Target formula mass (g)"
+    : "Total precursor powder mass (g)";
   previewHeightMass().catch(() => {});
 }
 

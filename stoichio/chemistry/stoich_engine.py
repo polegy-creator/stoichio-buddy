@@ -8,6 +8,7 @@ from .formula_parser import molar_mass, normalize_formula, parse_formula
 
 MASS_BASIS_TOTAL_PRECURSOR = "total_precursor_powder"
 MASS_BASIS_TARGET_FORMULA = "target_formula_mass"
+DECOMPOSITION_BYPRODUCT_ELEMENTS = {"C", "H", "N"}
 
 
 def normalize_target(target):
@@ -27,12 +28,16 @@ def solve_elements(target_comp, selected_powders, db):
     for powder in selected_powders:
         all_elements.update(db[powder].get("elements", {}).keys())
 
-    ignored = []
+    ignored = set()
     if any(element != "O" for element in target_comp):
-        ignored.append("O")
+        ignored.add("O")
+
+    for element in all_elements - set(target_comp):
+        if element in DECOMPOSITION_BYPRODUCT_ELEMENTS:
+            ignored.add(element)
 
     elements = sorted(element for element in all_elements if element not in ignored)
-    return elements, ignored
+    return elements, sorted(ignored)
 
 
 def non_negative_least_squares(A, b, tolerance=1e-12, max_iterations=None):
@@ -200,7 +205,7 @@ def compute_recipe(
         },
         "elements": elements,
         "ignored_elements": ignored_elements,
-        "basis": "cation balance" if ignored_elements == ["O"] else "element balance",
+        "basis": "cation balance" if ignored_elements else "element balance",
         "target": target_comp,
         "normalized_target": normalized_formula,
         "input_mass": round(float(mass), 6),
