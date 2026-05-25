@@ -19,6 +19,7 @@ from stoichio import storage
 from stoichio.backup_export import data_backup_json
 from stoichio.chemistry.density_engine import (
     DEFAULT_DIE_DIAMETER_MM,
+    cylinder_volume_cm3,
     measured_density,
     relative_density_percent,
     target_mass_from_height,
@@ -26,7 +27,7 @@ from stoichio.chemistry.density_engine import (
     unit_cell_volume_from_lattice,
 )
 from stoichio.chemistry.formula_parser import normalize_formula
-from stoichio.chemistry.stoich_engine import MASS_BASIS_TARGET_FORMULA, compute_recipe
+from stoichio.chemistry.stoich_engine import MASS_BASIS_TOTAL_PRECURSOR, compute_recipe
 from stoichio.density_records import (
     delete_material_density,
     load_material_densities,
@@ -132,7 +133,7 @@ class RecipeRequest(BaseModel):
     target: str = Field(..., min_length=1)
     mass_g: float = Field(..., gt=0)
     selected_powders: list[str] = Field(default_factory=list)
-    mass_basis: str = MASS_BASIS_TARGET_FORMULA
+    mass_basis: str = MASS_BASIS_TOTAL_PRECURSOR
 
 
 class RecipeSaveRequest(RecipeRequest):
@@ -148,6 +149,7 @@ class HeightRequest(BaseModel):
     theoretical_density_g_cm3: float = Field(..., gt=0)
     height_mm: float = Field(..., gt=0)
     diameter_mm: float = Field(DEFAULT_DIE_DIAMETER_MM, gt=0)
+    target_porosity_percent: float = Field(5.0, ge=0, lt=100)
 
 
 class RelativeDensityRequest(BaseModel):
@@ -713,12 +715,16 @@ def mass_from_height(payload: HeightRequest):
         payload.theoretical_density_g_cm3,
         payload.height_mm,
         payload.diameter_mm,
+        payload.target_porosity_percent,
     )
+    cylinder_volume = cylinder_volume_cm3(payload.diameter_mm, payload.height_mm)
     return {
         "target_mass_g": mass_g,
-        "volume_cm3": volume_cm3,
+        "volume_cm3": cylinder_volume,
+        "solid_volume_cm3": volume_cm3,
         "diameter_mm": payload.diameter_mm,
         "height_mm": payload.height_mm,
+        "target_porosity_percent": payload.target_porosity_percent,
     }
 
 

@@ -148,6 +148,18 @@ class DensityEngineTests(unittest.TestCase):
         self.assertAlmostEqual(measured, 2.5 / volume, places=12)
         self.assertAlmostEqual(relative_density_percent(measured, 5.2), measured / 5.2 * 100)
 
+    def test_height_mass_matches_excel_porosity_workflow(self):
+        mass, solid_volume = target_mass_from_height(
+            theoretical_density_g_cm3=5.27,
+            height_mm=6.35,
+            diameter_mm=25.0,
+            target_porosity_percent=5.0,
+        )
+
+        self.assertAlmostEqual(cylinder_volume_cm3(25.0, 6.35), 3.1170489609836225)
+        self.assertAlmostEqual(solid_volume, 2.9611965129344413)
+        self.assertAlmostEqual(mass, 15.605505623164504)
+
 
 if __name__ == "__main__":
     unittest.main()

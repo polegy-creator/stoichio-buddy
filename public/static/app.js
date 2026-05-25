@@ -74,6 +74,7 @@ const els = {
   targetMass: $("#targetMass"),
   targetHeight: $("#targetHeight"),
   targetDiameter: $("#targetDiameter"),
+  targetPorosity: $("#targetPorosity"),
   heightDensityChoice: $("#heightDensityChoice"),
   manualHeightDensityWrap: $("#manualHeightDensityWrap"),
   heightDensity: $("#heightDensity"),
@@ -272,13 +273,11 @@ function selectedAmountMode() {
 }
 
 function selectedRecipeMassBasis() {
-  return selectedAmountMode() === "powder" ? "total_precursor_powder" : "target_formula_mass";
+  return "total_precursor_powder";
 }
 
-function recipeInputMassLabel(result = {}) {
-  return result.mass_basis === "total_precursor_powder"
-    ? "total precursor powder mass"
-    : "target formula mass";
+function recipeInputMassLabel() {
+  return "target formula mass";
 }
 
 function densityRecordLabel(record, prefix = "") {
@@ -404,6 +403,7 @@ function persistRecipeSettings() {
     targetMass: els.targetMass.value,
     targetHeight: els.targetHeight.value,
     targetDiameter: els.targetDiameter.value,
+    targetPorosity: els.targetPorosity.value,
     heightDensity: els.heightDensity.value,
     recipeNotes: els.recipeNotes.value,
     showAllPowders: els.showAllPowders.checked,
@@ -427,6 +427,7 @@ function restoreRecipeSettings() {
   if (settings.targetMass) els.targetMass.value = settings.targetMass;
   if (settings.targetHeight) els.targetHeight.value = settings.targetHeight;
   if (settings.targetDiameter) els.targetDiameter.value = settings.targetDiameter;
+  if (settings.targetPorosity) els.targetPorosity.value = settings.targetPorosity;
   if (settings.heightDensity) els.heightDensity.value = settings.heightDensity;
   if (settings.recipeNotes) els.recipeNotes.value = settings.recipeNotes;
   els.showAllPowders.checked = Boolean(settings.showAllPowders);
@@ -434,7 +435,7 @@ function restoreRecipeSettings() {
     state.selectedPowders = new Set(settings.selectedPowders);
   }
   if (settings.amountMode) {
-    const restoredAmountMode = settings.amountMode === "mass" ? "powder" : settings.amountMode;
+    const restoredAmountMode = settings.amountMode === "height" ? "height" : "mass";
     const amountMode = $(`input[name='amountMode'][value="${restoredAmountMode}"]`);
     if (amountMode) amountMode.checked = true;
   }
@@ -663,6 +664,7 @@ async function previewHeightMass() {
   const density = theoreticalDensityFromSelect(els.heightDensityChoice, els.heightDensity);
   const height = Number(els.targetHeight.value);
   const diameter = Number(els.targetDiameter.value);
+  const porosity = Number(els.targetPorosity.value || 0);
   if (!(density > 0 && height > 0 && diameter > 0)) {
     els.heightMassPreview.textContent = "Enter height and density to calculate target formula mass.";
     return;
@@ -672,8 +674,9 @@ async function previewHeightMass() {
       theoretical_density_g_cm3: density,
       height_mm: height,
       diameter_mm: diameter,
+      target_porosity_percent: porosity,
     });
-    els.heightMassPreview.textContent = `m = ${formatNumber(data.target_mass_g, 6)} g · V = ${formatNumber(data.volume_cm3, 6)} cm³`;
+    els.heightMassPreview.textContent = `Target formula mass = ${formatNumber(data.target_mass_g, 6)} g · solid volume = ${formatNumber(data.solid_volume_cm3, 6)} cm³`;
   } catch (error) {
     els.heightMassPreview.textContent = error.message;
   }
@@ -688,6 +691,7 @@ async function currentTargetMass() {
     theoretical_density_g_cm3: density,
     height_mm: Number(els.targetHeight.value),
     diameter_mm: Number(els.targetDiameter.value),
+    target_porosity_percent: Number(els.targetPorosity.value || 0),
   });
   return Number(data.target_mass_g);
 }
@@ -749,10 +753,10 @@ function renderRecipeResult(data, mass) {
 
   const inputMass = result.input_mass ?? mass;
   els.recipeDetails.textContent =
-    `Basis: ${result.basis}; residual: ${formatNumber(result.residual, 10)}; ${recipeInputMassLabel(result)}: ${formatNumber(inputMass, 6)} g; estimated target formula mass: ${formatNumber(result.estimated_target_mass, 6)} g; total precursor powder: ${formatNumber(result.powder_basis, 6)} g.`;
+    `Target formula mass: ${formatNumber(inputMass, 6)} g; stoichiometry: ${result.exact ? "exact" : "approx"}; residual: ${formatNumber(result.residual, 10)}.`;
   els.recipeMetrics.innerHTML = `
-    <div class="metric-card"><strong>${formatNumber(result.estimated_target_mass, 6)}</strong><small>estimated target mass g</small></div>
-    <div class="metric-card"><strong>${formatNumber(result.powder_basis, 6)}</strong><small>total precursor powder g</small></div>
+    <div class="metric-card"><strong>${formatNumber(inputMass, 6)}</strong><small>target formula mass g</small></div>
+    <div class="metric-card"><strong>${Object.keys(result.recipe || {}).length}</strong><small>powders</small></div>
     <div class="metric-card"><strong>${result.exact ? "Exact" : "Approx"}</strong><small>stoichiometry</small></div>
   `;
   els.recipeQuickSummary.className = `recipe-summary-card ${data.stock_ok ? "" : "warning"}`.trim();
@@ -786,7 +790,7 @@ function recipeOneLineSummaryHtml(result, mass, stockOk) {
     stockOk ? `<span class="summary-badge good">Stock OK</span>` : `<span class="summary-badge warning">Stock warning</span>`,
   ].join("");
   return `
-    <div><strong>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</strong> | ${formatNumber(inputMass, 6)} g ${escapeHtml(recipeInputMassLabel(result))} | ${escapeHtml(powders)}</div>
+    <div><strong>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</strong> | ${formatNumber(inputMass, 6)} g ${escapeHtml(recipeInputMassLabel())} | ${escapeHtml(powders)}</div>
     <div class="summary-badges">${badges}</div>
   `;
 }
@@ -796,9 +800,7 @@ function recipeSummaryText(result, mass) {
   const lines = [
     `Target: ${result.normalized_target || els.targetFormula.value.trim()}`,
     `Target for: ${normalizeOwner(els.recipeTargetFor.value) || "quick calculation"}`,
-    `${recipeInputMassLabel(result)}: ${formatNumber(inputMass, 6)} g`,
-    `Estimated target formula mass: ${formatNumber(result.estimated_target_mass, 6)} g`,
-    `Total precursor powder: ${formatNumber(result.powder_basis, 6)} g`,
+    `${recipeInputMassLabel()}: ${formatNumber(inputMass, 6)} g`,
     "Powders:",
   ];
   for (const [powder, grams] of Object.entries(result.recipe || {})) {
@@ -815,9 +817,7 @@ function recipeNotebookText(result, mass) {
     `Date: ${niceTime(new Date().toISOString())}`,
     `Target: ${result.normalized_target || els.targetFormula.value.trim()}`,
     `Target for: ${normalizeOwner(els.recipeTargetFor.value) || "quick calculation"}`,
-    `${recipeInputMassLabel(result)}: ${formatNumber(inputMass, 6)} g`,
-    `Estimated target formula mass: ${formatNumber(result.estimated_target_mass, 6)} g`,
-    `Total precursor powder: ${formatNumber(result.powder_basis, 6)} g`,
+    `${recipeInputMassLabel()}: ${formatNumber(inputMass, 6)} g`,
     `Stoichiometry: ${result.exact ? "Exact" : "Approx"}`,
     `Residual: ${formatNumber(result.residual, 10)}`,
     `Powders:`,
@@ -1001,12 +1001,12 @@ function printRecipeLabel() {
     <body>
       <button onclick="window.print()">Print</button>
       <h1>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</h1>
-      <div class="meta">${escapeHtml(owner)} | ${escapeHtml(date)} | ${escapeHtml(recipeInputMassLabel(result))} ${formatNumber(result.input_mass ?? state.lastRecipeMass, 6)} g</div>
+      <div class="meta">${escapeHtml(owner)} | ${escapeHtml(date)} | ${escapeHtml(recipeInputMassLabel())} ${formatNumber(result.input_mass ?? state.lastRecipeMass, 6)} g</div>
       <table>
         <thead><tr><th>Powder</th><th>Mass</th><th>Available before</th><th>After recipe</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div class="box">Total precursor powder: ${formatNumber(result.powder_basis, 6)} g
+      <div class="box">Target formula mass: ${formatNumber(result.input_mass ?? state.lastRecipeMass, 6)} g
 Stoichiometry: ${result.exact ? "Exact" : "Approx"}
 Residual: ${formatNumber(result.residual, 10)}</div>
       ${notes ? `<div class="box"><strong>Notes</strong><br>${escapeHtml(notes)}</div>` : ""}
@@ -1753,7 +1753,7 @@ function renderHistory() {
 function historyItemHtml(entry) {
   const type = (entry.entry_type || "synthesis") === "target_density" ? "After sintering" : "Before sintering";
   const title = type === "Before sintering"
-    ? `${entry.recipe_id || "Recipe"} - ${formatNumber(entry.mass, 6)} g target basis`
+    ? `${entry.recipe_id || "Recipe"} - ${formatNumber(entry.mass, 6)} g target formula mass`
     : `Density ${formatNumber(entry.relative_density_percent, 2)}%`;
   const meta = type === "Before sintering"
     ? `${niceTime(entry.time)} | powders: ${Object.entries(entry.recipe || {}).map(([p, g]) => `${p} ${formatNumber(g, 6)} g`).join(", ")}`
@@ -1836,9 +1836,7 @@ function toggleAmountMode() {
   const heightMode = selectedAmountMode() === "height";
   $("#massModeFields").hidden = heightMode;
   $("#heightModeFields").hidden = !heightMode;
-  els.targetMassLabel.textContent = selectedAmountMode() === "target"
-    ? "Target formula mass (g)"
-    : "Total precursor powder mass (g)";
+  els.targetMassLabel.textContent = "Target formula mass (g)";
   previewHeightMass().catch(() => {});
 }
 
@@ -1925,10 +1923,10 @@ function setupEvents() {
     loadPowderOptions().catch((error) => flash(error.message, "error"));
   });
   els.reloadPowders.addEventListener("click", () => loadPowderOptions().catch((error) => flash(error.message, "error")));
-  [els.targetMass, els.targetHeight, els.targetDiameter, els.heightDensity, els.recipeNotes].forEach((input) => {
+  [els.targetMass, els.targetHeight, els.targetDiameter, els.targetPorosity, els.heightDensity, els.recipeNotes].forEach((input) => {
     input.addEventListener("input", debounce(persistRecipeSettings, 200));
   });
-  [els.targetHeight, els.targetDiameter, els.heightDensity, els.heightDensityChoice].forEach((input) => {
+  [els.targetHeight, els.targetDiameter, els.targetPorosity, els.heightDensity, els.heightDensityChoice].forEach((input) => {
     input.addEventListener("input", () => previewHeightMass().catch(() => {}));
     input.addEventListener("change", async () => {
       if (input === els.heightDensityChoice && input.value === "__show_more__") {

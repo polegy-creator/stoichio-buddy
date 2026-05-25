@@ -101,7 +101,7 @@ def compute_recipe(
     db,
     selected_powders,
     tolerance=1e-6,
-    mass_basis=MASS_BASIS_TARGET_FORMULA,
+    mass_basis=MASS_BASIS_TOTAL_PRECURSOR,
 ):
     """
     Deterministic stoichiometric solver.
@@ -110,8 +110,8 @@ def compute_recipe(
     - No subset search
     - Uses one non-negative least-squares solve: A x ~= b, x >= 0
     - Interprets x as precursor moles per mole of target
-    - Defaults to the original lab math: target formula mass basis
-    - Can also scale to a requested total precursor powder mass when explicitly requested
+    - Defaults to the lab weighing workflow: the input mass is the powder mixture mass
+    - Keeps the legacy target-formula basis available for stored-history checks
     """
     if not selected_powders:
         return {"recipe": None, "warning": "Select at least one powder"}
@@ -194,6 +194,9 @@ def compute_recipe(
     if residual > tolerance:
         warning = "Approximate solution (no exact stoichiometric match possible)"
 
+    chemical_target_mass = formula_units * target_molar_mass
+    displayed_target_mass = powder_basis if mass_basis == MASS_BASIS_TOTAL_PRECURSOR else chemical_target_mass
+
     return {
         "recipe": recipe,
         "warning": warning,
@@ -214,7 +217,8 @@ def compute_recipe(
         "target_molar_mass": round(float(target_molar_mass), 6),
         "precursor_formula_mass": round(float(precursor_formula_mass), 6),
         "formula_units": round(float(formula_units), 12),
-        "estimated_target_mass": round(float(formula_units * target_molar_mass), 6),
+        "estimated_target_mass": round(float(displayed_target_mass), 6),
+        "stoichiometric_target_mass": round(float(chemical_target_mass), 6),
     }
 
 
@@ -224,13 +228,14 @@ def infer_target_mass_from_recipe(
     db,
     selected_powders,
     tolerance=1e-3,
+    mass_basis=MASS_BASIS_TOTAL_PRECURSOR,
 ):
     """
-    Infer the target formula mass represented by known precursor masses.
+    Infer the recipe mass represented by known precursor masses.
 
-    This is the inverse of the default target-formula-mass scaling. It uses the
-    same cation-balance coefficients as compute_recipe, then reports how closely
-    the entered masses match that stoichiometric ratio.
+    By default this follows the lab weighing workflow, so the inferred target
+    mass is the total powder mass. The legacy target-formula basis is still
+    available for old saved-history checks.
     """
     if not selected_powders:
         return {"target_mass": None, "warning": "Select at least one powder"}
@@ -255,7 +260,7 @@ def infer_target_mass_from_recipe(
         db,
         selected_powders,
         tolerance=tolerance,
-        mass_basis=MASS_BASIS_TARGET_FORMULA,
+        mass_basis=mass_basis,
     )
     if reference.get("recipe") is None:
         return {"target_mass": None, "warning": reference.get("warning", "No valid solution found")}
@@ -268,9 +273,12 @@ def infer_target_mass_from_recipe(
     if precursor_formula_mass <= 0:
         return {"target_mass": None, "warning": "No physically valid precursor mass from selected powders"}
 
-    target_molar_mass = molar_mass(reference["target"])
     formula_units = total_actual_mass / precursor_formula_mass
-    target_mass = formula_units * target_molar_mass
+    if mass_basis == MASS_BASIS_TARGET_FORMULA:
+        target_molar_mass = molar_mass(reference["target"])
+        target_mass = formula_units * target_molar_mass
+    else:
+        target_mass = total_actual_mass
 
     expected_recipe = {
         powder: float(coefficients[powder]) * formula_units * powder_molar_mass(db[powder])

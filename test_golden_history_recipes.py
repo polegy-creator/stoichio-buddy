@@ -96,6 +96,7 @@ class GoldenHistoryRecipeTests(unittest.TestCase):
                     entry["recipe"],
                     powder_db_for(entry),
                     entry["selected_powders"],
+                    mass_basis=mass_basis_for(entry),
                 )
 
                 self.assertIsNone(inferred["warning"])

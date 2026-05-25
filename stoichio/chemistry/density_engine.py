@@ -132,16 +132,34 @@ def theoretical_density_from_cell(formula, unit_cell_volume_a3, z):
     return unit_cell_mass_g / unit_cell_volume_cm3
 
 
-def target_mass_from_height(theoretical_density_g_cm3, height_mm, diameter_mm=DEFAULT_DIE_DIAMETER_MM):
+def _porosity_fraction(target_porosity_percent):
+    porosity = float(target_porosity_percent or 0.0)
+    if porosity < 0 or porosity >= 100:
+        raise ValueError("Target porosity must be between 0 and 100 percent")
+    return porosity / 100.0
+
+
+def target_mass_from_height(
+    theoretical_density_g_cm3,
+    height_mm,
+    diameter_mm=DEFAULT_DIE_DIAMETER_MM,
+    target_porosity_percent=0.0,
+):
     density = float(theoretical_density_g_cm3)
     if density <= 0:
         raise ValueError("Theoretical density must be positive")
 
     volume = cylinder_volume_cm3(diameter_mm, height_mm)
-    return density * volume, volume
+    solid_volume = volume * (1.0 - _porosity_fraction(target_porosity_percent))
+    return density * solid_volume, solid_volume
 
 
-def target_height_from_mass(theoretical_density_g_cm3, target_mass_g, diameter_mm=DEFAULT_DIE_DIAMETER_MM):
+def target_height_from_mass(
+    theoretical_density_g_cm3,
+    target_mass_g,
+    diameter_mm=DEFAULT_DIE_DIAMETER_MM,
+    target_porosity_percent=0.0,
+):
     density = float(theoretical_density_g_cm3)
     mass = float(target_mass_g)
     diameter = float(diameter_mm)
@@ -152,10 +170,11 @@ def target_height_from_mass(theoretical_density_g_cm3, target_mass_g, diameter_m
     if diameter <= 0:
         raise ValueError("Diameter must be positive")
 
-    volume_cm3 = mass / density
+    solid_volume_cm3 = mass / density
+    volume_cm3 = solid_volume_cm3 / (1.0 - _porosity_fraction(target_porosity_percent))
     radius_cm = (diameter / 10.0) / 2.0
     height_cm = volume_cm3 / (math.pi * radius_cm**2)
-    return height_cm * 10.0, volume_cm3
+    return height_cm * 10.0, solid_volume_cm3
 
 
 def measured_density(mass_g, diameter_mm, height_mm):
