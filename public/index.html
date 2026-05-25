@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260525-7">
+  <link rel="stylesheet" href="/static/styles.css?v=20260525-8">
 </head>
 <body>
   <aside class="sidebar">
@@ -430,7 +430,7 @@
               <input id="msdsPurity" placeholder="99.9%">
             </label>
             <label>
-              Vendor / supplier
+              Manufacturer / company
               <input id="msdsCompany" placeholder="Sigma-Aldrich">
             </label>
           </div>
@@ -442,10 +442,13 @@
             </label>
           </div>
 
-          <label>
-            MSDS/SDS link
-            <input id="msdsExternalUrl" type="url" placeholder="https://...">
-          </label>
+          <div class="field-block">
+            <label for="msdsExternalUrl">MSDS/SDS link</label>
+            <div class="url-action-row">
+              <input id="msdsExternalUrl" type="url" placeholder="https://...">
+              <button id="searchMsdsOnline" type="button" class="secondary">Search SDS PDF</button>
+            </div>
+          </div>
 
           <label>
             Upload MSDS/SDS PDF
@@ -465,7 +468,7 @@
             <a id="msdsBinderDownload" class="download-link" href="/api/msds-binder" download="stoichio_msds_binder.pdf">Download MSDS Binder PDF</a>
           </div>
           <div class="filters msds-filters">
-            <label>Search <input id="msdsSearch" placeholder="CAS, formula, purity, vendor, closet, MSDS"></label>
+            <label>Search <input id="msdsSearch" placeholder="CAS, formula, purity, company, closet, MSDS"></label>
             <label>Closet <select id="msdsClosetFilter"></select></label>
           </div>
           <div class="table-wrap tall">
@@ -475,7 +478,7 @@
                   <th>CAS</th>
                   <th>Name / Formula</th>
                   <th>Purity</th>
-                  <th>Vendor</th>
+                  <th>Company</th>
                   <th>Closet</th>
                   <th>MSDS status</th>
                   <th>Actions</th>
@@ -528,6 +531,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260525-8"></script>
+  <script src="/static/app.js?v=20260525-9"></script>
 </body>
 </html>

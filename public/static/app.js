@@ -159,6 +159,7 @@ const els = {
   msdsCompany: $("#msdsCompany"),
   msdsClosetNumber: $("#msdsClosetNumber"),
   msdsExternalUrl: $("#msdsExternalUrl"),
+  searchMsdsOnline: $("#searchMsdsOnline"),
   msdsPdfFile: $("#msdsPdfFile"),
   saveMsdsMaterial: $("#saveMsdsMaterial"),
   uploadMsdsFile: $("#uploadMsdsFile"),
@@ -1408,6 +1409,31 @@ function msdsPayload() {
   };
 }
 
+function searchMsdsPdfOnline() {
+  const cas = els.msdsCasNumber.value.trim();
+  const company = els.msdsCompany.value.trim();
+  const name = els.msdsNameFormula.value.trim();
+  if (!cas && !company && !name) {
+    flash("Enter a CAS number and manufacturer/company first.", "warning");
+    return;
+  }
+
+  const terms = [];
+  if (cas) terms.push(`"${cas}"`);
+  if (company) terms.push(`"${company}"`);
+  if (!company && name) terms.push(`"${name}"`);
+  terms.push("SDS", "MSDS", "PDF", "filetype:pdf");
+  terms.push('-"BGU Nano-Fab"', '-"nano-fab"');
+
+  if (!cas || !company) {
+    flash("Search is strongest with both CAS number and manufacturer/company.", "warning");
+  }
+
+  const url = `https://www.google.com/search?q=${encodeURIComponent(terms.join(" "))}`;
+  window.open(url, "_blank", "noopener");
+  els.msdsLookupStatus.textContent = "Search opened. Paste the verified direct PDF link here, or upload the PDF file.";
+}
+
 async function saveMsdsMaterial(event, { keepForm = true } = {}) {
   if (event) event.preventDefault();
   const itemId = els.msdsItemId.value.trim();
@@ -1564,7 +1590,7 @@ function renderDataHealth() {
                 <th>CAS</th>
                 <th>Name / Formula</th>
                 <th>Purity</th>
-                <th>Vendor</th>
+                <th>Company</th>
                 <th>Closet</th>
                 <th>Source</th>
               </tr>
@@ -2310,6 +2336,7 @@ function setupEvents() {
 
   els.msdsForm.addEventListener("submit", (event) => saveMsdsMaterial(event));
   els.newMsdsMaterial.addEventListener("click", resetMsdsForm);
+  els.searchMsdsOnline.addEventListener("click", searchMsdsPdfOnline);
   els.uploadMsdsFile.addEventListener("click", async () => {
     const done = setBusy(els.uploadMsdsFile, "Uploading...");
     try {
