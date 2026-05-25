@@ -76,7 +76,6 @@ from stoichio.powders import (
     load_powders,
     normalize_powder,
     powder_display_name,
-    purity_fraction,
     relevant_powders_for_target,
 )
 
@@ -268,7 +267,6 @@ def powder_payload(powder: str, record: dict, inventory: dict | None = None) -> 
         "elements": record.get("elements", {}),
         "available_g": inventory.get(powder),
         "purity": record.get("purity", ""),
-        "purity_fraction": purity_fraction(record),
         "company": record.get("company") or record.get("supplier", ""),
         "casNumber": record.get("casNumber", ""),
     }

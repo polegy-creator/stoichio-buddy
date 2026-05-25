@@ -5,7 +5,6 @@ from stoichio.powders import (
     normalize_powder_record,
     powder_display_name,
     powder_key_for,
-    purity_fraction,
 )
 
 
@@ -41,7 +40,6 @@ class PowderMetadataTests(unittest.TestCase):
         self.assertEqual(normalize_powder(key), key)
         self.assertEqual(record["formula"], "Fe2O3")
         self.assertEqual(powder_display_name(key, record), "Fe2O3 | 99.9% | Sigma/Aldrich")
-        self.assertAlmostEqual(purity_fraction(record), 0.999)
 
 
 if __name__ == "__main__":

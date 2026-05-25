@@ -85,20 +85,6 @@ def powder_display_name(powder, record=None):
     return powder
 
 
-def purity_fraction(record):
-    text = normalize_purity_label(record.get("purity") if record else "")
-    if not text:
-        return 1.0
-    match = re.search(r"\d+(?:\.\d+)?", text)
-    if not match:
-        return 1.0
-    value = float(match.group(0))
-    fraction = value if value <= 1 else value / 100.0
-    if fraction <= 0 or fraction > 1:
-        return 1.0
-    return fraction
-
-
 def formula_cation_elements(formula):
     composition = parse_formula(normalize_formula(formula))
     return {element for element in composition if element != "O"}

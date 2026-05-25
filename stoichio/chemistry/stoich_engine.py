@@ -1,7 +1,6 @@
 import numpy as np
 
 from .formula_parser import molar_mass, normalize_formula, parse_formula
-from stoichio.powders import purity_fraction
 
 # =========================
 # CORE STOICHIOMETRY ENGINE
@@ -22,10 +21,6 @@ def normalize_target(target):
 
 def powder_molar_mass(powder_record):
     return molar_mass(powder_record["elements"])
-
-
-def powder_weighed_molar_mass(powder_record):
-    return powder_molar_mass(powder_record) / purity_fraction(powder_record)
 
 
 def solve_elements(target_comp, selected_powders, db):
@@ -175,7 +170,7 @@ def compute_recipe(
         return {"recipe": None, "warning": str(exc)}
 
     precursor_formula_mass = sum(
-        float(coefficients[i]) * powder_weighed_molar_mass(db[powder])
+        float(coefficients[i]) * powder_molar_mass(db[powder])
         for i, powder in enumerate(selected_powders)
     )
     if precursor_formula_mass <= tolerance:
@@ -187,7 +182,7 @@ def compute_recipe(
         formula_units = float(mass) / precursor_formula_mass
 
     recipe = {
-        powder: round(float(coefficients[i] * formula_units * powder_weighed_molar_mass(db[powder])), 6)
+        powder: round(float(coefficients[i] * formula_units * powder_molar_mass(db[powder])), 6)
         for i, powder in enumerate(selected_powders)
     }
     powder_basis = sum(recipe.values())
@@ -210,10 +205,6 @@ def compute_recipe(
         "coefficients": {
             powder: round(float(coefficients[i]), 12)
             for i, powder in enumerate(selected_powders)
-        },
-        "purity_factors": {
-            powder: round(float(purity_fraction(db[powder])), 8)
-            for powder in selected_powders
         },
         "elements": elements,
         "ignored_elements": ignored_elements,
