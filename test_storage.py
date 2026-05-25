@@ -86,6 +86,21 @@ class StorageGithubMergeTests(unittest.TestCase):
             ["a", "b", "c"],
         )
 
+    def test_github_json_store_merges_different_list_deletions_by_entry_id(self):
+        store = FakeGitHubJsonStore([
+            {"entry_id": "a", "value": 1},
+            {"entry_id": "b", "value": 2},
+        ])
+
+        local = store.load("history.json", [])
+        store.remote_data = [{"entry_id": "a", "value": 1}]
+        store.remote_sha = "remote"
+        local = [entry for entry in local if entry["entry_id"] != "a"]
+
+        store.save("history.json", local)
+
+        self.assertEqual(store.remote_data, [])
+
 
 class StorageFallbackTests(unittest.TestCase):
     def setUp(self):

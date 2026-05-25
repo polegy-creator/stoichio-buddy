@@ -341,11 +341,11 @@ def merge_json_documents(base, local, remote, path="JSON document"):
 
 def _merge_json_value(base, local, remote):
     if local == remote:
-        return copy.deepcopy(local)
+        return _copy_json_value(local)
     if remote == base:
-        return copy.deepcopy(local)
+        return _copy_json_value(local)
     if local == base:
-        return copy.deepcopy(remote)
+        return _copy_json_value(remote)
 
     if isinstance(base, dict) and isinstance(local, dict) and isinstance(remote, dict):
         return _merge_json_dict(base, local, remote)
@@ -376,14 +376,20 @@ def _merge_json_dict(base, local, remote):
 
 def _merge_json_slot(base_value, local_value, remote_value):
     if local_value == remote_value:
-        return copy.deepcopy(local_value)
+        return _copy_json_value(local_value)
     if remote_value == base_value:
-        return copy.deepcopy(local_value)
+        return _copy_json_value(local_value)
     if local_value == base_value:
-        return copy.deepcopy(remote_value)
+        return _copy_json_value(remote_value)
     if base_value is _MISSING or local_value is _MISSING or remote_value is _MISSING:
         raise RuntimeError("same key was edited and deleted or created differently")
     return _merge_json_value(base_value, local_value, remote_value)
+
+
+def _copy_json_value(value):
+    if value is _MISSING:
+        return _MISSING
+    return copy.deepcopy(value)
 
 
 def _merge_json_list(base, local, remote):
