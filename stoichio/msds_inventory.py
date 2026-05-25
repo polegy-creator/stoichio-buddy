@@ -12,6 +12,10 @@ from typing import Any
 
 from stoichio import storage
 from stoichio.chemistry.formula_parser import normalize_formula
+from stoichio.powders import (
+    normalize_powder,
+    powder_formula_from_key,
+)
 
 
 CLOSETS = {
@@ -79,17 +83,43 @@ def material_key(value: str | None) -> str:
         return re.sub(r"\s+", " ", text).lower()
 
 
-def material_id_for(cas_number: str, name_or_formula: str) -> str:
+def identity_text(value: str | None) -> str:
+    return re.sub(r"\s+", " ", str(value or "").strip()).lower()
+
+
+def identity_slug(value: str | None) -> str:
+    return re.sub(r"[^a-z0-9._%-]+", "-", identity_text(value)).strip("-")
+
+
+def material_identity_key(record: dict[str, Any]) -> tuple[str, str, str]:
+    cas = normalize_cas_number(record.get("casNumber")) if record.get("casNumber") else ""
+    name = material_key(record.get("nameOrFormula"))
+    purity = identity_text(record.get("purity"))
+    company = identity_text(record.get("company"))
+    return cas or name, purity, company
+
+
+def material_id_for(cas_number: str, name_or_formula: str, purity: str = "", company: str = "") -> str:
     if cas_number:
-        return f"cas:{cas_number}"
+        parts = [f"cas:{cas_number}"]
+        if purity:
+            parts.append(f"purity:{identity_slug(purity)}")
+        if company:
+            parts.append(f"vendor:{identity_slug(company)}")
+        return "|".join(parts)
     key = material_key(name_or_formula)
     if key:
-        return f"material:{key}"
+        parts = [f"material:{key}"]
+        if purity:
+            parts.append(f"purity:{identity_slug(purity)}")
+        if company:
+            parts.append(f"vendor:{identity_slug(company)}")
+        return "|".join(parts)
     return f"material:{uuid.uuid4().hex[:12]}"
 
 
 def powder_import_id(powder: str) -> str:
-    return f"powder:{normalize_formula(powder)}"
+    return f"powder:{normalize_powder(powder)}"
 
 
 def msds_status(item: dict[str, Any]) -> str:
@@ -126,21 +156,23 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
     created = record.get("createdAt") or now_iso()
     cas_number = normalize_cas_number(record.get("casNumber"))
     name_or_formula = str(record.get("nameOrFormula") or "").strip()
-    item_id = str(record.get("id") or material_id_for(cas_number, name_or_formula)).strip()
+    purity = str(record.get("purity") or "").strip()
+    company = str(record.get("company") or "").strip()
+    item_id = str(record.get("id") or material_id_for(cas_number, name_or_formula, purity, company)).strip()
     closet_number = normalize_closet_number(record.get("closetNumber", 1))
 
     return {
         "id": item_id,
         "casNumber": cas_number,
         "nameOrFormula": name_or_formula,
-        "purity": str(record.get("purity") or "").strip(),
+        "purity": purity,
         "closetNumber": closet_number,
         "msdsFileUrl": str(record.get("msdsFileUrl") or "").strip(),
         "msdsExternalUrl": str(record.get("msdsExternalUrl") or "").strip(),
         "msdsFileName": str(record.get("msdsFileName") or "").strip(),
         "msdsFileContentType": str(record.get("msdsFileContentType") or "").strip(),
         "msdsFileDataBase64": str(record.get("msdsFileDataBase64") or "").strip(),
-        "company": str(record.get("company") or "").strip(),
+        "company": company,
         "identityStatus": str(record.get("identityStatus") or "needs verification").strip(),
         "source": str(record.get("source") or "").strip(),
         "casSource": str(record.get("casSource") or "").strip(),
@@ -242,22 +274,28 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
         if item.get("sourcePowderId")
     }
     existing_named_items = {
-        material_key(item.get("nameOrFormula")): item
+        material_identity_key(item): item
         for item in items
-        if material_key(item.get("nameOrFormula"))
+        if material_identity_key(item)[0]
     }
 
     for powder, record in load_powders().items():
         source_id = powder_import_id(powder)
         if source_id in deleted:
             continue
-        existing_item = existing_powder_items.get(source_id) or existing_named_items.get(material_key(powder))
+        powder_identity = material_identity_key({
+            "casNumber": record.get("casNumber") or record.get("cas") or "",
+            "nameOrFormula": record.get("formula") or powder_formula_from_key(powder),
+            "purity": record.get("purity", ""),
+            "company": record.get("company") or record.get("supplier") or "",
+        })
+        existing_item = existing_powder_items.get(source_id) or existing_named_items.get(powder_identity)
         if existing_item:
             if apply_powder_metadata_to_msds_item(existing_item, powder, record, source_id):
                 changed = True
             continue
 
-        if material_key(powder) in existing_named_items:
+        if powder_identity in existing_named_items:
             continue
 
         now = now_iso()
@@ -265,7 +303,7 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
         item = {
             "id": source_id,
             "casNumber": cas_number,
-            "nameOrFormula": powder,
+            "nameOrFormula": record.get("formula") or powder_formula_from_key(powder),
             "purity": str(record.get("purity") or "").strip(),
             "closetNumber": 1,
             "msdsFileUrl": "",
@@ -287,7 +325,7 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
         }
         items.append(item)
         existing_powder_items[source_id] = item
-        existing_named_items[material_key(powder)] = item
+        existing_named_items[powder_identity] = item
         changed = True
 
     return changed
@@ -301,7 +339,7 @@ def apply_powder_metadata_to_msds_item(item: dict[str, Any], powder: str, record
         "source": "powder database",
     }
     if not item.get("nameOrFormula"):
-        updates["nameOrFormula"] = powder
+        updates["nameOrFormula"] = record.get("formula") or powder_formula_from_key(powder)
     if cas_number and not item.get("casNumber"):
         updates["casNumber"] = cas_number
         updates["identityStatus"] = str(record.get("identityStatus") or POWDER_IDENTITY_STATUS).strip()
@@ -347,6 +385,8 @@ def save_msds_inventory_item(payload: dict[str, Any], item_id: str | None = None
         "id": item_id or payload.get("id") or material_id_for(
             normalize_cas_number(payload.get("casNumber")),
             payload.get("nameOrFormula", ""),
+            payload.get("purity", ""),
+            payload.get("company", ""),
         ),
     })
 
@@ -356,28 +396,13 @@ def save_msds_inventory_item(payload: dict[str, Any], item_id: str | None = None
         if item_id and item["id"] == item_id:
             existing_index = index
             break
-        if not item_id and incoming["casNumber"] and item.get("casNumber") == incoming["casNumber"]:
-            existing_index = index
-            incoming["id"] = item["id"]
-            break
-        if (
-            not item_id
-            and not incoming["casNumber"]
-            and material_key(incoming["nameOrFormula"])
-            and material_key(item.get("nameOrFormula")) == material_key(incoming["nameOrFormula"])
-        ):
+        if not item_id and material_identity_key(item) == material_identity_key(incoming):
             existing_index = index
             incoming["id"] = item["id"]
             break
 
     if item_id and existing_index is None:
         raise ValueError("Material inventory item was not found.")
-
-    if incoming["casNumber"]:
-        for index, item in enumerate(store["items"]):
-            item = normalize_item(item)
-            if index != existing_index and item.get("casNumber") == incoming["casNumber"]:
-                raise ValueError("Another material already uses this CAS number.")
 
     now = now_iso()
     if existing_index is None:
@@ -471,7 +496,13 @@ def get_msds_pdf(item_id: str) -> tuple[str, str, bytes]:
 def sorted_inventory_items(include_file_data: bool = False) -> list[dict[str, Any]]:
     return sorted(
         load_msds_inventory(include_file_data=include_file_data),
-        key=lambda item: (item.get("closetNumber", 99), material_key(item.get("nameOrFormula")), item.get("casNumber", "")),
+        key=lambda item: (
+            item.get("closetNumber", 99),
+            material_key(item.get("nameOrFormula")),
+            item.get("casNumber", ""),
+            identity_text(item.get("company")),
+            identity_text(item.get("purity")),
+        ),
     )
 
 
@@ -541,6 +572,7 @@ def _binder_text_pages(items: list[dict[str, Any]], append_warning: bool = False
                 f"CAS: {item.get('casNumber') or 'needs verification'} | "
                 f"{item.get('nameOrFormula') or 'needs verification'} | "
                 f"Purity: {item.get('purity') or ''} | "
+                f"Vendor: {item.get('company') or ''} | "
                 f"MSDS: {msds_status(item)}"
             )
         index_lines.append("")
@@ -553,6 +585,7 @@ def _material_page_lines(item: dict[str, Any]) -> list[str]:
         f"CAS number: {item.get('casNumber') or 'needs verification'}",
         f"Name / formula: {item.get('nameOrFormula') or 'needs verification'}",
         f"Purity: {item.get('purity') or ''}",
+        f"Vendor / supplier: {item.get('company') or ''}",
         f"Closet: {closet_label(item.get('closetNumber', 1))}",
         f"MSDS status: {msds_status(item)}",
     ]

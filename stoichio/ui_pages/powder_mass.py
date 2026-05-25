@@ -28,6 +28,7 @@ def render(ctx):
     material_densities = ctx.material_densities
     next_target_number = ctx.next_target_number
     normalize_formula = ctx.normalize_formula
+    powder_display_name = ctx.powder_display_name
     powder_sets = ctx.powder_sets
     recipe_balance_dataframe = ctx.recipe_balance_dataframe
     recipe_basis_audit_dataframe = ctx.recipe_basis_audit_dataframe
@@ -183,7 +184,7 @@ def render(ctx):
                 format_func=lambda value: (
                     "Choose saved set"
                     if not value
-                    else f"{powder_sets[value]['name']} ({', '.join(powder_sets[value]['powders'])})"
+                    else f"{powder_sets[value]['name']} ({', '.join(powder_display_name(powder, db.get(powder, {})) for powder in powder_sets[value]['powders'])})"
                 ),
                 key="recipe_powder_set_choice",
                 help="Saved sets are grouped by target cations. Applying a set still leaves you in control of the final powder choices.",
@@ -226,6 +227,7 @@ def render(ctx):
             "Selected powders",
             powder_options,
             key="selected_recipe_powders",
+            format_func=lambda powder: powder_display_name(powder, db.get(powder, {})),
             help="Only these powders will be used in the calculation. The list is filtered to powders matching the target cations.",
         )
         visible_powder_db = {

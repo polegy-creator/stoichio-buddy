@@ -29,6 +29,46 @@ class StoichEngineTests(unittest.TestCase):
         self.assertAlmostEqual(result["estimated_target_mass"], 15.615, places=6)
         self.assertAlmostEqual(result["stoichiometric_target_mass"], 15.599355, places=6)
 
+    def test_powder_purity_adjusts_weighed_mass_without_changing_stoichiometry(self):
+        pure_db = {
+            "Fe2O3": {"elements": parse_formula("Fe2O3")},
+        }
+        impure_db = {
+            "Fe2O3 | purity 50% | vendor Test": {
+                "formula": "Fe2O3",
+                "elements": parse_formula("Fe2O3"),
+                "purity": "50%",
+                "company": "Test",
+            },
+        }
+
+        pure = compute_recipe(
+            "Fe2O3",
+            159.687,
+            pure_db,
+            ["Fe2O3"],
+            mass_basis=MASS_BASIS_TARGET_FORMULA,
+        )
+        impure = compute_recipe(
+            "Fe2O3",
+            159.687,
+            impure_db,
+            ["Fe2O3 | purity 50% | vendor Test"],
+            mass_basis=MASS_BASIS_TARGET_FORMULA,
+        )
+
+        self.assertAlmostEqual(
+            impure["coefficients"]["Fe2O3 | purity 50% | vendor Test"],
+            pure["coefficients"]["Fe2O3"],
+            places=12,
+        )
+        self.assertAlmostEqual(
+            impure["recipe"]["Fe2O3 | purity 50% | vendor Test"],
+            pure["recipe"]["Fe2O3"] * 2,
+            places=6,
+        )
+        self.assertEqual(impure["purity_factors"]["Fe2O3 | purity 50% | vendor Test"], 0.5)
+
     def test_legacy_target_formula_basis_is_still_available(self):
         db = {
             "Fe2O3": {"elements": parse_formula("Fe2O3")},

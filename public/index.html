@@ -245,6 +245,8 @@
         <form id="addPowderForm" class="panel">
           <h2>Add powder</h2>
           <label>Powder formula <input id="newPowderFormula" placeholder="Fe2O3"></label>
+          <label>Purity <input id="newPowderPurity" placeholder="99.9%"></label>
+          <label>Vendor / supplier <input id="newPowderCompany" placeholder="Sigma-Aldrich"></label>
           <label>Initial inventory grams <input id="newPowderGrams" type="number" min="0" step="0.0001" value="0"></label>
           <button type="submit" class="primary">Add Powder & Stock</button>
         </form>
@@ -273,7 +275,7 @@
           <h2>Powder database</h2>
           <div class="table-wrap tall">
             <table id="powderDatabaseTable">
-              <thead><tr><th>Powder</th><th>Molar mass</th><th>Elements</th><th>Stock</th></tr></thead>
+              <thead><tr><th>Powder</th><th>Formula</th><th>Purity</th><th>Vendor</th><th>Molar mass</th><th>Elements</th><th>Stock</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -428,6 +430,13 @@
               <input id="msdsPurity" placeholder="99.9%">
             </label>
             <label>
+              Vendor / supplier
+              <input id="msdsCompany" placeholder="Sigma-Aldrich">
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
               Closet
               <select id="msdsClosetNumber"></select>
             </label>
@@ -456,7 +465,7 @@
             <a id="msdsBinderDownload" class="download-link" href="/api/msds-binder" download="stoichio_msds_binder.pdf">Download MSDS Binder</a>
           </div>
           <div class="filters msds-filters">
-            <label>Search <input id="msdsSearch" placeholder="CAS, formula, purity, closet, MSDS"></label>
+            <label>Search <input id="msdsSearch" placeholder="CAS, formula, purity, vendor, closet, MSDS"></label>
             <label>Closet <select id="msdsClosetFilter"></select></label>
           </div>
           <div class="table-wrap tall">
@@ -466,6 +475,7 @@
                   <th>CAS</th>
                   <th>Name / Formula</th>
                   <th>Purity</th>
+                  <th>Vendor</th>
                   <th>Closet</th>
                   <th>MSDS status</th>
                   <th>Actions</th>
@@ -517,6 +527,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260525-6"></script>
+  <script src="/static/app.js?v=20260525-7"></script>
 </body>
 </html>

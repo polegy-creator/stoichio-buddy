@@ -70,7 +70,15 @@ from stoichio.powder_sets import (
     matching_powder_sets_for_target,
     save_powder_set,
 )
-from stoichio.powders import add_powder, delete_powder, load_powders, relevant_powders_for_target
+from stoichio.powders import (
+    add_powder,
+    delete_powder,
+    load_powders,
+    normalize_powder,
+    powder_display_name,
+    purity_fraction,
+    relevant_powders_for_target,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -193,6 +201,8 @@ class InventoryDeductRequest(BaseModel):
 class PowderCreateRequest(BaseModel):
     formula: str = Field(..., min_length=1)
     initial_grams: float = Field(0, ge=0)
+    purity: str = ""
+    company: str = ""
 
 
 class PowderSetRequest(BaseModel):
@@ -251,10 +261,16 @@ class MsdsInventoryRequest(BaseModel):
 def powder_payload(powder: str, record: dict, inventory: dict | None = None) -> dict:
     inventory = inventory or {}
     return {
-        "formula": powder,
+        "id": powder,
+        "display_name": powder_display_name(powder, record),
+        "formula": record.get("formula", powder),
         "molar_mass_g_mol": record.get("molar_mass"),
         "elements": record.get("elements", {}),
         "available_g": inventory.get(powder),
+        "purity": record.get("purity", ""),
+        "purity_fraction": purity_fraction(record),
+        "company": record.get("company") or record.get("supplier", ""),
+        "casNumber": record.get("casNumber", ""),
     }
 
 
@@ -434,10 +450,15 @@ def powders(target: str = Query(default=""), show_all: bool = Query(default=Fals
 @app.post("/api/powders")
 def create_powder(payload: PowderCreateRequest, x_stoichio_pin: str | None = Header(default=None)):
     require_write_pin(x_stoichio_pin)
-    powder, _ = add_powder(payload.formula)
+    powder, _ = add_powder(payload.formula, purity=payload.purity, company=payload.company)
     if payload.initial_grams > 0:
         set_inventory_quantity(powder, payload.initial_grams, reason="Initial stock when powder was added")
-    return {"powder": powder, "powders": all_powders_payload(), "inventory": load_inventory()}
+    return {
+        "powder": powder,
+        "powders": all_powders_payload(),
+        "inventory": load_inventory(),
+        "msds_inventory": load_msds_inventory(),
+    }
 
 
 @app.delete("/api/powders/{powder}")
@@ -677,7 +698,7 @@ def recipe(payload: RecipeRequest):
     db = load_powders()
     selected = []
     for powder in payload.selected_powders:
-        selected.append(normalize_formula(powder))
+        selected.append(normalize_powder(powder))
 
     result = compute_recipe(
         payload.target,

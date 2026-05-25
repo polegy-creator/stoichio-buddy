@@ -16,7 +16,7 @@ def render(ctx):
     inventory_dataframe = ctx.inventory_dataframe
     inventory_log = ctx.inventory_log
     inventory_log_dataframe = ctx.inventory_log_dataframe
-    normalize_formula = ctx.normalize_formula
+    powder_display_name = ctx.powder_display_name
     set_inventory_quantity = ctx.set_inventory_quantity
     st = ctx.st
     stock_row_class = ctx.stock_row_class
@@ -38,6 +38,8 @@ def render(ctx):
     with add_col:
         st.markdown("#### Add powder")
         new_formula = st.text_input("Powder formula", placeholder="Fe2O3")
+        new_purity = st.text_input("Purity", placeholder="99.9%")
+        new_company = st.text_input("Vendor / supplier", placeholder="Sigma-Aldrich")
         new_grams = st.number_input(
             "Initial inventory grams",
             min_value=0.0,
@@ -48,14 +50,14 @@ def render(ctx):
 
         if st.button("Add Powder & Stock", type="primary", width="stretch"):
             try:
-                powder_name, powders = add_powder(new_formula)
+                powder_name, powders = add_powder(new_formula, purity=new_purity, company=new_company)
                 if new_grams > 0:
                     set_inventory_quantity(powder_name, new_grams, reason="Initial stock when powder was added")
                 clear_data_cache()
                 if new_grams > 0:
-                    st.success(f"Added {powder_name} with {new_grams:g} g in inventory.")
+                    st.success(f"Added {powder_display_name(powder_name, powders[powder_name])} with {new_grams:g} g in inventory.")
                 else:
-                    st.success(f"Added {powder_name}.")
+                    st.success(f"Added {powder_display_name(powder_name, powders[powder_name])}.")
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
@@ -65,7 +67,11 @@ def render(ctx):
     with edit_col:
         st.markdown("#### Set quantity")
         powder_options = [""] + list(db.keys()) + [powder for powder in unknown_stock if powder not in db]
-        powder = st.selectbox("Powder", powder_options, format_func=lambda value: value or "Choose powder")
+        powder = st.selectbox(
+            "Powder",
+            powder_options,
+            format_func=lambda value: powder_display_name(value, db.get(value, {})) if value else "Choose powder",
+        )
         grams = st.number_input("Available grams", min_value=0.0, value=0.0, step=1.0, format="%.4f")
 
         if st.button("Save Quantity", type="primary", width="stretch"):
@@ -74,7 +80,7 @@ def render(ctx):
                     raise ValueError("Choose a powder")
                 set_inventory_quantity(powder, grams, reason="Manual inventory edit from UI")
                 clear_data_cache()
-                st.success(f"Updated {normalize_formula(powder)} to {grams:g} g.")
+                st.success(f"Updated {powder_display_name(powder, db.get(powder, {}))} to {grams:g} g.")
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
@@ -86,7 +92,7 @@ def render(ctx):
         powder_to_delete = st.selectbox(
             "Powder to delete",
             [""] + list(db.keys()),
-            format_func=lambda value: value or "Choose powder",
+            format_func=lambda value: powder_display_name(value, db.get(value, {})) if value else "Choose powder",
         )
         remove_deleted_stock = st.checkbox("Also remove its inventory entry", value=True)
 
@@ -96,7 +102,7 @@ def render(ctx):
                     raise ValueError("Choose a powder")
                 delete_powder(powder_to_delete, remove_inventory=remove_deleted_stock)
                 clear_data_cache()
-                st.success(f"Deleted {powder_to_delete}.")
+                st.success(f"Deleted {powder_display_name(powder_to_delete, db.get(powder_to_delete, {}))}.")
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
@@ -187,4 +193,3 @@ def render(ctx):
         )
     else:
         st.info("No inventory transactions logged yet.")
-

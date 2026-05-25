@@ -406,6 +406,15 @@ class LabManagerInventoryLogTests(unittest.TestCase):
         self.assertEqual(log_entries[1]["change_g"], -25)
         self.assertEqual(log_entries[1]["after_g"], 125)
 
+    def test_inventory_keeps_powder_variants_separate(self):
+        lab_manager.set_inventory_quantity("Fe2O3 | purity 99.9% | vendor A", 10, reason="Vendor A stock")
+        lab_manager.set_inventory_quantity("Fe2O3 | purity 95% | vendor B", 4, reason="Vendor B stock")
+
+        inventory = lab_manager.load_inventory()
+
+        self.assertEqual(inventory["Fe2O3 | purity 99.9% | vendor A"], 10)
+        self.assertEqual(inventory["Fe2O3 | purity 95% | vendor B"], 4)
+
     def test_recipe_deduction_is_logged(self):
         inventory = lab_manager.set_inventory_quantity("Fe2O3", 20, reason="Initial stock")
         lab_manager.consume_stock(

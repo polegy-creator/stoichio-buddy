@@ -62,6 +62,8 @@ from stoichio.powders import (
     add_powder,
     delete_powder,
     load_powders,
+    normalize_powder,
+    powder_display_name,
     relevant_powders_for_target,
 )
 from stoichio.lab_reports import (

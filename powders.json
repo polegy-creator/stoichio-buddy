@@ -5,6 +5,7 @@
             "Fe": 2.0,
             "O": 3.0
         },
+        "formula": "Fe2O3",
         "casNumber": "1309-37-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -19,6 +20,7 @@
             "Ti": 1.0,
             "O": 2.0
         },
+        "formula": "TiO2",
         "casNumber": "13463-67-7",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -33,6 +35,7 @@
             "Zn": 1.0,
             "O": 1.0
         },
+        "formula": "ZnO",
         "casNumber": "1314-13-2",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -47,6 +50,7 @@
             "Co": 3.0,
             "O": 4.0
         },
+        "formula": "Co3O4",
         "casNumber": "1308-06-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -61,6 +65,7 @@
             "Ni": 1.0,
             "O": 1.0
         },
+        "formula": "NiO",
         "casNumber": "1313-99-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -75,6 +80,7 @@
             "Hf": 1.0,
             "O": 2.0
         },
+        "formula": "HfO2",
         "casNumber": "12055-23-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -89,6 +95,7 @@
             "Cu": 1.0,
             "O": 1.0
         },
+        "formula": "CuO",
         "casNumber": "1317-38-0",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -103,6 +110,7 @@
             "Ta": 2.0,
             "O": 5.0
         },
+        "formula": "Ta2O5",
         "casNumber": "1314-61-0",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -118,6 +126,7 @@
             "C": 1.0,
             "O": 3.0
         },
+        "formula": "BaCO3",
         "casNumber": "513-77-9",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -132,6 +141,7 @@
             "Mg": 1.0,
             "O": 1.0
         },
+        "formula": "MgO",
         "casNumber": "1309-48-4",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -146,6 +156,7 @@
             "Mn": 1.0,
             "O": 2.0
         },
+        "formula": "MnO2",
         "casNumber": "1313-13-9",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -160,6 +171,7 @@
             "Al": 2.0,
             "O": 3.0
         },
+        "formula": "Al2O3",
         "casNumber": "1344-28-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -174,6 +186,7 @@
             "Nb": 2.0,
             "O": 5.0
         },
+        "formula": "Nb2O5",
         "casNumber": "1313-96-8",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -188,6 +201,7 @@
             "Co": 1.0,
             "O": 1.0
         },
+        "formula": "CoO",
         "casNumber": "1307-96-6",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -202,6 +216,7 @@
             "Mo": 1.0,
             "O": 3.0
         },
+        "formula": "MoO3",
         "casNumber": "1313-27-5",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -216,6 +231,7 @@
             "Sc": 2.0,
             "O": 3.0
         },
+        "formula": "Sc2O3",
         "casNumber": "12060-08-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -231,6 +247,7 @@
             "Ti": 1.0,
             "O": 3.0
         },
+        "formula": "BaTiO3",
         "casNumber": "12047-27-7",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -245,6 +262,7 @@
             "Cr": 2.0,
             "O": 3.0
         },
+        "formula": "Cr2O3",
         "casNumber": "1308-38-9",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -259,6 +277,7 @@
             "Sb": 2.0,
             "O": 3.0
         },
+        "formula": "Sb2O3",
         "casNumber": "1309-64-4",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -273,6 +292,7 @@
             "Tb": 4.0,
             "O": 7.0
         },
+        "formula": "Tb4O7",
         "casNumber": "12037-01-3",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -288,6 +308,7 @@
             "C": 1.0,
             "O": 3.0
         },
+        "formula": "CaCO3",
         "casNumber": "471-34-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -302,6 +323,7 @@
             "Zr": 1.0,
             "O": 2.0
         },
+        "formula": "ZrO2",
         "casNumber": "1314-23-4",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -316,6 +338,7 @@
             "Tm": 2.0,
             "O": 3.0
         },
+        "formula": "Tm2O3",
         "casNumber": "12036-44-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -330,6 +353,7 @@
             "Sn": 1.0,
             "O": 2.0
         },
+        "formula": "SnO2",
         "casNumber": "18282-10-5",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -344,6 +368,7 @@
             "La": 2.0,
             "O": 3.0
         },
+        "formula": "La2O3",
         "casNumber": "1312-81-8",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -359,6 +384,7 @@
             "C": 1.0,
             "O": 3.0
         },
+        "formula": "SrCO3",
         "casNumber": "1633-05-2",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -373,6 +399,7 @@
             "Ru": 1.0,
             "O": 2.0
         },
+        "formula": "RuO2",
         "casNumber": "12036-10-1",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -387,6 +414,7 @@
             "Y": 2.0,
             "O": 3.0
         },
+        "formula": "Y2O3",
         "casNumber": "1314-36-9",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -401,6 +429,7 @@
             "Pr": 6.0,
             "O": 11.0
         },
+        "formula": "Pr6O11",
         "casNumber": "12037-29-5",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -416,6 +445,7 @@
             "V": 1.0,
             "O": 4.0
         },
+        "formula": "BiVO4",
         "casNumber": "14059-33-7",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -430,6 +460,7 @@
             "Gd": 2.0,
             "O": 3.0
         },
+        "formula": "Gd2O3",
         "casNumber": "12064-62-9",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -444,6 +475,7 @@
             "Er": 2.0,
             "O": 3.0
         },
+        "formula": "Er2O3",
         "casNumber": "12061-16-4",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -458,6 +490,7 @@
             "Ce": 1.0,
             "O": 2.0
         },
+        "formula": "CeO2",
         "casNumber": "1306-38-3",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -472,6 +505,7 @@
             "V": 2.0,
             "O": 3.0
         },
+        "formula": "V2O3",
         "casNumber": "1314-34-7",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -486,6 +520,7 @@
             "W": 1.0,
             "O": 3.0
         },
+        "formula": "WO3",
         "casNumber": "1314-35-8",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -500,6 +535,7 @@
             "Yb": 2.0,
             "O": 3.0
         },
+        "formula": "Yb2O3",
         "casNumber": "1314-37-0",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -514,6 +550,7 @@
             "Bi": 2.0,
             "O": 3.0
         },
+        "formula": "Bi2O3",
         "casNumber": "1304-76-3",
         "identityStatus": "CAS imported from reference data - needs lab verification",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",

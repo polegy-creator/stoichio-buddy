@@ -129,6 +129,8 @@ const els = {
 
   addPowderForm: $("#addPowderForm"),
   newPowderFormula: $("#newPowderFormula"),
+  newPowderPurity: $("#newPowderPurity"),
+  newPowderCompany: $("#newPowderCompany"),
   newPowderGrams: $("#newPowderGrams"),
   inventoryForm: $("#inventoryForm"),
   inventoryPowder: $("#inventoryPowder"),
@@ -153,6 +155,7 @@ const els = {
   msdsNameFormula: $("#msdsNameFormula"),
   msdsLookupStatus: $("#msdsLookupStatus"),
   msdsPurity: $("#msdsPurity"),
+  msdsCompany: $("#msdsCompany"),
   msdsClosetNumber: $("#msdsClosetNumber"),
   msdsExternalUrl: $("#msdsExternalUrl"),
   msdsPdfFile: $("#msdsPdfFile"),
@@ -258,6 +261,14 @@ function msdsStatus(item) {
   if (item.msdsFileName || item.msdsStatus === "uploaded") return "uploaded";
   if (item.msdsExternalUrl || item.msdsStatus === "link only") return "link only";
   return "missing";
+}
+
+function powderLabel(powder) {
+  return state.powders[powder]?.display_name || powder;
+}
+
+function powderFormula(powder) {
+  return state.powders[powder]?.formula || powder.split(" | ")[0];
 }
 
 function statusPill(status) {
@@ -587,9 +598,10 @@ function renderPowderList(options, data) {
       <button type="button" class="icon favorite-toggle ${favorite ? "active" : ""}" data-favorite-powder="${escapeHtml(powder)}" title="${favorite ? "Remove favorite powder" : "Favorite this powder"}">${favorite ? "&#9733;" : "&#9734;"}</button>
       <label>
         <input type="checkbox" value="${escapeHtml(powder)}">
-        <span>${escapeHtml(powder)}</span>
+        <span>${escapeHtml(powderLabel(powder))}</span>
       </label>
       <span class="pill">${formatNumber(record.molar_mass_g_mol, 3)} g/mol</span>
+      ${record.purity ? `<span class="pill">${escapeHtml(record.purity)}</span>` : ""}
       <span class="pill">${record.available_g === null || record.available_g === undefined ? "no stock" : `${formatNumber(record.available_g, 3)} g`}</span>
       ${favorite ? `<span class="pill comfort">favorite</span>` : isRecent ? `<span class="pill comfort">recent</span>` : ""}
     `;
@@ -621,7 +633,7 @@ function renderPowderSets(matchingSets) {
     <strong>Saved powder sets</strong>
     ${matchingSets.map((record) => `
       <div class="inline-actions">
-        <span>${escapeHtml(record.name || record.record_id)} (${escapeHtml((record.powders || []).join(", "))})</span>
+        <span>${escapeHtml(record.name || record.record_id)} (${escapeHtml((record.powders || []).map(powderLabel).join(", "))})</span>
         <button type="button" class="secondary" data-apply-set="${escapeHtml(record.record_id)}">Apply</button>
         <button type="button" class="icon" data-delete-set="${escapeHtml(record.record_id)}" title="Delete powder set">&#128465;</button>
       </div>
@@ -826,7 +838,7 @@ function renderRecipeResult(data, mass) {
     const tr = document.createElement("tr");
     tr.className = after !== null && after < 0 ? "short" : after !== null && after < 10 ? "low" : "";
     tr.innerHTML = `
-      <td>${escapeHtml(powder)}</td>
+      <td>${escapeHtml(powderLabel(powder))}</td>
       <td>${formatNumber(grams, 6)}</td>
       <td>${available === undefined ? "Not in inventory" : formatNumber(available, 3)}</td>
       <td>${after === null ? "" : formatNumber(after, 3)}</td>
@@ -839,7 +851,7 @@ function renderRecipeResult(data, mass) {
 
 function recipeOneLineSummaryHtml(result, mass, stockOk) {
   const powders = Object.entries(result.recipe || {})
-    .map(([powder, grams]) => `${powder} ${formatNumber(grams, 6)} g`)
+    .map(([powder, grams]) => `${powderLabel(powder)} ${formatNumber(grams, 6)} g`)
     .join(" | ");
   const inputMass = result.input_mass ?? mass;
   const badges = [
@@ -861,7 +873,7 @@ function recipeSummaryText(result, mass) {
     "Powders:",
   ];
   for (const [powder, grams] of Object.entries(result.recipe || {})) {
-    lines.push(`- ${powder}: ${formatNumber(grams, 6)} g`);
+    lines.push(`- ${powderLabel(powder)}: ${formatNumber(grams, 6)} g`);
   }
   if (els.recipeNotes.value.trim()) lines.push(`Notes: ${els.recipeNotes.value.trim()}`);
   return lines.join("\n");
@@ -882,7 +894,7 @@ function recipeNotebookText(result, mass) {
   for (const [powder, grams] of Object.entries(result.recipe || {})) {
     const available = state.inventory[powder];
     const after = available === undefined ? "" : `, after recipe ${formatNumber(Number(available) - Number(grams), 3)} g`;
-    lines.push(`- ${powder}: ${formatNumber(grams, 6)} g${available === undefined ? " (not tracked in inventory)" : `, available ${formatNumber(available, 3)} g${after}`}`);
+    lines.push(`- ${powderLabel(powder)}: ${formatNumber(grams, 6)} g${available === undefined ? " (not tracked in inventory)" : `, available ${formatNumber(available, 3)} g${after}`}`);
   }
   if (state.lastRecipe?.stock_messages?.length) {
     lines.push(`Inventory warning: ${state.lastRecipe.stock_messages.join("; ")}`);
@@ -1180,7 +1192,7 @@ function renderInventorySelectors() {
     const previous = select.value;
     select.innerHTML = `<option value="">Choose powder</option>`;
     for (const powder of powderNames) {
-      select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(powder)}">${escapeHtml(powder)}</option>`);
+      select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(powder)}">${escapeHtml(powderLabel(powder))}</option>`);
     }
     if (powderNames.includes(previous)) select.value = previous;
   }
@@ -1196,7 +1208,7 @@ function renderInventoryAdjustment() {
   const current = Number(state.inventory[powder] || 0);
   setMessage(
     els.inventoryCurrent,
-    `${powder} current stock: ${formatNumber(current, 4)} g`,
+    `${powderLabel(powder)} current stock: ${formatNumber(current, 4)} g`,
     current < 10 ? "warning" : "good",
   );
 }
@@ -1211,7 +1223,10 @@ function renderPowderDatabase() {
       .join(", ");
     const available = state.inventory[powder] ?? record.available_g;
     tr.innerHTML = `
-      <td>${escapeHtml(powder)}</td>
+      <td>${escapeHtml(powderLabel(powder))}</td>
+      <td>${escapeHtml(record.formula || powderFormula(powder))}</td>
+      <td>${escapeHtml(record.purity || "")}</td>
+      <td>${escapeHtml(record.company || "")}</td>
       <td>${formatNumber(record.molar_mass_g_mol, 5)}</td>
       <td class="wrap">${escapeHtml(elements)}</td>
       <td>${available === undefined || available === null ? "" : formatNumber(available, 3)}</td>
@@ -1228,7 +1243,7 @@ function renderInventoryTables() {
       const lowB = Number(bv) < 10 ? 0 : 1;
       return lowA - lowB || a.localeCompare(b);
     });
-  const low = rows.filter(([, grams]) => Number(grams) < 10).map(([powder]) => powder);
+  const low = rows.filter(([, grams]) => Number(grams) < 10).map(([powder]) => powderLabel(powder));
   els.lowStockDashboard.textContent = low.length ? `Low inventory below 10 g: ${low.join(", ")}` : "No powder below 10 g.";
   els.lowStockDashboard.className = `message ${low.length ? "warning" : "good"}`;
 
@@ -1242,7 +1257,7 @@ function renderInventoryTables() {
     const tr = document.createElement("tr");
     tr.className = after !== null && after < 0 ? "short" : Number(grams) < 10 || (after !== null && after < 10) ? "low" : "";
     tr.innerHTML = `
-      <td>${escapeHtml(powder)}</td>
+      <td>${escapeHtml(powderLabel(powder))}</td>
       <td>${formatNumber(grams, 3)}</td>
       <td>${need === undefined ? "" : formatNumber(need, 6)}</td>
       <td>${after === null ? "" : formatNumber(after, 3)}</td>
@@ -1259,7 +1274,7 @@ function renderInventoryTables() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${niceTime(entry.time)}</td>
-      <td>${escapeHtml(entry.powder)}</td>
+      <td>${escapeHtml(powderLabel(entry.powder))}</td>
       <td>${formatNumber(entry.change_g, 6)}</td>
       <td>${formatNumber(entry.before_g, 6)}</td>
       <td>${formatNumber(entry.after_g, 6)}</td>
@@ -1276,7 +1291,7 @@ function renderMsdsInventory() {
   const rows = filteredMsdsItems();
   els.msdsTableBody.innerHTML = "";
   if (!rows.length) {
-    els.msdsTableBody.innerHTML = `<tr><td colspan="6" class="empty-table">No material records match this view.</td></tr>`;
+    els.msdsTableBody.innerHTML = `<tr><td colspan="7" class="empty-table">No material records match this view.</td></tr>`;
     return;
   }
 
@@ -1288,6 +1303,7 @@ function renderMsdsInventory() {
       <td>${item.casNumber ? escapeHtml(item.casNumber) : `<span class="needs-verification">needs verification</span>`}</td>
       <td>${item.nameOrFormula ? escapeHtml(item.nameOrFormula) : `<span class="needs-verification">needs verification</span>`}</td>
       <td>${escapeHtml(item.purity || "")}</td>
+      <td>${escapeHtml(item.company || "")}</td>
       <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
       <td>${statusPill(status)}${item.msdsExternalUrl ? ` <a href="${escapeHtml(item.msdsExternalUrl)}" target="_blank" rel="noopener">link</a>` : ""}</td>
       <td class="row-actions">
@@ -1353,6 +1369,7 @@ function resetMsdsForm() {
   els.msdsCasNumber.value = "";
   els.msdsNameFormula.value = "";
   els.msdsPurity.value = "";
+  els.msdsCompany.value = "";
   els.msdsClosetNumber.value = "1";
   els.msdsExternalUrl.value = "";
   els.msdsPdfFile.value = "";
@@ -1368,6 +1385,7 @@ function editMsdsItem(itemId) {
   els.msdsCasNumber.value = item.casNumber || "";
   els.msdsNameFormula.value = item.nameOrFormula || "";
   els.msdsPurity.value = item.purity || "";
+  els.msdsCompany.value = item.company || "";
   els.msdsClosetNumber.value = String(item.closetNumber || 1);
   els.msdsExternalUrl.value = item.msdsExternalUrl || "";
   els.msdsPdfFile.value = "";
@@ -1382,9 +1400,9 @@ function msdsPayload() {
     casNumber: els.msdsCasNumber.value.trim(),
     nameOrFormula: els.msdsNameFormula.value.trim(),
     purity: els.msdsPurity.value.trim(),
+    company: els.msdsCompany.value.trim(),
     closetNumber: Number(els.msdsClosetNumber.value || 1),
     msdsExternalUrl: els.msdsExternalUrl.value.trim(),
-    company: "",
     identityStatus: "needs verification",
   };
 }
@@ -1478,6 +1496,7 @@ async function lookupMsdsIdentity(source) {
       els.msdsCasNumber.value = match.casNumber || "";
     }
     if (!els.msdsPurity.value.trim()) els.msdsPurity.value = match.purity || "";
+    if (!els.msdsCompany.value.trim()) els.msdsCompany.value = match.company || "";
     if (!els.msdsExternalUrl.value.trim()) els.msdsExternalUrl.value = match.msdsExternalUrl || "";
     els.msdsLookupStatus.textContent = `Matched existing record: ${match.nameOrFormula || match.casNumber}.`;
   } catch (error) {
@@ -1536,13 +1555,16 @@ async function addPowder(event) {
   try {
     const data = await api.send("/api/powders", "POST", {
       formula: els.newPowderFormula.value,
+      purity: els.newPowderPurity.value,
+      company: els.newPowderCompany.value,
       initial_grams: Number(els.newPowderGrams.value),
     });
     state.powders = data.powders || state.powders;
     state.inventory = data.inventory || state.inventory;
+    state.msdsInventory = data.msds_inventory || state.msdsInventory;
     renderEverything();
     await loadPowderOptions();
-    flash(`Added ${data.powder}.`);
+    flash(`Added ${powderLabel(data.powder)}.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {
@@ -1566,7 +1588,7 @@ async function adjustInventory(direction, button) {
   if (direction === "remove" && amount >= current && current > 0) {
     const accepted = await confirmDanger(
       `Remove all ${powder} stock?`,
-      `This will clamp ${powder} inventory from ${formatNumber(current, 4)} g to 0 g.`,
+      `This will clamp ${powderLabel(powder)} inventory from ${formatNumber(current, 4)} g to 0 g.`,
       "Remove Stock",
     );
     if (!accepted) return;
@@ -1584,7 +1606,7 @@ async function adjustInventory(direction, button) {
     state.inventory = data.inventory || state.inventory;
     state.inventoryLog = data.inventory_log || state.inventoryLog;
     renderEverything();
-    flash(`${verb} ${formatNumber(amount, 4)} g for ${powder}. New stock: ${formatNumber(next, 4)} g.`);
+    flash(`${verb} ${formatNumber(amount, 4)} g for ${powderLabel(powder)}. New stock: ${formatNumber(next, 4)} g.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {
@@ -1600,7 +1622,7 @@ async function removePowder(event) {
     return;
   }
   const accepted = await confirmDanger(
-    `Delete ${powder}?`,
+    `Delete ${powderLabel(powder)}?`,
     els.removeDeletedStock.checked
       ? "This removes the powder from the database and removes its inventory row. History records stay unchanged."
       : "This removes the powder from the database but keeps the inventory row.",
@@ -1615,7 +1637,7 @@ async function removePowder(event) {
     state.inventory = data.inventory || state.inventory;
     renderEverything();
     await loadPowderOptions();
-    flash(`Deleted ${powder}.`);
+    flash(`Deleted ${powderLabel(powder)}.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {

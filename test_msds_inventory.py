@@ -82,6 +82,27 @@ class MsdsInventoryTest(unittest.TestCase):
         self.assertEqual(by_name["casNumber"], "7732-18-5")
         self.assertIsNone(unknown)
 
+    def test_same_cas_can_have_different_vendor_records(self):
+        first, items = save_msds_inventory_item({
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "99.9%",
+            "company": "Vendor A",
+            "closetNumber": 1,
+        })
+        second, items = save_msds_inventory_item({
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "99.9%",
+            "company": "Vendor B",
+            "closetNumber": 1,
+        })
+
+        matching = [item for item in items if item["casNumber"] == "1309-37-1"]
+
+        self.assertNotEqual(first["id"], second["id"])
+        self.assertEqual({item["company"] for item in matching}, {"Vendor A", "Vendor B"})
+
     def test_msds_binder_generates_pdf_even_without_uploaded_files(self):
         save_msds_inventory_item({
             "casNumber": "7732-18-5",

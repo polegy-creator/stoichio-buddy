@@ -10,19 +10,20 @@ from stoichio.config import LOW_STOCK_THRESHOLD_G
 from stoichio.chemistry.density_engine import DEFAULT_DIE_DIAMETER_MM
 from stoichio.chemistry.formula_parser import normalize_formula, parse_formula
 from stoichio.chemistry.stoich_engine import MASS_BASIS_TARGET_FORMULA, MASS_BASIS_TOTAL_PRECURSOR
+from stoichio.powders import normalize_powder, powder_display_name
 
 
 def recipe_dataframe(recipe_masses, inventory=None):
     rows = []
     for powder, grams in recipe_masses.items():
         row = {
-            "Powder": powder,
+            "Powder": powder_display_name(powder),
             "Mass (g)": round(grams, 3),
             "Exact mass (g)": grams,
         }
 
         if inventory is not None:
-            available = inventory.get(normalize_formula(powder))
+            available = inventory.get(normalize_powder(powder))
             if available is None:
                 row.update(
                     {
@@ -64,7 +65,10 @@ def database_dataframe(db):
     return pd.DataFrame(
         [
             {
-                "Powder": powder,
+                "Powder": powder_display_name(powder, record),
+                "Formula": record.get("formula", powder),
+                "Purity": record.get("purity", ""),
+                "Vendor": record.get("company") or record.get("supplier", ""),
                 "Molar mass (g/mol)": round(record["molar_mass"], 3),
                 "Composition": ", ".join(
                     f"{element}{amount:g}" for element, amount in record["elements"].items()
@@ -79,12 +83,12 @@ def inventory_dataframe(inventory, recipe_masses=None):
     rows = []
     recipe_masses = recipe_masses or {}
     normalized_requirements = {
-        normalize_formula(powder): grams
+        normalize_powder(powder): grams
         for powder, grams in recipe_masses.items()
     }
 
     for powder, grams in inventory.items():
-        required = normalized_requirements.get(normalize_formula(powder), 0.0)
+        required = normalized_requirements.get(normalize_powder(powder), 0.0)
         remaining = grams - required
 
         if required > grams:
@@ -95,7 +99,7 @@ def inventory_dataframe(inventory, recipe_masses=None):
             status = "OK"
 
         row = {
-            "Powder": powder,
+            "Powder": powder_display_name(powder),
             "Available (g)": round(grams, 3),
             "Status": status,
         }
