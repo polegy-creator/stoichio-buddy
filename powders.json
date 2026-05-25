@@ -11,7 +11,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
         "pubchemCid": "518696",
         "pubchemFormula": "Fe2O3",
-        "pubchemIupacName": "oxo(oxoferriooxy)iron"
+        "pubchemIupacName": "oxo(oxoferriooxy)iron",
+        "formula": "Fe2O3"
     },
     "TiO2": {
         "molar_mass": 79.865,
@@ -25,7 +26,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/26042",
         "pubchemCid": "26042",
         "pubchemFormula": "O2Ti",
-        "pubchemIupacName": "dioxotitanium"
+        "pubchemIupacName": "dioxotitanium",
+        "formula": "TiO2"
     },
     "ZnO": {
         "molar_mass": 81.37899999999999,
@@ -39,7 +41,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3007857",
         "pubchemCid": "3007857",
         "pubchemFormula": "OZn",
-        "pubchemIupacName": "zinc oxygen(2-)"
+        "pubchemIupacName": "zinc oxygen(2-)",
+        "formula": "ZnO"
     },
     "Co3O4": {
         "molar_mass": 240.79500000000002,
@@ -53,7 +56,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/11651651",
         "pubchemCid": "11651651",
         "pubchemFormula": "Co3O4",
-        "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt"
+        "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt",
+        "formula": "Co3O4"
     },
     "NiO": {
         "molar_mass": 74.692,
@@ -67,7 +71,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/179931",
         "pubchemCid": "179931",
         "pubchemFormula": "NiO",
-        "pubchemIupacName": "nickel(2+);oxygen(2-)"
+        "pubchemIupacName": "nickel(2+);oxygen(2-)",
+        "formula": "NiO"
     },
     "HfO2": {
         "molar_mass": 210.488,
@@ -81,7 +86,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/292779",
         "pubchemCid": "292779",
         "pubchemFormula": "HfO2",
-        "pubchemIupacName": "dioxohafnium"
+        "pubchemIupacName": "dioxohafnium",
+        "formula": "HfO2"
     },
     "CuO": {
         "molar_mass": 79.545,
@@ -95,7 +101,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/164827",
         "pubchemCid": "164827",
         "pubchemFormula": "CuO",
-        "pubchemIupacName": "copper oxygen(2-)"
+        "pubchemIupacName": "copper oxygen(2-)",
+        "formula": "CuO"
     },
     "Ta2O5": {
         "molar_mass": 441.895,
@@ -109,7 +116,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/62157",
         "pubchemCid": "62157",
         "pubchemFormula": "O5Ta2",
-        "pubchemIupacName": "pentakis(oxygen(2-));bis(tantalum(5+))"
+        "pubchemIupacName": "pentakis(oxygen(2-));bis(tantalum(5+))",
+        "formula": "Ta2O5"
     },
     "BaCO3": {
         "molar_mass": 197.33800000000002,
@@ -124,7 +132,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/10563",
         "pubchemCid": "10563",
         "pubchemFormula": "CBaO3",
-        "pubchemIupacName": "barium(2+) carbonate"
+        "pubchemIupacName": "barium(2+) carbonate",
+        "formula": "BaCO3"
     },
     "MgO": {
         "molar_mass": 40.304,
@@ -138,7 +147,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14792",
         "pubchemCid": "14792",
         "pubchemFormula": "MgO",
-        "pubchemIupacName": "oxomagnesium"
+        "pubchemIupacName": "oxomagnesium",
+        "formula": "MgO"
     },
     "MnO2": {
         "molar_mass": 86.936,
@@ -152,7 +162,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14801",
         "pubchemCid": "14801",
         "pubchemFormula": "MnO2",
-        "pubchemIupacName": "dioxomanganese"
+        "pubchemIupacName": "dioxomanganese",
+        "formula": "MnO2"
     },
     "Al2O3": {
         "molar_mass": 101.961,
@@ -166,7 +177,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/9989226",
         "pubchemCid": "9989226",
         "pubchemFormula": "Al2O3",
-        "pubchemIupacName": "dialuminum;tris(oxygen(2-))"
+        "pubchemIupacName": "dialuminum;tris(oxygen(2-))",
+        "formula": "Al2O3"
     },
     "Nb2O5": {
         "molar_mass": 265.807,
@@ -180,7 +192,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/9903420",
         "pubchemCid": "9903420",
         "pubchemFormula": "Nb2O5",
-        "pubchemIupacName": "bis(niobium(5+));pentakis(oxygen(2-))"
+        "pubchemIupacName": "bis(niobium(5+));pentakis(oxygen(2-))",
+        "formula": "Nb2O5"
     },
     "CoO": {
         "molar_mass": 74.932,
@@ -194,7 +207,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14786",
         "pubchemCid": "14786",
         "pubchemFormula": "CoO",
-        "pubchemIupacName": "oxocobalt"
+        "pubchemIupacName": "oxocobalt",
+        "formula": "CoO"
     },
     "MoO3": {
         "molar_mass": 143.947,
@@ -208,7 +222,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14802",
         "pubchemCid": "14802",
         "pubchemFormula": "MoO3",
-        "pubchemIupacName": "trioxomolybdenum"
+        "pubchemIupacName": "trioxomolybdenum",
+        "formula": "MoO3"
     },
     "Sc2O3": {
         "molar_mass": 137.909,
@@ -222,7 +237,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/134661",
         "pubchemCid": "134661",
         "pubchemFormula": "O3Sc2",
-        "pubchemIupacName": "tris(oxygen(2-));bis(scandium(3+))"
+        "pubchemIupacName": "tris(oxygen(2-));bis(scandium(3+))",
+        "formula": "Sc2O3"
     },
     "BaTiO3": {
         "molar_mass": 233.19400000000002,
@@ -237,7 +253,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159419",
         "pubchemCid": "159419",
         "pubchemFormula": "BaO3Ti",
-        "pubchemIupacName": "barium(2+);tris(oxygen(2-));titanium(4+)"
+        "pubchemIupacName": "barium(2+);tris(oxygen(2-));titanium(4+)",
+        "formula": "BaTiO3"
     },
     "Cr2O3": {
         "molar_mass": 151.989,
@@ -251,7 +268,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/517277",
         "pubchemCid": "517277",
         "pubchemFormula": "Cr2O3",
-        "pubchemIupacName": "oxo(oxochromiooxy)chromium"
+        "pubchemIupacName": "oxo(oxochromiooxy)chromium",
+        "formula": "Cr2O3"
     },
     "Sb2O3": {
         "molar_mass": 291.517,
@@ -265,7 +283,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14794",
         "pubchemCid": "14794",
         "pubchemFormula": "O3Sb2",
-        "pubchemIupacName": "bis(antimony(3+));tris(oxygen(2-))"
+        "pubchemIupacName": "bis(antimony(3+));tris(oxygen(2-))",
+        "formula": "Sb2O3"
     },
     "Tb4O7": {
         "molar_mass": 747.7130000000001,
@@ -279,7 +298,8 @@
         "casSourceUrl": "https://www.samaterials.com/terbium/1120-terbium-oxide.html",
         "pubchemCid": "16211492",
         "pubchemFormula": "O7Tb4",
-        "pubchemIupacName": "terbium;oxygen(2-)"
+        "pubchemIupacName": "terbium;oxygen(2-)",
+        "formula": "Tb4O7"
     },
     "CaCO3": {
         "molar_mass": 100.086,
@@ -294,7 +314,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/10112",
         "pubchemCid": "10112",
         "pubchemFormula": "CCaO3",
-        "pubchemIupacName": "calcium carbonate"
+        "pubchemIupacName": "calcium carbonate",
+        "formula": "CaCO3"
     },
     "ZrO2": {
         "molar_mass": 123.22200000000001,
@@ -308,7 +329,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/62395",
         "pubchemCid": "62395",
         "pubchemFormula": "O2Zr",
-        "pubchemIupacName": "dioxozirconium"
+        "pubchemIupacName": "dioxozirconium",
+        "formula": "ZrO2"
     },
     "Tm2O3": {
         "molar_mass": 385.857,
@@ -322,7 +344,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159411",
         "pubchemCid": "159411",
         "pubchemFormula": "O3Tm2",
-        "pubchemIupacName": "tris(oxygen(2-));bis(thulium(3+))"
+        "pubchemIupacName": "tris(oxygen(2-));bis(thulium(3+))",
+        "formula": "Tm2O3"
     },
     "SnO2": {
         "molar_mass": 150.708,
@@ -336,7 +359,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/16747781",
         "pubchemCid": "16747781",
         "pubchemFormula": "O2Sn",
-        "pubchemIupacName": "bis(oxygen(2-));tin(4+)"
+        "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
+        "formula": "SnO2"
     },
     "La2O3": {
         "molar_mass": 325.817,
@@ -350,7 +374,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/150906",
         "pubchemCid": "150906",
         "pubchemFormula": "La2O3",
-        "pubchemIupacName": "bis(lanthanum(3+));tris(oxygen(2-))"
+        "pubchemIupacName": "bis(lanthanum(3+));tris(oxygen(2-))",
+        "formula": "La2O3"
     },
     "SrCO3": {
         "molar_mass": 147.62800000000001,
@@ -365,7 +390,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/15407",
         "pubchemCid": "15407",
         "pubchemFormula": "CO3Sr",
-        "pubchemIupacName": "strontium carbonate"
+        "pubchemIupacName": "strontium carbonate",
+        "formula": "SrCO3"
     },
     "RuO2": {
         "molar_mass": 133.06799999999998,
@@ -379,7 +405,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/82848",
         "pubchemCid": "82848",
         "pubchemFormula": "O2Ru",
-        "pubchemIupacName": "dioxoruthenium"
+        "pubchemIupacName": "dioxoruthenium",
+        "formula": "RuO2"
     },
     "Y2O3": {
         "molar_mass": 225.80900000000003,
@@ -393,7 +420,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159374",
         "pubchemCid": "159374",
         "pubchemFormula": "O3Y2",
-        "pubchemIupacName": "tris(oxygen(2-));bis(yttrium(3+))"
+        "pubchemIupacName": "tris(oxygen(2-));bis(yttrium(3+))",
+        "formula": "Y2O3"
     },
     "Pr6O11": {
         "molar_mass": 1021.4490000000001,
@@ -407,7 +435,8 @@
         "casSourceUrl": "https://www.elementschina.com/praseodymium-oxide-pr6o11.html",
         "pubchemCid": "16211481",
         "pubchemFormula": "O11Pr6",
-        "pubchemIupacName": "oxygen(2-);praseodymium(3+)"
+        "pubchemIupacName": "oxygen(2-);praseodymium(3+)",
+        "formula": "Pr6O11"
     },
     "BiVO4": {
         "molar_mass": 323.918,
@@ -422,7 +451,8 @@
         "casSourceUrl": "https://www.govinfo.gov/content/pkg/CFR-2024-title40-vol33/pdf/CFR-2024-title40-vol33-part712-subpartB.pdf",
         "pubchemCid": "20243764",
         "pubchemFormula": "BiO4V",
-        "pubchemIupacName": "bismuth trioxido(oxo)vanadium"
+        "pubchemIupacName": "bismuth trioxido(oxo)vanadium",
+        "formula": "BiVO4"
     },
     "Gd2O3": {
         "molar_mass": 362.497,
@@ -436,7 +466,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159427",
         "pubchemCid": "159427",
         "pubchemFormula": "Gd2O3",
-        "pubchemIupacName": "bis(gadolinium(3+));tris(oxygen(2-))"
+        "pubchemIupacName": "bis(gadolinium(3+));tris(oxygen(2-))",
+        "formula": "Gd2O3"
     },
     "Er2O3": {
         "molar_mass": 382.517,
@@ -450,7 +481,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159426",
         "pubchemCid": "159426",
         "pubchemFormula": "Er2O3",
-        "pubchemIupacName": "bis(erbium(3+));tris(oxygen(2-))"
+        "pubchemIupacName": "bis(erbium(3+));tris(oxygen(2-))",
+        "formula": "Er2O3"
     },
     "CeO2": {
         "molar_mass": 172.118,
@@ -464,7 +496,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/73963",
         "pubchemCid": "73963",
         "pubchemFormula": "CeO2",
-        "pubchemIupacName": "dioxocerium"
+        "pubchemIupacName": "dioxocerium",
+        "formula": "CeO2"
     },
     "V2O3": {
         "molar_mass": 149.881,
@@ -478,7 +511,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518710",
         "pubchemCid": "518710",
         "pubchemFormula": "O3V2",
-        "pubchemIupacName": "oxo(oxovanadiooxy)vanadium"
+        "pubchemIupacName": "oxo(oxovanadiooxy)vanadium",
+        "formula": "V2O3"
     },
     "WO3": {
         "molar_mass": 231.837,
@@ -492,7 +526,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14811",
         "pubchemCid": "14811",
         "pubchemFormula": "O3W",
-        "pubchemIupacName": "trioxotungsten"
+        "pubchemIupacName": "trioxotungsten",
+        "formula": "WO3"
     },
     "Yb2O3": {
         "molar_mass": 394.09700000000004,
@@ -506,7 +541,8 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159375",
         "pubchemCid": "159375",
         "pubchemFormula": "O3Yb2",
-        "pubchemIupacName": "tris(oxygen(2-));bis(ytterbium(3+))"
+        "pubchemIupacName": "tris(oxygen(2-));bis(ytterbium(3+))",
+        "formula": "Yb2O3"
     },
     "Bi2O3": {
         "molar_mass": 465.957,
@@ -520,6 +556,7 @@
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14776",
         "pubchemCid": "14776",
         "pubchemFormula": "Bi2O3",
-        "pubchemIupacName": "oxo(oxobismuthanyloxy)bismuthane"
+        "pubchemIupacName": "oxo(oxobismuthanyloxy)bismuthane",
+        "formula": "Bi2O3"
     }
 }
