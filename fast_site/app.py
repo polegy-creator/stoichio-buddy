@@ -99,6 +99,14 @@ async def value_error_handler(_: Request, exc: ValueError):
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
+@app.exception_handler(RuntimeError)
+async def runtime_error_handler(_: Request, exc: RuntimeError):
+    message = str(exc)
+    if "Shared storage" in message or "data was not saved" in message:
+        return JSONResponse(status_code=409, content={"detail": message})
+    return JSONResponse(status_code=500, content={"detail": "Unexpected server error."})
+
+
 def storage_mode() -> str:
     if storage.has_shared_storage():
         return storage.storage_label()

@@ -2,6 +2,7 @@
 
 import datetime
 import base64
+import copy
 import json
 import os
 import re
@@ -37,6 +38,7 @@ SHEET_TABS = {
 _storage_backend = None
 _storage_label = "Local JSON files"
 _storage_error = None
+_MISSING = object()
 
 
 class GoogleSheetsStore:
@@ -198,6 +200,7 @@ class GitHubJsonStore:
         self.branch = str(branch or "lab-data").strip()
         self.path_prefix = str(path_prefix or "").strip().strip("/")
         self.api_root = f"https://api.github.com/repos/{self.repo}/contents"
+        self._loaded_documents = {}
 
     def _repo_path(self, path):
         base_name = os.path.basename(path)
@@ -248,38 +251,188 @@ class GitHubJsonStore:
     def load(self, path, default):
         record = self._load_content_record(path, allow_404=True)
         if record is None:
+            self._remember_loaded_document(path, default, None)
             return default
         content = record.get("content", "")
         if not content:
+            self._remember_loaded_document(path, default, record.get("sha"))
             return default
         try:
             decoded = base64.b64decode(content).decode("utf-8").strip()
-            return json.loads(decoded) if decoded else default
+            data = json.loads(decoded) if decoded else default
+            self._remember_loaded_document(path, data, record.get("sha"))
+            return data
         except (ValueError, json.JSONDecodeError):
+            self._remember_loaded_document(path, default, record.get("sha"))
             return default
+
+    @staticmethod
+    def _decode_content_record(record, default):
+        if record is None:
+            return copy.deepcopy(default), None
+        content = record.get("content", "")
+        if not content:
+            return copy.deepcopy(default), record.get("sha")
+        decoded = base64.b64decode(content).decode("utf-8").strip()
+        return (json.loads(decoded) if decoded else copy.deepcopy(default)), record.get("sha")
+
+    def _remember_loaded_document(self, path, data, sha):
+        self._loaded_documents[self._repo_path(path)] = {
+            "sha": sha,
+            "data": copy.deepcopy(data),
+        }
 
     def save(self, path, data):
         repo_path = self._repo_path(path)
-        payload_text = json.dumps(data, indent=4)
-        content = base64.b64encode((payload_text + "\n").encode("utf-8")).decode("ascii")
         existing = self._load_content_record(path, allow_404=True)
+        existing_data, existing_sha = self._decode_content_record(existing, None)
+        loaded = self._loaded_documents.get(repo_path)
+        data_to_save = data
+
+        if loaded and loaded.get("sha") != existing_sha:
+            data_to_save = merge_json_documents(
+                loaded.get("data"),
+                data,
+                existing_data,
+                path=os.path.basename(path),
+            )
+
         payload = {
             "message": f"Update Stoichio Buddy data: {os.path.basename(path)}",
-            "content": content,
+            "content": self._encoded_content(data_to_save),
             "branch": self.branch,
         }
-        if existing and existing.get("sha"):
-            payload["sha"] = existing["sha"]
+        if existing_sha:
+            payload["sha"] = existing_sha
 
         try:
-            self._request("PUT", self._put_url(path), payload=payload)
+            response = self._request("PUT", self._put_url(path), payload=payload)
         except RuntimeError as exc:
             # Retry once with a fresh SHA in case two lab users saved near the same time.
             if "409" not in str(exc):
                 raise
             existing = self._load_content_record(path, allow_404=False)
-            payload["sha"] = existing["sha"]
-            self._request("PUT", self._put_url(path), payload=payload)
+            retry_data, retry_sha = self._decode_content_record(existing, None)
+            data_to_save = merge_json_documents(
+                loaded.get("data") if loaded else existing_data,
+                data_to_save,
+                retry_data,
+                path=os.path.basename(path),
+            )
+            payload["content"] = self._encoded_content(data_to_save)
+            payload["sha"] = retry_sha
+            response = self._request("PUT", self._put_url(path), payload=payload)
+
+        saved_sha = (response.get("content") or {}).get("sha") if isinstance(response, dict) else None
+        self._remember_loaded_document(path, data_to_save, saved_sha)
+
+    @staticmethod
+    def _encoded_content(data):
+        payload_text = json.dumps(data, indent=4)
+        return base64.b64encode((payload_text + "\n").encode("utf-8")).decode("ascii")
+
+
+def merge_json_documents(base, local, remote, path="JSON document"):
+    try:
+        return _merge_json_value(base, local, remote)
+    except RuntimeError as exc:
+        raise RuntimeError(f"Could not merge concurrent edits in {path}: {exc}") from exc
+
+
+def _merge_json_value(base, local, remote):
+    if local == remote:
+        return copy.deepcopy(local)
+    if remote == base:
+        return copy.deepcopy(local)
+    if local == base:
+        return copy.deepcopy(remote)
+
+    if isinstance(base, dict) and isinstance(local, dict) and isinstance(remote, dict):
+        return _merge_json_dict(base, local, remote)
+
+    if isinstance(base, list) and isinstance(local, list) and isinstance(remote, list):
+        return _merge_json_list(base, local, remote)
+
+    raise RuntimeError("same value changed differently by two saves")
+
+
+def _merge_json_dict(base, local, remote):
+    merged = {}
+    ordered_keys = []
+    for source in (remote, local, base):
+        for key in source:
+            if key not in ordered_keys:
+                ordered_keys.append(key)
+
+    for key in ordered_keys:
+        base_value = base.get(key, _MISSING)
+        local_value = local.get(key, _MISSING)
+        remote_value = remote.get(key, _MISSING)
+        merged_value = _merge_json_slot(base_value, local_value, remote_value)
+        if merged_value is not _MISSING:
+            merged[key] = merged_value
+    return merged
+
+
+def _merge_json_slot(base_value, local_value, remote_value):
+    if local_value == remote_value:
+        return copy.deepcopy(local_value)
+    if remote_value == base_value:
+        return copy.deepcopy(local_value)
+    if local_value == base_value:
+        return copy.deepcopy(remote_value)
+    if base_value is _MISSING or local_value is _MISSING or remote_value is _MISSING:
+        raise RuntimeError("same key was edited and deleted or created differently")
+    return _merge_json_value(base_value, local_value, remote_value)
+
+
+def _merge_json_list(base, local, remote):
+    identity_key = _list_identity_key(base, local, remote)
+    if not identity_key:
+        raise RuntimeError("same list changed differently and cannot be merged safely")
+
+    base_map = {item[identity_key]: item for item in base}
+    local_map = {item[identity_key]: item for item in local}
+    remote_map = {item[identity_key]: item for item in remote}
+
+    merged_map = {}
+    ordered_ids = []
+    for source in (remote, local, base):
+        for item in source:
+            item_id = item[identity_key]
+            if item_id not in ordered_ids:
+                ordered_ids.append(item_id)
+
+    for item_id in ordered_ids:
+        merged_value = _merge_json_slot(
+            base_map.get(item_id, _MISSING),
+            local_map.get(item_id, _MISSING),
+            remote_map.get(item_id, _MISSING),
+        )
+        if merged_value is not _MISSING:
+            merged_map[item_id] = merged_value
+
+    return [merged_map[item_id] for item_id in ordered_ids if item_id in merged_map]
+
+
+def _list_identity_key(*lists):
+    items = [item for values in lists for item in values]
+    if not items:
+        return None
+    if not all(isinstance(item, dict) for item in items):
+        return None
+
+    for key in ("entry_id", "record_id", "id"):
+        if all(key in item and item.get(key) for item in items) and all(
+            len([item[key] for item in values]) == len({item[key] for item in values})
+            for values in lists
+        ):
+            return key
+    return None
+
+
+def running_on_vercel():
+    return os.environ.get("VERCEL") == "1"
 
 
 def configure_google_sheets(credentials_info, spreadsheet_id=None, spreadsheet_name=None):
@@ -319,6 +472,11 @@ def disable_shared_storage(exc):
     global _storage_backend, _storage_label, _storage_error
     _storage_backend = None
     _storage_label = "Local JSON files (shared storage unavailable)"
+    _storage_error = str(exc)
+
+
+def record_shared_storage_error(exc):
+    global _storage_error
     _storage_error = str(exc)
 
 
@@ -438,5 +596,12 @@ def save_json(path, data):
             _storage_backend.save(path, data)
             return
         except Exception as exc:
+            if running_on_vercel():
+                record_shared_storage_error(exc)
+                raise RuntimeError(
+                    f"Shared storage write failed; data was not saved: {exc}"
+                ) from exc
             disable_shared_storage(exc)
+    if running_on_vercel():
+        raise RuntimeError("Shared storage is unavailable; data was not saved.")
     save_json_file(path, data)
