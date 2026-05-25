@@ -1,6 +1,8 @@
 import os
 import tempfile
 import unittest
+import json
+from pathlib import Path
 
 from stoichio.msds_inventory import (
     build_msds_binder_pdf,
@@ -33,6 +35,35 @@ class MsdsInventoryTest(unittest.TestCase):
         fe = next(item for item in first if item["nameOrFormula"] == "Fe2O3")
         self.assertEqual(fe["closetNumber"], 1)
         self.assertEqual(fe["closetLabel"], "1 \u2014 Powders")
+
+    def test_powder_cas_metadata_migrates_existing_blank_import(self):
+        Path("powders.json").write_text(json.dumps({
+            "Fe2O3": {
+                "elements": {"Fe": 2, "O": 3},
+                "casNumber": "1309-37-1",
+                "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
+                "pubchemCid": "518696",
+            }
+        }))
+        Path("msds_inventory.json").write_text(json.dumps({
+            "items": [{
+                "id": "powder:Fe2O3",
+                "casNumber": "",
+                "nameOrFormula": "Fe2O3",
+                "purity": "",
+                "closetNumber": 1,
+                "sourcePowderId": "powder:Fe2O3",
+            }],
+            "deletedPowderImports": [],
+        }))
+
+        items = load_msds_inventory()
+        fe = next(item for item in items if item["nameOrFormula"] == "Fe2O3")
+
+        self.assertEqual(fe["casNumber"], "1309-37-1")
+        self.assertEqual(fe["casSourceUrl"], "https://pubchem.ncbi.nlm.nih.gov/compound/518696")
+        self.assertEqual(fe["pubchemCid"], "518696")
+        self.assertIn("needs lab verification", fe["identityStatus"])
 
     def test_cas_and_name_lookup_use_known_records_only(self):
         saved, _ = save_msds_inventory_item({

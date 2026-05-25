@@ -24,6 +24,7 @@ CLOSETS = {
 _DEFAULT_STORE = {"items": [], "deletedPowderImports": []}
 _CAS_RE = re.compile(r"^(\d{2,7})-(\d{2})-(\d)$")
 _MAX_TEXT_LINES_PER_PAGE = 43
+POWDER_IDENTITY_STATUS = "CAS imported from powder database - needs lab verification"
 
 
 def now_iso() -> str:
@@ -142,6 +143,11 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
         "company": str(record.get("company") or "").strip(),
         "identityStatus": str(record.get("identityStatus") or "needs verification").strip(),
         "source": str(record.get("source") or "").strip(),
+        "casSource": str(record.get("casSource") or "").strip(),
+        "casSourceUrl": str(record.get("casSourceUrl") or "").strip(),
+        "pubchemCid": str(record.get("pubchemCid") or "").strip(),
+        "pubchemFormula": str(record.get("pubchemFormula") or "").strip(),
+        "pubchemIupacName": str(record.get("pubchemIupacName") or "").strip(),
         "sourcePowderId": str(record.get("sourcePowderId") or "").strip(),
         "createdAt": created,
         "updatedAt": record.get("updatedAt") or created,
@@ -162,6 +168,11 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
         "company": item.get("company", ""),
         "identityStatus": item.get("identityStatus", "needs verification"),
         "source": item.get("source", ""),
+        "casSource": item.get("casSource", ""),
+        "casSourceUrl": item.get("casSourceUrl", ""),
+        "pubchemCid": item.get("pubchemCid", ""),
+        "pubchemFormula": item.get("pubchemFormula", ""),
+        "pubchemIupacName": item.get("pubchemIupacName", ""),
         "createdAt": item.get("createdAt", ""),
         "updatedAt": item.get("updatedAt", ""),
         "msdsStatus": msds_status(item),
@@ -225,20 +236,35 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
     changed = False
     deleted = set(store.get("deletedPowderImports", []))
     items = store["items"]
-    existing_powder_ids = {item.get("sourcePowderId") for item in items if item.get("sourcePowderId")}
-    existing_names = {material_key(item.get("nameOrFormula")) for item in items if not item.get("casNumber")}
+    existing_powder_items = {
+        item.get("sourcePowderId"): item
+        for item in items
+        if item.get("sourcePowderId")
+    }
+    existing_named_items = {
+        material_key(item.get("nameOrFormula")): item
+        for item in items
+        if material_key(item.get("nameOrFormula"))
+    }
 
     for powder, record in load_powders().items():
         source_id = powder_import_id(powder)
-        if source_id in deleted or source_id in existing_powder_ids:
+        if source_id in deleted:
             continue
-        if material_key(powder) in existing_names:
+        existing_item = existing_powder_items.get(source_id) or existing_named_items.get(material_key(powder))
+        if existing_item:
+            if apply_powder_metadata_to_msds_item(existing_item, powder, record, source_id):
+                changed = True
+            continue
+
+        if material_key(powder) in existing_named_items:
             continue
 
         now = now_iso()
+        cas_number = normalize_cas_number(record.get("casNumber") or record.get("cas") or "")
         item = {
             "id": source_id,
-            "casNumber": normalize_cas_number(record.get("casNumber") or record.get("cas") or ""),
+            "casNumber": cas_number,
             "nameOrFormula": powder,
             "purity": str(record.get("purity") or "").strip(),
             "closetNumber": 1,
@@ -248,17 +274,52 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
             "company": str(record.get("company") or record.get("supplier") or "").strip(),
-            "identityStatus": "needs verification",
+            "identityStatus": str(record.get("identityStatus") or (POWDER_IDENTITY_STATUS if cas_number else "needs verification")).strip(),
             "source": "powder database",
+            "casSource": str(record.get("casSource") or "").strip(),
+            "casSourceUrl": str(record.get("casSourceUrl") or "").strip(),
+            "pubchemCid": str(record.get("pubchemCid") or "").strip(),
+            "pubchemFormula": str(record.get("pubchemFormula") or "").strip(),
+            "pubchemIupacName": str(record.get("pubchemIupacName") or "").strip(),
             "sourcePowderId": source_id,
             "createdAt": now,
             "updatedAt": now,
         }
         items.append(item)
-        existing_powder_ids.add(source_id)
-        existing_names.add(material_key(powder))
+        existing_powder_items[source_id] = item
+        existing_named_items[material_key(powder)] = item
         changed = True
 
+    return changed
+
+
+def apply_powder_metadata_to_msds_item(item: dict[str, Any], powder: str, record: dict[str, Any], source_id: str) -> bool:
+    changed = False
+    cas_number = normalize_cas_number(record.get("casNumber") or record.get("cas") or "")
+    updates = {
+        "sourcePowderId": source_id,
+        "source": "powder database",
+    }
+    if not item.get("nameOrFormula"):
+        updates["nameOrFormula"] = powder
+    if cas_number and not item.get("casNumber"):
+        updates["casNumber"] = cas_number
+        updates["identityStatus"] = str(record.get("identityStatus") or POWDER_IDENTITY_STATUS).strip()
+    for field in ("purity", "company"):
+        value = record.get(field) or (record.get("supplier") if field == "company" else "")
+        if value and not item.get(field):
+            updates[field] = str(value).strip()
+    for field in ("casSource", "casSourceUrl", "pubchemCid", "pubchemFormula", "pubchemIupacName"):
+        value = record.get(field)
+        if value and item.get(field) != str(value).strip():
+            updates[field] = str(value).strip()
+
+    for field, value in updates.items():
+        if item.get(field) != value:
+            item[field] = value
+            changed = True
+    if changed:
+        item["updatedAt"] = now_iso()
     return changed
 
 

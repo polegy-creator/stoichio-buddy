@@ -4,6 +4,19 @@ from stoichio.chemistry.formula_parser import molar_mass, normalize_formula, par
 from stoichio import storage
 
 POWDER_RELEVANCE_IGNORED_ELEMENTS = {"O", "H", "C", "N"}
+POWDER_METADATA_FIELDS = (
+    "casNumber",
+    "purity",
+    "company",
+    "supplier",
+    "identityStatus",
+    "source",
+    "casSource",
+    "casSourceUrl",
+    "pubchemCid",
+    "pubchemFormula",
+    "pubchemIupacName",
+)
 
 
 def normalize_powder(name):
@@ -61,10 +74,20 @@ def default_powders():
 
 def normalize_powder_record(record):
     elements = {element: float(amount) for element, amount in record.get("elements", {}).items()}
-    return {
+    normalized = {
         "molar_mass": molar_mass(elements),
         "elements": elements,
     }
+    cas_number = str(record.get("casNumber") or record.get("cas") or "").strip()
+    if cas_number:
+        normalized["casNumber"] = cas_number
+    for field in POWDER_METADATA_FIELDS:
+        if field == "casNumber":
+            continue
+        value = record.get(field)
+        if value is not None and str(value).strip():
+            normalized[field] = value if isinstance(value, (int, float)) else str(value).strip()
+    return normalized
 
 
 def load_powders():
