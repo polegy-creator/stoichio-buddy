@@ -16,25 +16,5 @@
         "entry_id": "62015688870c4335a12e73f3315e265d",
         "recipe_number": 1,
         "recipe_id": "R001"
-    },
-    {
-        "time": "2026-05-19T10:54:12",
-        "target": "CoFe1.99Ti0.01O4",
-        "mass": 15.485,
-        "selected_powders": [
-            "Fe2O3",
-            "TiO2",
-            "Co3O4"
-        ],
-        "recipe": {
-            "Fe2O3": 10.490311,
-            "TiO2": 0.052729,
-            "Co3O4": 5.299342
-        },
-        "warning": null,
-        "inventory_deducted": false,
-        "entry_id": "1c4128d7dd97444c95ab60376cba1996",
-        "recipe_number": 2,
-        "recipe_id": "R002"
     }
 ]
