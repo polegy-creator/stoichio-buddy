@@ -441,15 +441,15 @@
             "id": "powder:Tb4O7",
             "casNumber": "12037-01-3",
             "nameOrFormula": "Tb4O7",
-            "purity": "",
+            "purity": "99.9",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "Thermo Scientific",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://www.samaterials.com/terbium/1120-terbium-oxide.html",
@@ -458,7 +458,7 @@
             "pubchemIupacName": "terbium;oxygen(2-)",
             "sourcePowderId": "powder:Tb4O7",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T14:55:17"
         },
         {
             "id": "powder:CaCO3",
