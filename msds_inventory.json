@@ -395,15 +395,15 @@
             "id": "powder:Cr2O3",
             "casNumber": "1308-38-9",
             "nameOrFormula": "Cr2O3",
-            "purity": "",
+            "purity": "99.6",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "Thermo Scientific",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/517277",
@@ -412,7 +412,7 @@
             "pubchemIupacName": "oxo(oxochromiooxy)chromium",
             "sourcePowderId": "powder:Cr2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T14:57:55"
         },
         {
             "id": "powder:Sb2O3",
