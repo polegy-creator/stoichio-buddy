@@ -63,24 +63,6 @@
         "target_for": "vinoth"
     },
     {
-        "entry_id": "ef46d292ec9f44aea2e4b21f6344561e",
-        "entry_type": "target_density",
-        "time": "2026-05-31T13:11:00",
-        "target": "Fe203",
-        "measured_density_g_cm3": 4.884312529041968,
-        "theoretical_density_g_cm3": 5.255643832026548,
-        "relative_density_percent": 92.93461819612314,
-        "final_volume_cm3": 3.057134430119858,
-        "final_mass_g": 14.932,
-        "final_diameter_mm": 19.95,
-        "final_height_mm": 9.78,
-        "density_source": "Fe2O3 (hematite alpha), hematite alpha: 5.25564 g/cm\u00b3 - Codex seeded - verify before use",
-        "notes": "",
-        "target_id": "vinoth-T002",
-        "target_number": 2,
-        "target_for": "vinoth"
-    },
-    {
         "entry_id": "421d8ec815a04fbb8498eb58190db80b",
         "entry_type": "target_density",
         "time": "2026-05-31T13:14:13",
