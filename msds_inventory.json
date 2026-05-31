@@ -372,15 +372,15 @@
             "id": "powder:BaTiO3",
             "casNumber": "12047-27-7",
             "nameOrFormula": "BaTiO3",
-            "purity": "",
+            "purity": "99.9",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "noah technologies",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159419",
@@ -389,7 +389,7 @@
             "pubchemIupacName": "barium(2+);tris(oxygen(2-));titanium(4+)",
             "sourcePowderId": "powder:BaTiO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T14:51:04"
         },
         {
             "id": "powder:Cr2O3",
