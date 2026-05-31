@@ -1080,6 +1080,29 @@
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:30:24",
             "updatedAt": "2026-05-31T15:30:24"
+        },
+        {
+            "id": "cas:7647-01-0|purity:32|vendor:bio-lab",
+            "casNumber": "7647-01-0",
+            "nameOrFormula": "ClH",
+            "purity": "32",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "bio-lab",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/313",
+            "pubchemCid": "313",
+            "pubchemFormula": "ClH",
+            "pubchemIupacName": "chlorane",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T15:37:15",
+            "updatedAt": "2026-05-31T15:37:15"
         }
     ],
     "deletedPowderImports": []
