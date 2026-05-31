@@ -51,6 +51,11 @@ const state = {
   densityTargetAutoSynced: true,
   selectedDensityReviewKey: "",
   weightedRelativeDensityComponents: [],
+  targetDensityRecords: {
+    targetKey: "",
+    exact: [],
+    related: [],
+  },
   densityPickerExpanded: {
     heightDensityChoice: false,
     relativeDensityChoice: false,
@@ -420,17 +425,32 @@ function targetFormulaCations() {
   return cationFractionsForFormula(targetDensityFormulaForChoices()).map((entry) => entry.element);
 }
 
+function cachedTargetDensityRecords() {
+  const targetKey = String(targetDensityFormulaForChoices()).trim().toLowerCase();
+  if (state.targetDensityRecords.targetKey !== targetKey) return [];
+  const records = [...state.targetDensityRecords.exact, ...state.targetDensityRecords.related];
+  const seen = new Set();
+  return records.filter((record) => {
+    const key = densityRecordId(record);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function densityRecordsForWeightedMode(element = "") {
   const targetCations = targetFormulaCations();
   const targetSet = new Set(targetCations);
-  return Object.values(state.densities || {})
+  const cachedRecords = cachedTargetDensityRecords();
+  const sourceRecords = cachedRecords.length ? cachedRecords : Object.values(state.densities || {});
+  return sourceRecords
     .filter((record) => Number(record.theoretical_density_g_cm3) > 0)
     .filter((record) => {
       const cations = densityRecordCations(record);
       if (!targetCations.length) return false;
       if (!cations.length) return false;
       if (element && !cations.includes(element)) return false;
-      return cations.every((cation) => targetSet.has(cation));
+      return cations.some((cation) => targetSet.has(cation));
     })
     .sort((a, b) => {
       const aCations = densityRecordCations(a);
@@ -524,12 +544,20 @@ function defaultWeightedDensityComponents() {
   return records.map((record) => ({ densityKey: densityRecordId(record), weight: "" }));
 }
 
+function weightedDensityKeyAvailable(component) {
+  const key = component?.densityKey || "";
+  if (!key || key === "__manual__") return true;
+  return densityRecordsForWeightedMode(component.element || "")
+    .some((record) => densityRecordId(record) === key);
+}
+
 function weightedRowsMatchTarget(components, targetComponents) {
   const currentElements = (components || []).map((component) => component.element).filter(Boolean).sort();
   const targetElements = (targetComponents || []).map((component) => component.element).filter(Boolean).sort();
   return targetElements.length > 0
     && currentElements.length === targetElements.length
-    && targetElements.every((element, index) => element === currentElements[index]);
+    && targetElements.every((element, index) => element === currentElements[index])
+    && (components || []).every(weightedDensityKeyAvailable);
 }
 
 function syncWeightedDensityRowsToTarget({ force = false } = {}) {
@@ -964,6 +992,14 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   const related = data.related || [];
   const visibleRelated = expanded ? related : related.slice(0, 6);
   const hiddenRelated = Math.max(0, related.length - visibleRelated.length);
+
+  if (select === els.relativeDensityChoice) {
+    state.targetDensityRecords = {
+      targetKey,
+      exact,
+      related,
+    };
+  }
 
   select.innerHTML = `<option value="__manual__">Manual theoretical density</option>`;
   for (const record of exact) {
@@ -1741,7 +1777,8 @@ function renderMsdsLookupResults(data) {
 async function searchMsdsPdfOnline() {
   const cas = els.msdsCasNumber.value.trim();
   const name = els.msdsNameFormula.value.trim();
-  const params = new URLSearchParams({ cas_number: cas, name_or_formula: name });
+  const company = els.msdsCompany.value.trim();
+  const params = new URLSearchParams({ cas_number: cas, company, name_or_formula: name });
   if (els.msdsLookupResults) {
     els.msdsLookupResults.innerHTML = `<div class="sds-warning">Building review-required SDS lookup candidates...</div>`;
   }
