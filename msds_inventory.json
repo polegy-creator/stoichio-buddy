@@ -73,15 +73,15 @@
             "id": "powder:Co3O4",
             "casNumber": "1308-06-1",
             "nameOrFormula": "Co3O4",
-            "purity": "",
-            "closetNumber": 1,
+            "purity": "99",
+            "closetNumber": 4,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "aaron chemicals",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/11651651",
@@ -90,7 +90,7 @@
             "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt",
             "sourcePowderId": "powder:Co3O4",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T15:35:52"
         },
         {
             "id": "powder:NiO",
