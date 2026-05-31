@@ -671,15 +671,15 @@
             "id": "powder:BiVO4",
             "casNumber": "14059-33-7",
             "nameOrFormula": "BiVO4",
-            "purity": "",
+            "purity": "99.9",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "Thermo Scientific",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://www.govinfo.gov/content/pkg/CFR-2024-title40-vol33/pdf/CFR-2024-title40-vol33-part712-subpartB.pdf",
@@ -688,7 +688,7 @@
             "pubchemIupacName": "bismuth trioxido(oxo)vanadium",
             "sourcePowderId": "powder:BiVO4",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T15:11:11"
         },
         {
             "id": "powder:Gd2O3",
