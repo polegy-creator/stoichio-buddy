@@ -326,15 +326,15 @@
             "id": "powder:MoO3",
             "casNumber": "1313-27-5",
             "nameOrFormula": "MoO3",
-            "purity": "",
+            "purity": "99.999",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "strem chemicals",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14802",
@@ -343,7 +343,7 @@
             "pubchemIupacName": "trioxomolybdenum",
             "sourcePowderId": "powder:MoO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T14:38:05"
         },
         {
             "id": "powder:Sc2O3",
