@@ -119,15 +119,15 @@
             "id": "powder:HfO2",
             "casNumber": "12055-23-1",
             "nameOrFormula": "HfO2",
-            "purity": "",
+            "purity": "98",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "aablocks",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/292779",
@@ -136,7 +136,7 @@
             "pubchemIupacName": "dioxohafnium",
             "sourcePowderId": "powder:HfO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T12:52:04"
         },
         {
             "id": "powder:CuO",
