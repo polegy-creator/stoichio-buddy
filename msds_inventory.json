@@ -809,15 +809,15 @@
             "id": "powder:Yb2O3",
             "casNumber": "1314-37-0",
             "nameOrFormula": "Yb2O3",
-            "purity": "",
+            "purity": "99.9",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "noah technologies",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/159375",
@@ -826,7 +826,7 @@
             "pubchemIupacName": "tris(oxygen(2-));bis(ytterbium(3+))",
             "sourcePowderId": "powder:Yb2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T15:09:54"
         },
         {
             "id": "powder:Bi2O3",
