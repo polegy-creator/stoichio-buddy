@@ -79,5 +79,23 @@
         "target_id": "vinoth-T003",
         "target_number": 3,
         "target_for": "vinoth"
+    },
+    {
+        "entry_id": "f0c72b7f4c0347bd8d35e2ac6949950f",
+        "entry_type": "target_density",
+        "time": "2026-05-31T13:15:26",
+        "target": "Ti",
+        "measured_density_g_cm3": 4.562340858782908,
+        "theoretical_density_g_cm3": 5.255643832026548,
+        "relative_density_percent": 86.80841024616566,
+        "final_volume_cm3": 3.279018482628426,
+        "final_mass_g": 14.96,
+        "final_diameter_mm": 20.8,
+        "final_height_mm": 9.65,
+        "density_source": "Ti2O3 (tistarite alpha), tistarite alpha: 4.57189 g/cm\u00b3 - Codex seeded - verify before use",
+        "notes": "",
+        "target_id": "vinoth-T004",
+        "target_number": 4,
+        "target_for": "vinoth"
     }
 ]
