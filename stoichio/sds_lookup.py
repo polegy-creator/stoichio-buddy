@@ -17,25 +17,20 @@ _UNVERIFIED_WARNING = (
 
 def build_sds_lookup_candidates(cas_number: str, company: str, name_or_formula: str = "") -> dict[str, Any]:
     cas = normalize_cas_number(cas_number) if str(cas_number or "").strip() else ""
-    supplier = _clean_text(company)
     material = _clean_text(name_or_formula)
 
     warnings = [_UNVERIFIED_WARNING]
-    if not supplier:
-        warnings.append("Lookup is strongest with both CAS number and company/manufacturer.")
 
     terms = []
     if cas:
         terms.append(f'"{cas}"')
-    if supplier:
-        terms.append(f'"{supplier}"')
     if material:
         terms.append(f'"{material}"')
     terms.extend(["SDS", "MSDS", '"Safety Data Sheet"', "PDF", "filetype:pdf"])
 
     candidates = []
-    if cas or supplier or material:
-        candidates.append(_candidate("Supplier SDS PDF search", _search_url(" ".join(terms))))
+    if cas or material:
+        candidates.append(_candidate("SDS PDF search", _search_url(" ".join(terms))))
 
     return {
         "warnings": warnings,

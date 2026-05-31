@@ -15,17 +15,18 @@ class SdsLookupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_sds_lookup_candidates("123-45-6", "Sigma-Aldrich")
 
-    def test_company_appears_url_encoded_in_primary_query(self):
+    def test_company_is_not_used_in_primary_query(self):
         result = build_sds_lookup_candidates("1309-37-1", "Acme Chemicals", "Fe2O3")
         url = result["candidates"][0]["url"]
 
-        self.assertIn("Acme+Chemicals", url)
+        self.assertNotIn("Acme+Chemicals", url)
         self.assertIn("1309-37-1", urllib.parse.unquote_plus(url))
 
-    def test_missing_company_returns_warning(self):
+    def test_missing_company_does_not_block_lookup(self):
         result = build_sds_lookup_candidates("1309-37-1", "", "Fe2O3")
 
-        self.assertTrue(any("company/manufacturer" in warning for warning in result["warnings"]))
+        self.assertEqual(len(result["warnings"]), 1)
+        self.assertTrue(result["candidates"])
 
     def test_pubchem_is_not_used_as_sds_source(self):
         result = build_sds_lookup_candidates("1309-37-1", "Sigma-Aldrich", "Fe2O3")

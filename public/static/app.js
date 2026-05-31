@@ -50,6 +50,7 @@ const state = {
   lastMsdsIdentity: null,
   densityTargetAutoSynced: true,
   selectedDensityReviewKey: "",
+  weightedRelativeDensityComponents: [],
   densityPickerExpanded: {
     heightDensityChoice: false,
     relativeDensityChoice: false,
@@ -118,9 +119,14 @@ const els = {
   finalDiameter: $("#finalDiameter"),
   finalHeight: $("#finalHeight"),
   finalMass: $("#finalMass"),
+  singleRelativeDensityFields: $("#singleRelativeDensityFields"),
   relativeDensityChoice: $("#relativeDensityChoice"),
   manualRelativeDensityWrap: $("#manualRelativeDensityWrap"),
   relativeTheoreticalDensity: $("#relativeTheoreticalDensity"),
+  weightedRelativeDensityWrap: $("#weightedRelativeDensityWrap"),
+  weightedDensityRows: $("#weightedDensityRows"),
+  addWeightedDensityRow: $("#addWeightedDensityRow"),
+  weightedDensityPreview: $("#weightedDensityPreview"),
   densityForm: $("#densityForm"),
   densityResult: $("#densityResult"),
   densityMetrics: $("#densityMetrics"),
@@ -405,6 +411,141 @@ function densitySourceFromSelect(select) {
   return densityRecordLabel(record);
 }
 
+function selectedRelativeDensityMode() {
+  return $("input[name='relativeDensityMode']:checked")?.value || "single";
+}
+
+function densityRecordsForWeightedMode() {
+  return Object.values(state.densities || {})
+    .filter((record) => Number(record.theoretical_density_g_cm3) > 0)
+    .sort((a, b) => {
+      const trustedRank = Number(!isTrustedDensity(a)) - Number(!isTrustedDensity(b));
+      if (trustedRank !== 0) return trustedRank;
+      return String(a.formula || a.display_name || "").localeCompare(String(b.formula || b.display_name || ""));
+    });
+}
+
+function weightedDensitySelectOptions(selectedKey = "") {
+  const records = densityRecordsForWeightedMode();
+  const options = [`<option value="">Choose density</option>`];
+  for (const record of records) {
+    const key = densityRecordId(record);
+    options.push(`<option value="${escapeHtml(key)}" ${key === selectedKey ? "selected" : ""}>${escapeHtml(densityRecordLabel(record))}</option>`);
+  }
+  return options.join("");
+}
+
+function defaultWeightedDensityComponents() {
+  const records = densityRecordsForWeightedMode().slice(0, 2);
+  if (!records.length) {
+    return [{ densityKey: "", weight: "" }, { densityKey: "", weight: "" }];
+  }
+  return records.map((record) => ({ densityKey: densityRecordId(record), weight: "" }));
+}
+
+function readWeightedDensityComponents({ includeEmpty = true } = {}) {
+  const rows = Array.from(els.weightedDensityRows?.querySelectorAll(".weighted-density-row") || []);
+  const components = rows.map((row) => ({
+    densityKey: row.querySelector("[data-weighted-density-key]")?.value || "",
+    weight: row.querySelector("[data-weighted-density-weight]")?.value || "",
+  }));
+  return includeEmpty
+    ? components
+    : components.filter((component) => component.densityKey || component.weight);
+}
+
+function renderWeightedDensityRows(components = null) {
+  if (!els.weightedDensityRows) return;
+  const current = components || readWeightedDensityComponents({ includeEmpty: true });
+  const rows = current.length ? current : state.weightedRelativeDensityComponents.length
+    ? state.weightedRelativeDensityComponents
+    : defaultWeightedDensityComponents();
+
+  els.weightedDensityRows.innerHTML = rows.map((component, index) => `
+    <div class="weighted-density-row">
+      <label>
+        Density ${index + 1}
+        <select data-weighted-density-key>${weightedDensitySelectOptions(component.densityKey)}</select>
+      </label>
+      <label>
+        Fraction / %
+        <input data-weighted-density-weight type="number" min="0" step="0.0001" value="${escapeHtml(component.weight)}" placeholder="${index === 0 ? "0.77" : "0.23"}">
+      </label>
+      <button type="button" class="icon" data-remove-weighted-density title="Remove density">&#128465;</button>
+    </div>
+  `).join("");
+
+  if (els.weightedDensityRows.children.length < 2) {
+    els.weightedDensityRows.insertAdjacentHTML("beforeend", `
+      <div class="weighted-density-row">
+        <label>
+          Density ${els.weightedDensityRows.children.length + 1}
+          <select data-weighted-density-key>${weightedDensitySelectOptions("")}</select>
+        </label>
+        <label>
+          Fraction / %
+          <input data-weighted-density-weight type="number" min="0" step="0.0001" value="" placeholder="0.23">
+        </label>
+        <button type="button" class="icon" data-remove-weighted-density title="Remove density">&#128465;</button>
+      </div>
+    `);
+  }
+
+  updateWeightedDensityPreview();
+}
+
+function weightedDensityCalculation() {
+  const components = readWeightedDensityComponents({ includeEmpty: false })
+    .map((component) => {
+      const record = state.densities[component.densityKey];
+      const weight = Number(component.weight);
+      const density = Number(record?.theoretical_density_g_cm3);
+      return { ...component, record, weight, density };
+    });
+
+  if (!components.length) throw new Error("Choose at least one density for the weighted mix.");
+  if (components.some((component) => !component.record)) throw new Error("Choose a density record for every weighted row.");
+  if (components.some((component) => !(component.weight > 0))) throw new Error("Enter a positive fraction or percent for every weighted row.");
+
+  const total = components.reduce((sum, component) => sum + component.weight, 0);
+  const scale = Math.abs(total - 1) <= 0.01 ? 1 : Math.abs(total - 100) <= 0.5 ? 100 : null;
+  if (!scale) throw new Error("Weighted density fractions must sum to 1.000, or percentages must sum to 100.");
+
+  const density = components.reduce((sum, component) => sum + (component.weight / scale) * component.density, 0);
+  const source = components
+    .map((component) => `${formatNumber(component.weight / scale, 4)}*${densityRecordLabel(component.record)}`)
+    .join(" + ");
+  return { density, source: `Weighted theoretical density: ${source}`, components };
+}
+
+function updateWeightedDensityPreview() {
+  if (!els.weightedDensityPreview) return;
+  try {
+    const { density } = weightedDensityCalculation();
+    els.weightedDensityPreview.textContent = `Weighted theoretical density = ${formatNumber(density, 5)} g/cm³`;
+  } catch (error) {
+    els.weightedDensityPreview.textContent = error.message;
+  }
+}
+
+function relativeTheoreticalDensitySelection() {
+  if (selectedRelativeDensityMode() === "weighted") {
+    return weightedDensityCalculation();
+  }
+  const density = theoreticalDensityFromSelect(els.relativeDensityChoice, els.relativeTheoreticalDensity);
+  return { density, source: densitySourceFromSelect(els.relativeDensityChoice), components: [] };
+}
+
+function toggleRelativeDensityMode() {
+  const weighted = selectedRelativeDensityMode() === "weighted";
+  els.singleRelativeDensityFields.hidden = weighted;
+  els.weightedRelativeDensityWrap.hidden = !weighted;
+  els.manualRelativeDensityWrap.hidden = weighted || els.relativeDensityChoice.value !== "__manual__";
+  if (weighted) {
+    renderWeightedDensityRows();
+  }
+}
+
 function linkedRecipeById(entryId) {
   return state.linkedRecipes.find((entry) => entry.entry_id === entryId) || null;
 }
@@ -475,6 +616,7 @@ function persistRecipeSettings() {
     targetDiameter: els.targetDiameter.value,
     targetPorosity: els.targetPorosity.value,
     heightDensity: els.heightDensity.value,
+    relativeTheoreticalDensity: els.relativeTheoreticalDensity.value,
     recipeNotes: els.recipeNotes.value,
     showAllPowders: els.showAllPowders.checked,
     amountMode: checkedAmountMode ? checkedAmountMode.value : "mass",
@@ -483,6 +625,8 @@ function persistRecipeSettings() {
       heightDensityChoice: els.heightDensityChoice.value,
       relativeDensityChoice: els.relativeDensityChoice.value,
     },
+    relativeDensityMode: selectedRelativeDensityMode(),
+    weightedRelativeDensityComponents: readWeightedDensityComponents({ includeEmpty: false }),
   });
 }
 
@@ -499,6 +643,7 @@ function restoreRecipeSettings() {
   if (settings.targetDiameter) els.targetDiameter.value = settings.targetDiameter;
   if (settings.targetPorosity) els.targetPorosity.value = settings.targetPorosity;
   if (settings.heightDensity) els.heightDensity.value = settings.heightDensity;
+  if (settings.relativeTheoreticalDensity) els.relativeTheoreticalDensity.value = settings.relativeTheoreticalDensity;
   if (settings.recipeNotes) els.recipeNotes.value = settings.recipeNotes;
   els.showAllPowders.checked = Boolean(settings.showAllPowders);
   if (Array.isArray(settings.selectedPowders) && settings.selectedPowders.length) {
@@ -510,6 +655,14 @@ function restoreRecipeSettings() {
     if (amountMode) amountMode.checked = true;
   }
   state.savedDensityChoices = settings.densityChoices || {};
+  state.weightedRelativeDensityComponents = Array.isArray(settings.weightedRelativeDensityComponents)
+    ? settings.weightedRelativeDensityComponents
+    : [];
+  if (settings.relativeDensityMode) {
+    const mode = settings.relativeDensityMode === "weighted" ? "weighted" : "single";
+    const input = $(`input[name='relativeDensityMode'][value="${mode}"]`);
+    if (input) input.checked = true;
+  }
 }
 
 async function loadAll() {
@@ -707,6 +860,10 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   select.dataset.lastTarget = targetKey;
   state.savedDensityChoices[select.id] = select.value;
   manualWrap.hidden = select.value !== "__manual__";
+  if (select === els.relativeDensityChoice) {
+    renderWeightedDensityRows();
+    toggleRelativeDensityMode();
+  }
 }
 
 function targetDensityFormulaForChoices() {
@@ -1123,7 +1280,8 @@ async function calculateDensity(event) {
   event.preventDefault();
   syncTargetDensityFormulaFromRecipeTarget();
   try {
-    const theoretical = theoreticalDensityFromSelect(els.relativeDensityChoice, els.relativeTheoreticalDensity);
+    const theoreticalSelection = relativeTheoreticalDensitySelection();
+    const theoretical = theoreticalSelection.density;
     const payload = {
       final_mass_g: Number(els.finalMass.value),
       final_diameter_mm: Number(els.finalDiameter.value),
@@ -1131,14 +1289,15 @@ async function calculateDensity(event) {
       theoretical_density_g_cm3: theoretical,
     };
     const data = await api.send("/api/relative-density", "POST", payload);
-    state.lastDensityResult = { payload, result: data };
-    renderDensityResult(data, theoretical);
+    state.lastDensityResult = { payload, result: data, theoreticalSelection };
+    renderDensityResult(data, theoreticalSelection);
   } catch (error) {
     setMessage(els.densityResult, error.message, "error");
   }
 }
 
-function renderDensityResult(data, theoretical) {
+function renderDensityResult(data, theoreticalSelection) {
+  const theoretical = theoreticalSelection.density;
   const relative = Number(data.relative_density_percent);
   setMessage(
     els.densityResult,
@@ -1159,7 +1318,7 @@ function renderDensityResult(data, theoretical) {
     `Theoretical density: ${formatNumber(theoretical, 5)} g/cm³`,
     `Relative density: ${formatNumber(relative, 2)}%`,
     `Final volume: ${formatNumber(data.final_volume_cm3, 6)} cm³`,
-    `Density source: ${densitySourceFromSelect(els.relativeDensityChoice)}`,
+    `Density source: ${theoreticalSelection.source}`,
     els.densityNotes.value.trim() ? `Notes: ${els.densityNotes.value.trim()}` : "",
   ].filter(Boolean).join("\n");
 }
@@ -1175,7 +1334,7 @@ async function saveDensityHistory() {
       ...state.lastDensityResult.payload,
       target: targetDensityFormulaForChoices(),
       target_for: els.densityTargetFor.value.trim(),
-      density_source: densitySourceFromSelect(els.relativeDensityChoice),
+      density_source: state.lastDensityResult.theoreticalSelection?.source || densitySourceFromSelect(els.relativeDensityChoice),
       notes: els.densityNotes.value,
       linked_recipe_entry_id: els.linkedRecipe.value,
     };
@@ -1451,9 +1610,8 @@ function renderMsdsLookupResults(data) {
 
 async function searchMsdsPdfOnline() {
   const cas = els.msdsCasNumber.value.trim();
-  const company = els.msdsCompany.value.trim();
   const name = els.msdsNameFormula.value.trim();
-  const params = new URLSearchParams({ cas_number: cas, company, name_or_formula: name });
+  const params = new URLSearchParams({ cas_number: cas, name_or_formula: name });
   if (els.msdsLookupResults) {
     els.msdsLookupResults.innerHTML = `<div class="sds-warning">Building review-required SDS lookup candidates...</div>`;
   }
@@ -2390,8 +2548,39 @@ function setupEvents() {
       state.densityPickerExpanded.relativeDensityChoice = true;
       await updateDensityChoicesForTarget(targetDensityFormulaForChoices(), els.relativeDensityChoice, els.manualRelativeDensityWrap);
     }
-    els.manualRelativeDensityWrap.hidden = els.relativeDensityChoice.value !== "__manual__";
+    toggleRelativeDensityMode();
     state.savedDensityChoices.relativeDensityChoice = els.relativeDensityChoice.value;
+    persistRecipeSettings();
+  });
+  $$("input[name='relativeDensityMode']").forEach((input) => input.addEventListener("change", () => {
+    toggleRelativeDensityMode();
+    persistRecipeSettings();
+  }));
+  els.relativeTheoreticalDensity.addEventListener("input", debounce(persistRecipeSettings, 200));
+  els.addWeightedDensityRow.addEventListener("click", () => {
+    const components = readWeightedDensityComponents({ includeEmpty: true });
+    components.push({ densityKey: "", weight: "" });
+    state.weightedRelativeDensityComponents = components;
+    renderWeightedDensityRows(components);
+    persistRecipeSettings();
+  });
+  els.weightedDensityRows.addEventListener("input", debounce(() => {
+    state.weightedRelativeDensityComponents = readWeightedDensityComponents({ includeEmpty: true });
+    updateWeightedDensityPreview();
+    persistRecipeSettings();
+  }, 150));
+  els.weightedDensityRows.addEventListener("change", () => {
+    state.weightedRelativeDensityComponents = readWeightedDensityComponents({ includeEmpty: true });
+    updateWeightedDensityPreview();
+    persistRecipeSettings();
+  });
+  els.weightedDensityRows.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-remove-weighted-density]");
+    if (!button) return;
+    const row = button.closest(".weighted-density-row");
+    row?.remove();
+    state.weightedRelativeDensityComponents = readWeightedDensityComponents({ includeEmpty: true });
+    renderWeightedDensityRows(state.weightedRelativeDensityComponents);
     persistRecipeSettings();
   });
   els.densityForm.addEventListener("submit", calculateDensity);
@@ -2472,6 +2661,7 @@ setupQuickMode();
 setupEvents();
 toggleAmountMode();
 toggleDensityEntryMode();
+toggleRelativeDensityMode();
 renderMsdsClosetControls();
 resetMsdsForm();
 renderRecipeEmptyState();

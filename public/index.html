@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260531-3">
+  <link rel="stylesheet" href="/static/styles.css?v=20260531-4">
 </head>
 <body>
   <aside class="sidebar">
@@ -215,14 +215,28 @@
             Measured final mass (g)
             <input id="finalMass" type="number" min="0" step="0.000001">
           </label>
-          <label>
-            Theoretical density source
-            <select id="relativeDensityChoice"></select>
-          </label>
-          <label id="manualRelativeDensityWrap">
-            Manual theoretical density (g/cm³)
-            <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
-          </label>
+          <fieldset class="segmented">
+            <legend>Theoretical density mode</legend>
+            <label><input type="radio" name="relativeDensityMode" value="single" checked> Single source</label>
+            <label><input type="radio" name="relativeDensityMode" value="weighted"> Weighted mix</label>
+          </fieldset>
+          <div id="singleRelativeDensityFields">
+            <label>
+              Theoretical density source
+              <select id="relativeDensityChoice"></select>
+            </label>
+            <label id="manualRelativeDensityWrap">
+              Manual theoretical density (g/cm³)
+              <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
+            </label>
+          </div>
+          <div id="weightedRelativeDensityWrap" hidden>
+            <div id="weightedDensityRows" class="weighted-density-list"></div>
+            <div class="inline-actions">
+              <button id="addWeightedDensityRow" type="button" class="secondary">+ density</button>
+            </div>
+            <div id="weightedDensityPreview" class="hint"></div>
+          </div>
           <button type="submit" class="primary">Calculate Target Density %</button>
         </form>
 
@@ -535,6 +549,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260531-3"></script>
+  <script src="/static/app.js?v=20260531-4"></script>
 </body>
 </html>

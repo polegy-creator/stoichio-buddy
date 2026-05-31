@@ -505,6 +505,22 @@ p:empty {
   padding-inline: 1rem;
 }
 
+.weighted-density-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.weighted-density-row {
+  align-items: end;
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: minmax(0, 1.6fr) minmax(96px, 0.45fr) auto;
+}
+
+.weighted-density-row label {
+  margin-bottom: 0;
+}
+
 .sds-lookup-results {
   display: grid;
   gap: 0.45rem;
@@ -1059,6 +1075,10 @@ body.quick .advanced-only {
   }
 
   .url-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .weighted-density-row {
     grid-template-columns: 1fr;
   }
 }
