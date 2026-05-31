@@ -7,11 +7,11 @@
             "purity": "99.95",
             "closetNumber": 1,
             "msdsFileUrl": "",
-            "msdsExternalUrl": "",
+            "msdsExternalUrl": "https://sds.mcmaster.ca/Iron(III)_Oxide.pdf",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "noah chemicals",
+            "company": "NOAH chemicals",
             "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -21,7 +21,7 @@
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "sourcePowderId": "powder:Fe2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T12:49:59"
+            "updatedAt": "2026-05-31T12:51:15"
         },
         {
             "id": "powder:TiO2",
