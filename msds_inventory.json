@@ -464,15 +464,15 @@
             "id": "powder:CaCO3",
             "casNumber": "471-34-1",
             "nameOrFormula": "CaCO3",
-            "purity": "",
+            "purity": "99.98",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "noah technologies",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/10112",
@@ -481,7 +481,7 @@
             "pubchemIupacName": "calcium carbonate",
             "sourcePowderId": "powder:CaCO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T14:58:36"
         },
         {
             "id": "powder:ZrO2",
