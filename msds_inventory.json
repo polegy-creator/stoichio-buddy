@@ -942,6 +942,29 @@
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:53:53",
             "updatedAt": "2026-05-31T14:53:53"
+        },
+        {
+            "id": "cas:9003-39-8|vendor:thermo-scientific",
+            "casNumber": "9003-39-8",
+            "nameOrFormula": "C6H9NO",
+            "purity": "",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/6917",
+            "pubchemCid": "6917",
+            "pubchemFormula": "C6H9NO",
+            "pubchemIupacName": "1-ethenylpyrrolidin-2-one",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T14:59:32",
+            "updatedAt": "2026-05-31T14:59:32"
         }
     ],
     "deletedPowderImports": []
