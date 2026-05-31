@@ -32,7 +32,7 @@ CLOSETS = {
 _DEFAULT_STORE = {"items": [], "deletedPowderImports": []}
 _CAS_RE = re.compile(r"^(\d{2,7})-(\d{2})-(\d)$")
 _MAX_TEXT_LINES_PER_PAGE = 43
-POWDER_IDENTITY_STATUS = "CAS imported from powder database - needs lab verification"
+POWDER_IDENTITY_STATUS = "CAS imported from powder database"
 
 
 def now_iso() -> str:
@@ -425,6 +425,12 @@ def save_msds_inventory_item(payload: dict[str, Any], item_id: str | None = None
             "msdsExternalUrl": incoming["msdsExternalUrl"],
             "company": incoming["company"],
             "identityStatus": incoming["identityStatus"] or existing.get("identityStatus", "needs verification"),
+            "source": incoming["source"] or existing.get("source", ""),
+            "casSource": incoming["casSource"] or existing.get("casSource", ""),
+            "casSourceUrl": incoming["casSourceUrl"] or existing.get("casSourceUrl", ""),
+            "pubchemCid": incoming["pubchemCid"] or existing.get("pubchemCid", ""),
+            "pubchemFormula": incoming["pubchemFormula"] or existing.get("pubchemFormula", ""),
+            "pubchemIupacName": incoming["pubchemIupacName"] or existing.get("pubchemIupacName", ""),
             "updatedAt": now,
         }
         store["items"][existing_index] = saved

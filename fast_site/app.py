@@ -65,6 +65,8 @@ from stoichio.msds_inventory import (
     load_msds_inventory,
     save_msds_inventory_item,
 )
+from stoichio.cas_identity import lookup_cas_identity
+from stoichio.sds_lookup import build_sds_lookup_candidates
 from stoichio.powder_sets import (
     delete_powder_set,
     load_powder_sets,
@@ -256,6 +258,12 @@ class MsdsInventoryRequest(BaseModel):
     msdsExternalUrl: str = ""
     company: str = ""
     identityStatus: str = "needs verification"
+    source: str = ""
+    casSource: str = ""
+    casSourceUrl: str = ""
+    pubchemCid: str = ""
+    pubchemFormula: str = ""
+    pubchemIupacName: str = ""
 
 
 def powder_payload(powder: str, record: dict, inventory: dict | None = None) -> dict:
@@ -500,6 +508,28 @@ def msds_inventory():
 def lookup_msds_identity(cas_number: str = Query(default=""), name_or_formula: str = Query(default="")):
     match = find_known_identity(cas_number=cas_number, name_or_formula=name_or_formula)
     return {"match": match}
+
+
+@app.get("/api/msds-inventory/cas-identity")
+def lookup_msds_cas_identity(cas_number: str = Query(default="")):
+    try:
+        return lookup_cas_identity(cas_number, load_msds_inventory())
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.get("/api/msds-inventory/sds-lookup")
+def lookup_sds_candidates(
+    cas_number: str = Query(default=""),
+    company: str = Query(default=""),
+    name_or_formula: str = Query(default=""),
+):
+    try:
+        return build_sds_lookup_candidates(cas_number, company, name_or_formula)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.post("/api/msds-inventory")

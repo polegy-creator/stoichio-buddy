@@ -500,6 +500,40 @@ p:empty {
   min-height: 42px;
 }
 
+.cas-apply-button {
+  min-width: 124px;
+}
+
+.sds-lookup-results {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+
+.sds-candidate {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.62rem 0.7rem;
+  text-decoration: none;
+}
+
+.sds-candidate span,
+.sds-warning {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.sds-warning {
+  background: var(--warn-bg);
+  border: 1px solid rgba(240, 202, 106, 0.28);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+}
+
 .filters {
   display: grid;
   grid-template-columns: 1.4fr 0.8fr 0.8fr;

@@ -47,6 +47,7 @@ const state = {
   lastRecipe: null,
   lastRecipeMass: null,
   lastDensityResult: null,
+  lastMsdsIdentity: null,
   densityTargetAutoSynced: true,
   selectedDensityReviewKey: "",
   densityPickerExpanded: {
@@ -153,6 +154,7 @@ const els = {
   msdsItemId: $("#msdsItemId"),
   msdsFormMode: $("#msdsFormMode"),
   msdsCasNumber: $("#msdsCasNumber"),
+  applyMsdsCas: $("#applyMsdsCas"),
   msdsNameFormula: $("#msdsNameFormula"),
   msdsLookupStatus: $("#msdsLookupStatus"),
   msdsPurity: $("#msdsPurity"),
@@ -160,6 +162,7 @@ const els = {
   msdsClosetNumber: $("#msdsClosetNumber"),
   msdsExternalUrl: $("#msdsExternalUrl"),
   searchMsdsOnline: $("#searchMsdsOnline"),
+  msdsLookupResults: $("#msdsLookupResults"),
   msdsPdfFile: $("#msdsPdfFile"),
   saveMsdsMaterial: $("#saveMsdsMaterial"),
   uploadMsdsFile: $("#uploadMsdsFile"),
@@ -1376,6 +1379,8 @@ function resetMsdsForm() {
   els.msdsExternalUrl.value = "";
   els.msdsPdfFile.value = "";
   els.msdsLookupStatus.textContent = "";
+  state.lastMsdsIdentity = null;
+  renderMsdsLookupResults(null);
   setMessage(els.msdsFormMode, "New material.");
   els.saveMsdsMaterial.textContent = "Save Material";
 }
@@ -1392,46 +1397,74 @@ function editMsdsItem(itemId) {
   els.msdsExternalUrl.value = item.msdsExternalUrl || "";
   els.msdsPdfFile.value = "";
   els.msdsLookupStatus.textContent = "";
+  state.lastMsdsIdentity = null;
+  renderMsdsLookupResults(null);
   setMessage(els.msdsFormMode, `Editing ${item.nameOrFormula || item.casNumber || "material"}.`, "good");
   els.saveMsdsMaterial.textContent = "Save Changes";
   els.msdsCasNumber.focus();
 }
 
 function msdsPayload() {
+  const currentCas = els.msdsCasNumber.value.trim();
+  const identity = state.lastMsdsIdentity?.casNumber === currentCas ? state.lastMsdsIdentity : {};
   return {
-    casNumber: els.msdsCasNumber.value.trim(),
+    casNumber: currentCas,
     nameOrFormula: els.msdsNameFormula.value.trim(),
     purity: els.msdsPurity.value.trim(),
     company: els.msdsCompany.value.trim(),
     closetNumber: Number(els.msdsClosetNumber.value || 1),
     msdsExternalUrl: els.msdsExternalUrl.value.trim(),
-    identityStatus: "needs verification",
+    identityStatus: identity.identityStatus || (currentCas && els.msdsNameFormula.value.trim() ? "manual identity entry" : "needs verification"),
+    source: identity.source || "",
+    casSource: identity.casSource || "",
+    casSourceUrl: identity.casSourceUrl || "",
+    pubchemCid: identity.pubchemCid || "",
+    pubchemFormula: identity.pubchemFormula || "",
+    pubchemIupacName: identity.pubchemIupacName || "",
   };
 }
 
-function searchMsdsPdfOnline() {
-  const cas = els.msdsCasNumber.value.trim();
-  const company = els.msdsCompany.value.trim();
-  const name = els.msdsNameFormula.value.trim();
-  if (!cas && !company && !name) {
-    flash("Enter a CAS number and manufacturer/company first.", "warning");
+function renderMsdsLookupResults(data) {
+  if (!els.msdsLookupResults) return;
+  if (!data) {
+    els.msdsLookupResults.innerHTML = "";
     return;
   }
 
-  const terms = [];
-  if (cas) terms.push(`"${cas}"`);
-  if (company) terms.push(`"${company}"`);
-  if (!company && name) terms.push(`"${name}"`);
-  terms.push("SDS", "MSDS", "PDF", "filetype:pdf");
-  terms.push('-"BGU Nano-Fab"', '-"nano-fab"');
+  const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+  const candidates = Array.isArray(data.candidates) ? data.candidates : [];
+  const warningsHtml = warnings
+    .map((warning) => `<div class="sds-warning">${escapeHtml(warning)}</div>`)
+    .join("");
+  const candidatesHtml = candidates
+    .map((candidate) => `
+      <a class="sds-candidate" href="${escapeHtml(candidate.url || "#")}" target="_blank" rel="noopener noreferrer">
+        <strong>${escapeHtml(candidate.label || "SDS search candidate")}</strong>
+        <span>${candidate.requiresReview ? "Review required" : "Open search"}</span>
+      </a>
+    `)
+    .join("");
+  const emptyHtml = candidates.length ? "" : `<div class="sds-warning">No SDS lookup candidates were generated.</div>`;
 
-  if (!cas || !company) {
-    flash("Search is strongest with both CAS number and manufacturer/company.", "warning");
+  els.msdsLookupResults.innerHTML = `${warningsHtml}${candidatesHtml}${emptyHtml}`;
+}
+
+async function searchMsdsPdfOnline() {
+  const cas = els.msdsCasNumber.value.trim();
+  const company = els.msdsCompany.value.trim();
+  const name = els.msdsNameFormula.value.trim();
+  const params = new URLSearchParams({ cas_number: cas, company, name_or_formula: name });
+  if (els.msdsLookupResults) {
+    els.msdsLookupResults.innerHTML = `<div class="sds-warning">Building review-required SDS lookup candidates...</div>`;
   }
-
-  const url = `https://www.google.com/search?q=${encodeURIComponent(terms.join(" "))}`;
-  window.open(url, "_blank", "noopener");
-  els.msdsLookupStatus.textContent = "Search opened. Paste the verified direct PDF link here, or upload the PDF file.";
+  try {
+    const data = await api.get(`/api/msds-inventory/sds-lookup?${params.toString()}`);
+    renderMsdsLookupResults(data);
+    els.msdsLookupStatus.textContent = "Open a candidate, review it, then paste the direct PDF link or upload the PDF.";
+  } catch (error) {
+    renderMsdsLookupResults({ warnings: [error.message], candidates: [] });
+    els.msdsLookupStatus.textContent = error.message;
+  }
 }
 
 async function saveMsdsMaterial(event, { keepForm = true } = {}) {
@@ -1501,6 +1534,46 @@ async function deleteMsdsItem(itemId) {
   }
 }
 
+function clearAppliedMsdsCasIdentity() {
+  state.lastMsdsIdentity = null;
+  els.msdsLookupStatus.textContent = "";
+}
+
+async function lookupMsdsCasIdentity(button = null) {
+  const cas = els.msdsCasNumber.value.trim();
+  if (!cas) {
+    state.lastMsdsIdentity = null;
+    els.msdsLookupStatus.textContent = "Enter a CAS number first.";
+    return;
+  }
+  if (!/^\d{2,7}-\d{2}-\d$/.test(cas)) {
+    state.lastMsdsIdentity = null;
+    els.msdsLookupStatus.textContent = "Enter a complete CAS number, for example 1309-37-1.";
+    return;
+  }
+
+  const done = button ? setBusy(button, "Applying...") : () => {};
+  try {
+    const params = new URLSearchParams({ cas_number: cas });
+    const data = await api.get(`/api/msds-inventory/cas-identity?${params.toString()}`);
+    const identity = data.identity;
+    if (!identity) {
+      state.lastMsdsIdentity = null;
+      els.msdsLookupStatus.textContent = (data.warnings || []).join(" ");
+      return;
+    }
+
+    state.lastMsdsIdentity = identity;
+    els.msdsNameFormula.value = identity.nameOrFormula || identity.pubchemFormula || identity.pubchemIupacName || "";
+    els.msdsLookupStatus.textContent = `CAS identity applied from ${data.source}.`;
+  } catch (error) {
+    state.lastMsdsIdentity = null;
+    els.msdsLookupStatus.textContent = error.message;
+  } finally {
+    done();
+  }
+}
+
 async function lookupMsdsIdentity(source) {
   const cas = els.msdsCasNumber.value.trim();
   const name = els.msdsNameFormula.value.trim();
@@ -1522,9 +1595,6 @@ async function lookupMsdsIdentity(source) {
     if (source === "name" && !els.msdsCasNumber.value.trim()) {
       els.msdsCasNumber.value = match.casNumber || "";
     }
-    if (!els.msdsPurity.value.trim()) els.msdsPurity.value = match.purity || "";
-    if (!els.msdsCompany.value.trim()) els.msdsCompany.value = match.company || "";
-    if (!els.msdsExternalUrl.value.trim()) els.msdsExternalUrl.value = match.msdsExternalUrl || "";
     els.msdsLookupStatus.textContent = `Matched existing record: ${match.nameOrFormula || match.casNumber}.`;
   } catch (error) {
     els.msdsLookupStatus.textContent = error.message;
@@ -2336,6 +2406,7 @@ function setupEvents() {
 
   els.msdsForm.addEventListener("submit", (event) => saveMsdsMaterial(event));
   els.newMsdsMaterial.addEventListener("click", resetMsdsForm);
+  els.applyMsdsCas.addEventListener("click", () => lookupMsdsCasIdentity(els.applyMsdsCas));
   els.searchMsdsOnline.addEventListener("click", searchMsdsPdfOnline);
   els.uploadMsdsFile.addEventListener("click", async () => {
     const done = setBusy(els.uploadMsdsFile, "Uploading...");
@@ -2349,7 +2420,7 @@ function setupEvents() {
   });
   els.msdsSearch.addEventListener("input", renderMsdsInventory);
   els.msdsClosetFilter.addEventListener("change", renderMsdsInventory);
-  els.msdsCasNumber.addEventListener("input", debounce(() => lookupMsdsIdentity("cas"), 260));
+  els.msdsCasNumber.addEventListener("input", clearAppliedMsdsCasIdentity);
   els.msdsNameFormula.addEventListener("input", debounce(() => lookupMsdsIdentity("name"), 260));
 
   els.densityEntryMode.addEventListener("change", toggleDensityEntryMode);

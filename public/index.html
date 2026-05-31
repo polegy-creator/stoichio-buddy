@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260525-8">
+  <link rel="stylesheet" href="/static/styles.css?v=20260531-2">
 </head>
 <body>
   <aside class="sidebar">
@@ -414,10 +414,13 @@
           <input id="msdsItemId" type="hidden">
           <div id="msdsFormMode" class="message">New material.</div>
 
-          <label>
-            CAS number
-            <input id="msdsCasNumber" placeholder="1309-37-1">
-          </label>
+          <div class="field-block">
+            <label for="msdsCasNumber">CAS number</label>
+            <div class="url-action-row">
+              <input id="msdsCasNumber" placeholder="1309-37-1">
+              <button id="applyMsdsCas" type="button" class="primary cas-apply-button">Apply CAS</button>
+            </div>
+          </div>
           <label>
             Name / formula
             <input id="msdsNameFormula" placeholder="Fe2O3">
@@ -448,6 +451,7 @@
               <input id="msdsExternalUrl" type="url" placeholder="https://...">
               <button id="searchMsdsOnline" type="button" class="secondary">Search SDS PDF</button>
             </div>
+            <div id="msdsLookupResults" class="sds-lookup-results"></div>
           </div>
 
           <label>
@@ -531,6 +535,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260525-9"></script>
+  <script src="/static/app.js?v=20260531-3"></script>
 </body>
 </html>

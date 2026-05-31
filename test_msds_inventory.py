@@ -67,7 +67,7 @@ class MsdsInventoryTest(unittest.TestCase):
         self.assertEqual(fe["casNumber"], "1309-37-1")
         self.assertEqual(fe["casSourceUrl"], "https://pubchem.ncbi.nlm.nih.gov/compound/518696")
         self.assertEqual(fe["pubchemCid"], "518696")
-        self.assertIn("needs lab verification", fe["identityStatus"])
+        self.assertEqual(fe["identityStatus"], "CAS imported from powder database")
 
     def test_cas_and_name_lookup_use_known_records_only(self):
         saved, _ = save_msds_inventory_item({
@@ -106,6 +106,28 @@ class MsdsInventoryTest(unittest.TestCase):
 
         self.assertNotEqual(first["id"], second["id"])
         self.assertEqual({item["company"] for item in matching}, {"Vendor A", "Vendor B"})
+
+    def test_pubchem_identity_metadata_is_saved_without_affecting_vendor_fields(self):
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "",
+            "company": "",
+            "closetNumber": 1,
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST - needs lab verification",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
+            "pubchemCid": "518696",
+            "pubchemFormula": "Fe2O3",
+            "pubchemIupacName": "oxo(oxoferriooxy)iron",
+        })
+
+        self.assertEqual(saved["pubchemCid"], "518696")
+        self.assertEqual(saved["pubchemFormula"], "Fe2O3")
+        self.assertEqual(saved["identityStatus"], "CAS identity applied")
+        self.assertEqual(saved["company"], "")
+        self.assertEqual(saved["purity"], "")
 
     def test_msds_binder_generates_pdf_even_without_uploaded_files(self):
         save_msds_inventory_item({
