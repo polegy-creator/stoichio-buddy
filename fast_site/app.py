@@ -60,6 +60,7 @@ from stoichio.msds_inventory import (
     build_msds_binder_pdf,
     closet_options,
     delete_msds_inventory_item,
+    download_msds_pdf_from_url,
     find_known_identity,
     get_msds_pdf,
     load_msds_inventory,
@@ -264,6 +265,10 @@ class MsdsInventoryRequest(BaseModel):
     pubchemCid: str = ""
     pubchemFormula: str = ""
     pubchemIupacName: str = ""
+
+
+class MsdsUrlDownloadRequest(BaseModel):
+    url: str = ""
 
 
 def powder_payload(powder: str, record: dict, inventory: dict | None = None) -> dict:
@@ -567,6 +572,22 @@ async def upload_msds_file(item_id: str, request: Request, x_stoichio_pin: str |
         getattr(upload, "content_type", "") or "application/pdf",
         pdf_bytes,
     )
+    return {"item": item, "items": items, "closets": closet_options()}
+
+
+@app.post("/api/msds-inventory/{item_id}/msds-file-from-url")
+def upload_msds_file_from_url(
+    item_id: str,
+    payload: MsdsUrlDownloadRequest,
+    x_stoichio_pin: str | None = Header(default=None),
+):
+    require_write_pin(x_stoichio_pin)
+    try:
+        item, items = download_msds_pdf_from_url(item_id, payload.url)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return {"item": item, "items": items, "closets": closet_options()}
 
 

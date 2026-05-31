@@ -1795,8 +1795,11 @@ async function searchMsdsPdfOnline() {
 async function saveMsdsMaterial(event, { keepForm = true } = {}) {
   if (event) event.preventDefault();
   const itemId = els.msdsItemId.value.trim();
+  const sourceUrl = els.msdsExternalUrl.value.trim();
+  const previousItem = itemId ? state.msdsInventory.find((item) => item.id === itemId) : null;
   const done = setBusy(els.saveMsdsMaterial, itemId ? "Saving..." : "Adding...");
   try {
+    let downloadedPdf = false;
     const data = await api.send(
       itemId ? `/api/msds-inventory/${encodeURIComponent(itemId)}` : "/api/msds-inventory",
       itemId ? "PATCH" : "POST",
@@ -1806,11 +1809,19 @@ async function saveMsdsMaterial(event, { keepForm = true } = {}) {
     let savedItem = data.item;
     if (els.msdsPdfFile.files.length) {
       savedItem = await uploadMsdsPdf(savedItem.id);
+    } else if (sourceUrl && (!savedItem.msdsFileName || previousItem?.msdsExternalUrl !== sourceUrl)) {
+      try {
+        savedItem = await downloadMsdsPdfFromUrl(savedItem.id, sourceUrl, { quiet: true });
+        downloadedPdf = true;
+      } catch (error) {
+        flash(`Material saved, but PDF download failed: ${error.message}`, "warning");
+      }
     }
     renderEverything();
     if (keepForm) editMsdsItem(savedItem.id);
     else resetMsdsForm();
-    flash("Material inventory saved.");
+    if (downloadedPdf) flash("Material saved and MSDS PDF attached.");
+    else if (!sourceUrl || savedItem.msdsFileName) flash("Material inventory saved.");
     return savedItem;
   } catch (error) {
     flash(error.message, "error");
@@ -1822,7 +1833,14 @@ async function saveMsdsMaterial(event, { keepForm = true } = {}) {
 
 async function uploadMsdsPdf(itemId = els.msdsItemId.value.trim()) {
   if (!els.msdsPdfFile.files.length) {
-    flash("Choose an MSDS/SDS PDF first.", "warning");
+    const sourceUrl = els.msdsExternalUrl.value.trim();
+    if (sourceUrl) {
+      if (!itemId) {
+        return saveMsdsMaterial(null);
+      }
+      return downloadMsdsPdfFromUrl(itemId, sourceUrl);
+    }
+    flash("Choose an MSDS/SDS PDF file or paste a direct PDF link first.", "warning");
     return null;
   }
   if (!itemId) {
@@ -1836,6 +1854,27 @@ async function uploadMsdsPdf(itemId = els.msdsItemId.value.trim()) {
   els.msdsPdfFile.value = "";
   renderEverything();
   flash("MSDS PDF uploaded.");
+  return data.item;
+}
+
+async function downloadMsdsPdfFromUrl(itemId, sourceUrl = els.msdsExternalUrl.value.trim(), { quiet = false } = {}) {
+  if (!itemId) {
+    flash("Save the material before downloading the SDS PDF link.", "warning");
+    return null;
+  }
+  if (!sourceUrl) {
+    flash("Paste a direct SDS/MSDS PDF link first.", "warning");
+    return null;
+  }
+  const data = await api.send(
+    `/api/msds-inventory/${encodeURIComponent(itemId)}/msds-file-from-url`,
+    "POST",
+    { url: sourceUrl },
+  );
+  state.msdsInventory = data.items || state.msdsInventory;
+  els.msdsPdfFile.value = "";
+  renderEverything();
+  if (!quiet) flash("MSDS PDF downloaded and attached.");
   return data.item;
 }
 

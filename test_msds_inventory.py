@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 import zipfile
+from email.message import Message
 from pathlib import Path
 
 from stoichio.msds_inventory import (
@@ -11,10 +12,29 @@ from stoichio.msds_inventory import (
     build_msds_binder_archive,
     build_msds_binder_pdf,
     closet_label,
+    download_msds_pdf_from_url,
     find_known_identity,
     load_msds_inventory,
     save_msds_inventory_item,
 )
+
+
+class FakePdfResponse:
+    def __init__(self, payload: bytes, content_type: str = "application/pdf", filename: str = "vendor_sds.pdf"):
+        self.payload = payload
+        self.status = 200
+        self.headers = Message()
+        self.headers["Content-Type"] = content_type
+        self.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def read(self, _size=-1):
+        return self.payload
 
 
 class MsdsInventoryTest(unittest.TestCase):
@@ -140,6 +160,51 @@ class MsdsInventoryTest(unittest.TestCase):
         pdf = build_msds_binder_pdf()
         self.assertTrue(pdf.startswith(b"%PDF"))
         self.assertIn(b"Lab Inventory MSDS Binder", pdf)
+
+    def test_download_msds_pdf_from_direct_url_attaches_pdf_and_source(self):
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "99.9%",
+            "company": "Vendor A",
+            "closetNumber": 1,
+        })
+
+        item, items = download_msds_pdf_from_url(
+            saved["id"],
+            "https://example.com/fe2o3-sds.pdf",
+            opener=lambda _request, timeout: FakePdfResponse(b"%PDF-1.4\n% linked sds\n", filename="fe2o3_sds.pdf"),
+        )
+
+        self.assertEqual(item["msdsStatus"], "uploaded")
+        self.assertEqual(item["msdsExternalUrl"], "https://example.com/fe2o3-sds.pdf")
+        self.assertEqual(item["msdsFileName"], "fe2o3_sds.pdf")
+        saved_again = next(record for record in items if record["id"] == saved["id"])
+        self.assertEqual(saved_again["msdsStatus"], "uploaded")
+
+    def test_download_msds_pdf_from_url_rejects_non_pdf_response(self):
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "7732-18-5",
+            "nameOrFormula": "Water",
+            "closetNumber": 4,
+        })
+
+        with self.assertRaises(ValueError):
+            download_msds_pdf_from_url(
+                saved["id"],
+                "https://example.com/water-sds.pdf",
+                opener=lambda _request, timeout: FakePdfResponse(b"<html>not a pdf</html>", content_type="text/html"),
+            )
+
+    def test_download_msds_pdf_from_url_rejects_private_hosts(self):
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "7732-18-5",
+            "nameOrFormula": "Water",
+            "closetNumber": 4,
+        })
+
+        with self.assertRaises(ValueError):
+            download_msds_pdf_from_url(saved["id"], "http://127.0.0.1/water-sds.pdf")
 
     def test_msds_binder_archive_groups_by_closet_and_preserves_source_and_pdf(self):
         saved, _ = save_msds_inventory_item({

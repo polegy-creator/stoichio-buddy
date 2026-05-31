@@ -5,10 +5,15 @@ from __future__ import annotations
 import base64
 import hashlib
 import html
+import ipaddress
 import io
 import json
 import re
+import socket
 import textwrap
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid
 import zipfile
 from datetime import datetime
@@ -32,6 +37,9 @@ CLOSETS = {
 _DEFAULT_STORE = {"items": [], "deletedPowderImports": []}
 _CAS_RE = re.compile(r"^(\d{2,7})-(\d{2})-(\d)$")
 _MAX_TEXT_LINES_PER_PAGE = 43
+_MAX_MSDS_PDF_BYTES = 10 * 1024 * 1024
+_MSDS_DOWNLOAD_TIMEOUT_SEC = 15
+_BLOCKED_HOSTNAMES = {"localhost", "localhost.localdomain"}
 POWDER_IDENTITY_STATUS = "CAS imported from powder database"
 
 
@@ -462,10 +470,16 @@ def delete_msds_inventory_item(item_id: str) -> tuple[dict[str, Any], list[dict[
     return item_payload(removed), load_msds_inventory()
 
 
-def attach_msds_pdf(item_id: str, filename: str, content_type: str, pdf_bytes: bytes) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def attach_msds_pdf(
+    item_id: str,
+    filename: str,
+    content_type: str,
+    pdf_bytes: bytes,
+    source_url: str = "",
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     if not pdf_bytes:
         raise ValueError("Upload a non-empty MSDS PDF.")
-    if len(pdf_bytes) > 10 * 1024 * 1024:
+    if len(pdf_bytes) > _MAX_MSDS_PDF_BYTES:
         raise ValueError("MSDS PDF is too large. Keep uploads under 10 MB.")
     if not filename.lower().endswith(".pdf") and content_type != "application/pdf":
         raise ValueError("Upload an MSDS/SDS PDF file.")
@@ -481,11 +495,115 @@ def attach_msds_pdf(item_id: str, filename: str, content_type: str, pdf_bytes: b
         normalized["msdsFileContentType"] = content_type or "application/pdf"
         normalized["msdsFileDataBase64"] = base64.b64encode(pdf_bytes).decode("ascii")
         normalized["msdsFileUrl"] = f"/api/msds-inventory/{item_id}/msds-file"
+        if source_url:
+            normalized["msdsExternalUrl"] = _normalize_msds_download_url(source_url)
         normalized["updatedAt"] = now_iso()
         store["items"][index] = normalized
         _save_store(store)
         return item_payload(normalized), load_msds_inventory()
     raise ValueError("Material inventory item was not found.")
+
+
+def download_msds_pdf_from_url(
+    item_id: str,
+    url: str,
+    opener=None,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    source_url = _normalize_msds_download_url(url)
+    request = urllib.request.Request(
+        source_url,
+        headers={
+            "User-Agent": "Stoichio-Buddy/1.0",
+            "Accept": "application/pdf,application/octet-stream;q=0.9,*/*;q=0.1",
+        },
+    )
+    open_url = opener or urllib.request.urlopen
+    try:
+        with open_url(request, timeout=_MSDS_DOWNLOAD_TIMEOUT_SEC) as response:
+            status = getattr(response, "status", None)
+            if status is None and hasattr(response, "getcode"):
+                status = response.getcode()
+            if status and status >= 400:
+                raise RuntimeError(f"SDS PDF URL returned HTTP {status}.")
+            content_type = _response_content_type(response)
+            pdf_bytes = response.read(_MAX_MSDS_PDF_BYTES + 1)
+            if len(pdf_bytes) > _MAX_MSDS_PDF_BYTES:
+                raise ValueError("MSDS PDF is too large. Keep downloads under 10 MB.")
+            if content_type != "application/pdf" and not pdf_bytes.startswith(b"%PDF"):
+                raise ValueError("The SDS link did not return a PDF file.")
+            filename = _download_filename(source_url, response)
+    except urllib.error.HTTPError as exc:
+        raise RuntimeError(f"SDS PDF URL returned HTTP {exc.code}.") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Could not download SDS PDF: {exc.reason}") from exc
+    except TimeoutError as exc:
+        raise RuntimeError("Timed out while downloading SDS PDF.") from exc
+
+    return attach_msds_pdf(
+        item_id,
+        filename,
+        content_type or "application/pdf",
+        pdf_bytes,
+        source_url=source_url,
+    )
+
+
+def _normalize_msds_download_url(url: str) -> str:
+    text = str(url or "").strip()
+    if not text:
+        raise ValueError("Paste a direct SDS/MSDS PDF link first.")
+    parsed = urllib.parse.urlparse(text)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("SDS PDF links must start with http:// or https://.")
+    if not parsed.hostname:
+        raise ValueError("SDS PDF link is missing a host name.")
+    _reject_private_download_host(parsed.hostname, parsed.port, parsed.scheme)
+    return urllib.parse.urlunparse(parsed)
+
+
+def _reject_private_download_host(hostname: str, port: int | None, scheme: str) -> None:
+    host = hostname.strip().lower().rstrip(".")
+    if host in _BLOCKED_HOSTNAMES:
+        raise ValueError("SDS PDF links must use a public supplier/source URL.")
+    try:
+        addresses = {info[4][0] for info in socket.getaddrinfo(host, port or (443 if scheme == "https" else 80))}
+    except socket.gaierror as exc:
+        raise RuntimeError(f"Could not resolve SDS PDF host: {host}.") from exc
+    for address in addresses:
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            continue
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
+            raise ValueError("SDS PDF links must use a public supplier/source URL.")
+
+
+def _response_content_type(response) -> str:
+    headers = getattr(response, "headers", None)
+    if headers is not None and hasattr(headers, "get_content_type"):
+        return headers.get_content_type().lower()
+    value = ""
+    if headers is not None and hasattr(headers, "get"):
+        value = headers.get("Content-Type", "")
+    return value.split(";", 1)[0].strip().lower()
+
+
+def _download_filename(source_url: str, response) -> str:
+    headers = getattr(response, "headers", None)
+    disposition = headers.get("Content-Disposition", "") if headers is not None and hasattr(headers, "get") else ""
+    match = re.search(r"filename\*?=(?:UTF-8''|\"?)([^\";]+)", disposition, flags=re.IGNORECASE)
+    if match:
+        filename = urllib.parse.unquote(match.group(1).strip().strip('"'))
+    else:
+        filename = urllib.parse.unquote(_path_like_name(urllib.parse.urlparse(source_url).path))
+    filename = re.sub(r"[^A-Za-z0-9._-]+", "_", filename).strip("._-") or "msds.pdf"
+    if not filename.lower().endswith(".pdf"):
+        filename = f"{filename}.pdf"
+    return filename
+
+
+def _path_like_name(path: str) -> str:
+    return path.rsplit("/", 1)[-1] or "msds.pdf"
 
 
 def get_msds_pdf(item_id: str) -> tuple[str, str, bytes]:
