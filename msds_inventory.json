@@ -487,15 +487,15 @@
             "id": "powder:ZrO2",
             "casNumber": "1314-23-4",
             "nameOrFormula": "ZrO2",
-            "purity": "",
+            "purity": "99.95",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "noah technologies",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/62395",
@@ -504,7 +504,7 @@
             "pubchemIupacName": "dioxozirconium",
             "sourcePowderId": "powder:ZrO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T15:06:14"
         },
         {
             "id": "powder:Tm2O3",
