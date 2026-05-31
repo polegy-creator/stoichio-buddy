@@ -6,7 +6,7 @@ import re
 import urllib.parse
 from typing import Any
 
-from stoichio.msds_inventory import normalize_cas_number
+from stoichio.msds_inventory import canonical_company_name, normalize_cas_number
 
 
 _UNVERIFIED_WARNING = (
@@ -17,7 +17,7 @@ _UNVERIFIED_WARNING = (
 
 def build_sds_lookup_candidates(cas_number: str, company: str, name_or_formula: str = "") -> dict[str, Any]:
     cas = normalize_cas_number(cas_number) if str(cas_number or "").strip() else ""
-    supplier = _clean_text(company)
+    supplier = canonical_company_name(_clean_text(company))
     material = _clean_text(name_or_formula)
 
     warnings = [_UNVERIFIED_WARNING]

@@ -11,6 +11,7 @@ from stoichio.msds_inventory import (
     attach_msds_pdf,
     build_msds_binder_archive,
     build_msds_binder_pdf,
+    canonical_company_name,
     closet_label,
     download_msds_pdf_from_url,
     find_known_identity,
@@ -126,6 +127,18 @@ class MsdsInventoryTest(unittest.TestCase):
 
         self.assertNotEqual(first["id"], second["id"])
         self.assertEqual({item["company"] for item in matching}, {"Vendor A", "Vendor B"})
+
+    def test_thermo_scientific_company_name_is_canonicalized(self):
+        self.assertEqual(canonical_company_name("thermoscientific"), "Thermo Scientific")
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "1314-13-2",
+            "nameOrFormula": "ZnO",
+            "purity": "99.999%",
+            "company": "thermoscientific",
+            "closetNumber": 1,
+        })
+
+        self.assertEqual(saved["company"], "Thermo Scientific")
 
     def test_pubchem_identity_metadata_is_saved_without_affecting_vendor_fields(self):
         saved, _ = save_msds_inventory_item({

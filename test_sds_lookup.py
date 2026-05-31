@@ -20,7 +20,7 @@ class SdsLookupTests(unittest.TestCase):
         url = result["candidates"][0]["url"]
         query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)["q"][0]
 
-        self.assertEqual(query, "SDS for ThermoScientific Fe2O3 1309-37-1")
+        self.assertEqual(query, "SDS for Thermo Scientific Fe2O3 1309-37-1")
 
     def test_missing_company_does_not_block_lookup(self):
         result = build_sds_lookup_candidates("1309-37-1", "", "Fe2O3")

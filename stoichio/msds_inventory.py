@@ -99,6 +99,14 @@ def identity_text(value: str | None) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip()).lower()
 
 
+def canonical_company_name(value: str | None) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").strip())
+    key = re.sub(r"[^a-z0-9]+", "", text.lower())
+    if key == "thermoscientific":
+        return "Thermo Scientific"
+    return text
+
+
 def identity_slug(value: str | None) -> str:
     return re.sub(r"[^a-z0-9._%-]+", "-", identity_text(value)).strip("-")
 
@@ -169,7 +177,7 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
     cas_number = normalize_cas_number(record.get("casNumber"))
     name_or_formula = str(record.get("nameOrFormula") or "").strip()
     purity = str(record.get("purity") or "").strip()
-    company = str(record.get("company") or "").strip()
+    company = canonical_company_name(record.get("company"))
     item_id = str(record.get("id") or material_id_for(cas_number, name_or_formula, purity, company)).strip()
     closet_number = normalize_closet_number(record.get("closetNumber", 1))
 

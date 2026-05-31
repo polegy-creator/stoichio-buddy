@@ -438,20 +438,50 @@ function cachedTargetDensityRecords() {
   });
 }
 
-function densityRecordsForWeightedMode(element = "") {
+function targetDensityChoicePrefix(record, kind = "related") {
+  if (kind === "exact") {
+    return isPreferredDensity(record) ? "Preferred exact - " : "Exact - ";
+  }
+  if (!isTrustedDensity(record)) return "Related - ";
+  return isPreferredDensity(record) ? "Preferred related - " : "Checked related - ";
+}
+
+function currentTargetDensityChoices() {
+  const targetKey = String(targetDensityFormulaForChoices()).trim().toLowerCase();
+  const seen = new Set();
+  const choices = [];
+  const addChoice = (record, prefix = "") => {
+    const key = densityRecordId(record);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    choices.push({ record, prefix });
+  };
+
+  if (state.targetDensityRecords.targetKey === targetKey) {
+    state.targetDensityRecords.exact.forEach((record) => addChoice(record, targetDensityChoicePrefix(record, "exact")));
+    state.targetDensityRecords.related.forEach((record) => addChoice(record, targetDensityChoicePrefix(record, "related")));
+  } else {
+    Object.values(state.densities || {}).forEach((record) => addChoice(record, ""));
+  }
+  return choices;
+}
+
+function targetDensityChoiceMatches(choice, element = "") {
   const targetCations = targetFormulaCations();
   const targetSet = new Set(targetCations);
-  const cachedRecords = cachedTargetDensityRecords();
-  const sourceRecords = cachedRecords.length ? cachedRecords : Object.values(state.densities || {});
-  return sourceRecords
+  const record = choice.record || choice;
+  const cations = densityRecordCations(record);
+  if (!targetCations.length) return false;
+  if (!cations.length) return false;
+  if (element && !cations.includes(element)) return false;
+  return cations.some((cation) => targetSet.has(cation));
+}
+
+function densityRecordsForWeightedMode(element = "") {
+  return currentTargetDensityChoices()
+    .filter((choice) => targetDensityChoiceMatches(choice, element))
+    .map((choice) => choice.record)
     .filter((record) => Number(record.theoretical_density_g_cm3) > 0)
-    .filter((record) => {
-      const cations = densityRecordCations(record);
-      if (!targetCations.length) return false;
-      if (!cations.length) return false;
-      if (element && !cations.includes(element)) return false;
-      return cations.some((cation) => targetSet.has(cation));
-    })
     .sort((a, b) => {
       const aCations = densityRecordCations(a);
       const bCations = densityRecordCations(b);
@@ -464,14 +494,15 @@ function densityRecordsForWeightedMode(element = "") {
 }
 
 function weightedDensitySelectOptions(selectedKey = "", element = "") {
-  const records = densityRecordsForWeightedMode(element);
+  const choices = currentTargetDensityChoices()
+    .filter((choice) => targetDensityChoiceMatches(choice, ""));
   const options = [
     `<option value="">Choose density</option>`,
-    `<option value="__manual__" ${selectedKey === "__manual__" ? "selected" : ""}>Manual density</option>`,
+    `<option value="__manual__" ${selectedKey === "__manual__" ? "selected" : ""}>Manual theoretical density</option>`,
   ];
-  for (const record of records) {
+  for (const { record, prefix } of choices) {
     const key = densityRecordId(record);
-    options.push(`<option value="${escapeHtml(key)}" ${key === selectedKey ? "selected" : ""}>${escapeHtml(densityRecordLabel(record))}</option>`);
+    options.push(`<option value="${escapeHtml(key)}" ${key === selectedKey ? "selected" : ""}>${escapeHtml(densityRecordLabel(record, prefix))}</option>`);
   }
   return options.join("");
 }
