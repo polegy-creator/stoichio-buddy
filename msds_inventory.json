@@ -786,15 +786,15 @@
             "id": "powder:WO3",
             "casNumber": "1314-35-8",
             "nameOrFormula": "WO3",
-            "purity": "",
+            "purity": "99.99",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "noah technologies",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14811",
@@ -803,7 +803,7 @@
             "pubchemIupacName": "trioxotungsten",
             "sourcePowderId": "powder:WO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T15:22:07"
         },
         {
             "id": "powder:Yb2O3",
