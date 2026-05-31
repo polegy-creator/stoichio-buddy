@@ -427,7 +427,7 @@ function densityRecordsForWeightedMode(element = "") {
     .filter((record) => Number(record.theoretical_density_g_cm3) > 0)
     .filter((record) => {
       const cations = densityRecordCations(record);
-      if (!targetCations.length) return true;
+      if (!targetCations.length) return false;
       if (!cations.length) return false;
       if (element && !cations.includes(element)) return false;
       return cations.every((cation) => targetSet.has(cation));
@@ -522,6 +522,36 @@ function defaultWeightedDensityComponents() {
     return [{ densityKey: "", weight: "" }, { densityKey: "", weight: "" }];
   }
   return records.map((record) => ({ densityKey: densityRecordId(record), weight: "" }));
+}
+
+function weightedRowsMatchTarget(components, targetComponents) {
+  const currentElements = (components || []).map((component) => component.element).filter(Boolean).sort();
+  const targetElements = (targetComponents || []).map((component) => component.element).filter(Boolean).sort();
+  return targetElements.length > 0
+    && currentElements.length === targetElements.length
+    && targetElements.every((element, index) => element === currentElements[index]);
+}
+
+function syncWeightedDensityRowsToTarget({ force = false } = {}) {
+  const targetComponents = targetFormulaWeightedDensityComponents();
+  const current = state.weightedRelativeDensityComponents || [];
+  if (!targetComponents.length) {
+    if (force || current.some((component) => component.element)) {
+      state.weightedRelativeDensityComponents = [];
+      renderWeightedDensityRows([]);
+      return;
+    }
+    renderWeightedDensityRows(current);
+    return;
+  }
+
+  if (force || !weightedRowsMatchTarget(current, targetComponents)) {
+    state.weightedRelativeDensityComponents = targetComponents;
+    renderWeightedDensityRows(targetComponents);
+    return;
+  }
+
+  renderWeightedDensityRows(current);
 }
 
 function readWeightedDensityComponents({ includeEmpty = true } = {}) {
@@ -642,7 +672,7 @@ function toggleRelativeDensityMode() {
   els.weightedRelativeDensityWrap.hidden = !weighted;
   els.manualRelativeDensityWrap.hidden = weighted || els.relativeDensityChoice.value !== "__manual__";
   if (weighted) {
-    renderWeightedDensityRows();
+    syncWeightedDensityRowsToTarget();
   }
 }
 
@@ -961,7 +991,7 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   state.savedDensityChoices[select.id] = select.value;
   manualWrap.hidden = select.value !== "__manual__";
   if (select === els.relativeDensityChoice) {
-    renderWeightedDensityRows();
+    syncWeightedDensityRowsToTarget();
     toggleRelativeDensityMode();
   }
 }
@@ -2658,9 +2688,7 @@ function setupEvents() {
   }));
   els.relativeTheoreticalDensity.addEventListener("input", debounce(persistRecipeSettings, 200));
   els.autoWeightedDensityRows.addEventListener("click", () => {
-    const components = targetFormulaWeightedDensityComponents();
-    state.weightedRelativeDensityComponents = components;
-    renderWeightedDensityRows(components);
+    syncWeightedDensityRowsToTarget({ force: true });
     persistRecipeSettings();
   });
   els.addWeightedDensityRow.addEventListener("click", () => {
