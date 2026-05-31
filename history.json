@@ -151,5 +151,23 @@
         "target_id": "vinoth-T007",
         "target_number": 7,
         "target_for": "vinoth"
+    },
+    {
+        "entry_id": "d75e6baa0a334eb7a404d3c4b22efd87",
+        "entry_type": "target_density",
+        "time": "2026-05-31T13:29:59",
+        "target": "Ti0.74Yb0.2Er0.06O2",
+        "measured_density_g_cm3": 5.073546396421527,
+        "theoretical_density_g_cm3": 5.4624,
+        "relative_density_percent": 92.8812682414603,
+        "final_volume_cm3": 2.2415878581541033,
+        "final_mass_g": 11.3728,
+        "final_diameter_mm": 21.56,
+        "final_height_mm": 6.14,
+        "density_source": "Manual theoretical density",
+        "notes": "",
+        "target_id": "vinoth-T008",
+        "target_number": 8,
+        "target_for": "vinoth"
     }
 ]
