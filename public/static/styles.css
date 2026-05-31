@@ -501,7 +501,8 @@ p:empty {
 }
 
 .cas-apply-button {
-  min-width: 124px;
+  min-width: 82px;
+  padding-inline: 1rem;
 }
 
 .sds-lookup-results {
