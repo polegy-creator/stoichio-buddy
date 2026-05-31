@@ -1011,6 +1011,29 @@
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:16:53",
             "updatedAt": "2026-05-31T15:16:53"
+        },
+        {
+            "id": "cas:112926-00-8|vendor:ted-pella",
+            "casNumber": "112926-00-8",
+            "nameOrFormula": "Bulk Dessicant",
+            "purity": "",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://www.tedpella.com/SDS_html/19950_19952_19960_19961_sds.pdf",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "ted pella",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24261",
+            "pubchemCid": "24261",
+            "pubchemFormula": "O2Si",
+            "pubchemIupacName": "dioxosilane",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T15:27:37",
+            "updatedAt": "2026-05-31T15:27:37"
         }
     ],
     "deletedPowderImports": []
