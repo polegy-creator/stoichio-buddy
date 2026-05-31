@@ -102,7 +102,7 @@ def identity_text(value: str | None) -> str:
 def canonical_company_name(value: str | None) -> str:
     text = re.sub(r"\s+", " ", str(value or "").strip())
     key = re.sub(r"[^a-z0-9]+", "", text.lower())
-    if key == "thermoscientific":
+    if key in {"thermoscientific", "thermoscientifc"}:
         return "Thermo Scientific"
     return text
 

@@ -130,6 +130,7 @@ class MsdsInventoryTest(unittest.TestCase):
 
     def test_thermo_scientific_company_name_is_canonicalized(self):
         self.assertEqual(canonical_company_name("thermoscientific"), "Thermo Scientific")
+        self.assertEqual(canonical_company_name("thermo scientifc"), "Thermo Scientific")
         saved, _ = save_msds_inventory_item({
             "casNumber": "1314-13-2",
             "nameOrFormula": "ZnO",
