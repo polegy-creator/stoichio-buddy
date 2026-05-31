@@ -303,15 +303,15 @@
             "id": "powder:CoO",
             "casNumber": "1307-96-6",
             "nameOrFormula": "CoO",
-            "purity": "",
+            "purity": "99",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "",
-            "identityStatus": "CAS imported from reference data - needs lab verification",
+            "company": "aaron chemicals",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14786",
@@ -320,7 +320,7 @@
             "pubchemIupacName": "oxocobalt",
             "sourcePowderId": "powder:CoO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-25T17:04:57"
+            "updatedAt": "2026-05-31T14:35:17"
         },
         {
             "id": "powder:MoO3",
