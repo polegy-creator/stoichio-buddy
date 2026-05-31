@@ -514,7 +514,7 @@ p:empty {
   align-items: end;
   display: grid;
   gap: 0.55rem;
-  grid-template-columns: minmax(0, 1.6fr) minmax(96px, 0.45fr) auto;
+  grid-template-columns: minmax(0, 1.6fr) minmax(110px, 0.45fr) minmax(96px, 0.45fr) auto;
 }
 
 .weighted-density-row label {
