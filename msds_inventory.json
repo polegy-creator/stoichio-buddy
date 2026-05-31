@@ -1034,6 +1034,29 @@
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:27:37",
             "updatedAt": "2026-05-31T15:27:39"
+        },
+        {
+            "id": "cas:57-11-4|purity:97|vendor:thermo-scientific",
+            "casNumber": "57-11-4",
+            "nameOrFormula": "C18H36O2",
+            "purity": "97",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/5281",
+            "pubchemCid": "5281",
+            "pubchemFormula": "C18H36O2",
+            "pubchemIupacName": "octadecanoic acid",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T15:28:32",
+            "updatedAt": "2026-05-31T15:28:32"
         }
     ],
     "deletedPowderImports": []
