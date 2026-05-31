@@ -125,6 +125,7 @@ const els = {
   relativeTheoreticalDensity: $("#relativeTheoreticalDensity"),
   weightedRelativeDensityWrap: $("#weightedRelativeDensityWrap"),
   weightedDensityRows: $("#weightedDensityRows"),
+  autoWeightedDensityRows: $("#autoWeightedDensityRows"),
   addWeightedDensityRow: $("#addWeightedDensityRow"),
   weightedDensityPreview: $("#weightedDensityPreview"),
   densityForm: $("#densityForm"),
@@ -435,7 +436,67 @@ function weightedDensitySelectOptions(selectedKey = "") {
   return options.join("");
 }
 
+function parseSimpleFormulaComposition(formula) {
+  const text = String(formula || "").trim();
+  const composition = {};
+  const pattern = /([A-Z][a-z]?)(\d+(?:\.\d*)?|\.\d+)?/g;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    const amount = match[2] ? Number(match[2]) : 1;
+    if (amount > 0) {
+      composition[match[1]] = (composition[match[1]] || 0) + amount;
+    }
+  }
+  return composition;
+}
+
+function cationFractionsForFormula(formula) {
+  const composition = parseSimpleFormulaComposition(formula);
+  const ignored = new Set(["O", "H", "C", "N"]);
+  const entries = Object.entries(composition).filter(([element, amount]) => !ignored.has(element) && amount > 0);
+  const total = entries.reduce((sum, [, amount]) => sum + amount, 0);
+  if (!(total > 0)) return [];
+  return entries.map(([element, amount]) => ({ element, fraction: amount / total }));
+}
+
+function densityRecordCations(record) {
+  const composition = parseSimpleFormulaComposition(record.formula || record.display_name || "");
+  return Object.keys(composition).filter((element) => !["O", "H", "C", "N"].includes(element));
+}
+
+function bestDensityRecordForElement(element) {
+  const records = densityRecordsForWeightedMode().filter((record) => densityRecordCations(record).includes(element));
+  if (!records.length) return null;
+  return records.sort((a, b) => {
+    const aCations = densityRecordCations(a);
+    const bCations = densityRecordCations(b);
+    const singleCationRank = Number(aCations.length !== 1) - Number(bCations.length !== 1);
+    if (singleCationRank !== 0) return singleCationRank;
+    const trustedRank = Number(!isTrustedDensity(a)) - Number(!isTrustedDensity(b));
+    if (trustedRank !== 0) return trustedRank;
+    const preferredRank = Number(!isPreferredDensity(a)) - Number(!isPreferredDensity(b));
+    if (preferredRank !== 0) return preferredRank;
+    return String(a.formula || a.display_name || "").length - String(b.formula || b.display_name || "").length;
+  })[0];
+}
+
+function targetFormulaWeightedDensityComponents() {
+  const fractions = cationFractionsForFormula(targetDensityFormulaForChoices());
+  return fractions.map(({ element, fraction }) => {
+    const record = bestDensityRecordForElement(element);
+    return {
+      densityKey: record ? densityRecordId(record) : "",
+      weight: formatNumber(fraction * 100, 4),
+      element,
+    };
+  });
+}
+
 function defaultWeightedDensityComponents() {
+  const formulaComponents = targetFormulaWeightedDensityComponents();
+  if (formulaComponents.length) {
+    return formulaComponents;
+  }
   const records = densityRecordsForWeightedMode().slice(0, 2);
   if (!records.length) {
     return [{ densityKey: "", weight: "" }, { densityKey: "", weight: "" }];
@@ -457,14 +518,16 @@ function readWeightedDensityComponents({ includeEmpty = true } = {}) {
 function renderWeightedDensityRows(components = null) {
   if (!els.weightedDensityRows) return;
   const current = components || readWeightedDensityComponents({ includeEmpty: true });
-  const rows = current.length ? current : state.weightedRelativeDensityComponents.length
+  const meaningfulCurrent = current.some((component) => component.densityKey || component.weight);
+  const meaningfulSaved = state.weightedRelativeDensityComponents.some((component) => component.densityKey || component.weight);
+  const rows = components ? current : meaningfulCurrent ? current : meaningfulSaved
     ? state.weightedRelativeDensityComponents
     : defaultWeightedDensityComponents();
 
   els.weightedDensityRows.innerHTML = rows.map((component, index) => `
     <div class="weighted-density-row">
       <label>
-        Density ${index + 1}
+        ${component.element ? `${escapeHtml(component.element)} density` : `Density ${index + 1}`}
         <select data-weighted-density-key>${weightedDensitySelectOptions(component.densityKey)}</select>
       </label>
       <label>
@@ -2557,6 +2620,12 @@ function setupEvents() {
     persistRecipeSettings();
   }));
   els.relativeTheoreticalDensity.addEventListener("input", debounce(persistRecipeSettings, 200));
+  els.autoWeightedDensityRows.addEventListener("click", () => {
+    const components = targetFormulaWeightedDensityComponents();
+    state.weightedRelativeDensityComponents = components;
+    renderWeightedDensityRows(components);
+    persistRecipeSettings();
+  });
   els.addWeightedDensityRow.addEventListener("click", () => {
     const components = readWeightedDensityComponents({ includeEmpty: true });
     components.push({ densityKey: "", weight: "" });

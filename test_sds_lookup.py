@@ -15,18 +15,27 @@ class SdsLookupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_sds_lookup_candidates("123-45-6", "Sigma-Aldrich")
 
-    def test_company_is_not_used_in_primary_query(self):
-        result = build_sds_lookup_candidates("1309-37-1", "Acme Chemicals", "Fe2O3")
+    def test_query_is_normal_sentence_with_company_material_and_cas(self):
+        result = build_sds_lookup_candidates("1309-37-1", "ThermoScientific", "Fe2O3")
         url = result["candidates"][0]["url"]
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)["q"][0]
 
-        self.assertNotIn("Acme+Chemicals", url)
-        self.assertIn("1309-37-1", urllib.parse.unquote_plus(url))
+        self.assertEqual(query, "SDS for ThermoScientific Fe2O3 1309-37-1")
 
     def test_missing_company_does_not_block_lookup(self):
         result = build_sds_lookup_candidates("1309-37-1", "", "Fe2O3")
 
         self.assertEqual(len(result["warnings"]), 1)
         self.assertTrue(result["candidates"])
+
+    def test_query_does_not_force_pdf_or_quote_terms(self):
+        result = build_sds_lookup_candidates("1309-37-1", "Sigma-Aldrich", "Fe2O3")
+        url = result["candidates"][0]["url"]
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)["q"][0]
+
+        self.assertNotIn('"', query)
+        self.assertNotIn("filetype", query.lower())
+        self.assertNotIn("pdf", query.lower())
 
     def test_pubchem_is_not_used_as_sds_source(self):
         result = build_sds_lookup_candidates("1309-37-1", "Sigma-Aldrich", "Fe2O3")
