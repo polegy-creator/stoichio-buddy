@@ -1057,6 +1057,29 @@
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:28:32",
             "updatedAt": "2026-05-31T15:28:32"
+        },
+        {
+            "id": "cas:1314-13-2|purity:98|vendor:aaron-chemicals",
+            "casNumber": "1314-13-2",
+            "nameOrFormula": "ZnO",
+            "purity": "98",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "aaron chemicals",
+            "identityStatus": "CAS identity applied",
+            "source": "local saved CAS record",
+            "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3007857",
+            "pubchemCid": "3007857",
+            "pubchemFormula": "OZn",
+            "pubchemIupacName": "zinc oxygen(2-)",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T15:30:24",
+            "updatedAt": "2026-05-31T15:30:24"
         }
     ],
     "deletedPowderImports": []
