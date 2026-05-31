@@ -165,14 +165,14 @@
             "id": "powder:Ta2O5",
             "casNumber": "1314-61-0",
             "nameOrFormula": "Ta2O5",
-            "purity": "99",
+            "purity": "",
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "aablocks",
+            "company": "",
             "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
@@ -182,7 +182,7 @@
             "pubchemIupacName": "pentakis(oxygen(2-));bis(tantalum(5+))",
             "sourcePowderId": "powder:Ta2O5",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:36:32"
+            "updatedAt": "2026-05-31T14:36:43"
         },
         {
             "id": "powder:BaCO3",
