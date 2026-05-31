@@ -919,6 +919,29 @@
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:46:33",
             "updatedAt": "2026-05-31T14:46:33"
+        },
+        {
+            "id": "cas:9002-89-5|purity:89|vendor:thermo-scientifc",
+            "casNumber": "9002-89-5",
+            "nameOrFormula": "C2H4O",
+            "purity": "89",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "thermo scientifc",
+            "identityStatus": "CAS identity applied",
+            "source": "local saved CAS record",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/177",
+            "pubchemCid": "177",
+            "pubchemFormula": "C2H4O",
+            "pubchemIupacName": "acetaldehyde",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T14:53:53",
+            "updatedAt": "2026-05-31T14:53:53"
         }
     ],
     "deletedPowderImports": []
