@@ -850,6 +850,29 @@
             "pubchemCid": "14776",
             "pubchemFormula": "Bi2O3",
             "pubchemIupacName": "oxo(oxobismuthanyloxy)bismuthane"
+        },
+        {
+            "id": "cas:1309-37-1|purity:99.999|vendor:sigma-aldrich",
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "99.999",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://sds.mcmaster.ca/Iron(III)_Oxide.pdf",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "company": "sigma-aldrich",
+            "identityStatus": "CAS identity applied",
+            "source": "local saved CAS record",
+            "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
+            "pubchemCid": "518696",
+            "pubchemFormula": "Fe2O3",
+            "pubchemIupacName": "oxo(oxoferriooxy)iron",
+            "sourcePowderId": "",
+            "createdAt": "2026-05-31T10:57:57",
+            "updatedAt": "2026-05-31T10:57:57"
         }
     ],
     "deletedPowderImports": []
