@@ -11,8 +11,8 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
-            "company": "NOAH chemicals",
-            "identityStatus": "CAS identity applied",
+            "company": "noah chemicals",
+            "identityStatus": "manual identity entry",
             "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
@@ -21,7 +21,7 @@
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "sourcePowderId": "powder:Fe2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T12:49:32"
+            "updatedAt": "2026-05-31T12:49:59"
         },
         {
             "id": "powder:TiO2",
