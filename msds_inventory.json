@@ -1229,7 +1229,7 @@
             "casNumber": "1310-58-3",
             "nameOrFormula": "potassium hydroxide",
             "purity": "",
-            "closetNumber": 1,
+            "closetNumber": 2,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
@@ -1237,7 +1237,7 @@
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "",
             "company": "Thermo Scientific",
-            "identityStatus": "CAS identity applied",
+            "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14797",
@@ -1246,7 +1246,7 @@
             "pubchemIupacName": "potassium hydroxide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:25:13",
-            "updatedAt": "2026-06-01T09:25:13"
+            "updatedAt": "2026-06-01T09:25:26"
         }
     ],
     "deletedPowderImports": []
