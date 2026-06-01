@@ -1463,6 +1463,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:40:11",
             "updatedAt": "2026-06-01T09:40:11"
+        },
+        {
+            "id": "cas:7757-83-7|purity:98.0%|vendor:thermo-scientific",
+            "casNumber": "7757-83-7",
+            "nameOrFormula": "Na2O3S",
+            "purity": "98.0%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24437",
+            "pubchemCid": "24437",
+            "pubchemFormula": "Na2O3S",
+            "pubchemIupacName": "disodium;sulfite",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:42:03",
+            "updatedAt": "2026-06-01T09:42:03"
         }
     ],
     "deletedPowderImports": []
