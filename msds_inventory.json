@@ -1325,7 +1325,7 @@
             "casNumber": "1310-53-8",
             "nameOrFormula": "GeO2",
             "purity": "99.999%",
-            "closetNumber": 1,
+            "closetNumber": 2,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
@@ -1333,7 +1333,7 @@
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "",
             "company": "Thermo Scientific",
-            "identityStatus": "CAS identity applied",
+            "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14796",
@@ -1342,7 +1342,7 @@
             "pubchemIupacName": "dioxogermane",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:31:31",
-            "updatedAt": "2026-06-01T09:31:31"
+            "updatedAt": "2026-06-01T09:31:58"
         }
     ],
     "deletedPowderImports": []
