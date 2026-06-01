@@ -16,6 +16,7 @@ from stoichio.msds_inventory import (
     closet_label,
     download_msds_pdf_from_url,
     find_known_identity,
+    get_msds_pdf,
     load_msds_inventory,
     normalize_purity,
     save_msds_inventory_item,
@@ -323,6 +324,35 @@ class MsdsInventoryTest(unittest.TestCase):
             self.assertIn("https://example.com/fe2o3-sds.pdf", source_html)
             self.assertIn("URL=https://example.com/fe2o3-sds.pdf", shortcut)
             self.assertEqual(archive.read(material_pdfs[0]), b"%PDF-1.4\n% test msds\n")
+
+    def test_many_msds_pdfs_are_stored_outside_inventory_json(self):
+        for index in range(105):
+            saved, _ = save_msds_inventory_item({
+                "nameOrFormula": f"ScaleTest{index}",
+                "purity": "99%",
+                "company": "Scale Vendor",
+                "closetNumber": 1,
+            })
+            attach_msds_pdf(
+                saved["id"],
+                f"scale_{index}.pdf",
+                "application/pdf",
+                f"%PDF-1.4\n% scale test {index}\n".encode("ascii"),
+            )
+
+        raw_inventory = Path("msds_inventory.json").read_text()
+        inventory = json.loads(raw_inventory)
+        pdf_files = sorted(Path("msds_pdfs").glob("*.pdf"))
+
+        self.assertEqual(len(pdf_files), 105)
+        self.assertEqual(sum(1 for item in inventory["items"] if item.get("msdsFileStoragePath")), 105)
+        self.assertNotIn("%PDF-1.4", raw_inventory)
+
+        target_id = next(item["id"] for item in inventory["items"] if item.get("nameOrFormula") == "ScaleTest37")
+        filename, content_type, pdf_bytes = get_msds_pdf(target_id)
+        self.assertEqual(filename, "scale_37.pdf")
+        self.assertEqual(content_type, "application/pdf")
+        self.assertEqual(pdf_bytes, b"%PDF-1.4\n% scale test 37\n")
 
 
 if __name__ == "__main__":

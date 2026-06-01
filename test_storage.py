@@ -3,6 +3,7 @@ import json
 import os
 import tempfile
 import unittest
+import urllib.parse
 
 from stoichio import storage
 
@@ -55,6 +56,34 @@ class FakeLargeGitHubJsonStore(storage.GitHubJsonStore):
         }
 
 
+class FakeGitHubBinaryStore(storage.GitHubJsonStore):
+    def __init__(self):
+        super().__init__("owner/repo", "token", branch="lab-data")
+        self.records = {}
+        self.requests = []
+
+    def _request(self, method, url, payload=None, allow_404=False):
+        self.requests.append((method, url, payload))
+        if "/contents/" not in url:
+            raise AssertionError(f"Unexpected fake GitHub URL: {url}")
+        path = urllib.parse.unquote(url.split("/contents/", 1)[1].split("?", 1)[0])
+
+        if method == "GET":
+            if path not in self.records:
+                return None if allow_404 else {}
+            return {"sha": f"sha-{path}", "content": self.records[path]}
+
+        if method == "PUT":
+            self.records[path] = payload["content"]
+            return {"content": {"sha": f"sha-{path}"}}
+
+        if method == "DELETE":
+            self.records.pop(path, None)
+            return {}
+
+        raise AssertionError(f"Unexpected fake GitHub method: {method}")
+
+
 class FailingBackend:
     def save(self, path, data):
         raise RuntimeError("backend exploded")
@@ -68,6 +97,19 @@ class StorageGithubMergeTests(unittest.TestCase):
 
         self.assertEqual(data, {"items": [{"id": "large", "value": 1}]})
         self.assertTrue(any("/git/blobs/" in url for url in store.gets))
+
+    def test_github_binary_store_preserves_pdf_folder_paths(self):
+        store = FakeGitHubBinaryStore()
+
+        store.save_binary("msds_pdfs/test.pdf", b"%PDF-1.4\n")
+        loaded = store.load_binary("msds_pdfs/test.pdf")
+
+        self.assertEqual(loaded, b"%PDF-1.4\n")
+        self.assertIn("msds_pdfs/test.pdf", store.records)
+
+        store.delete_binary("msds_pdfs/test.pdf")
+
+        self.assertNotIn("msds_pdfs/test.pdf", store.records)
 
     def test_github_json_store_merges_non_conflicting_dict_updates(self):
         store = FakeGitHubJsonStore({"Fe2O3": {"status": "old"}})

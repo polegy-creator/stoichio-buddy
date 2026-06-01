@@ -40,6 +40,7 @@ _MAX_TEXT_LINES_PER_PAGE = 43
 _MAX_MSDS_PDF_BYTES = 10 * 1024 * 1024
 _MSDS_DOWNLOAD_TIMEOUT_SEC = 15
 _BLOCKED_HOSTNAMES = {"localhost", "localhost.localdomain"}
+MSDS_PDF_STORAGE_DIR = "msds_pdfs"
 POWDER_IDENTITY_STATUS = "CAS imported from powder database"
 
 
@@ -362,11 +363,41 @@ def powder_import_id(powder: str) -> str:
 
 
 def msds_status(item: dict[str, Any]) -> str:
-    if item.get("msdsFileDataBase64"):
+    if item.get("msdsFileDataBase64") or item.get("msdsFileStoragePath"):
         return "uploaded"
     if item.get("msdsExternalUrl"):
         return "link only"
     return "missing"
+
+
+def msds_pdf_storage_path(item_id: str) -> str:
+    digest = hashlib.sha256(str(item_id).encode("utf-8")).hexdigest()[:32]
+    return f"{MSDS_PDF_STORAGE_DIR}/{digest}.pdf"
+
+
+def _item_pdf_bytes(item: dict[str, Any]) -> bytes:
+    inline_data = item.get("msdsFileDataBase64") or ""
+    if inline_data:
+        return base64.b64decode(inline_data)
+    storage_path = item.get("msdsFileStoragePath") or ""
+    if storage_path:
+        pdf_bytes = storage.load_binary(storage_path, default=b"")
+        if not pdf_bytes:
+            raise ValueError("The stored MSDS PDF file could not be found.")
+        return pdf_bytes
+    return b""
+
+
+def _item_pdf_data_base64(item: dict[str, Any]) -> str:
+    inline_data = item.get("msdsFileDataBase64") or ""
+    if inline_data:
+        return inline_data
+    pdf_bytes = _item_pdf_bytes(item)
+    return base64.b64encode(pdf_bytes).decode("ascii") if pdf_bytes else ""
+
+
+def _item_has_pdf(item: dict[str, Any]) -> bool:
+    return bool(item.get("msdsFileDataBase64") or item.get("msdsFileStoragePath"))
 
 
 def _empty_store() -> dict[str, Any]:
@@ -411,6 +442,7 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
         "msdsFileName": str(record.get("msdsFileName") or "").strip(),
         "msdsFileContentType": str(record.get("msdsFileContentType") or "").strip(),
         "msdsFileDataBase64": str(record.get("msdsFileDataBase64") or "").strip(),
+        "msdsFileStoragePath": str(record.get("msdsFileStoragePath") or "").strip(),
         "company": company,
         "identityStatus": str(record.get("identityStatus") or "needs verification").strip(),
         "source": str(record.get("source") or "").strip(),
@@ -436,6 +468,7 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
         "msdsFileUrl": item.get("msdsFileUrl", ""),
         "msdsExternalUrl": item.get("msdsExternalUrl", ""),
         "msdsFileName": item.get("msdsFileName", ""),
+        "msdsFileStoragePath": item.get("msdsFileStoragePath", ""),
         "company": item.get("company", ""),
         "identityStatus": item.get("identityStatus", "needs verification"),
         "source": item.get("source", ""),
@@ -450,7 +483,10 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
     }
     if include_file_data:
         payload["msdsFileContentType"] = item.get("msdsFileContentType", "")
-        payload["msdsFileDataBase64"] = item.get("msdsFileDataBase64", "")
+        try:
+            payload["msdsFileDataBase64"] = _item_pdf_data_base64(item)
+        except Exception:
+            payload["msdsFileDataBase64"] = item.get("msdsFileDataBase64", "")
     return payload
 
 
@@ -550,6 +586,7 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": str(record.get("company") or record.get("supplier") or "").strip(),
             "identityStatus": str(record.get("identityStatus") or (POWDER_IDENTITY_STATUS if cas_number else "needs verification")).strip(),
             "source": "powder database",
@@ -694,6 +731,11 @@ def delete_msds_inventory_item(item_id: str) -> tuple[dict[str, Any], list[dict[
 
     store["items"] = next_items
     _save_store(store)
+    if removed.get("msdsFileStoragePath"):
+        storage.delete_binary(
+            removed["msdsFileStoragePath"],
+            message=f"Delete Stoichio Buddy MSDS PDF: {removed.get('nameOrFormula') or removed['id']}",
+        )
     return item_payload(removed), load_msds_inventory()
 
 
@@ -720,7 +762,18 @@ def attach_msds_pdf(
             continue
         normalized["msdsFileName"] = filename
         normalized["msdsFileContentType"] = content_type or "application/pdf"
-        normalized["msdsFileDataBase64"] = base64.b64encode(pdf_bytes).decode("ascii")
+        if storage.has_binary_storage():
+            storage_path = normalized.get("msdsFileStoragePath") or msds_pdf_storage_path(item_id)
+            storage.save_binary(
+                storage_path,
+                pdf_bytes,
+                message=f"Update Stoichio Buddy MSDS PDF: {normalized.get('nameOrFormula') or item_id}",
+            )
+            normalized["msdsFileStoragePath"] = storage_path
+            normalized["msdsFileDataBase64"] = ""
+        else:
+            normalized["msdsFileStoragePath"] = ""
+            normalized["msdsFileDataBase64"] = base64.b64encode(pdf_bytes).decode("ascii")
         normalized["msdsFileUrl"] = f"/api/msds-inventory/{item_id}/msds-file"
         if source_url:
             normalized["msdsExternalUrl"] = _normalize_msds_download_url(source_url)
@@ -837,13 +890,13 @@ def get_msds_pdf(item_id: str) -> tuple[str, str, bytes]:
     for item in load_msds_inventory(include_file_data=True):
         if item.get("id") != item_id:
             continue
-        data = item.get("msdsFileDataBase64") or ""
-        if not data:
+        pdf_bytes = _item_pdf_bytes(item)
+        if not pdf_bytes:
             raise ValueError("This material does not have an uploaded MSDS PDF.")
         return (
             item.get("msdsFileName") or "msds.pdf",
             item.get("msdsFileContentType") or "application/pdf",
-            base64.b64decode(data),
+            pdf_bytes,
         )
     raise ValueError("Material inventory item was not found.")
 
@@ -880,10 +933,10 @@ def build_msds_binder_pdf() -> bytes:
     for item in items:
         heading = item.get("nameOrFormula") or "Unnamed material"
         metadata = _material_page_lines(item)
-        if item.get("msdsFileDataBase64"):
+        if _item_has_pdf(item):
             append_text_pages([["Uploaded MSDS/SDS", "", *metadata]])
             try:
-                reader = PdfReader(io.BytesIO(base64.b64decode(item["msdsFileDataBase64"])))
+                reader = PdfReader(io.BytesIO(_item_pdf_bytes(item)))
                 if reader.is_encrypted:
                     reader.decrypt("")
                 for page in reader.pages:
@@ -927,11 +980,10 @@ def build_msds_binder_archive() -> bytes:
                 if item.get("msdsExternalUrl"):
                     archive.writestr(f"{material_folder}/source_link.url", _internet_shortcut(item["msdsExternalUrl"]))
 
-                pdf_data = item.get("msdsFileDataBase64") or ""
-                if pdf_data:
+                if _item_has_pdf(item):
                     pdf_filename = _archive_pdf_filename(item)
                     try:
-                        archive.writestr(f"{material_folder}/{pdf_filename}", base64.b64decode(pdf_data, validate=True))
+                        archive.writestr(f"{material_folder}/{pdf_filename}", _item_pdf_bytes(item))
                     except Exception as exc:
                         archive.writestr(
                             f"{material_folder}/PDF_DECODE_ERROR.txt",
@@ -1007,7 +1059,7 @@ def _archive_item_row(item: dict[str, Any], link_folder: bool = False) -> str:
 def _archive_material_source_html(item: dict[str, Any]) -> str:
     external_url = item.get("msdsExternalUrl") or ""
     source_url = item.get("casSourceUrl") or ""
-    pdf_link = _html_link(_archive_pdf_filename(item)) if item.get("msdsFileDataBase64") else "not uploaded"
+    pdf_link = _html_link(_archive_pdf_filename(item)) if _item_has_pdf(item) else "not uploaded"
     body = [
         "<h1>MSDS/SDS Source Record</h1>",
         "<dl>",

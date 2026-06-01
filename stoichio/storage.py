@@ -204,11 +204,11 @@ class GitHubJsonStore:
         self.api_root = f"https://api.github.com/repos/{self.repo}/contents"
         self._loaded_documents = {}
 
-    def _repo_path(self, path):
-        base_name = os.path.basename(path)
+    def _repo_path(self, path, preserve_dirs=False):
+        repo_path = str(path or "").strip().strip("/") if preserve_dirs else os.path.basename(path)
         if self.path_prefix:
-            return f"{self.path_prefix}/{base_name}"
-        return base_name
+            return f"{self.path_prefix}/{repo_path}"
+        return repo_path
 
     def _request(self, method, url, payload=None, allow_404=False):
         headers = {
@@ -239,16 +239,16 @@ class GitHubJsonStore:
         except urllib.error.URLError as exc:
             raise RuntimeError(f"GitHub storage request failed: {exc}") from exc
 
-    def _content_url(self, path):
-        repo_path = urllib.parse.quote(self._repo_path(path), safe="/")
+    def _content_url(self, path, preserve_dirs=False):
+        repo_path = urllib.parse.quote(self._repo_path(path, preserve_dirs=preserve_dirs), safe="/")
         return f"{self.api_root}/{repo_path}?ref={urllib.parse.quote(self.branch)}"
 
-    def _put_url(self, path):
-        repo_path = urllib.parse.quote(self._repo_path(path), safe="/")
+    def _put_url(self, path, preserve_dirs=False):
+        repo_path = urllib.parse.quote(self._repo_path(path, preserve_dirs=preserve_dirs), safe="/")
         return f"{self.api_root}/{repo_path}"
 
-    def _load_content_record(self, path, allow_404=False):
-        record = self._request("GET", self._content_url(path), allow_404=allow_404)
+    def _load_content_record(self, path, allow_404=False, preserve_dirs=False):
+        record = self._request("GET", self._content_url(path, preserve_dirs=preserve_dirs), allow_404=allow_404)
         if record is None:
             return None
         if not record.get("content") and record.get("git_url"):
@@ -343,6 +343,41 @@ class GitHubJsonStore:
     def _encoded_content(data):
         payload_text = json.dumps(data, indent=4)
         return base64.b64encode((payload_text + "\n").encode("utf-8")).decode("ascii")
+
+    def load_binary(self, path, default=b""):
+        record = self._load_content_record(path, allow_404=True, preserve_dirs=True)
+        if record is None:
+            return default
+        content = record.get("content", "")
+        if not content:
+            return default
+        try:
+            return base64.b64decode(content)
+        except ValueError:
+            return default
+
+    def save_binary(self, path, data, message=None):
+        record = self._load_content_record(path, allow_404=True, preserve_dirs=True)
+        existing_sha = record.get("sha") if record else None
+        payload = {
+            "message": message or f"Update Stoichio Buddy file: {path}",
+            "content": base64.b64encode(data).decode("ascii"),
+            "branch": self.branch,
+        }
+        if existing_sha:
+            payload["sha"] = existing_sha
+        return self._request("PUT", self._put_url(path, preserve_dirs=True), payload=payload)
+
+    def delete_binary(self, path, message=None):
+        record = self._load_content_record(path, allow_404=True, preserve_dirs=True)
+        if record is None:
+            return
+        payload = {
+            "message": message or f"Delete Stoichio Buddy file: {path}",
+            "sha": record["sha"],
+            "branch": self.branch,
+        }
+        self._request("DELETE", self._put_url(path, preserve_dirs=True), payload=payload)
 
 
 def merge_json_documents(base, local, remote, path="JSON document"):
@@ -624,3 +659,84 @@ def save_json(path, data):
     if running_on_vercel():
         raise RuntimeError("Shared storage is unavailable; data was not saved.")
     save_json_file(path, data)
+
+
+def has_binary_storage():
+    return _storage_backend is None or all(
+        hasattr(_storage_backend, method)
+        for method in ("load_binary", "save_binary")
+    )
+
+
+def load_binary_file(path, default=b""):
+    try:
+        with open(path, "rb") as source:
+            return source.read()
+    except OSError:
+        return default
+
+
+def save_binary_file(path, data):
+    directory = os.path.dirname(os.path.abspath(path)) or "."
+    os.makedirs(directory, exist_ok=True)
+    with tempfile.NamedTemporaryFile("wb", dir=directory, delete=False) as f:
+        f.write(data)
+        temp_path = f.name
+    os.replace(temp_path, path)
+
+
+def delete_binary_file(path):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        pass
+
+
+def load_binary(path, default=b""):
+    if _storage_backend is not None and hasattr(_storage_backend, "load_binary"):
+        try:
+            return _storage_backend.load_binary(path, default=default)
+        except Exception as exc:
+            if running_on_vercel():
+                record_shared_storage_error(exc)
+                raise RuntimeError(
+                    f"Shared storage read failed; file was not loaded: {exc}"
+                ) from exc
+            disable_shared_storage(exc)
+    if running_on_vercel():
+        raise RuntimeError("Shared storage is unavailable; file was not loaded.")
+    return load_binary_file(path, default)
+
+
+def save_binary(path, data, message=None):
+    if _storage_backend is not None and hasattr(_storage_backend, "save_binary"):
+        try:
+            _storage_backend.save_binary(path, data, message=message)
+            return
+        except Exception as exc:
+            if running_on_vercel():
+                record_shared_storage_error(exc)
+                raise RuntimeError(
+                    f"Shared storage write failed; file was not saved: {exc}"
+                ) from exc
+            disable_shared_storage(exc)
+    if running_on_vercel():
+        raise RuntimeError("Shared storage is unavailable; file was not saved.")
+    save_binary_file(path, data)
+
+
+def delete_binary(path, message=None):
+    if _storage_backend is not None and hasattr(_storage_backend, "delete_binary"):
+        try:
+            _storage_backend.delete_binary(path, message=message)
+            return
+        except Exception as exc:
+            if running_on_vercel():
+                record_shared_storage_error(exc)
+                raise RuntimeError(
+                    f"Shared storage delete failed; file was not deleted: {exc}"
+                ) from exc
+            disable_shared_storage(exc)
+    if running_on_vercel():
+        raise RuntimeError("Shared storage is unavailable; file was not deleted.")
+    delete_binary_file(path)
