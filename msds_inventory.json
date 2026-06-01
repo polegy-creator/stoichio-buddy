@@ -1799,6 +1799,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:00:17",
             "updatedAt": "2026-06-01T10:00:20"
+        },
+        {
+            "id": "cas:7727-73-3|vendor:thermo-scientifc",
+            "casNumber": "7727-73-3",
+            "nameOrFormula": "H20Na2O14S",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/62649",
+            "pubchemCid": "62649",
+            "pubchemFormula": "H20Na2O14S",
+            "pubchemIupacName": "disodium;sulfate;decahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:01:16",
+            "updatedAt": "2026-06-01T10:01:16"
         }
     ],
     "deletedPowderImports": []
