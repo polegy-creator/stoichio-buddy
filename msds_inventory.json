@@ -2231,6 +2231,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:40:40",
             "updatedAt": "2026-06-01T10:40:44"
+        },
+        {
+            "id": "cas:64-19-7",
+            "casNumber": "64-19-7",
+            "nameOrFormula": "acetic acid glacial",
+            "purity": "",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://www.bgu.ac.il/media/0q5giewx/acetic-acid_biolab.pdf",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/176",
+            "pubchemCid": "176",
+            "pubchemFormula": "C2H4O2",
+            "pubchemIupacName": "acetic acid",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:42:45",
+            "updatedAt": "2026-06-01T10:42:45"
         }
     ],
     "deletedPowderImports": []
