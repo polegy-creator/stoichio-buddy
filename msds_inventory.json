@@ -2015,6 +2015,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:10:11",
             "updatedAt": "2026-06-01T10:10:11"
+        },
+        {
+            "id": "cas:67-63-0|vendor:bio-lab",
+            "casNumber": "67-63-0",
+            "nameOrFormula": "C3H8O",
+            "purity": "",
+            "closetNumber": 3,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Bio-Lab Ltd.",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3776",
+            "pubchemCid": "3776",
+            "pubchemFormula": "C3H8O",
+            "pubchemIupacName": "propan-2-ol",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:12:57",
+            "updatedAt": "2026-06-01T10:12:57"
         }
     ],
     "deletedPowderImports": []
