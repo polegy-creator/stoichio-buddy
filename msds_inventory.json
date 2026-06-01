@@ -1203,7 +1203,7 @@
         {
             "id": "cas:1310-73-2|vendor:bio-lab",
             "casNumber": "1310-73-2",
-            "nameOrFormula": "sodium hydroxide pearls",
+            "nameOrFormula": "Sodium Hydroxide Pearls",
             "purity": "",
             "closetNumber": 2,
             "msdsFileUrl": "/api/msds-inventory/cas:1310-73-2|vendor:bio-lab/msds-file",
@@ -1223,7 +1223,7 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:18:55",
-            "updatedAt": "2026-06-01T09:19:09"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7447-40-7|vendor:sentek",
@@ -1253,7 +1253,7 @@
         {
             "id": "cas:10043-35-3|vendor:bio-lab",
             "casNumber": "10043-35-3",
-            "nameOrFormula": "boric acid",
+            "nameOrFormula": "Boric Acid",
             "purity": "",
             "closetNumber": 2,
             "msdsFileUrl": "/api/msds-inventory/cas:10043-35-3|vendor:bio-lab/msds-file",
@@ -1273,12 +1273,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:23:43",
-            "updatedAt": "2026-06-01T09:23:53"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:1310-58-3|vendor:fisher-scientific",
             "casNumber": "1310-58-3",
-            "nameOrFormula": "potassium hydroxide",
+            "nameOrFormula": "Potassium Hydroxide",
             "purity": "",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1298,7 +1298,7 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:25:13",
-            "updatedAt": "2026-06-01T09:25:26"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:12024-21-4|purity:99.99|vendor:thermo-scientific",
@@ -1353,7 +1353,7 @@
         {
             "id": "cas:7721-01-9|purity:99.8%|vendor:thermo-scientific",
             "casNumber": "7721-01-9",
-            "nameOrFormula": "Tantalum pentachloride",
+            "nameOrFormula": "Tantalum Pentachloride",
             "purity": "99.8%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1373,7 +1373,7 @@
             "pubchemTitle": "Tantalum pentachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:30:40",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:1310-53-8|purity:99.999%|vendor:thermo-scientific",
@@ -1403,7 +1403,7 @@
         {
             "id": "cas:7447-40-7|vendor:fisher-bioreagents",
             "casNumber": "7447-40-7",
-            "nameOrFormula": "phosphate buffered saline tablets",
+            "nameOrFormula": "Phosphate Buffered Saline Tablets",
             "purity": "",
             "closetNumber": 2,
             "msdsFileUrl": "/api/msds-inventory/cas:7447-40-7|vendor:fisher-bioreagents/msds-file",
@@ -1423,7 +1423,7 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:35:21",
-            "updatedAt": "2026-06-01T09:35:29"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7632-00-0|purity:99%|vendor:fisher-chemicals",
@@ -1453,7 +1453,7 @@
         {
             "id": "cas:1465-25-4|vendor:thermo-scientific",
             "casNumber": "1465-25-4",
-            "nameOrFormula": "N-1-Naphthylethylenediamine dihydrochloride",
+            "nameOrFormula": "N-1-Naphthylethylenediamine Dihydrochloride",
             "purity": "96%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1473,12 +1473,12 @@
             "pubchemTitle": "N-1-Naphthylethylenediamine dihydrochloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:37:34",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:10026-12-7|purity:99%|vendor:thermo-scientific",
             "casNumber": "10026-12-7",
-            "nameOrFormula": "Niobium pentachloride",
+            "nameOrFormula": "Niobium Pentachloride",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1498,12 +1498,12 @@
             "pubchemTitle": "Niobium pentachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:38:39",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:13478-00-7|purity:98%|vendor:alfa-aesar",
             "casNumber": "13478-00-7",
-            "nameOrFormula": "Nickel nitrate hexahydrate",
+            "nameOrFormula": "Nickel Nitrate Hexahydrate",
             "purity": "98%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1523,7 +1523,7 @@
             "pubchemTitle": "Nickel nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:40:11",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7757-83-7|purity:98.0%|vendor:thermo-scientific",
@@ -1553,7 +1553,7 @@
         {
             "id": "cas:10196-18-6|purity:99%|vendor:alfa-aesar",
             "casNumber": "10196-18-6",
-            "nameOrFormula": "Zinc nitrate hexahydrate",
+            "nameOrFormula": "Zinc Nitrate Hexahydrate",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1573,7 +1573,7 @@
             "pubchemTitle": "Zinc nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:43:37",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:127-09-3|purity:99%|vendor:sigma-aldrich",
@@ -1653,7 +1653,7 @@
         {
             "id": "cas:13499-05-3|purity:99%|vendor:thermo-scientifc",
             "casNumber": "13499-05-3",
-            "nameOrFormula": "Hafnium tetrachloride",
+            "nameOrFormula": "Hafnium Tetrachloride",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1673,12 +1673,12 @@
             "pubchemTitle": "Hafnium tetrachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:48:19",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:6018-89-9|vendor:thermo-scientific",
             "casNumber": "6018-89-9",
-            "nameOrFormula": "Nickel acetate tetrahydrate",
+            "nameOrFormula": "Nickel Acetate Tetrahydrate",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1698,12 +1698,12 @@
             "pubchemTitle": "Nickel acetate tetrahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:49:52",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7782-61-8|purity:99|vendor:thermo-scientific",
             "casNumber": "7782-61-8",
-            "nameOrFormula": "Iron nitrate (Fe(NO3)3) nonahydrate",
+            "nameOrFormula": "Iron Nitrate (Fe(NO3)3) Nonahydrate",
             "purity": "99+",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1723,12 +1723,12 @@
             "pubchemTitle": "Iron nitrate (Fe(NO3)3) nonahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:52:02",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7778-77-0|purity:99.0%|vendor:thermo-scientific",
             "casNumber": "7778-77-0",
-            "nameOrFormula": "Monobasic potassium phosphate",
+            "nameOrFormula": "Monobasic Potassium Phosphate",
             "purity": "99.0%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1748,12 +1748,12 @@
             "pubchemTitle": "Monobasic potassium phosphate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:53:16",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:10026-22-9|purity:97.7%|vendor:alfa-aesar",
             "casNumber": "10026-22-9",
-            "nameOrFormula": "Cobaltous nitrate hexahydrate",
+            "nameOrFormula": "Cobaltous Nitrate Hexahydrate",
             "purity": "97.7%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1773,7 +1773,7 @@
             "pubchemTitle": "Cobaltous nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:55:05",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:13446-18-9|purity:98-102%|vendor:alfa-aesar",
@@ -1803,7 +1803,7 @@
         {
             "id": "cas:14985-18-3|purity:99.5%|vendor:thermo-scientific",
             "casNumber": "14985-18-3",
-            "nameOrFormula": "Zirconium dinitrate oxide hydrate",
+            "nameOrFormula": "Zirconium Dinitrate Oxide Hydrate",
             "purity": "99.5%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1823,12 +1823,12 @@
             "pubchemTitle": "Zirconium dinitrate oxide hydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:57:50",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:10196-18-6|purity:99%|vendor:thermo-scientific",
             "casNumber": "10196-18-6",
-            "nameOrFormula": "Zinc nitrate hexahydrate",
+            "nameOrFormula": "Zinc Nitrate Hexahydrate",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1848,7 +1848,7 @@
             "pubchemTitle": "Zinc nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:59:15",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7631-99-4|purity:98|vendor:thermo-scientific",
@@ -1878,7 +1878,7 @@
         {
             "id": "cas:7727-73-3|vendor:thermo-scientifc",
             "casNumber": "7727-73-3",
-            "nameOrFormula": "Sodium sulfate decahydrate",
+            "nameOrFormula": "Sodium Sulfate Decahydrate",
             "purity": "",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1898,12 +1898,12 @@
             "pubchemTitle": "Sodium sulfate decahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:01:16",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7646-79-9|purity:97%|vendor:thermo-scientific",
             "casNumber": "7646-79-9",
-            "nameOrFormula": "Cobalt chloride (cocl2)",
+            "nameOrFormula": "Cobalt Chloride (cocl2)",
             "purity": "97%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1923,12 +1923,12 @@
             "pubchemTitle": "Cobalt chloride (cocl2)",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:02:37",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:23838-02-0|purity:99%|vendor:alfa-aesar",
             "casNumber": "23838-02-0",
-            "nameOrFormula": "Ferrous chloride dihydrate",
+            "nameOrFormula": "Ferrous Chloride Dihydrate",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1948,12 +1948,12 @@
             "pubchemTitle": "Ferrous chloride dihydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:03:36",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:15244-10-7|vendor:thermo-scientific",
             "casNumber": "15244-10-7",
-            "nameOrFormula": "Ferric sulfate hydrate",
+            "nameOrFormula": "Ferric Sulfate Hydrate",
             "purity": "",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1973,12 +1973,12 @@
             "pubchemTitle": "Ferric sulfate hydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:04:49",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:10025-77-1|purity:97-102%|vendor:alfa-aesar",
             "casNumber": "10025-77-1",
-            "nameOrFormula": "Ferric chloride hexahydrate",
+            "nameOrFormula": "Ferric Chloride Hexahydrate",
             "purity": "97-102%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1998,7 +1998,7 @@
             "pubchemTitle": "Ferric chloride hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:05:38",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:57-13-6|purity:99%|vendor:arcos-organics",
@@ -2078,7 +2078,7 @@
         {
             "id": "cas:13746-66-2|purity:99%|vendor:sigma-aldrich",
             "casNumber": "13746-66-2",
-            "nameOrFormula": "Potassium ferricyanide",
+            "nameOrFormula": "Potassium Ferricyanide",
             "purity": "99%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -2098,7 +2098,7 @@
             "pubchemTitle": "Potassium ferricyanide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:10:11",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:67-63-0|vendor:bio-lab",
@@ -2128,7 +2128,7 @@
         {
             "id": "cas:64-17-5|purity:99.9%|vendor:romichal",
             "casNumber": "64-17-5",
-            "nameOrFormula": "ethanol",
+            "nameOrFormula": "Ethanol",
             "purity": "99.9%",
             "closetNumber": 3,
             "msdsFileUrl": "/api/msds-inventory/cas:64-17-5|purity:99.9%|vendor:romichal/msds-file",
@@ -2148,12 +2148,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:18:01",
-            "updatedAt": "2026-06-01T10:19:09"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:67-64-1|vendor:bio-labs",
             "casNumber": "67-64-1",
-            "nameOrFormula": "acetone",
+            "nameOrFormula": "Acetone",
             "purity": "",
             "closetNumber": 3,
             "msdsFileUrl": "/api/msds-inventory/cas:67-64-1|vendor:bio-labs/msds-file",
@@ -2173,12 +2173,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:22:26",
-            "updatedAt": "2026-06-01T10:25:29"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:110-54-3|vendor:bio-lab",
             "casNumber": "110-54-3",
-            "nameOrFormula": "n-hexane",
+            "nameOrFormula": "N-Hexane",
             "purity": "",
             "closetNumber": 3,
             "msdsFileUrl": "/api/msds-inventory/cas:110-54-3|vendor:bio-lab/msds-file",
@@ -2198,12 +2198,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:25:11",
-            "updatedAt": "2026-06-01T10:25:14"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7722-84-1|purity:35%|vendor:thermo-scientific",
             "casNumber": "7722-84-1",
-            "nameOrFormula": "hydrogen peroxide for analysis",
+            "nameOrFormula": "Hydrogen Peroxide for Analysis",
             "purity": "35%",
             "closetNumber": 4,
             "msdsFileUrl": "/api/msds-inventory/cas:7722-84-1|purity:35%|vendor:thermo-scientific/msds-file",
@@ -2223,12 +2223,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:28:36",
-            "updatedAt": "2026-06-01T10:30:52"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7722-84-1|purity:30%|vendor:sigma-aldrich",
             "casNumber": "7722-84-1",
-            "nameOrFormula": "hydrogen peroxide",
+            "nameOrFormula": "Hydrogen Peroxide",
             "purity": "30%",
             "closetNumber": 4,
             "msdsFileUrl": "/api/msds-inventory/cas:7722-84-1|purity:30%|vendor:sigma-aldrich/msds-file",
@@ -2248,7 +2248,7 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:30:00",
-            "updatedAt": "2026-06-01T10:34:51"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:7550-45-0|vendor:thermo-scientific",
@@ -2278,7 +2278,7 @@
         {
             "id": "cas:63-74-1|purity:98%|vendor:thermo-scientific",
             "casNumber": "63-74-1",
-            "nameOrFormula": "sulfanilamide",
+            "nameOrFormula": "Sulfanilamide",
             "purity": "98%",
             "closetNumber": 4,
             "msdsFileUrl": "",
@@ -2298,12 +2298,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:38:06",
-            "updatedAt": "2026-06-01T10:38:06"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:1336-21-6|vendor:bio-lab",
             "casNumber": "1336-21-6",
-            "nameOrFormula": "ammonium hydroxide",
+            "nameOrFormula": "Ammonium Hydroxide",
             "purity": "",
             "closetNumber": 4,
             "msdsFileUrl": "/api/msds-inventory/cas:1336-21-6|vendor:bio-lab/msds-file",
@@ -2323,12 +2323,12 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:40:40",
-            "updatedAt": "2026-06-01T10:40:44"
+            "updatedAt": "2026-06-01T15:20:37"
         },
         {
             "id": "cas:64-19-7",
             "casNumber": "64-19-7",
-            "nameOrFormula": "acetic acid glacial",
+            "nameOrFormula": "Acetic Acid Glacial",
             "purity": "",
             "closetNumber": 4,
             "msdsFileUrl": "/api/msds-inventory/cas:64-19-7/msds-file",
@@ -2348,7 +2348,7 @@
             "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:42:45",
-            "updatedAt": "2026-06-01T10:42:59"
+            "updatedAt": "2026-06-01T15:20:37"
         }
     ],
     "deletedPowderImports": []
