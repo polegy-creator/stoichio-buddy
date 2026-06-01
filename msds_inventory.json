@@ -1607,6 +1607,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:48:19",
             "updatedAt": "2026-06-01T09:48:19"
+        },
+        {
+            "id": "cas:6018-89-9|vendor:thermo-scientific",
+            "casNumber": "6018-89-9",
+            "nameOrFormula": "C4H14NiO8",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/62601",
+            "pubchemCid": "62601",
+            "pubchemFormula": "C4H14NiO8",
+            "pubchemIupacName": "nickel(2+);diacetate;tetrahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:49:52",
+            "updatedAt": "2026-06-01T09:49:52"
         }
     ],
     "deletedPowderImports": []
