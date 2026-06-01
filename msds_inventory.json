@@ -2135,6 +2135,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:28:36",
             "updatedAt": "2026-06-01T10:28:39"
+        },
+        {
+            "id": "cas:7722-84-1|purity:30%|vendor:sigma-aldrich",
+            "casNumber": "7722-84-1",
+            "nameOrFormula": "hydrogen peroxide",
+            "purity": "30%",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Sigma-Aldrich",
+            "identityStatus": "CAS identity applied",
+            "source": "local saved CAS record",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/784",
+            "pubchemCid": "784",
+            "pubchemFormula": "H2O2",
+            "pubchemIupacName": "hydrogen peroxide",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:30:00",
+            "updatedAt": "2026-06-01T10:30:00"
         }
     ],
     "deletedPowderImports": []
