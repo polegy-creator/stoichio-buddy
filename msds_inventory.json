@@ -1253,7 +1253,7 @@
             "casNumber": "12024-21-4",
             "nameOrFormula": "Ga2O3",
             "purity": "99.99+",
-            "closetNumber": 2,
+            "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
             "msdsFileName": "",
@@ -1261,7 +1261,7 @@
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "",
             "company": "Thermo Scientific",
-            "identityStatus": "CAS identity applied",
+            "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/158605",
@@ -1270,7 +1270,7 @@
             "pubchemIupacName": "digallium;tris(oxygen(2-))",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:26:43",
-            "updatedAt": "2026-06-01T09:26:43"
+            "updatedAt": "2026-06-01T09:27:23"
         }
     ],
     "deletedPowderImports": []
