@@ -1395,10 +1395,10 @@
             "pubchemCid": "14796",
             "pubchemFormula": "GeO2",
             "pubchemIupacName": "dioxogermane",
-            "pubchemTitle": "Dioxogermane",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:31:31",
-            "updatedAt": "2026-06-01T15:25:29"
+            "updatedAt": "2026-06-01T15:29:08"
         },
         {
             "id": "cas:7447-40-7|vendor:fisher-bioreagents",
