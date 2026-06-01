@@ -1967,6 +1967,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:07:41",
             "updatedAt": "2026-06-01T10:07:41"
+        },
+        {
+            "id": "cas:54-21-7|purity:99%|vendor:thermo-scientific",
+            "casNumber": "54-21-7",
+            "nameOrFormula": "C7H5NaO3",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/16760658",
+            "pubchemCid": "16760658",
+            "pubchemFormula": "C7H5NaO3",
+            "pubchemIupacName": "sodium 2-hydroxybenzoate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:08:50",
+            "updatedAt": "2026-06-01T10:08:50"
         }
     ],
     "deletedPowderImports": []
