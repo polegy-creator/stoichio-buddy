@@ -2087,6 +2087,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:22:26",
             "updatedAt": "2026-06-01T10:22:48"
+        },
+        {
+            "id": "cas:110-54-3|vendor:bio-lab",
+            "casNumber": "110-54-3",
+            "nameOrFormula": "n-hexane",
+            "purity": "",
+            "closetNumber": 3,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://www.lobachemie.com/lab-chemical-msds/MSDS-nHEXANE-CASNO-110-54-00162-EN.aspx",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Bio-Lab Ltd.",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/8058",
+            "pubchemCid": "8058",
+            "pubchemFormula": "C6H14",
+            "pubchemIupacName": "hexane",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:25:11",
+            "updatedAt": "2026-06-01T10:25:11"
         }
     ],
     "deletedPowderImports": []
