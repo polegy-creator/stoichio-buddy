@@ -2039,6 +2039,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:12:57",
             "updatedAt": "2026-06-01T10:15:21"
+        },
+        {
+            "id": "cas:64-17-5|purity:99.9%|vendor:romichal",
+            "casNumber": "64-17-5",
+            "nameOrFormula": "ethanol",
+            "purity": "99.9%",
+            "closetNumber": 3,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "romichal",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/702",
+            "pubchemCid": "702",
+            "pubchemFormula": "C2H6O",
+            "pubchemIupacName": "ethanol",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:18:01",
+            "updatedAt": "2026-06-01T10:18:01"
         }
     ],
     "deletedPowderImports": []
