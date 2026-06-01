@@ -18,6 +18,7 @@ from stoichio.msds_inventory import (
     download_msds_pdf_from_url,
     find_known_identity,
     get_msds_pdf,
+    item_payload,
     load_msds_inventory,
     material_display_name,
     normalize_purity,
@@ -358,6 +359,24 @@ class MsdsInventoryTest(unittest.TestCase):
             self.assertIn("https://example.com/fe2o3-sds.pdf", source_html)
             self.assertIn("URL=https://example.com/fe2o3-sds.pdf", shortcut)
             self.assertEqual(archive.read(material_pdfs[0]), b"%PDF-1.4\n% test msds\n")
+
+    def test_msds_file_url_is_encoded_for_browser_links(self):
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "99%",
+            "company": "Vendor A",
+            "closetNumber": 1,
+        })
+        attached, _ = attach_msds_pdf(
+            saved["id"],
+            "fe2o3_sds.pdf",
+            "application/pdf",
+            b"%PDF-1.4\n% test msds\n",
+        )
+
+        self.assertIn("%7C", item_payload(attached)["msdsFileUrl"])
+        self.assertIn("%25", item_payload(attached)["msdsFileUrl"])
 
     def test_many_msds_pdfs_are_stored_outside_inventory_json(self):
         for index in range(105):

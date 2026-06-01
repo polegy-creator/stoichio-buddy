@@ -543,6 +543,11 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[str, Any]:
+    msds_file_url = ""
+    if item.get("msdsFileUrl"):
+        item_id = urllib.parse.quote(str(item["id"]), safe="")
+        msds_file_url = f"/api/msds-inventory/{item_id}/msds-file"
+
     payload = {
         "id": item["id"],
         "casNumber": item.get("casNumber", ""),
@@ -551,7 +556,7 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
         "purity": item.get("purity", ""),
         "closetNumber": item.get("closetNumber", 1),
         "closetLabel": closet_label(item.get("closetNumber", 1)),
-        "msdsFileUrl": item.get("msdsFileUrl", ""),
+        "msdsFileUrl": msds_file_url,
         "msdsExternalUrl": item.get("msdsExternalUrl", ""),
         "msdsFileName": item.get("msdsFileName", ""),
         "msdsFileStoragePath": item.get("msdsFileStoragePath", ""),
