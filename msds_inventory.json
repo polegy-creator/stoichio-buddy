@@ -11,6 +11,7 @@
             "msdsFileName": "SDB-4463-AU-EN.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/1ad4387d59c5a69374613e41c01558ee.pdf",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -21,8 +22,7 @@
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "sourcePowderId": "powder:Fe2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:32:10",
-            "msdsFileStoragePath": "msds_pdfs/1ad4387d59c5a69374613e41c01558ee.pdf"
+            "updatedAt": "2026-06-01T06:32:10"
         },
         {
             "id": "powder:TiO2",
@@ -35,6 +35,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -58,6 +59,7 @@
             "msdsFileName": "ZnO_1314-13-2_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/9b87328c037d60fd40e7a3880ec8d84d.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -68,8 +70,7 @@
             "pubchemIupacName": "zinc oxygen(2-)",
             "sourcePowderId": "powder:ZnO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:03",
-            "msdsFileStoragePath": "msds_pdfs/9b87328c037d60fd40e7a3880ec8d84d.pdf"
+            "updatedAt": "2026-06-01T06:38:03"
         },
         {
             "id": "powder:Co3O4",
@@ -82,6 +83,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Aaron Chemicals LLC",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -105,6 +107,7 @@
             "msdsFileName": "NiO_1313-99-1_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/54f757cc29783c849684801cbc2f7d37.pdf",
             "company": "Alfa Aesar",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -115,8 +118,7 @@
             "pubchemIupacName": "nickel(2+);oxygen(2-)",
             "sourcePowderId": "powder:NiO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:10",
-            "msdsFileStoragePath": "msds_pdfs/54f757cc29783c849684801cbc2f7d37.pdf"
+            "updatedAt": "2026-06-01T06:38:10"
         },
         {
             "id": "powder:HfO2",
@@ -129,6 +131,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "AA Blocks, Inc.",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -152,6 +155,7 @@
             "msdsFileName": "CuO_1317-38-0_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/b86ce58acc1e9592394fc051d02ed72b.pdf",
             "company": "Alfa Aesar",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -162,8 +166,7 @@
             "pubchemIupacName": "copper oxygen(2-)",
             "sourcePowderId": "powder:CuO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:17",
-            "msdsFileStoragePath": "msds_pdfs/b86ce58acc1e9592394fc051d02ed72b.pdf"
+            "updatedAt": "2026-06-01T06:38:17"
         },
         {
             "id": "powder:Ta2O5",
@@ -176,6 +179,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "AA Blocks, Inc.",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -199,6 +203,7 @@
             "msdsFileName": "BaCO3_513-77-9_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/1aebac3c29b5abae954ff3256a84c13a.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -209,8 +214,7 @@
             "pubchemIupacName": "barium(2+) carbonate",
             "sourcePowderId": "powder:BaCO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:24",
-            "msdsFileStoragePath": "msds_pdfs/1aebac3c29b5abae954ff3256a84c13a.pdf"
+            "updatedAt": "2026-06-01T06:38:24"
         },
         {
             "id": "powder:MgO",
@@ -223,6 +227,7 @@
             "msdsFileName": "MgO_1309-48-4_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/5860a17464303f2c6d1b0024fc3163aa.pdf",
             "company": "Alfa Aesar",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -233,8 +238,7 @@
             "pubchemIupacName": "oxomagnesium",
             "sourcePowderId": "powder:MgO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:08",
-            "msdsFileStoragePath": "msds_pdfs/5860a17464303f2c6d1b0024fc3163aa.pdf"
+            "updatedAt": "2026-06-01T09:42:08"
         },
         {
             "id": "powder:MnO2",
@@ -247,6 +251,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -270,6 +275,7 @@
             "msdsFileName": "Al2O3_1344-28-1_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/17b5ba713cd26afeef18aab919d01e4a.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -280,8 +286,7 @@
             "pubchemIupacName": "dialuminum;tris(oxygen(2-))",
             "sourcePowderId": "powder:Al2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:11",
-            "msdsFileStoragePath": "msds_pdfs/17b5ba713cd26afeef18aab919d01e4a.pdf"
+            "updatedAt": "2026-06-01T09:42:11"
         },
         {
             "id": "powder:Nb2O5",
@@ -294,6 +299,7 @@
             "msdsFileName": "Nb2O5_1313-96-8_Acros-Organics_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/fc30c69624aa1941a1bd4c809ae69e81.pdf",
             "company": "Acros Organics",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -304,8 +310,7 @@
             "pubchemIupacName": "bis(niobium(5+));pentakis(oxygen(2-))",
             "sourcePowderId": "powder:Nb2O5",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:11",
-            "msdsFileStoragePath": "msds_pdfs/fc30c69624aa1941a1bd4c809ae69e81.pdf"
+            "updatedAt": "2026-06-01T09:42:11"
         },
         {
             "id": "powder:CoO",
@@ -318,6 +323,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Aaron Chemicals LLC",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -341,6 +347,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Strem Chemicals, Inc.",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -364,6 +371,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -387,6 +395,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -410,6 +419,7 @@
             "msdsFileName": "Cr2O3_1308-38-9_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/fe0b1b0a3f606e15ec367cb957d0558b.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -420,8 +430,7 @@
             "pubchemIupacName": "oxo(oxochromiooxy)chromium",
             "sourcePowderId": "powder:Cr2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:12",
-            "msdsFileStoragePath": "msds_pdfs/fe0b1b0a3f606e15ec367cb957d0558b.pdf"
+            "updatedAt": "2026-06-01T09:42:12"
         },
         {
             "id": "powder:Sb2O3",
@@ -434,6 +443,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -457,6 +467,7 @@
             "msdsFileName": "Tb4O7_12037-01-3_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/bced0925243a8f02be85307e4150b6f4.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -467,8 +478,7 @@
             "pubchemIupacName": "terbium;oxygen(2-)",
             "sourcePowderId": "powder:Tb4O7",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:13",
-            "msdsFileStoragePath": "msds_pdfs/bced0925243a8f02be85307e4150b6f4.pdf"
+            "updatedAt": "2026-06-01T09:42:13"
         },
         {
             "id": "powder:CaCO3",
@@ -481,6 +491,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -504,6 +515,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -527,6 +539,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -550,6 +563,7 @@
             "msdsFileName": "SnO2_18282-10-5_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/dd004b967c467d00703b63c6bc0e3887.pdf",
             "company": "Alfa Aesar",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -560,8 +574,7 @@
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
             "sourcePowderId": "powder:SnO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:14",
-            "msdsFileStoragePath": "msds_pdfs/dd004b967c467d00703b63c6bc0e3887.pdf"
+            "updatedAt": "2026-06-01T09:42:14"
         },
         {
             "id": "powder:La2O3",
@@ -574,6 +587,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -597,6 +611,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -620,6 +635,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -643,6 +659,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -666,6 +683,7 @@
             "msdsFileName": "Pr6O11_12037-29-5_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/35695c3bb0ed33ba6077427b2a2ad39d.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -676,8 +694,7 @@
             "pubchemIupacName": "oxygen(2-);praseodymium(3+)",
             "sourcePowderId": "powder:Pr6O11",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:15",
-            "msdsFileStoragePath": "msds_pdfs/35695c3bb0ed33ba6077427b2a2ad39d.pdf"
+            "updatedAt": "2026-06-01T09:42:15"
         },
         {
             "id": "powder:BiVO4",
@@ -690,6 +707,7 @@
             "msdsFileName": "BiVO4_14059-33-7_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/2516985d3467e27b126026cb1e7bbdf8.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -700,8 +718,7 @@
             "pubchemIupacName": "bismuth trioxido(oxo)vanadium",
             "sourcePowderId": "powder:BiVO4",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:16",
-            "msdsFileStoragePath": "msds_pdfs/2516985d3467e27b126026cb1e7bbdf8.pdf"
+            "updatedAt": "2026-06-01T09:42:16"
         },
         {
             "id": "powder:Gd2O3",
@@ -714,6 +731,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -737,6 +755,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -760,6 +779,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -783,6 +803,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -806,6 +827,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -829,6 +851,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -852,6 +875,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "manual identity entry",
             "source": "powder database",
@@ -875,6 +899,7 @@
             "msdsFileName": "FERRIC-OXIDE-ANHYD-CERT-500G.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/e3acd62c906c89188188da06f641b76b.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
             "source": "local saved CAS record",
@@ -885,8 +910,7 @@
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T10:57:57",
-            "updatedAt": "2026-05-31T14:31:23",
-            "msdsFileStoragePath": "msds_pdfs/e3acd62c906c89188188da06f641b76b.pdf"
+            "updatedAt": "2026-05-31T14:31:23"
         },
         {
             "id": "cas:1309-37-1|purity:99.999|vendor:acros-organics",
@@ -899,6 +923,7 @@
             "msdsFileName": "Fe2O3_1309-37-1_Acros-Organics_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/d09bdd8422a9e8c19d40089563537ce3.pdf",
             "company": "Acros Organics",
             "identityStatus": "CAS identity applied",
             "source": "local saved CAS record",
@@ -909,8 +934,7 @@
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:33:36",
-            "updatedAt": "2026-06-01T09:42:16",
-            "msdsFileStoragePath": "msds_pdfs/d09bdd8422a9e8c19d40089563537ce3.pdf"
+            "updatedAt": "2026-06-01T09:42:16"
         },
         {
             "id": "cas:9002-89-5|vendor:alfa-aesar",
@@ -923,6 +947,7 @@
             "msdsFileName": "C2H4O_9002-89-5_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/61980d386fc5c0900905ebd38808c976.pdf",
             "company": "Alfa Aesar",
             "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
@@ -933,8 +958,7 @@
             "pubchemIupacName": "acetaldehyde",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:46:33",
-            "updatedAt": "2026-06-01T09:42:17",
-            "msdsFileStoragePath": "msds_pdfs/61980d386fc5c0900905ebd38808c976.pdf"
+            "updatedAt": "2026-06-01T09:42:17"
         },
         {
             "id": "cas:9002-89-5|purity:89|vendor:thermo-scientifc",
@@ -947,6 +971,7 @@
             "msdsFileName": "C2H4O_9002-89-5_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/955e4a65cf42cd4cce54abccbd007c92.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
             "source": "local saved CAS record",
@@ -957,8 +982,7 @@
             "pubchemIupacName": "acetaldehyde",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:53:53",
-            "updatedAt": "2026-06-01T09:42:18",
-            "msdsFileStoragePath": "msds_pdfs/955e4a65cf42cd4cce54abccbd007c92.pdf"
+            "updatedAt": "2026-06-01T09:42:18"
         },
         {
             "id": "cas:9003-39-8|vendor:thermo-scientific",
@@ -971,6 +995,7 @@
             "msdsFileName": "C6H9NO_9003-39-8_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/86cd71ce5d3f757e88a8691f7ff3e242.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -981,8 +1006,7 @@
             "pubchemIupacName": "1-ethenylpyrrolidin-2-one",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:59:32",
-            "updatedAt": "2026-06-01T09:42:19",
-            "msdsFileStoragePath": "msds_pdfs/86cd71ce5d3f757e88a8691f7ff3e242.pdf"
+            "updatedAt": "2026-06-01T09:42:19"
         },
         {
             "id": "cas:1314-13-2|purity:99.995|vendor:noah-technologies",
@@ -995,6 +1019,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "CAS identity applied",
             "source": "local saved CAS record",
@@ -1018,6 +1043,7 @@
             "msdsFileName": "SnO2_18282-10-5_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/2ace1f41fd31c89f1ab426b062a7eafd.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
             "source": "local saved CAS record",
@@ -1028,8 +1054,7 @@
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:16:53",
-            "updatedAt": "2026-06-01T09:42:20",
-            "msdsFileStoragePath": "msds_pdfs/2ace1f41fd31c89f1ab426b062a7eafd.pdf"
+            "updatedAt": "2026-06-01T09:42:20"
         },
         {
             "id": "cas:112926-00-8|vendor:ted-pella",
@@ -1042,6 +1067,7 @@
             "msdsFileName": "19950_19952_19960_19961_sds.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/74c05e123b970952dfab6adbdef5c948.pdf",
             "company": "Ted Pella, Inc.",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -1052,8 +1078,7 @@
             "pubchemIupacName": "dioxosilane",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:27:37",
-            "updatedAt": "2026-05-31T15:27:39",
-            "msdsFileStoragePath": "msds_pdfs/74c05e123b970952dfab6adbdef5c948.pdf"
+            "updatedAt": "2026-05-31T15:27:39"
         },
         {
             "id": "cas:57-11-4|purity:97|vendor:thermo-scientific",
@@ -1066,6 +1091,7 @@
             "msdsFileName": "C18H36O2_57-11-4_Alfa-Aesar_SDS.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "msds_pdfs/774916c7dd5596c5d629c8d7503252fa.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -1076,8 +1102,7 @@
             "pubchemIupacName": "octadecanoic acid",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:28:32",
-            "updatedAt": "2026-06-01T09:42:21",
-            "msdsFileStoragePath": "msds_pdfs/774916c7dd5596c5d629c8d7503252fa.pdf"
+            "updatedAt": "2026-06-01T09:42:21"
         },
         {
             "id": "cas:1314-13-2|purity:98|vendor:aaron-chemicals",
@@ -1090,6 +1115,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Aaron Chemicals LLC",
             "identityStatus": "CAS identity applied",
             "source": "local saved CAS record",
@@ -1113,6 +1139,7 @@
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
             "company": "Bio-Lab Ltd.",
             "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
