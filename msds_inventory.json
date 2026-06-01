@@ -1439,6 +1439,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:38:39",
             "updatedAt": "2026-06-01T09:39:00"
+        },
+        {
+            "id": "cas:13478-00-7|purity:98%|vendor:alfa-aesar",
+            "casNumber": "13478-00-7",
+            "nameOrFormula": "H12N2NiO12",
+            "purity": "98%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Alfa Aesar",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/61630",
+            "pubchemCid": "61630",
+            "pubchemFormula": "H12N2NiO12",
+            "pubchemIupacName": "nickel(2+);dinitrate;hexahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:40:11",
+            "updatedAt": "2026-06-01T09:40:11"
         }
     ],
     "deletedPowderImports": []
