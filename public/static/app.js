@@ -458,11 +458,24 @@ function densityRecordsForWeightedMode() {
     });
 }
 
-function weightedDensitySelectOptions(selectedKey = "") {
+function usedWeightedDensityKeys(rows, activeIndex) {
+  const keys = new Set();
+  rows.forEach((component, index) => {
+    const key = component?.densityKey || "";
+    if (index === activeIndex || !key || key === "__manual__") return;
+    keys.add(key);
+  });
+  return keys;
+}
+
+function weightedDensitySelectOptions(selectedKey = "", excludedKeys = new Set()) {
   const items = [
     { value: "", label: "Choose density" },
     ...relativeDensityPickerItems({ expanded: true, includeShowMore: false }),
-  ];
+  ].filter((item) => {
+    const value = String(item.value || "");
+    return value === selectedKey || !excludedKeys.has(value);
+  });
   return densityPickerOptionsHtml(items, selectedKey);
 }
 
@@ -598,7 +611,7 @@ function renderWeightedDensityRows(components = null) {
     <div class="weighted-density-row" data-weighted-element="${escapeHtml(component.element || "")}">
       <label>
         ${component.element ? `${escapeHtml(component.element)} density` : `Density ${index + 1}`}
-        <select data-weighted-density-key>${weightedDensitySelectOptions(component.densityKey)}</select>
+        <select data-weighted-density-key>${weightedDensitySelectOptions(component.densityKey, usedWeightedDensityKeys(rows, index))}</select>
       </label>
       <label ${component.densityKey === "__manual__" ? "" : "hidden"}>
         Manual g/cm³
@@ -617,7 +630,7 @@ function renderWeightedDensityRows(components = null) {
       <div class="weighted-density-row">
         <label>
           Density ${els.weightedDensityRows.children.length + 1}
-          <select data-weighted-density-key>${weightedDensitySelectOptions("")}</select>
+          <select data-weighted-density-key>${weightedDensitySelectOptions("", usedWeightedDensityKeys(rows, -1))}</select>
         </label>
         <label hidden>
           Manual g/cm³
@@ -647,6 +660,10 @@ function weightedDensityCalculation() {
 
   if (!components.length) throw new Error("Choose at least one density for the weighted mix.");
   if (components.some((component) => component.densityKey !== "__manual__" && !component.record)) throw new Error("Choose a density record for every weighted row, or choose Manual density.");
+  const savedDensityKeys = components
+    .map((component) => component.densityKey)
+    .filter((key) => key && key !== "__manual__");
+  if (new Set(savedDensityKeys).size !== savedDensityKeys.length) throw new Error("Use each saved density only once, or choose Manual density.");
   if (components.some((component) => !(component.density > 0))) throw new Error("Enter a positive manual density for every manual row.");
   if (components.some((component) => !(component.weight > 0))) throw new Error("Enter a positive fraction or percent for every weighted row.");
 
@@ -2792,14 +2809,18 @@ function setupEvents() {
     updateWeightedDensityPreview();
     persistRecipeSettings();
   }, 150));
-  els.weightedDensityRows.addEventListener("change", () => {
+  els.weightedDensityRows.addEventListener("change", (event) => {
     els.weightedDensityRows.querySelectorAll(".weighted-density-row").forEach((row) => {
       const manual = row.querySelector("[data-weighted-density-key]")?.value === "__manual__";
       const manualWrap = row.querySelector("[data-weighted-manual-density]")?.closest("label");
       if (manualWrap) manualWrap.hidden = !manual;
     });
     state.weightedRelativeDensityComponents = readWeightedDensityComponents({ includeEmpty: true });
-    updateWeightedDensityPreview();
+    if (event.target.closest("[data-weighted-density-key]")) {
+      renderWeightedDensityRows(state.weightedRelativeDensityComponents);
+    } else {
+      updateWeightedDensityPreview();
+    }
     persistRecipeSettings();
   });
   els.weightedDensityRows.addEventListener("click", (event) => {
