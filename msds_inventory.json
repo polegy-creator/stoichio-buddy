@@ -2111,6 +2111,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:25:11",
             "updatedAt": "2026-06-01T10:25:14"
+        },
+        {
+            "id": "cas:7722-84-1|purity:35%|vendor:thermo-scientific",
+            "casNumber": "7722-84-1",
+            "nameOrFormula": "hydrogen poroxide for analysis",
+            "purity": "35%",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://assets.thermofisher.com/DirectWebViewer/private/document.aspx?prd=ACR44438~~PDF~~MTR~~CLP1~~EE~~2024-09-11%2004:15:09~~Hydrogen%20Peroxide%20%2035%20wt%%20solution%20in%20water%20%20stabilized~~",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/784",
+            "pubchemCid": "784",
+            "pubchemFormula": "H2O2",
+            "pubchemIupacName": "hydrogen peroxide",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:28:36",
+            "updatedAt": "2026-06-01T10:28:36"
         }
     ],
     "deletedPowderImports": []
