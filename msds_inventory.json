@@ -1727,6 +1727,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:56:11",
             "updatedAt": "2026-06-01T09:56:36"
+        },
+        {
+            "id": "cas:14985-18-3|purity:99.5%|vendor:thermo-scientific",
+            "casNumber": "14985-18-3",
+            "nameOrFormula": "H2N2O8Zr",
+            "purity": "99.5%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/16211674",
+            "pubchemCid": "16211674",
+            "pubchemFormula": "H2N2O8Zr",
+            "pubchemIupacName": "oxozirconium(2+);dinitrate;hydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:57:50",
+            "updatedAt": "2026-06-01T09:57:50"
         }
     ],
     "deletedPowderImports": []
