@@ -187,5 +187,23 @@
         "target_id": "vinoth-T009",
         "target_number": 9,
         "target_for": "vinoth"
+    },
+    {
+        "entry_id": "4b68c1c197014604b03bc0788761ffa2",
+        "entry_type": "target_density",
+        "time": "2026-06-01T12:04:06",
+        "target": "Ti0.77Yb0.2Er0.03",
+        "measured_density_g_cm3": 4.957794276736508,
+        "theoretical_density_g_cm3": 5.336769023318352,
+        "relative_density_percent": 92.89879803817702,
+        "final_volume_cm3": 2.1685046615280084,
+        "final_mass_g": 10.751,
+        "final_diameter_mm": 21.31,
+        "final_height_mm": 6.08,
+        "density_source": "Weighted theoretical density: 0.77*TiO2 (rutile), rutile: 4.24822 g/cm\u00b3 - Codex seeded - verify before use + 0.03*Er2O3 (C-type cubic), C-type cubic: 8.68948 g/cm\u00b3 - Codex seeded - verify before use + 0.2*Yb2O3 (C-type cubic), C-type cubic: 9.02476 g/cm\u00b3 - Codex seeded - verify before use",
+        "notes": "",
+        "target_id": "vinoth-T010",
+        "target_number": 10,
+        "target_for": "vinoth"
     }
 ]
