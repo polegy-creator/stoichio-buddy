@@ -42,6 +42,9 @@ _MSDS_DOWNLOAD_TIMEOUT_SEC = 15
 _BLOCKED_HOSTNAMES = {"localhost", "localhost.localdomain"}
 MSDS_PDF_STORAGE_DIR = "msds_pdfs"
 POWDER_IDENTITY_STATUS = "CAS imported from powder database"
+PREFERRED_LAB_MATERIAL_NAMES = {
+    "1310-53-8": "Germanium Dioxide",
+}
 
 
 def now_iso() -> str:
@@ -78,6 +81,14 @@ def normalize_cas_number(value: str | None) -> str:
     return cas_number
 
 
+def preferred_lab_material_name(cas_number: str | None) -> str:
+    try:
+        cas = normalize_cas_number(cas_number)
+    except ValueError:
+        return ""
+    return PREFERRED_LAB_MATERIAL_NAMES.get(cas, "")
+
+
 def cas_checksum_valid(cas_number: str) -> bool:
     digits = cas_number.replace("-", "")
     check_digit = int(digits[-1])
@@ -105,7 +116,8 @@ def material_display_name(item: dict[str, Any]) -> str:
         return raw_name
 
     name = (
-        str(item.get("pubchemTitle") or "").strip()
+        preferred_lab_material_name(item.get("casNumber"))
+        or str(item.get("pubchemTitle") or "").strip()
         or raw_name
         or str(item.get("pubchemIupacName") or "").strip()
         or str(item.get("pubchemFormula") or "").strip()

@@ -9,7 +9,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
-from stoichio.msds_inventory import normalize_cas_number
+from stoichio.msds_inventory import normalize_cas_number, preferred_lab_material_name
 
 
 _PUBCHEM_BASE = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
@@ -55,7 +55,7 @@ def _local_identity(cas_number: str, known_items: list[dict[str, Any]], prefer_n
     for item in known_items:
         if item.get("casNumber") != cas_number:
             continue
-        name_or_formula = _preferred_identity_text(item, prefer_name=prefer_name)
+        name_or_formula = _preferred_identity_text(cas_number, item, prefer_name=prefer_name)
         if not name_or_formula:
             continue
         return {
@@ -125,10 +125,11 @@ def _pubchem_ssl_context() -> ssl.SSLContext | None:
     return ssl.create_default_context(cafile=certifi.where())
 
 
-def _preferred_identity_text(item: dict[str, Any], prefer_name: bool = False) -> str:
+def _preferred_identity_text(cas_number: str, item: dict[str, Any], prefer_name: bool = False) -> str:
     if prefer_name:
         return (
-            str(item.get("pubchemTitle") or "").strip()
+            preferred_lab_material_name(cas_number)
+            or str(item.get("pubchemTitle") or "").strip()
             or str(item.get("pubchemIupacName") or "").strip()
             or str(item.get("nameOrFormula") or "").strip()
             or str(item.get("pubchemFormula") or "").strip()
@@ -146,10 +147,11 @@ def _identity_from_pubchem_record(cas_number: str, record: dict[str, Any], prefe
     formula = str(record.get("MolecularFormula") or "").strip()
     iupac = str(record.get("IUPACName") or "").strip()
     title = str(record.get("Title") or "").strip()
+    lab_name = preferred_lab_material_name(cas_number)
 
     return {
         "casNumber": cas_number,
-        "nameOrFormula": (title or iupac or formula) if prefer_name else (formula or title or iupac),
+        "nameOrFormula": (lab_name or title or iupac or formula) if prefer_name else (formula or lab_name or title or iupac),
         "identityStatus": "CAS identity applied",
         "source": "PubChem identity metadata",
         "casSource": "PubChem PUG REST",

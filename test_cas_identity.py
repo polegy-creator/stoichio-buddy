@@ -86,6 +86,26 @@ class CasIdentityTests(unittest.TestCase):
         self.assertEqual(identity["nameOrFormula"], "Acetic Acid")
         self.assertEqual(identity["pubchemFormula"], "C2H4O2")
 
+    def test_pubchem_identity_uses_lab_preferred_name_when_available(self):
+        payload = {
+            "PropertyTable": {
+                "Properties": [{
+                    "CID": 14796,
+                    "MolecularFormula": "GeO2",
+                    "IUPACName": "dioxogermane",
+                    "Title": "Dioxogermane",
+                }]
+            }
+        }
+
+        with patch("stoichio.cas_identity.urllib.request.urlopen", return_value=_FakeResponse(payload)):
+            result = lookup_cas_identity("1310-53-8", [], prefer_name=True)
+
+        identity = result["identity"]
+        self.assertEqual(result["source"], "pubchem")
+        self.assertEqual(identity["nameOrFormula"], "Germanium Dioxide")
+        self.assertEqual(identity["pubchemFormula"], "GeO2")
+
     def test_pubchem_xref_fallback_is_used_when_name_route_fails(self):
         payload = {
             "PropertyTable": {

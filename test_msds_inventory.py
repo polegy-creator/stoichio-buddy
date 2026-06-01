@@ -236,10 +236,17 @@ class MsdsInventoryTest(unittest.TestCase):
             "pubchemTitle": "Ferric Oxide",
             "closetNumber": 1,
         }
+        lab_preferred = {
+            "casNumber": "1310-53-8",
+            "nameOrFormula": "Dioxogermane",
+            "pubchemTitle": "Dioxogermane",
+            "closetNumber": 2,
+        }
 
         self.assertEqual(material_display_name(acid), "Hydrochloric Acid")
         self.assertEqual(material_display_name(solvent), "N-Hexane")
         self.assertEqual(material_display_name(powder), "Fe2O3")
+        self.assertEqual(material_display_name(lab_preferred), "Germanium Dioxide")
 
     def test_msds_binder_generates_pdf_even_without_uploaded_files(self):
         save_msds_inventory_item({
