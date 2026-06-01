@@ -1583,6 +1583,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:47:16",
             "updatedAt": "2026-06-01T09:47:16"
+        },
+        {
+            "id": "cas:13499-05-3|purity:99%|vendor:thermo-scientifc",
+            "casNumber": "13499-05-3",
+            "nameOrFormula": "Cl4Hf",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/37715",
+            "pubchemCid": "37715",
+            "pubchemFormula": "Cl4Hf",
+            "pubchemIupacName": "tetrachlorohafnium",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:48:19",
+            "updatedAt": "2026-06-01T09:48:19"
         }
     ],
     "deletedPowderImports": []
