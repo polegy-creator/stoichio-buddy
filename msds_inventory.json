@@ -1378,7 +1378,7 @@
         {
             "id": "cas:1310-53-8|purity:99.999%|vendor:thermo-scientific",
             "casNumber": "1310-53-8",
-            "nameOrFormula": "Dioxogermane",
+            "nameOrFormula": "Germanium Dioxide",
             "purity": "99.999%",
             "closetNumber": 2,
             "msdsFileUrl": "",
@@ -1398,7 +1398,7 @@
             "pubchemTitle": "Dioxogermane",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:31:31",
-            "updatedAt": "2026-06-01T14:51:23"
+            "updatedAt": "2026-06-01T15:25:29"
         },
         {
             "id": "cas:7447-40-7|vendor:fisher-bioreagents",
