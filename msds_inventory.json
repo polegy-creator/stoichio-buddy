@@ -1775,6 +1775,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:59:15",
             "updatedAt": "2026-06-01T09:59:21"
+        },
+        {
+            "id": "cas:7631-99-4|purity:98|vendor:thermo-scientific",
+            "casNumber": "7631-99-4",
+            "nameOrFormula": "NNaO3",
+            "purity": "98+",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24268",
+            "pubchemCid": "24268",
+            "pubchemFormula": "NNaO3",
+            "pubchemIupacName": "sodium nitrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:00:17",
+            "updatedAt": "2026-06-01T10:00:17"
         }
     ],
     "deletedPowderImports": []
