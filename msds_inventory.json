@@ -1535,6 +1535,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:44:54",
             "updatedAt": "2026-06-01T09:44:54"
+        },
+        {
+            "id": "cas:7758-11-4|vendor:thermo-scientific",
+            "casNumber": "7758-11-4",
+            "nameOrFormula": "HK2O4P",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24450",
+            "pubchemCid": "24450",
+            "pubchemFormula": "HK2O4P",
+            "pubchemIupacName": "dipotassium;hydrogen phosphate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:45:54",
+            "updatedAt": "2026-06-01T09:45:54"
         }
     ],
     "deletedPowderImports": []
