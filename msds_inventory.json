@@ -2372,8 +2372,8 @@
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Fe2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:TiO2",
@@ -2397,8 +2397,8 @@
             "pubchemIupacName": "dioxotitanium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:TiO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:ZnO",
@@ -2422,8 +2422,8 @@
             "pubchemIupacName": "zinc oxygen(2-)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:ZnO",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:NiO",
@@ -2447,8 +2447,8 @@
             "pubchemIupacName": "nickel(2+);oxygen(2-)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:NiO",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:HfO2",
@@ -2472,8 +2472,8 @@
             "pubchemIupacName": "dioxohafnium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:HfO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:CuO",
@@ -2497,8 +2497,8 @@
             "pubchemIupacName": "copper oxygen(2-)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:CuO",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Ta2O5",
@@ -2522,8 +2522,8 @@
             "pubchemIupacName": "pentakis(oxygen(2-));bis(tantalum(5+))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Ta2O5",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:BaCO3",
@@ -2547,8 +2547,8 @@
             "pubchemIupacName": "barium(2+) carbonate",
             "pubchemTitle": "",
             "sourcePowderId": "powder:BaCO3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:MgO",
@@ -2572,8 +2572,8 @@
             "pubchemIupacName": "oxomagnesium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:MgO",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:MnO2",
@@ -2597,8 +2597,8 @@
             "pubchemIupacName": "dioxomanganese",
             "pubchemTitle": "",
             "sourcePowderId": "powder:MnO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Al2O3",
@@ -2622,8 +2622,8 @@
             "pubchemIupacName": "dialuminum;tris(oxygen(2-))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Al2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Nb2O5",
@@ -2647,8 +2647,8 @@
             "pubchemIupacName": "bis(niobium(5+));pentakis(oxygen(2-))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Nb2O5",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:CoO",
@@ -2672,8 +2672,8 @@
             "pubchemIupacName": "oxocobalt",
             "pubchemTitle": "",
             "sourcePowderId": "powder:CoO",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:MoO3",
@@ -2697,8 +2697,8 @@
             "pubchemIupacName": "trioxomolybdenum",
             "pubchemTitle": "",
             "sourcePowderId": "powder:MoO3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Sc2O3",
@@ -2722,8 +2722,8 @@
             "pubchemIupacName": "tris(oxygen(2-));bis(scandium(3+))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Sc2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:BaTiO3",
@@ -2747,8 +2747,8 @@
             "pubchemIupacName": "barium(2+);tris(oxygen(2-));titanium(4+)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:BaTiO3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Cr2O3",
@@ -2772,8 +2772,8 @@
             "pubchemIupacName": "oxo(oxochromiooxy)chromium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Cr2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Sb2O3",
@@ -2797,8 +2797,8 @@
             "pubchemIupacName": "bis(antimony(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Sb2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Tb4O7",
@@ -2822,8 +2822,8 @@
             "pubchemIupacName": "terbium;oxygen(2-)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Tb4O7",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:CaCO3",
@@ -2847,8 +2847,8 @@
             "pubchemIupacName": "calcium carbonate",
             "pubchemTitle": "",
             "sourcePowderId": "powder:CaCO3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:ZrO2",
@@ -2872,8 +2872,8 @@
             "pubchemIupacName": "dioxozirconium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:ZrO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Tm2O3",
@@ -2897,8 +2897,8 @@
             "pubchemIupacName": "tris(oxygen(2-));bis(thulium(3+))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Tm2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:SnO2",
@@ -2922,8 +2922,8 @@
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:SnO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:La2O3",
@@ -2947,8 +2947,8 @@
             "pubchemIupacName": "bis(lanthanum(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:La2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:SrCO3",
@@ -2972,8 +2972,8 @@
             "pubchemIupacName": "strontium carbonate",
             "pubchemTitle": "",
             "sourcePowderId": "powder:SrCO3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:RuO2",
@@ -2997,8 +2997,8 @@
             "pubchemIupacName": "dioxoruthenium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:RuO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Y2O3",
@@ -3022,8 +3022,8 @@
             "pubchemIupacName": "tris(oxygen(2-));bis(yttrium(3+))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Y2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Pr6O11",
@@ -3047,8 +3047,8 @@
             "pubchemIupacName": "oxygen(2-);praseodymium(3+)",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Pr6O11",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:BiVO4",
@@ -3072,8 +3072,8 @@
             "pubchemIupacName": "bismuth trioxido(oxo)vanadium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:BiVO4",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Gd2O3",
@@ -3097,8 +3097,8 @@
             "pubchemIupacName": "bis(gadolinium(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Gd2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Er2O3",
@@ -3122,8 +3122,8 @@
             "pubchemIupacName": "bis(erbium(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Er2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:CeO2",
@@ -3147,8 +3147,8 @@
             "pubchemIupacName": "dioxocerium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:CeO2",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:V2O3",
@@ -3172,8 +3172,8 @@
             "pubchemIupacName": "oxo(oxovanadiooxy)vanadium",
             "pubchemTitle": "",
             "sourcePowderId": "powder:V2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:WO3",
@@ -3197,8 +3197,8 @@
             "pubchemIupacName": "trioxotungsten",
             "pubchemTitle": "",
             "sourcePowderId": "powder:WO3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Yb2O3",
@@ -3222,8 +3222,8 @@
             "pubchemIupacName": "tris(oxygen(2-));bis(ytterbium(3+))",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Yb2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         },
         {
             "id": "powder:Bi2O3",
@@ -3247,8 +3247,8 @@
             "pubchemIupacName": "oxo(oxobismuthanyloxy)bismuthane",
             "pubchemTitle": "",
             "sourcePowderId": "powder:Bi2O3",
-            "createdAt": "2026-06-01T17:46:05",
-            "updatedAt": "2026-06-01T17:46:05"
+            "createdAt": "2026-06-01T17:51:22",
+            "updatedAt": "2026-06-01T17:51:22"
         }
     ],
     "deletedPowderImports": []
