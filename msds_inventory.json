@@ -21,9 +21,9 @@
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Fe2O3",
+            "sourcePowderId": "powder:Fe2O3 | purity 99.95% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:32:10"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:TiO2",
@@ -46,9 +46,9 @@
             "pubchemFormula": "O2Ti",
             "pubchemIupacName": "dioxotitanium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:TiO2",
+            "sourcePowderId": "powder:TiO2 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:27"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:ZnO",
@@ -71,9 +71,9 @@
             "pubchemFormula": "OZn",
             "pubchemIupacName": "zinc oxygen(2-)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:ZnO",
+            "sourcePowderId": "powder:ZnO | purity 99.999% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T07:20:59"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Co3O4",
@@ -121,9 +121,9 @@
             "pubchemFormula": "NiO",
             "pubchemIupacName": "nickel(2+);oxygen(2-)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:NiO",
+            "sourcePowderId": "powder:NiO | purity 99% | vendor Alfa Aesar",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:10"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:HfO2",
@@ -146,9 +146,9 @@
             "pubchemFormula": "HfO2",
             "pubchemIupacName": "dioxohafnium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:HfO2",
+            "sourcePowderId": "powder:HfO2 | purity 98% | vendor AA Blocks, Inc.",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:29"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:CuO",
@@ -171,9 +171,9 @@
             "pubchemFormula": "CuO",
             "pubchemIupacName": "copper oxygen(2-)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:CuO",
+            "sourcePowderId": "powder:CuO | purity 99.7% | vendor Alfa Aesar",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:17"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Ta2O5",
@@ -196,9 +196,9 @@
             "pubchemFormula": "O5Ta2",
             "pubchemIupacName": "pentakis(oxygen(2-));bis(tantalum(5+))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Ta2O5",
+            "sourcePowderId": "powder:Ta2O5 | purity 99% | vendor AA Blocks, Inc.",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:30"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:BaCO3",
@@ -221,9 +221,9 @@
             "pubchemFormula": "CBaO3",
             "pubchemIupacName": "barium(2+) carbonate",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:BaCO3",
+            "sourcePowderId": "powder:BaCO3 | purity 99.95% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:24"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:MgO",
@@ -246,9 +246,9 @@
             "pubchemFormula": "MgO",
             "pubchemIupacName": "oxomagnesium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:MgO",
+            "sourcePowderId": "powder:MgO | purity 99.95% | vendor Alfa Aesar",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:08"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:MnO2",
@@ -271,9 +271,9 @@
             "pubchemFormula": "MnO2",
             "pubchemIupacName": "dioxomanganese",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:MnO2",
+            "sourcePowderId": "powder:MnO2 | purity 99.9% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:32"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Al2O3",
@@ -296,9 +296,9 @@
             "pubchemFormula": "Al2O3",
             "pubchemIupacName": "dialuminum;tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Al2O3",
+            "sourcePowderId": "powder:Al2O3 | purity 99.997% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:11"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Nb2O5",
@@ -321,9 +321,9 @@
             "pubchemFormula": "Nb2O5",
             "pubchemIupacName": "bis(niobium(5+));pentakis(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Nb2O5",
+            "sourcePowderId": "powder:Nb2O5 | purity 99.99% | vendor Acros Organics",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:11"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:CoO",
@@ -346,9 +346,9 @@
             "pubchemFormula": "CoO",
             "pubchemIupacName": "oxocobalt",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:CoO",
+            "sourcePowderId": "powder:CoO | purity 99% | vendor Aaron Chemicals LLC",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:33"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:MoO3",
@@ -371,9 +371,9 @@
             "pubchemFormula": "MoO3",
             "pubchemIupacName": "trioxomolybdenum",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:MoO3",
+            "sourcePowderId": "powder:MoO3 | purity 99.999% | vendor Strem Chemicals, Inc.",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:35"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Sc2O3",
@@ -396,9 +396,9 @@
             "pubchemFormula": "O3Sc2",
             "pubchemIupacName": "tris(oxygen(2-));bis(scandium(3+))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Sc2O3",
+            "sourcePowderId": "powder:Sc2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:36"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:BaTiO3",
@@ -421,9 +421,9 @@
             "pubchemFormula": "BaO3Ti",
             "pubchemIupacName": "barium(2+);tris(oxygen(2-));titanium(4+)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:BaTiO3",
+            "sourcePowderId": "powder:BaTiO3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:38"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Cr2O3",
@@ -446,9 +446,9 @@
             "pubchemFormula": "Cr2O3",
             "pubchemIupacName": "oxo(oxochromiooxy)chromium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Cr2O3",
+            "sourcePowderId": "powder:Cr2O3 | purity 99.6% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:12"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Sb2O3",
@@ -471,9 +471,9 @@
             "pubchemFormula": "O3Sb2",
             "pubchemIupacName": "bis(antimony(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Sb2O3",
+            "sourcePowderId": "powder:Sb2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:40"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Tb4O7",
@@ -496,9 +496,9 @@
             "pubchemFormula": "O7Tb4",
             "pubchemIupacName": "terbium;oxygen(2-)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Tb4O7",
+            "sourcePowderId": "powder:Tb4O7 | purity 99.9% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:13"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:CaCO3",
@@ -521,9 +521,9 @@
             "pubchemFormula": "CCaO3",
             "pubchemIupacName": "calcium carbonate",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:CaCO3",
+            "sourcePowderId": "powder:CaCO3 | purity 99.98% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:41"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:ZrO2",
@@ -546,9 +546,9 @@
             "pubchemFormula": "O2Zr",
             "pubchemIupacName": "dioxozirconium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:ZrO2",
+            "sourcePowderId": "powder:ZrO2 | purity 99.95% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:43"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Tm2O3",
@@ -571,9 +571,9 @@
             "pubchemFormula": "O3Tm2",
             "pubchemIupacName": "tris(oxygen(2-));bis(thulium(3+))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Tm2O3",
+            "sourcePowderId": "powder:Tm2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:45"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:SnO2",
@@ -596,9 +596,9 @@
             "pubchemFormula": "O2Sn",
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:SnO2",
+            "sourcePowderId": "powder:SnO2 | purity 99.9% | vendor Alfa Aesar",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:14"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:La2O3",
@@ -621,9 +621,9 @@
             "pubchemFormula": "La2O3",
             "pubchemIupacName": "bis(lanthanum(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:La2O3",
+            "sourcePowderId": "powder:La2O3 | purity 99.99% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:48"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:SrCO3",
@@ -646,9 +646,9 @@
             "pubchemFormula": "CO3Sr",
             "pubchemIupacName": "strontium carbonate",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:SrCO3",
+            "sourcePowderId": "powder:SrCO3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:49"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:RuO2",
@@ -671,9 +671,9 @@
             "pubchemFormula": "O2Ru",
             "pubchemIupacName": "dioxoruthenium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:RuO2",
+            "sourcePowderId": "powder:RuO2 | purity 99.95% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:51"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Y2O3",
@@ -696,9 +696,9 @@
             "pubchemFormula": "O3Y2",
             "pubchemIupacName": "tris(oxygen(2-));bis(yttrium(3+))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Y2O3",
+            "sourcePowderId": "powder:Y2O3 | purity 99.999% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:52"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Pr6O11",
@@ -721,9 +721,9 @@
             "pubchemFormula": "O11Pr6",
             "pubchemIupacName": "oxygen(2-);praseodymium(3+)",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Pr6O11",
+            "sourcePowderId": "powder:Pr6O11 | purity 99% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:15"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:BiVO4",
@@ -746,9 +746,9 @@
             "pubchemFormula": "BiO4V",
             "pubchemIupacName": "bismuth trioxido(oxo)vanadium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:BiVO4",
+            "sourcePowderId": "powder:BiVO4 | purity 99.9% | vendor Thermo Scientific",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:16"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Gd2O3",
@@ -771,9 +771,9 @@
             "pubchemFormula": "Gd2O3",
             "pubchemIupacName": "bis(gadolinium(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Gd2O3",
+            "sourcePowderId": "powder:Gd2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:53"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Er2O3",
@@ -796,9 +796,9 @@
             "pubchemFormula": "Er2O3",
             "pubchemIupacName": "bis(erbium(3+));tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Er2O3",
+            "sourcePowderId": "powder:Er2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:55"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:CeO2",
@@ -821,9 +821,9 @@
             "pubchemFormula": "CeO2",
             "pubchemIupacName": "dioxocerium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:CeO2",
+            "sourcePowderId": "powder:CeO2 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:57"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:V2O3",
@@ -846,9 +846,9 @@
             "pubchemFormula": "O3V2",
             "pubchemIupacName": "oxo(oxovanadiooxy)vanadium",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:V2O3",
+            "sourcePowderId": "powder:V2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:58"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:WO3",
@@ -871,9 +871,9 @@
             "pubchemFormula": "O3W",
             "pubchemIupacName": "trioxotungsten",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:WO3",
+            "sourcePowderId": "powder:WO3 | purity 99.99% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:49:59"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Yb2O3",
@@ -896,9 +896,9 @@
             "pubchemFormula": "O3Yb2",
             "pubchemIupacName": "tris(oxygen(2-));bis(ytterbium(3+))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Yb2O3",
+            "sourcePowderId": "powder:Yb2O3 | purity 99.9% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:50:02"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "powder:Bi2O3",
@@ -921,9 +921,9 @@
             "pubchemFormula": "Bi2O3",
             "pubchemIupacName": "oxo(oxobismuthanyloxy)bismuthane",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Bi2O3",
+            "sourcePowderId": "powder:Bi2O3 | purity 99.999% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T15:50:03"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:1309-37-1|purity:99.999|vendor:sigma-aldrich",
@@ -939,16 +939,16 @@
             "msdsFileStoragePath": "msds_pdfs/e3acd62c906c89188188da06f641b76b.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
-            "source": "local saved CAS record",
+            "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
             "pubchemCid": "518696",
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:Fe2O3 | purity 99.999% | vendor Thermo Scientific",
             "createdAt": "2026-05-31T10:57:57",
-            "updatedAt": "2026-05-31T14:31:23"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:1309-37-1|purity:99.999|vendor:acros-organics",
@@ -964,16 +964,16 @@
             "msdsFileStoragePath": "msds_pdfs/d09bdd8422a9e8c19d40089563537ce3.pdf",
             "company": "Acros Organics",
             "identityStatus": "CAS identity applied",
-            "source": "local saved CAS record",
+            "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/518696",
             "pubchemCid": "518696",
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:Fe2O3 | purity 99.999% | vendor Acros Organics",
             "createdAt": "2026-05-31T14:33:36",
-            "updatedAt": "2026-06-01T09:42:16"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:9002-89-5|vendor:alfa-aesar",
@@ -989,16 +989,16 @@
             "msdsFileStoragePath": "msds_pdfs/61980d386fc5c0900905ebd38808c976.pdf",
             "company": "Alfa Aesar",
             "identityStatus": "manual identity entry",
-            "source": "PubChem identity metadata",
+            "source": "powder database",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/177",
             "pubchemCid": "177",
             "pubchemFormula": "C2H4O",
             "pubchemIupacName": "acetaldehyde",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:C2H4O | purity 98-99% | vendor Alfa Aesar",
             "createdAt": "2026-05-31T14:46:33",
-            "updatedAt": "2026-06-01T09:42:17"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:9002-89-5|purity:89|vendor:thermo-scientifc",
@@ -1014,16 +1014,16 @@
             "msdsFileStoragePath": "msds_pdfs/955e4a65cf42cd4cce54abccbd007c92.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
-            "source": "local saved CAS record",
+            "source": "powder database",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/177",
             "pubchemCid": "177",
             "pubchemFormula": "C2H4O",
             "pubchemIupacName": "acetaldehyde",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:C2H4O | purity 89% | vendor Thermo Scientific",
             "createdAt": "2026-05-31T14:53:53",
-            "updatedAt": "2026-06-01T09:42:18"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:9003-39-8|vendor:thermo-scientific",
@@ -1039,16 +1039,16 @@
             "msdsFileStoragePath": "msds_pdfs/86cd71ce5d3f757e88a8691f7ff3e242.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
-            "source": "PubChem identity metadata",
+            "source": "powder database",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/6917",
             "pubchemCid": "6917",
             "pubchemFormula": "C6H9NO",
             "pubchemIupacName": "1-ethenylpyrrolidin-2-one",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:C6H9NO | vendor Thermo Scientific",
             "createdAt": "2026-05-31T14:59:32",
-            "updatedAt": "2026-06-01T09:42:19"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:1314-13-2|purity:99.995|vendor:noah-technologies",
@@ -1064,16 +1064,16 @@
             "msdsFileStoragePath": "msds_pdfs/0a0d88122ecc7c673c5bf1b3bdddcd26.pdf",
             "company": "Noah Chemicals Corporation",
             "identityStatus": "CAS identity applied",
-            "source": "local saved CAS record",
+            "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3007857",
             "pubchemCid": "3007857",
             "pubchemFormula": "OZn",
             "pubchemIupacName": "zinc oxygen(2-)",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:ZnO | purity 99.995% | vendor Noah Chemicals Corporation",
             "createdAt": "2026-05-31T15:01:20",
-            "updatedAt": "2026-06-01T15:50:04"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:18282-10-5|purity:99.9|vendor:thermo-scientific",
@@ -1089,16 +1089,16 @@
             "msdsFileStoragePath": "msds_pdfs/2ace1f41fd31c89f1ab426b062a7eafd.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
-            "source": "local saved CAS record",
+            "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/16747781",
             "pubchemCid": "16747781",
             "pubchemFormula": "O2Sn",
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:SnO2 | purity 99.9% | vendor Thermo Scientific",
             "createdAt": "2026-05-31T15:16:53",
-            "updatedAt": "2026-06-01T09:42:20"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:112926-00-8|vendor:ted-pella",
@@ -1114,16 +1114,16 @@
             "msdsFileStoragePath": "msds_pdfs/74c05e123b970952dfab6adbdef5c948.pdf",
             "company": "Ted Pella, Inc.",
             "identityStatus": "CAS identity applied",
-            "source": "PubChem identity metadata",
+            "source": "powder database",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24261",
             "pubchemCid": "24261",
             "pubchemFormula": "O2Si",
             "pubchemIupacName": "dioxosilane",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:O2Si | vendor Ted Pella, Inc.",
             "createdAt": "2026-05-31T15:27:37",
-            "updatedAt": "2026-05-31T15:27:39"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:57-11-4|purity:97|vendor:thermo-scientific",
@@ -1139,16 +1139,16 @@
             "msdsFileStoragePath": "msds_pdfs/774916c7dd5596c5d629c8d7503252fa.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "CAS identity applied",
-            "source": "PubChem identity metadata",
+            "source": "powder database",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/5281",
             "pubchemCid": "5281",
             "pubchemFormula": "C18H36O2",
             "pubchemIupacName": "octadecanoic acid",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:C18H36O2 | purity 97% | vendor Thermo Scientific",
             "createdAt": "2026-05-31T15:28:32",
-            "updatedAt": "2026-06-01T09:42:21"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:1314-13-2|purity:98|vendor:aaron-chemicals",
@@ -1164,16 +1164,16 @@
             "msdsFileStoragePath": "msds_pdfs/675d753709abaabdd24e853b72978f5c.pdf",
             "company": "Aaron Chemicals LLC",
             "identityStatus": "CAS identity applied",
-            "source": "local saved CAS record",
+            "source": "powder database",
             "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3007857",
             "pubchemCid": "3007857",
             "pubchemFormula": "OZn",
             "pubchemIupacName": "zinc oxygen(2-)",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:ZnO | purity 98% | vendor Aaron Chemicals LLC",
             "createdAt": "2026-05-31T15:30:24",
-            "updatedAt": "2026-06-01T15:50:04"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:7647-01-0|purity:32|vendor:bio-lab",
@@ -1314,16 +1314,16 @@
             "msdsFileStoragePath": "msds_pdfs/b87e35974182a937c55399d1ae95b7c9.pdf",
             "company": "Thermo Scientific",
             "identityStatus": "manual identity entry",
-            "source": "PubChem identity metadata",
+            "source": "powder database",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/158605",
             "pubchemCid": "158605",
             "pubchemFormula": "Ga2O3",
             "pubchemIupacName": "digallium;tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "",
+            "sourcePowderId": "powder:Ga2O3 | purity 99.99+ | vendor Thermo Scientific",
             "createdAt": "2026-06-01T09:26:43",
-            "updatedAt": "2026-06-01T15:50:09"
+            "updatedAt": "2026-06-01T17:45:08"
         },
         {
             "id": "cas:7632-00-0|purity:97%|vendor:thermo-scientific",
