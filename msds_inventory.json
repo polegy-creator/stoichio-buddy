@@ -2142,12 +2142,12 @@
             "nameOrFormula": "hydrogen peroxide",
             "purity": "30%",
             "closetNumber": 4,
-            "msdsFileUrl": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:7722-84-1|purity:30%|vendor:sigma-aldrich/msds-file",
             "msdsExternalUrl": "https://www.sigmaaldrich.com/IL/en/sds/mm/8.22287?userType=anonymous",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileName": "8.22287.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/4e7e20ffd32db01bd6f4863db3ca302b.pdf",
             "company": "Sigma-Aldrich",
             "identityStatus": "manual identity entry",
             "source": "local saved CAS record",
@@ -2158,7 +2158,7 @@
             "pubchemIupacName": "hydrogen peroxide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:30:00",
-            "updatedAt": "2026-06-01T10:33:02"
+            "updatedAt": "2026-06-01T10:33:53"
         }
     ],
     "deletedPowderImports": []
