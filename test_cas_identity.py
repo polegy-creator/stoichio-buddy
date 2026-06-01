@@ -49,6 +49,7 @@ class CasIdentityTests(unittest.TestCase):
                     "CID": 518696,
                     "MolecularFormula": "Fe2O3",
                     "IUPACName": "oxo(oxoferriooxy)iron",
+                    "Title": "Ferric Oxide",
                 }]
             }
         }
@@ -61,8 +62,29 @@ class CasIdentityTests(unittest.TestCase):
         self.assertEqual(identity["nameOrFormula"], "Fe2O3")
         self.assertEqual(identity["pubchemCid"], "518696")
         self.assertEqual(identity["pubchemFormula"], "Fe2O3")
+        self.assertEqual(identity["pubchemTitle"], "Ferric Oxide")
         self.assertEqual(identity["identityStatus"], "CAS identity applied")
         self.assertIn("pubchem.ncbi.nlm.nih.gov/compound/518696", identity["casSourceUrl"])
+
+    def test_pubchem_identity_can_prefer_common_name_for_non_powder_closets(self):
+        payload = {
+            "PropertyTable": {
+                "Properties": [{
+                    "CID": 176,
+                    "MolecularFormula": "C2H4O2",
+                    "IUPACName": "acetic acid",
+                    "Title": "Acetic Acid",
+                }]
+            }
+        }
+
+        with patch("stoichio.cas_identity.urllib.request.urlopen", return_value=_FakeResponse(payload)):
+            result = lookup_cas_identity("64-19-7", [], prefer_name=True)
+
+        identity = result["identity"]
+        self.assertEqual(result["source"], "pubchem")
+        self.assertEqual(identity["nameOrFormula"], "Acetic Acid")
+        self.assertEqual(identity["pubchemFormula"], "C2H4O2")
 
     def test_pubchem_xref_fallback_is_used_when_name_route_fails(self):
         payload = {

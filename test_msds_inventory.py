@@ -210,10 +210,12 @@ class MsdsInventoryTest(unittest.TestCase):
             "pubchemCid": "518696",
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
+            "pubchemTitle": "Ferric Oxide",
         })
 
         self.assertEqual(saved["pubchemCid"], "518696")
         self.assertEqual(saved["pubchemFormula"], "Fe2O3")
+        self.assertEqual(saved["pubchemTitle"], "Ferric Oxide")
         self.assertEqual(saved["identityStatus"], "CAS identity applied")
         self.assertEqual(saved["company"], "")
         self.assertEqual(saved["purity"], "")

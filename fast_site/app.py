@@ -265,6 +265,7 @@ class MsdsInventoryRequest(BaseModel):
     pubchemCid: str = ""
     pubchemFormula: str = ""
     pubchemIupacName: str = ""
+    pubchemTitle: str = ""
 
 
 class MsdsUrlDownloadRequest(BaseModel):
@@ -516,9 +517,9 @@ def lookup_msds_identity(cas_number: str = Query(default=""), name_or_formula: s
 
 
 @app.get("/api/msds-inventory/cas-identity")
-def lookup_msds_cas_identity(cas_number: str = Query(default="")):
+def lookup_msds_cas_identity(cas_number: str = Query(default=""), closet_number: int = Query(default=1)):
     try:
-        return lookup_cas_identity(cas_number, load_msds_inventory())
+        return lookup_cas_identity(cas_number, load_msds_inventory(), prefer_name=closet_number != 1)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:

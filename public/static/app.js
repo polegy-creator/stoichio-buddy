@@ -1796,6 +1796,7 @@ function msdsPayload() {
     pubchemCid: identity.pubchemCid || "",
     pubchemFormula: identity.pubchemFormula || "",
     pubchemIupacName: identity.pubchemIupacName || "",
+    pubchemTitle: identity.pubchemTitle || "",
   };
 }
 
@@ -1968,7 +1969,10 @@ async function lookupMsdsCasIdentity(button = null) {
 
   const done = button ? setBusy(button, "Applying...") : () => {};
   try {
-    const params = new URLSearchParams({ cas_number: cas });
+    const params = new URLSearchParams({
+      cas_number: cas,
+      closet_number: els.msdsClosetNumber.value || "1",
+    });
     const data = await api.get(`/api/msds-inventory/cas-identity?${params.toString()}`);
     const identity = data.identity;
     if (!identity) {

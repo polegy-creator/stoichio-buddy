@@ -23,11 +23,12 @@ def lookup_cas_identity(
     cas_number: str,
     known_items: list[dict[str, Any]] | None = None,
     timeout_sec: float = 6,
+    prefer_name: bool = False,
 ) -> dict[str, Any]:
     cas = normalize_cas_number(cas_number)
     warnings = [_IDENTITY_WARNING]
 
-    local_identity = _local_identity(cas, known_items or [])
+    local_identity = _local_identity(cas, known_items or [], prefer_name=prefer_name)
     if local_identity:
         return {
             "source": "local",
@@ -35,7 +36,7 @@ def lookup_cas_identity(
             "identity": local_identity,
         }
 
-    pubchem_identity = _pubchem_identity(cas, timeout_sec=timeout_sec)
+    pubchem_identity = _pubchem_identity(cas, timeout_sec=timeout_sec, prefer_name=prefer_name)
     if pubchem_identity:
         return {
             "source": "pubchem",
@@ -50,11 +51,11 @@ def lookup_cas_identity(
     }
 
 
-def _local_identity(cas_number: str, known_items: list[dict[str, Any]]) -> dict[str, Any] | None:
+def _local_identity(cas_number: str, known_items: list[dict[str, Any]], prefer_name: bool = False) -> dict[str, Any] | None:
     for item in known_items:
         if item.get("casNumber") != cas_number:
             continue
-        name_or_formula = item.get("nameOrFormula") or item.get("pubchemFormula") or item.get("pubchemIupacName") or ""
+        name_or_formula = _preferred_identity_text(item, prefer_name=prefer_name)
         if not name_or_formula:
             continue
         return {
@@ -67,15 +68,16 @@ def _local_identity(cas_number: str, known_items: list[dict[str, Any]]) -> dict[
             "pubchemCid": item.get("pubchemCid") or "",
             "pubchemFormula": item.get("pubchemFormula") or "",
             "pubchemIupacName": item.get("pubchemIupacName") or "",
+            "pubchemTitle": item.get("pubchemTitle") or "",
         }
     return None
 
 
-def _pubchem_identity(cas_number: str, timeout_sec: float) -> dict[str, Any] | None:
+def _pubchem_identity(cas_number: str, timeout_sec: float, prefer_name: bool = False) -> dict[str, Any] | None:
     path_cas = urllib.parse.quote(cas_number, safe="")
     urls = [
-        f"{_PUBCHEM_BASE}/compound/name/{path_cas}/property/MolecularFormula,IUPACName/JSON",
-        f"{_PUBCHEM_BASE}/compound/xref/RN/{path_cas}/property/MolecularFormula,IUPACName/JSON",
+        f"{_PUBCHEM_BASE}/compound/name/{path_cas}/property/MolecularFormula,IUPACName,Title/JSON",
+        f"{_PUBCHEM_BASE}/compound/xref/RN/{path_cas}/property/MolecularFormula,IUPACName,Title/JSON",
     ]
     last_error = None
     for url in urls:
@@ -87,7 +89,7 @@ def _pubchem_identity(cas_number: str, timeout_sec: float) -> dict[str, Any] | N
             last_error = exc
             continue
         if records:
-            return _identity_from_pubchem_record(cas_number, records[0])
+            return _identity_from_pubchem_record(cas_number, records[0], prefer_name=prefer_name)
     if last_error:
         raise last_error
     return None
@@ -123,14 +125,31 @@ def _pubchem_ssl_context() -> ssl.SSLContext | None:
     return ssl.create_default_context(cafile=certifi.where())
 
 
-def _identity_from_pubchem_record(cas_number: str, record: dict[str, Any]) -> dict[str, Any]:
+def _preferred_identity_text(item: dict[str, Any], prefer_name: bool = False) -> str:
+    if prefer_name:
+        return (
+            str(item.get("pubchemTitle") or "").strip()
+            or str(item.get("pubchemIupacName") or "").strip()
+            or str(item.get("nameOrFormula") or "").strip()
+            or str(item.get("pubchemFormula") or "").strip()
+        )
+    return (
+        str(item.get("nameOrFormula") or "").strip()
+        or str(item.get("pubchemFormula") or "").strip()
+        or str(item.get("pubchemTitle") or "").strip()
+        or str(item.get("pubchemIupacName") or "").strip()
+    )
+
+
+def _identity_from_pubchem_record(cas_number: str, record: dict[str, Any], prefer_name: bool = False) -> dict[str, Any]:
     cid = str(record.get("CID") or "").strip()
     formula = str(record.get("MolecularFormula") or "").strip()
     iupac = str(record.get("IUPACName") or "").strip()
+    title = str(record.get("Title") or "").strip()
 
     return {
         "casNumber": cas_number,
-        "nameOrFormula": formula or iupac,
+        "nameOrFormula": (title or iupac or formula) if prefer_name else (formula or title or iupac),
         "identityStatus": "CAS identity applied",
         "source": "PubChem identity metadata",
         "casSource": "PubChem PUG REST",
@@ -138,6 +157,7 @@ def _identity_from_pubchem_record(cas_number: str, record: dict[str, Any]) -> di
         "pubchemCid": cid,
         "pubchemFormula": formula,
         "pubchemIupacName": iupac,
+        "pubchemTitle": title,
     }
 
 

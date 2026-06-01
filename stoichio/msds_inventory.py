@@ -477,6 +477,7 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
         "pubchemCid": str(record.get("pubchemCid") or "").strip(),
         "pubchemFormula": str(record.get("pubchemFormula") or "").strip(),
         "pubchemIupacName": str(record.get("pubchemIupacName") or "").strip(),
+        "pubchemTitle": str(record.get("pubchemTitle") or "").strip(),
         "sourcePowderId": str(record.get("sourcePowderId") or "").strip(),
         "createdAt": created,
         "updatedAt": record.get("updatedAt") or created,
@@ -503,6 +504,7 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
         "pubchemCid": item.get("pubchemCid", ""),
         "pubchemFormula": item.get("pubchemFormula", ""),
         "pubchemIupacName": item.get("pubchemIupacName", ""),
+        "pubchemTitle": item.get("pubchemTitle", ""),
         "createdAt": item.get("createdAt", ""),
         "updatedAt": item.get("updatedAt", ""),
         "msdsStatus": msds_status(item),
@@ -633,6 +635,7 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
             "pubchemCid": str(record.get("pubchemCid") or "").strip(),
             "pubchemFormula": str(record.get("pubchemFormula") or "").strip(),
             "pubchemIupacName": str(record.get("pubchemIupacName") or "").strip(),
+            "pubchemTitle": str(record.get("pubchemTitle") or "").strip(),
             "sourcePowderId": source_id,
             "createdAt": now,
             "updatedAt": now,
@@ -661,7 +664,7 @@ def apply_powder_metadata_to_msds_item(item: dict[str, Any], powder: str, record
         value = record.get(field) or (record.get("supplier") if field == "company" else "")
         if value and not item.get(field):
             updates[field] = normalize_purity(value) if field == "purity" else str(value).strip()
-    for field in ("casSource", "casSourceUrl", "pubchemCid", "pubchemFormula", "pubchemIupacName"):
+    for field in ("casSource", "casSourceUrl", "pubchemCid", "pubchemFormula", "pubchemIupacName", "pubchemTitle"):
         value = record.get(field)
         if value and item.get(field) != str(value).strip():
             updates[field] = str(value).strip()
@@ -741,6 +744,7 @@ def save_msds_inventory_item(payload: dict[str, Any], item_id: str | None = None
             "pubchemCid": incoming["pubchemCid"] or existing.get("pubchemCid", ""),
             "pubchemFormula": incoming["pubchemFormula"] or existing.get("pubchemFormula", ""),
             "pubchemIupacName": incoming["pubchemIupacName"] or existing.get("pubchemIupacName", ""),
+            "pubchemTitle": incoming["pubchemTitle"] or existing.get("pubchemTitle", ""),
             "updatedAt": now,
         }
         store["items"][existing_index] = saved
@@ -1152,6 +1156,7 @@ def _archive_item_metadata(item: dict[str, Any]) -> dict[str, Any]:
         "casSource",
         "casSourceUrl",
         "pubchemCid",
+        "pubchemTitle",
         "createdAt",
         "updatedAt",
     ]
