@@ -2070,12 +2070,12 @@
             "nameOrFormula": "acetone",
             "purity": "",
             "closetNumber": 3,
-            "msdsFileUrl": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:67-64-1|vendor:bio-labs/msds-file",
             "msdsExternalUrl": "https://doc.chem-lab.be/sds?prod=CL00.0114&lang=EN&client=bdl",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileName": "SDS_CL00.0114.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/dcf61c8033b205531f6d73d47a00ccbb.pdf",
             "company": "bio labs",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -2086,7 +2086,7 @@
             "pubchemIupacName": "propan-2-one",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:22:26",
-            "updatedAt": "2026-06-01T10:22:26"
+            "updatedAt": "2026-06-01T10:22:31"
         }
     ],
     "deletedPowderImports": []
