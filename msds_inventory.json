@@ -1175,6 +1175,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:18:55",
             "updatedAt": "2026-06-01T09:19:09"
+        },
+        {
+            "id": "cas:7447-40-7|vendor:sentek",
+            "casNumber": "7447-40-7",
+            "nameOrFormula": "ClK",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "sentek",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/4873",
+            "pubchemCid": "4873",
+            "pubchemFormula": "ClK",
+            "pubchemIupacName": "potassium chloride",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:20:03",
+            "updatedAt": "2026-06-01T09:20:03"
         }
     ],
     "deletedPowderImports": []
