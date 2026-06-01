@@ -332,32 +332,19 @@ class MsdsInventoryTest(unittest.TestCase):
             self.assertIn("1 - Powders/index.html", names)
             self.assertIn("2 - Acids/index.html", names)
 
-            material_sources = [
-                name for name in names
-                if name.startswith("1 - Powders/") and name.endswith("/source.html")
-            ]
             material_pdfs = [
                 name for name in names
-                if name.startswith("1 - Powders/") and name.endswith("/fe2o3_sds.pdf")
-            ]
-            material_links = [
-                name for name in names
-                if name.startswith("1 - Powders/") and name.endswith("/source_link.url")
+                if name == "1 - Powders/Fe2O3 99.9% MSDS.pdf"
             ]
 
             self.assertEqual(len(material_pdfs), 1)
-            material_folder = str(Path(material_pdfs[0]).parent)
-            source_name = f"{material_folder}/source.html"
-            shortcut_name = f"{material_folder}/source_link.url"
+            root_index = archive.read("index.html").decode("utf-8")
+            closet_index = archive.read("1 - Powders/index.html").decode("utf-8")
 
-            self.assertIn(source_name, material_sources)
-            self.assertIn(shortcut_name, material_links)
-            source_html = archive.read(source_name).decode("utf-8")
-            shortcut = archive.read(shortcut_name).decode("utf-8")
-
-            self.assertIn("Vendor A", source_html)
-            self.assertIn("https://example.com/fe2o3-sds.pdf", source_html)
-            self.assertIn("URL=https://example.com/fe2o3-sds.pdf", shortcut)
+            self.assertIn("Vendor A", root_index)
+            self.assertIn("https://example.com/fe2o3-sds.pdf", root_index)
+            self.assertIn("1 - Powders/Fe2O3 99.9% MSDS.pdf", root_index)
+            self.assertIn("Fe2O3 99.9% MSDS.pdf", closet_index)
             self.assertEqual(archive.read(material_pdfs[0]), b"%PDF-1.4\n% test msds\n")
 
     def test_msds_file_url_is_encoded_for_browser_links(self):

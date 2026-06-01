@@ -1060,45 +1060,45 @@ def build_msds_binder_archive() -> bytes:
     items = sorted_inventory_items(include_file_data=True)
     output = io.BytesIO()
     generated = now_iso()
+    pdf_filenames_by_id: dict[str, str] = {}
+    for closet_number in CLOSETS:
+        closet_items = [item for item in items if item.get("closetNumber") == closet_number]
+        pdf_filenames_by_id.update(_archive_pdf_filenames_by_id(closet_items))
 
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("README.txt", _archive_readme(generated, items))
-        archive.writestr("index.html", _archive_index_html(generated, items))
+        archive.writestr("index.html", _archive_index_html(generated, items, pdf_filenames_by_id))
         archive.writestr("inventory_index.json", json.dumps([_archive_item_metadata(item) for item in items], indent=4))
 
         for closet_number in CLOSETS:
             closet_folder = _archive_safe_name(f"{closet_number} - {CLOSETS[closet_number]}")
             archive.writestr(f"{closet_folder}/", "")
             closet_items = [item for item in items if item.get("closetNumber") == closet_number]
-            archive.writestr(f"{closet_folder}/index.html", _archive_closet_index_html(closet_number, closet_items))
+            archive.writestr(
+                f"{closet_folder}/index.html",
+                _archive_closet_index_html(closet_number, closet_items, pdf_filenames_by_id),
+            )
+            missing_lines = []
 
             for item in closet_items:
-                material_folder = f"{closet_folder}/{_archive_material_folder_name(item)}"
-                archive.writestr(f"{material_folder}/", "")
-                archive.writestr(f"{material_folder}/source.html", _archive_material_source_html(item))
-                archive.writestr(
-                    f"{material_folder}/metadata.json",
-                    json.dumps(_archive_item_metadata(item), indent=4),
-                )
-                if item.get("msdsExternalUrl"):
-                    archive.writestr(f"{material_folder}/source_link.url", _internet_shortcut(item["msdsExternalUrl"]))
-
                 if _item_has_pdf(item):
-                    pdf_filename = _archive_pdf_filename(item)
+                    pdf_filename = pdf_filenames_by_id.get(item.get("id", ""), _archive_pdf_filename(item))
                     try:
-                        archive.writestr(f"{material_folder}/{pdf_filename}", _item_pdf_bytes(item))
+                        archive.writestr(f"{closet_folder}/{pdf_filename}", _item_pdf_bytes(item))
                     except Exception as exc:
-                        archive.writestr(
-                            f"{material_folder}/PDF_DECODE_ERROR.txt",
-                            "The stored MSDS/SDS PDF could not be decoded into the archive.\n"
-                            f"Error: {exc}\n",
+                        missing_lines.append(
+                            f"{material_display_name(item) or 'needs verification'} | "
+                            f"CAS: {item.get('casNumber') or 'needs verification'} | "
+                            f"Purity: {item.get('purity') or ''} | PDF read error: {exc}"
                         )
                 else:
-                    archive.writestr(
-                        f"{material_folder}/MSDS_NOT_UPLOADED.txt",
-                        "No MSDS/SDS PDF is stored for this material yet.\n"
-                        "Paste a source URL and upload the verified PDF in Stoichio Buddy to preserve both.\n",
+                    missing_lines.append(
+                        f"{material_display_name(item) or 'needs verification'} | "
+                        f"CAS: {item.get('casNumber') or 'needs verification'} | "
+                        f"Purity: {item.get('purity') or ''} | MSDS PDF missing"
                     )
+            if missing_lines:
+                archive.writestr(f"{closet_folder}/MISSING_MSDS_PDFS.txt", "\n".join(missing_lines) + "\n")
 
     return output.getvalue()
 
@@ -1110,18 +1110,22 @@ def _archive_readme(generated: str, items: list[dict[str, Any]]) -> str:
         f"Materials: {len(items)}",
         "",
         "Folders are grouped by storage closet.",
-        "Each material folder contains source.html, metadata.json, and the uploaded MSDS/SDS PDF when one is stored.",
-        "If a material only has a web source link, the archive keeps that source link but cannot guarantee an offline PDF.",
-        "For safety records, keep the source URL and upload the verified PDF after checking the manufacturer/SDS.",
+        "Uploaded MSDS/SDS PDFs are placed directly inside each closet folder.",
+        "PDF names use the material name/formula and purity, for example: Fe2O3 99.9% MSDS.pdf.",
+        "If two PDFs would have the same name, a number is added to keep both files.",
+        "index.html and inventory_index.json summarize the material records and source URLs.",
         "",
     ])
 
 
-def _archive_index_html(generated: str, items: list[dict[str, Any]]) -> str:
+def _archive_index_html(generated: str, items: list[dict[str, Any]], pdf_filenames_by_id: dict[str, str]) -> str:
     sections = []
     for closet_number in CLOSETS:
         closet_items = [item for item in items if item.get("closetNumber") == closet_number]
-        rows = "\n".join(_archive_item_row(item) for item in closet_items) or "<tr><td colspan='6'>No materials recorded.</td></tr>"
+        rows = (
+            "\n".join(_archive_item_row(item, pdf_filenames_by_id) for item in closet_items)
+            or "<tr><td colspan='6'>No materials recorded.</td></tr>"
+        )
         sections.append(
             f"<h2>{html.escape(closet_label(closet_number))}</h2>"
             f"<table><thead><tr><th>CAS</th><th>Name / Formula</th><th>Purity</th><th>Vendor</th><th>MSDS</th><th>Source</th></tr></thead><tbody>{rows}</tbody></table>"
@@ -1132,8 +1136,15 @@ def _archive_index_html(generated: str, items: list[dict[str, Any]]) -> str:
     )
 
 
-def _archive_closet_index_html(closet_number: int, items: list[dict[str, Any]]) -> str:
-    rows = "\n".join(_archive_item_row(item, link_folder=True) for item in items) or "<tr><td colspan='6'>No materials recorded.</td></tr>"
+def _archive_closet_index_html(
+    closet_number: int,
+    items: list[dict[str, Any]],
+    pdf_filenames_by_id: dict[str, str],
+) -> str:
+    rows = (
+        "\n".join(_archive_item_row(item, pdf_filenames_by_id, link_folder=True) for item in items)
+        or "<tr><td colspan='6'>No materials recorded.</td></tr>"
+    )
     return _html_page(
         closet_label(closet_number),
         f"<h1>{html.escape(closet_label(closet_number))}</h1>"
@@ -1141,49 +1152,30 @@ def _archive_closet_index_html(closet_number: int, items: list[dict[str, Any]]) 
     )
 
 
-def _archive_item_row(item: dict[str, Any], link_folder: bool = False) -> str:
-    folder = _archive_material_folder_name(item)
+def _archive_item_row(
+    item: dict[str, Any],
+    pdf_filenames_by_id: dict[str, str],
+    link_folder: bool = False,
+) -> str:
     closet_number = item.get("closetNumber", 1)
     closet_folder = _archive_safe_name(f"{closet_number} - {CLOSETS.get(closet_number, 'Closet')}")
-    source_href = f"{folder}/source.html" if link_folder else f"{closet_folder}/{folder}/source.html"
-    source = f"<a href='{html.escape(source_href)}'>source.html</a>"
+    pdf_filename = pdf_filenames_by_id.get(item.get("id", ""))
+    if pdf_filename:
+        pdf_href = pdf_filename if link_folder else f"{closet_folder}/{pdf_filename}"
+        msds = f"<a href='{html.escape(pdf_href)}'>{html.escape(msds_status(item))}</a>"
+    else:
+        msds = html.escape(msds_status(item))
+    source = _html_link(item["msdsExternalUrl"]) if item.get("msdsExternalUrl") else ""
     return (
         "<tr>"
         f"<td>{html.escape(item.get('casNumber') or 'needs verification')}</td>"
         f"<td>{html.escape(material_display_name(item) or 'needs verification')}</td>"
         f"<td>{html.escape(item.get('purity') or '')}</td>"
         f"<td>{html.escape(item.get('company') or '')}</td>"
-        f"<td>{html.escape(msds_status(item))}</td>"
+        f"<td>{msds}</td>"
         f"<td>{source}</td>"
         "</tr>"
     )
-
-
-def _archive_material_source_html(item: dict[str, Any]) -> str:
-    external_url = item.get("msdsExternalUrl") or ""
-    source_url = item.get("casSourceUrl") or ""
-    pdf_link = _html_link(_archive_pdf_filename(item)) if _item_has_pdf(item) else "not uploaded"
-    body = [
-        "<h1>MSDS/SDS Source Record</h1>",
-        "<dl>",
-        _html_definition("CAS number", item.get("casNumber") or "needs verification"),
-        _html_definition("Material name", material_display_name(item) or "needs verification"),
-        _html_definition("Purity", item.get("purity") or ""),
-        _html_definition("Vendor / supplier", item.get("company") or ""),
-        _html_definition("Closet", closet_label(item.get("closetNumber", 1))),
-        _html_definition("MSDS status", msds_status(item)),
-        _html_definition("Identity status", item.get("identityStatus") or ""),
-        _html_definition("Uploaded PDF", pdf_link),
-        _html_definition("MSDS/SDS source URL", _html_link(external_url) if external_url else ""),
-        _html_definition("CAS/reference source URL", _html_link(source_url) if source_url else ""),
-        "</dl>",
-        "<p>Safety note: verify the CAS, vendor, and PDF against the bottle/manufacturer before use.</p>",
-    ]
-    return _html_page("MSDS/SDS Source Record", "".join(body))
-
-
-def _html_definition(label: str, value: str) -> str:
-    return f"<dt>{html.escape(label)}</dt><dd>{value if value.startswith('<a ') else html.escape(value)}</dd>"
 
 
 def _html_link(url: str) -> str:
@@ -1232,32 +1224,45 @@ def _archive_item_metadata(item: dict[str, Any]) -> dict[str, Any]:
     return metadata
 
 
-def _archive_material_folder_name(item: dict[str, Any]) -> str:
-    label_parts = [
-        material_display_name(item) or "material",
-        item.get("casNumber") or "no-cas",
-        item.get("purity") or "",
-        item.get("company") or "",
-    ]
-    digest = hashlib.sha1(str(item.get("id", "")).encode("utf-8")).hexdigest()[:8]
-    return _archive_safe_name(" - ".join(part for part in label_parts if part), fallback="material")[:90] + f"_{digest}"
-
-
 def _archive_pdf_filename(item: dict[str, Any]) -> str:
-    filename = _archive_safe_name(item.get("msdsFileName") or "uploaded_msds.pdf")
-    if not filename.lower().endswith(".pdf"):
-        filename = f"{filename}.pdf"
-    return filename
+    label_parts = [
+        material_display_name(item) or item.get("nameOrFormula") or "material",
+        item.get("purity") or "",
+        "MSDS",
+    ]
+    return f"{_archive_safe_name(' '.join(part for part in label_parts if part), fallback='material MSDS')}.pdf"
+
+
+def _archive_pdf_filenames_by_id(items: list[dict[str, Any]]) -> dict[str, str]:
+    used_names: set[str] = {"index.html", "MISSING_MSDS_PDFS.txt"}
+    filenames: dict[str, str] = {}
+    for item in items:
+        item_id = item.get("id")
+        if item_id and _item_has_pdf(item):
+            filenames[item_id] = _unique_archive_pdf_filename(item, used_names)
+    return filenames
+
+
+def _unique_archive_pdf_filename(item: dict[str, Any], used_names: set[str]) -> str:
+    filename = _archive_pdf_filename(item)
+    if filename not in used_names:
+        used_names.add(filename)
+        return filename
+
+    stem = filename[:-4]
+    counter = 2
+    while True:
+        candidate = f"{stem} {counter}.pdf"
+        if candidate not in used_names:
+            used_names.add(candidate)
+            return candidate
+        counter += 1
 
 
 def _archive_safe_name(value: str, fallback: str = "item") -> str:
     safe = re.sub(r"[^A-Za-z0-9._%+ -]+", "_", str(value or "")).strip(" ._")
     safe = re.sub(r"\s+", " ", safe)
     return safe or fallback
-
-
-def _internet_shortcut(url: str) -> str:
-    return f"[InternetShortcut]\nURL={url}\n"
 
 
 def _binder_text_pages(items: list[dict[str, Any]], append_warning: bool = False) -> list[list[str]]:
