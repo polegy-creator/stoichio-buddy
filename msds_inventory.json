@@ -1919,6 +1919,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:05:38",
             "updatedAt": "2026-06-01T10:05:38"
+        },
+        {
+            "id": "cas:57-13-6|purity:99%|vendor:arcos-organics",
+            "casNumber": "57-13-6",
+            "nameOrFormula": "CH4N2O",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "arcos organics",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/1176",
+            "pubchemCid": "1176",
+            "pubchemFormula": "CH4N2O",
+            "pubchemIupacName": "urea",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:06:56",
+            "updatedAt": "2026-06-01T10:06:56"
         }
     ],
     "deletedPowderImports": []
