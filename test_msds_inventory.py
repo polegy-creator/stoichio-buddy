@@ -57,6 +57,9 @@ class MsdsInventoryTest(unittest.TestCase):
     def test_numeric_purity_is_normalized_to_percent(self):
         self.assertEqual(normalize_purity("99.9"), "99.9%")
         self.assertEqual(normalize_purity("99.9 %"), "99.9%")
+        self.assertEqual(normalize_purity("98 - 102"), "98-102%")
+        self.assertEqual(normalize_purity("98 to 102%"), "98-102%")
+        self.assertEqual(normalize_purity("98%-102%"), "98-102%")
         self.assertEqual(normalize_purity("HPLC"), "HPLC")
 
         saved, _ = save_msds_inventory_item({

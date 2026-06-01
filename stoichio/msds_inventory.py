@@ -115,10 +115,19 @@ def normalize_purity(value: str | None) -> str:
     text = re.sub(r"\s+", " ", str(value or "").strip())
     if not text:
         return ""
-    if "%" in text:
-        return re.sub(r"\s*%\s*", "%", text)
-    if re.fullmatch(r"(?:[<>]=?|[≥≤~≈])?\s*\d+(?:\.\d+)?", text):
-        return f"{text}%"
+    text = re.sub(r"\s*%\s*", "%", text)
+    number = r"(?:[<>]=?|[≥≤~≈])?\s*\d+(?:\.\d+)?"
+    numeric_candidate = text.replace("%", "")
+    compact_number = lambda part: re.sub(r"\s+", "", part)
+    range_match = re.fullmatch(
+        rf"({number})\s*(?:-|–|—|\bto\b)\s*({number})",
+        numeric_candidate,
+        flags=re.IGNORECASE,
+    )
+    if range_match:
+        return f"{compact_number(range_match.group(1))}-{compact_number(range_match.group(2))}%"
+    if re.fullmatch(number, numeric_candidate):
+        return f"{compact_number(numeric_candidate)}%"
     return text
 
 

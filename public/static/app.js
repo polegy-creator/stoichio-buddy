@@ -263,8 +263,16 @@ function formatNumber(value, digits = 4) {
 function formatPurity(value) {
   const text = String(value || "").trim().replace(/\s+/g, " ");
   if (!text) return "";
-  if (text.includes("%")) return text.replace(/\s*%\s*/g, "%");
-  return /^(?:[<>]=?|[≥≤~≈])?\s*\d+(?:\.\d+)?$/.test(text) ? `${text}%` : text;
+  const percentText = text.replace(/\s*%\s*/g, "%");
+  const numericCandidate = percentText.replace(/%/g, "");
+  const numberPattern = "(?:[<>]=?|[≥≤~≈])?\\s*\\d+(?:\\.\\d+)?";
+  const rangeMatch = numericCandidate.match(new RegExp(`^(${numberPattern})\\s*(?:-|–|—|\\bto\\b)\\s*(${numberPattern})$`, "i"));
+  if (rangeMatch) {
+    return `${rangeMatch[1].replace(/\s+/g, "")}-${rangeMatch[2].replace(/\s+/g, "")}%`;
+  }
+  return new RegExp(`^${numberPattern}$`).test(numericCandidate)
+    ? `${numericCandidate.replace(/\s+/g, "")}%`
+    : percentText;
 }
 
 function closetLabel(closetNumber) {
