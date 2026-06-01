@@ -2115,7 +2115,7 @@
         {
             "id": "cas:7722-84-1|purity:35%|vendor:thermo-scientific",
             "casNumber": "7722-84-1",
-            "nameOrFormula": "hydrogen poroxide for analysis",
+            "nameOrFormula": "hydrogen peroxide for analysis",
             "purity": "35%",
             "closetNumber": 4,
             "msdsFileUrl": "/api/msds-inventory/cas:7722-84-1|purity:35%|vendor:thermo-scientific/msds-file",
@@ -2125,7 +2125,7 @@
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "msds_pdfs/557332b59d59f5e1609a2533645918b6.pdf",
             "company": "Thermo Scientific",
-            "identityStatus": "CAS identity applied",
+            "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/784",
@@ -2134,7 +2134,7 @@
             "pubchemIupacName": "hydrogen peroxide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:28:36",
-            "updatedAt": "2026-06-01T10:28:39"
+            "updatedAt": "2026-06-01T10:30:52"
         },
         {
             "id": "cas:7722-84-1|purity:30%|vendor:sigma-aldrich",
