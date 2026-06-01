@@ -20,6 +20,9 @@ POWDER_METADATA_FIELDS = (
     "pubchemCid",
     "pubchemFormula",
     "pubchemIupacName",
+    "pubchemTitle",
+    "notes",
+    "msdsInventoryItemId",
 )
 
 
@@ -180,7 +183,7 @@ def save_powders(powders):
     storage.save_json(storage.POWDERS_FILE, powders)
 
 
-def add_powder(formula, purity="", company="", cas_number=""):
+def add_powder(formula, purity="", company="", cas_number="", notes=""):
     powders = load_powders()
     key = powder_key_for(formula, purity=purity, company=company)
     formula_key = powder_formula_from_key(key)
@@ -215,8 +218,120 @@ def add_powder(formula, purity="", company="", cas_number=""):
                     if record.get(field):
                         powders[key][field] = record[field]
                 break
+    if notes is not None:
+        note_text = str(notes or "").strip()
+        if note_text:
+            powders[key]["notes"] = note_text
+        else:
+            powders[key].pop("notes", None)
     save_powders(powders)
     return key, powders
+
+
+def update_powder_notes(powder, notes=""):
+    powders = load_powders()
+    key = normalize_powder(powder)
+    if key not in powders:
+        raise ValueError(f"Powder not found: {key}")
+    note_text = str(notes or "").strip()
+    if note_text:
+        powders[key]["notes"] = note_text
+    else:
+        powders[key].pop("notes", None)
+    save_powders(powders)
+    return key, powders
+
+
+def sync_powders_from_msds_inventory(items=None):
+    if items is None:
+        from stoichio.msds_inventory import load_msds_inventory
+
+        items = load_msds_inventory(include_file_data=False)
+
+    powders = load_powders()
+    created = 0
+    updated = 0
+    skipped = 0
+
+    for item in items:
+        if int(item.get("closetNumber") or 1) != 1:
+            continue
+
+        formula = _formula_from_msds_item(item)
+        if not formula:
+            skipped += 1
+            continue
+
+        purity = item.get("purity", "")
+        company = item.get("company", "")
+        key = powder_key_for(formula, purity=purity, company=company)
+        composition = parse_formula(powder_formula_from_key(key))
+        existing = dict(powders.get(key, {}))
+        record = {
+            **existing,
+            "formula": powder_formula_from_key(key),
+            "molar_mass": molar_mass(composition),
+            "elements": composition,
+        }
+
+        metadata_updates = _powder_metadata_from_msds_item(item)
+        for field, value in metadata_updates.items():
+            if value:
+                record[field] = value
+
+        if key in powders:
+            if powders[key] != record:
+                updated += 1
+        else:
+            created += 1
+        powders[key] = record
+
+    if created or updated:
+        save_powders(powders)
+    return {
+        "created": created,
+        "updated": updated,
+        "skipped": skipped,
+        "powders": powders,
+    }
+
+
+def _formula_from_msds_item(item):
+    candidates = []
+    source_id = str(item.get("sourcePowderId") or item.get("id") or "").strip()
+    if source_id.startswith("powder:"):
+        candidates.append(source_id.split("powder:", 1)[1])
+    candidates.extend([
+        item.get("nameOrFormula", ""),
+        item.get("pubchemFormula", ""),
+    ])
+
+    for candidate in candidates:
+        try:
+            formula = normalize_formula(candidate)
+            parse_formula(formula)
+            return formula
+        except ValueError:
+            continue
+    return ""
+
+
+def _powder_metadata_from_msds_item(item):
+    metadata = {
+        "purity": normalize_purity_label(item.get("purity", "")),
+        "company": clean_metadata_text(item.get("company", "")),
+        "casNumber": clean_metadata_text(item.get("casNumber", "")),
+        "identityStatus": clean_metadata_text(item.get("identityStatus", "")),
+        "source": "MSDS inventory",
+        "casSource": clean_metadata_text(item.get("casSource", "")),
+        "casSourceUrl": clean_metadata_text(item.get("casSourceUrl", "")),
+        "pubchemCid": clean_metadata_text(item.get("pubchemCid", "")),
+        "pubchemFormula": clean_metadata_text(item.get("pubchemFormula", "")),
+        "pubchemIupacName": clean_metadata_text(item.get("pubchemIupacName", "")),
+        "pubchemTitle": clean_metadata_text(item.get("pubchemTitle", "")),
+        "msdsInventoryItemId": clean_metadata_text(item.get("id", "")),
+    }
+    return {field: value for field, value in metadata.items() if value}
 
 
 def delete_powder(powder, remove_inventory=True):

@@ -88,6 +88,8 @@ from stoichio.powders import (
     powder_relevance_elements,
     relevant_powders_for_target,
     save_powders,
+    sync_powders_from_msds_inventory,
+    update_powder_notes,
 )
 from stoichio.storage import (
     BACKUP_DIR_NAME,

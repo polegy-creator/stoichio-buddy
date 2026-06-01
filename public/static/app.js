@@ -140,6 +140,11 @@ const els = {
   newPowderFormula: $("#newPowderFormula"),
   newPowderPurity: $("#newPowderPurity"),
   newPowderCompany: $("#newPowderCompany"),
+  newPowderNotes: $("#newPowderNotes"),
+  powderNoteForm: $("#powderNoteForm"),
+  notePowder: $("#notePowder"),
+  powderNotes: $("#powderNotes"),
+  syncMsdsPowders: $("#syncMsdsPowders"),
   deletePowderForm: $("#deletePowderForm"),
   deletePowder: $("#deletePowder"),
   powderDatabaseTableBody: $("#powderDatabaseTable tbody"),
@@ -1472,12 +1477,22 @@ async function saveDensityHistory() {
 
 function renderPowderSelectors() {
   const powderNames = Object.keys(state.powders).sort();
-  const previous = els.deletePowder.value;
-  els.deletePowder.innerHTML = `<option value="">Choose powder</option>`;
-  for (const powder of powderNames) {
-    els.deletePowder.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(powder)}">${escapeHtml(powderLabel(powder))}</option>`);
-  }
-  if (powderNames.includes(previous)) els.deletePowder.value = previous;
+  const fillSelect = (select, previous) => {
+    select.innerHTML = `<option value="">Choose powder</option>`;
+    for (const powder of powderNames) {
+      select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(powder)}">${escapeHtml(powderLabel(powder))}</option>`);
+    }
+    if (powderNames.includes(previous)) select.value = previous;
+  };
+  fillSelect(els.deletePowder, els.deletePowder.value);
+  fillSelect(els.notePowder, els.notePowder.value);
+  syncPowderNoteTextarea();
+}
+
+function syncPowderNoteTextarea() {
+  const powder = els.notePowder.value;
+  const record = state.powders[powder] || {};
+  els.powderNotes.value = record.notes || "";
 }
 
 function renderPowderDatabase() {
@@ -1495,6 +1510,7 @@ function renderPowderDatabase() {
       <td>${escapeHtml(record.company || "")}</td>
       <td>${formatNumber(record.molar_mass_g_mol, 5)}</td>
       <td class="wrap">${escapeHtml(elements)}</td>
+      <td class="wrap">${escapeHtml(record.notes || "")}</td>
     `;
     els.powderDatabaseTableBody.appendChild(tr);
   }
@@ -1935,12 +1951,47 @@ async function addPowder(event) {
       formula: els.newPowderFormula.value,
       purity: formatPurity(els.newPowderPurity.value),
       company: els.newPowderCompany.value,
+      notes: els.newPowderNotes.value,
     });
     state.powders = data.powders || state.powders;
     state.msdsInventory = data.msds_inventory || state.msdsInventory;
     renderEverything();
     await loadPowderOptions();
     flash(`Added ${powderLabel(data.powder)}.`);
+  } catch (error) {
+    flash(error.message, "error");
+  } finally {
+    done();
+  }
+}
+
+async function savePowderNote(event) {
+  event.preventDefault();
+  const done = setBusy(event.submitter, "Saving...");
+  try {
+    const data = await api.send("/api/powders/note", "POST", {
+      powder: els.notePowder.value,
+      notes: els.powderNotes.value,
+    });
+    state.powders = data.powders || state.powders;
+    renderEverything();
+    await loadPowderOptions();
+    flash("Powder note saved.");
+  } catch (error) {
+    flash(error.message, "error");
+  } finally {
+    done();
+  }
+}
+
+async function syncMsdsPowders() {
+  const done = setBusy(els.syncMsdsPowders, "Syncing...");
+  try {
+    const data = await api.send("/api/powders/sync-msds", "POST");
+    state.powders = data.powders || state.powders;
+    renderEverything();
+    await loadPowderOptions();
+    flash(`Synced MSDS powders: ${data.created || 0} added, ${data.updated || 0} updated, ${data.skipped || 0} skipped.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {
@@ -2642,6 +2693,9 @@ function setupEvents() {
     });
   });
   els.deletePowderForm.addEventListener("submit", removePowder);
+  els.powderNoteForm.addEventListener("submit", savePowderNote);
+  els.notePowder.addEventListener("change", syncPowderNoteTextarea);
+  els.syncMsdsPowders.addEventListener("click", syncMsdsPowders);
 
   els.msdsForm.addEventListener("submit", (event) => saveMsdsMaterial(event));
   els.newMsdsMaterial.addEventListener("click", resetMsdsForm);

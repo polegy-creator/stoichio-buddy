@@ -73,6 +73,7 @@ def database_dataframe(db):
                 "Composition": ", ".join(
                     f"{element}{amount:g}" for element, amount in record["elements"].items()
                 ),
+                "Notes": record.get("notes", ""),
             }
             for powder, record in db.items()
         ]

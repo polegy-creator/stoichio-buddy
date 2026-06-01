@@ -252,13 +252,21 @@
     </section>
 
     <section id="page-powders-inventory" class="page">
-      <div class="two-col">
+      <div class="three-col">
         <form id="addPowderForm" class="panel">
           <h2>Add powder</h2>
           <label>Powder formula <input id="newPowderFormula" placeholder="Fe2O3"></label>
           <label>Purity <input id="newPowderPurity" placeholder="99.9%"></label>
           <label>Vendor / supplier <input id="newPowderCompany" placeholder="Sigma-Aldrich"></label>
+          <label>Notes <textarea id="newPowderNotes" rows="3" placeholder="Bottle label, batch, location, or handling notes"></textarea></label>
           <button type="submit" class="primary">Add Powder</button>
+        </form>
+
+        <form id="powderNoteForm" class="panel">
+          <h2>Powder notes</h2>
+          <label>Powder <select id="notePowder"></select></label>
+          <label>Notes <textarea id="powderNotes" rows="5" placeholder="Write or clear the note for this powder"></textarea></label>
+          <button type="submit" class="primary">Save Note</button>
         </form>
 
         <form id="deletePowderForm" class="panel">
@@ -269,10 +277,13 @@
       </div>
 
       <section class="panel">
-        <h2>Powder database</h2>
+        <div class="panel-heading">
+          <h2>Powder database</h2>
+          <button id="syncMsdsPowders" type="button" class="secondary">Sync Powders from MSDS</button>
+        </div>
         <div class="table-wrap tall">
           <table id="powderDatabaseTable">
-            <thead><tr><th>Powder</th><th>Formula</th><th>Purity</th><th>Vendor</th><th>Molar mass</th><th>Elements</th></tr></thead>
+            <thead><tr><th>Powder</th><th>Formula</th><th>Purity</th><th>Vendor</th><th>Molar mass</th><th>Elements</th><th>Notes</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>

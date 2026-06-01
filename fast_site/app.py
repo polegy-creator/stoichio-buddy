@@ -80,6 +80,8 @@ from stoichio.powders import (
     normalize_powder,
     powder_display_name,
     relevant_powders_for_target,
+    sync_powders_from_msds_inventory,
+    update_powder_notes,
 )
 
 
@@ -205,6 +207,12 @@ class PowderCreateRequest(BaseModel):
     initial_grams: float = Field(0, ge=0)
     purity: str = ""
     company: str = ""
+    notes: str = ""
+
+
+class PowderNoteRequest(BaseModel):
+    powder: str = Field(..., min_length=1)
+    notes: str = ""
 
 
 class PowderSetRequest(BaseModel):
@@ -281,6 +289,7 @@ def powder_payload(powder: str, record: dict) -> dict:
         "purity": record.get("purity", ""),
         "company": record.get("company") or record.get("supplier", ""),
         "casNumber": record.get("casNumber", ""),
+        "notes": record.get("notes", ""),
     }
 
 
@@ -454,11 +463,41 @@ def powders(target: str = Query(default=""), show_all: bool = Query(default=Fals
 @app.post("/api/powders")
 def create_powder(payload: PowderCreateRequest, x_stoichio_pin: str | None = Header(default=None)):
     require_write_pin(x_stoichio_pin)
-    powder, _ = add_powder(payload.formula, purity=payload.purity, company=payload.company)
+    powder, _ = add_powder(
+        payload.formula,
+        purity=payload.purity,
+        company=payload.company,
+        notes=payload.notes,
+    )
     return {
         "powder": powder,
         "powders": all_powders_payload(),
         "msds_inventory": load_msds_inventory(),
+    }
+
+
+@app.post("/api/powders/note")
+def save_powder_note(payload: PowderNoteRequest, x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    powder, _ = update_powder_notes(payload.powder, payload.notes)
+    return {
+        "powder": powder,
+        "powders": all_powders_payload(),
+    }
+
+
+@app.post("/api/powders/sync-msds")
+def sync_powder_database_from_msds(x_stoichio_pin: str | None = Header(default=None)):
+    require_write_pin(x_stoichio_pin)
+    summary = sync_powders_from_msds_inventory(load_msds_inventory())
+    return {
+        "created": summary["created"],
+        "updated": summary["updated"],
+        "skipped": summary["skipped"],
+        "powders": {
+            powder: powder_payload(powder, record)
+            for powder, record in summary["powders"].items()
+        },
     }
 
 

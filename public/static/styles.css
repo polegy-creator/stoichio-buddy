@@ -396,6 +396,18 @@ p:empty {
   padding: 1rem;
 }
 
+.panel-heading {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.panel-heading h2 {
+  margin: 0;
+}
+
 .flow-steps {
   display: grid;
   gap: 0.55rem;

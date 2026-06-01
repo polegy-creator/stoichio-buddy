@@ -65,6 +65,8 @@ from stoichio.powders import (
     normalize_powder,
     powder_display_name,
     relevant_powders_for_target,
+    sync_powders_from_msds_inventory,
+    update_powder_notes,
 )
 from stoichio.lab_reports import (
     recipe_lab_summary,
