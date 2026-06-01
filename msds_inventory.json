@@ -1391,6 +1391,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:36:29",
             "updatedAt": "2026-06-01T09:36:45"
+        },
+        {
+            "id": "cas:1465-25-4|vendor:thermo-scientific",
+            "casNumber": "1465-25-4",
+            "nameOrFormula": "C12H16Cl2N2",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/15106",
+            "pubchemCid": "15106",
+            "pubchemFormula": "C12H16Cl2N2",
+            "pubchemIupacName": "N'-naphthalen-1-ylethane-1,2-diamine;dihydrochloride",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:37:34",
+            "updatedAt": "2026-06-01T09:37:34"
         }
     ],
     "deletedPowderImports": []
