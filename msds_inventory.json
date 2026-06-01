@@ -191,7 +191,7 @@
             "purity": "99.95%",
             "closetNumber": 1,
             "msdsFileUrl": "",
-            "msdsExternalUrl": "",
+            "msdsExternalUrl": "https://www.chemblink.com/MSDSFiles/513-77-9Alfa-Aesar.pdf",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
@@ -205,7 +205,7 @@
             "pubchemIupacName": "barium(2+) carbonate",
             "sourcePowderId": "powder:BaCO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:48:43"
+            "updatedAt": "2026-06-01T06:38:21"
         },
         {
             "id": "powder:MgO",
