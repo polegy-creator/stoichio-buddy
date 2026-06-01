@@ -34,12 +34,41 @@ class FakeGitHubJsonStore(storage.GitHubJsonStore):
         return {"content": {"sha": self.remote_sha}}
 
 
+class FakeLargeGitHubJsonStore(storage.GitHubJsonStore):
+    def __init__(self, data, sha="large-sha"):
+        super().__init__("owner/repo", "token", branch="lab-data")
+        self.remote_data = data
+        self.remote_sha = sha
+        self.gets = []
+
+    def _request(self, method, url, payload=None, allow_404=False):
+        if method != "GET":
+            raise AssertionError(f"Unexpected fake GitHub method: {method}")
+        self.gets.append(url)
+        if "/git/blobs/" in url:
+            return github_content_record(self.remote_data, self.remote_sha)
+        return {
+            "sha": self.remote_sha,
+            "content": "",
+            "encoding": "none",
+            "git_url": f"https://api.github.com/repos/owner/repo/git/blobs/{self.remote_sha}",
+        }
+
+
 class FailingBackend:
     def save(self, path, data):
         raise RuntimeError("backend exploded")
 
 
 class StorageGithubMergeTests(unittest.TestCase):
+    def test_github_json_store_loads_large_content_from_blob_api(self):
+        store = FakeLargeGitHubJsonStore({"items": [{"id": "large", "value": 1}]})
+
+        data = store.load("msds_inventory.json", {})
+
+        self.assertEqual(data, {"items": [{"id": "large", "value": 1}]})
+        self.assertTrue(any("/git/blobs/" in url for url in store.gets))
+
     def test_github_json_store_merges_non_conflicting_dict_updates(self):
         store = FakeGitHubJsonStore({"Fe2O3": {"status": "old"}})
 

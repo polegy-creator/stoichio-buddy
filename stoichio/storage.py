@@ -248,7 +248,18 @@ class GitHubJsonStore:
         return f"{self.api_root}/{repo_path}"
 
     def _load_content_record(self, path, allow_404=False):
-        return self._request("GET", self._content_url(path), allow_404=allow_404)
+        record = self._request("GET", self._content_url(path), allow_404=allow_404)
+        if record is None:
+            return None
+        if not record.get("content") and record.get("git_url"):
+            blob = self._request("GET", record["git_url"], allow_404=allow_404)
+            if blob:
+                record = {
+                    **record,
+                    "content": blob.get("content", ""),
+                    "encoding": blob.get("encoding", record.get("encoding")),
+                }
+        return record
 
     def load(self, path, default):
         record = self._load_content_record(path, allow_404=True)
