@@ -2207,6 +2207,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:38:06",
             "updatedAt": "2026-06-01T10:38:06"
+        },
+        {
+            "id": "cas:1336-21-6|vendor:bio-lab",
+            "casNumber": "1336-21-6",
+            "nameOrFormula": "ammonium hydroxide",
+            "purity": "",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://www.fishersci.co.uk/store/msds?partNumber=10470481&productDescription%3D1LT+Ammonium+hydroxide%2C+for+analysis%2C+28-30+wt%25+solution&countryCode=GB&language=en",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Bio-Lab Ltd.",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14923",
+            "pubchemCid": "14923",
+            "pubchemFormula": "H5NO",
+            "pubchemIupacName": "azanium hydroxide",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:40:40",
+            "updatedAt": "2026-06-01T10:40:40"
         }
     ],
     "deletedPowderImports": []
