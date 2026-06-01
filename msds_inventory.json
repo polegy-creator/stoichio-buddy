@@ -1223,6 +1223,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:23:43",
             "updatedAt": "2026-06-01T09:23:53"
+        },
+        {
+            "id": "cas:1310-58-3|vendor:fisher-scientific",
+            "casNumber": "1310-58-3",
+            "nameOrFormula": "potassium hydroxide",
+            "purity": "",
+            "closetNumber": 1,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/14797",
+            "pubchemCid": "14797",
+            "pubchemFormula": "HKO",
+            "pubchemIupacName": "potassium hydroxide",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:25:13",
+            "updatedAt": "2026-06-01T09:25:13"
         }
     ],
     "deletedPowderImports": []
