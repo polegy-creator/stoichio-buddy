@@ -1751,6 +1751,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:57:50",
             "updatedAt": "2026-06-01T09:58:00"
+        },
+        {
+            "id": "cas:10196-18-6|purity:99%|vendor:thermo-scientific",
+            "casNumber": "10196-18-6",
+            "nameOrFormula": "H12N2O12Zn",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "local saved CAS record",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/15865313",
+            "pubchemCid": "15865313",
+            "pubchemFormula": "H12N2O12Zn",
+            "pubchemIupacName": "zinc;dinitrate;hexahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:59:15",
+            "updatedAt": "2026-06-01T09:59:15"
         }
     ],
     "deletedPowderImports": []
