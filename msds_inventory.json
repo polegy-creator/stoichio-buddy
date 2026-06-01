@@ -1703,6 +1703,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:55:05",
             "updatedAt": "2026-06-01T09:55:05"
+        },
+        {
+            "id": "cas:13446-18-9|purity:98-102%|vendor:alfa-aesar",
+            "casNumber": "13446-18-9",
+            "nameOrFormula": "H12MgN2O12",
+            "purity": "98-102%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Alfa Aesar",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/202877",
+            "pubchemCid": "202877",
+            "pubchemFormula": "H12MgN2O12",
+            "pubchemIupacName": "magnesium;dinitrate;hexahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:56:11",
+            "updatedAt": "2026-06-01T09:56:11"
         }
     ],
     "deletedPowderImports": []
