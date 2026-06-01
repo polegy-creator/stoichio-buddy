@@ -16,6 +16,7 @@ from stoichio.msds_inventory import (
     download_msds_pdf_from_url,
     find_known_identity,
     load_msds_inventory,
+    normalize_purity,
     save_msds_inventory_item,
 )
 
@@ -52,6 +53,21 @@ class MsdsInventoryTest(unittest.TestCase):
         self.assertEqual(closet_label(1), "1 \u2014 Powders")
         self.assertEqual(closet_label(3), "3 \u2014 Solvents")
         self.assertEqual(closet_label("4"), "4 \u2014 Fridge")
+
+    def test_numeric_purity_is_normalized_to_percent(self):
+        self.assertEqual(normalize_purity("99.9"), "99.9%")
+        self.assertEqual(normalize_purity("99.9 %"), "99.9%")
+        self.assertEqual(normalize_purity("HPLC"), "HPLC")
+
+        saved, _ = save_msds_inventory_item({
+            "casNumber": "1309-37-1",
+            "nameOrFormula": "Fe2O3",
+            "purity": "99.9",
+            "company": "Vendor A",
+            "closetNumber": 1,
+        })
+
+        self.assertEqual(saved["purity"], "99.9%")
 
     def test_powders_auto_import_once(self):
         first = load_msds_inventory()

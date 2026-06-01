@@ -260,6 +260,13 @@ function formatNumber(value, digits = 4) {
   return number.toFixed(digits).replace(/\.?0+$/, "");
 }
 
+function formatPurity(value) {
+  const text = String(value || "").trim().replace(/\s+/g, " ");
+  if (!text) return "";
+  if (text.includes("%")) return text.replace(/\s*%\s*/g, "%");
+  return /^(?:[<>]=?|[≥≤~≈])?\s*\d+(?:\.\d+)?$/.test(text) ? `${text}%` : text;
+}
+
 function closetLabel(closetNumber) {
   const number = Number(closetNumber);
   const name = state.closets[number] || "";
@@ -929,7 +936,7 @@ function renderPowderList(options, data) {
         <span>${escapeHtml(powderLabel(powder))}</span>
       </label>
       <span class="pill">${formatNumber(record.molar_mass_g_mol, 3)} g/mol</span>
-      ${record.purity ? `<span class="pill">${escapeHtml(record.purity)}</span>` : ""}
+      ${record.purity ? `<span class="pill">${escapeHtml(formatPurity(record.purity))}</span>` : ""}
       <span class="pill">${record.available_g === null || record.available_g === undefined ? "no stock" : `${formatNumber(record.available_g, 3)} g`}</span>
       ${favorite ? `<span class="pill comfort">favorite</span>` : isRecent ? `<span class="pill comfort">recent</span>` : ""}
     `;
@@ -1590,7 +1597,7 @@ function renderPowderDatabase() {
     tr.innerHTML = `
       <td>${escapeHtml(powderLabel(powder))}</td>
       <td>${escapeHtml(record.formula || powderFormula(powder))}</td>
-      <td>${escapeHtml(record.purity || "")}</td>
+      <td>${escapeHtml(formatPurity(record.purity))}</td>
       <td>${escapeHtml(record.company || "")}</td>
       <td>${formatNumber(record.molar_mass_g_mol, 5)}</td>
       <td class="wrap">${escapeHtml(elements)}</td>
@@ -1667,7 +1674,7 @@ function renderMsdsInventory() {
     tr.innerHTML = `
       <td>${item.casNumber ? escapeHtml(item.casNumber) : `<span class="needs-verification">needs verification</span>`}</td>
       <td>${item.nameOrFormula ? escapeHtml(item.nameOrFormula) : `<span class="needs-verification">needs verification</span>`}</td>
-      <td>${escapeHtml(item.purity || "")}</td>
+      <td>${escapeHtml(formatPurity(item.purity))}</td>
       <td>${escapeHtml(item.company || "")}</td>
       <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
       <td>${statusPill(status)}${item.msdsExternalUrl ? ` <a href="${escapeHtml(item.msdsExternalUrl)}" target="_blank" rel="noopener">link</a>` : ""}</td>
@@ -1751,7 +1758,7 @@ function editMsdsItem(itemId) {
   els.msdsItemId.value = item.id;
   els.msdsCasNumber.value = item.casNumber || "";
   els.msdsNameFormula.value = item.nameOrFormula || "";
-  els.msdsPurity.value = item.purity || "";
+  els.msdsPurity.value = formatPurity(item.purity);
   els.msdsCompany.value = item.company || "";
   els.msdsClosetNumber.value = String(item.closetNumber || 1);
   els.msdsExternalUrl.value = item.msdsExternalUrl || "";
@@ -1770,7 +1777,7 @@ function msdsPayload() {
   return {
     casNumber: currentCas,
     nameOrFormula: els.msdsNameFormula.value.trim(),
-    purity: els.msdsPurity.value.trim(),
+    purity: formatPurity(els.msdsPurity.value),
     company: els.msdsCompany.value.trim(),
     closetNumber: Number(els.msdsClosetNumber.value || 1),
     msdsExternalUrl: els.msdsExternalUrl.value.trim(),
@@ -2069,7 +2076,7 @@ function renderDataHealth() {
                 <tr class="low">
                   <td>${escapeHtml(item.casNumber || "")}</td>
                   <td>${escapeHtml(item.nameOrFormula || "")}</td>
-                  <td>${escapeHtml(item.purity || "")}</td>
+                  <td>${escapeHtml(formatPurity(item.purity))}</td>
                   <td>${escapeHtml(item.company || "")}</td>
                   <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
                   <td>${item.msdsExternalUrl ? `<a href="${escapeHtml(item.msdsExternalUrl)}" target="_blank" rel="noopener">source</a>` : ""}</td>
@@ -2089,7 +2096,7 @@ async function addPowder(event) {
   try {
     const data = await api.send("/api/powders", "POST", {
       formula: els.newPowderFormula.value,
-      purity: els.newPowderPurity.value,
+      purity: formatPurity(els.newPowderPurity.value),
       company: els.newPowderCompany.value,
       initial_grams: Number(els.newPowderGrams.value),
     });
@@ -2842,6 +2849,11 @@ function setupEvents() {
   els.saveDensityHistory.addEventListener("click", saveDensityHistory);
 
   els.addPowderForm.addEventListener("submit", addPowder);
+  [els.newPowderPurity, els.msdsPurity].forEach((input) => {
+    input.addEventListener("blur", () => {
+      input.value = formatPurity(input.value);
+    });
+  });
   els.inventoryForm.addEventListener("submit", (event) => event.preventDefault());
   els.inventoryPowder.addEventListener("change", renderInventoryAdjustment);
   els.inventoryAdd.addEventListener("click", () => adjustInventory("add", els.inventoryAdd));

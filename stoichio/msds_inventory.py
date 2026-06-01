@@ -111,15 +111,27 @@ def identity_slug(value: str | None) -> str:
     return re.sub(r"[^a-z0-9._%-]+", "-", identity_text(value)).strip("-")
 
 
+def normalize_purity(value: str | None) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").strip())
+    if not text:
+        return ""
+    if "%" in text:
+        return re.sub(r"\s*%\s*", "%", text)
+    if re.fullmatch(r"(?:[<>]=?|[≥≤~≈])?\s*\d+(?:\.\d+)?", text):
+        return f"{text}%"
+    return text
+
+
 def material_identity_key(record: dict[str, Any]) -> tuple[str, str, str]:
     cas = normalize_cas_number(record.get("casNumber")) if record.get("casNumber") else ""
     name = material_key(record.get("nameOrFormula"))
-    purity = identity_text(record.get("purity"))
+    purity = identity_text(normalize_purity(record.get("purity")))
     company = identity_text(record.get("company"))
     return cas or name, purity, company
 
 
 def material_id_for(cas_number: str, name_or_formula: str, purity: str = "", company: str = "") -> str:
+    purity = normalize_purity(purity)
     if cas_number:
         parts = [f"cas:{cas_number}"]
         if purity:
@@ -176,7 +188,7 @@ def normalize_item(record: dict[str, Any]) -> dict[str, Any]:
     created = record.get("createdAt") or now_iso()
     cas_number = normalize_cas_number(record.get("casNumber"))
     name_or_formula = str(record.get("nameOrFormula") or "").strip()
-    purity = str(record.get("purity") or "").strip()
+    purity = normalize_purity(record.get("purity"))
     company = canonical_company_name(record.get("company"))
     item_id = str(record.get("id") or material_id_for(cas_number, name_or_formula, purity, company)).strip()
     closet_number = normalize_closet_number(record.get("closetNumber", 1))
@@ -324,7 +336,7 @@ def import_powders_into_msds_store(store: dict[str, Any]) -> bool:
             "id": source_id,
             "casNumber": cas_number,
             "nameOrFormula": record.get("formula") or powder_formula_from_key(powder),
-            "purity": str(record.get("purity") or "").strip(),
+            "purity": normalize_purity(record.get("purity")),
             "closetNumber": 1,
             "msdsFileUrl": "",
             "msdsExternalUrl": "",
@@ -366,7 +378,7 @@ def apply_powder_metadata_to_msds_item(item: dict[str, Any], powder: str, record
     for field in ("purity", "company"):
         value = record.get(field) or (record.get("supplier") if field == "company" else "")
         if value and not item.get(field):
-            updates[field] = str(value).strip()
+            updates[field] = normalize_purity(value) if field == "purity" else str(value).strip()
     for field in ("casSource", "casSourceUrl", "pubchemCid", "pubchemFormula", "pubchemIupacName"):
         value = record.get(field)
         if value and item.get(field) != str(value).strip():
