@@ -22,6 +22,16 @@ class SdsLookupTests(unittest.TestCase):
 
         self.assertEqual(query, "SDS for Thermo Scientific Fe2O3 1309-37-1")
 
+    def test_supplier_aliases_add_reviewable_search_candidates(self):
+        result = build_sds_lookup_candidates("1309-37-1", "alfa aesar", "Fe2O3")
+        queries = [
+            urllib.parse.parse_qs(urllib.parse.urlparse(candidate["url"]).query)["q"][0]
+            for candidate in result["candidates"]
+        ]
+
+        self.assertIn("SDS for Alfa Aesar Fe2O3 1309-37-1", queries)
+        self.assertIn("SDS for Thermo Fisher Scientific Chemicals Fe2O3 1309-37-1", queries)
+
     def test_missing_company_does_not_block_lookup(self):
         result = build_sds_lookup_candidates("1309-37-1", "", "Fe2O3")
 

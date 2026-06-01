@@ -6,7 +6,7 @@ import re
 import urllib.parse
 from typing import Any
 
-from stoichio.msds_inventory import canonical_company_name, normalize_cas_number
+from stoichio.msds_inventory import company_sds_search_terms, normalize_cas_number
 
 
 _UNVERIFIED_WARNING = (
@@ -17,22 +17,25 @@ _UNVERIFIED_WARNING = (
 
 def build_sds_lookup_candidates(cas_number: str, company: str, name_or_formula: str = "") -> dict[str, Any]:
     cas = normalize_cas_number(cas_number) if str(cas_number or "").strip() else ""
-    supplier = canonical_company_name(_clean_text(company))
+    supplier_terms = company_sds_search_terms(company)
     material = _clean_text(name_or_formula)
 
     warnings = [_UNVERIFIED_WARNING]
 
-    terms = ["SDS", "for"]
-    if supplier:
-        terms.append(supplier)
-    if material:
-        terms.append(material)
-    if cas:
-        terms.append(cas)
-
     candidates = []
-    if cas or supplier or material:
-        candidates.append(_candidate("SDS search", _search_url(" ".join(terms))))
+    search_suppliers = supplier_terms or [""]
+    for index, supplier in enumerate(search_suppliers):
+        terms = ["SDS", "for"]
+        if supplier:
+            terms.append(supplier)
+        if material:
+            terms.append(material)
+        if cas:
+            terms.append(cas)
+        query = " ".join(terms)
+        if cas or supplier or material:
+            label = "SDS search" if index == 0 else f"SDS search: {supplier}"
+            candidates.append(_candidate(label, _search_url(query)))
 
     return {
         "warnings": warnings,

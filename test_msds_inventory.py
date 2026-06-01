@@ -12,6 +12,7 @@ from stoichio.msds_inventory import (
     build_msds_binder_archive,
     build_msds_binder_pdf,
     canonical_company_name,
+    company_sds_search_terms,
     closet_label,
     download_msds_pdf_from_url,
     find_known_identity,
@@ -160,6 +161,35 @@ class MsdsInventoryTest(unittest.TestCase):
         })
 
         self.assertEqual(saved["company"], "Thermo Scientific")
+
+    def test_supplier_company_names_are_canonicalized(self):
+        cases = {
+            "NOAH chemicals": "Noah Chemicals Corporation",
+            "noah technologies": "Noah Chemicals Corporation",
+            "aaron chemicals": "Aaron Chemicals LLC",
+            "aablocks": "AA Blocks, Inc.",
+            "acros organics": "Acros Organics",
+            "alfa aesar": "Alfa Aesar",
+            "strem chemicals": "Strem Chemicals, Inc.",
+            "ted pella": "Ted Pella, Inc.",
+            "bio-lab": "Bio-Lab Ltd.",
+            "Sigma Aldrich": "Sigma-Aldrich",
+        }
+
+        for raw_name, official_name in cases.items():
+            with self.subTest(raw_name=raw_name):
+                self.assertEqual(canonical_company_name(raw_name), official_name)
+
+    def test_supplier_sds_terms_include_official_and_legacy_names(self):
+        noah_terms = company_sds_search_terms("noah technologies")
+        alfa_terms = company_sds_search_terms("alfa aesar")
+        strem_terms = company_sds_search_terms("strem chemicals")
+
+        self.assertIn("Noah Chemicals Corporation", noah_terms)
+        self.assertIn("Noah Technologies Corporation", noah_terms)
+        self.assertIn("Alfa Aesar", alfa_terms)
+        self.assertIn("Thermo Fisher Scientific Chemicals", alfa_terms)
+        self.assertIn("Ascensus Specialties", strem_terms)
 
     def test_pubchem_identity_metadata_is_saved_without_affecting_vendor_fields(self):
         saved, _ = save_msds_inventory_item({

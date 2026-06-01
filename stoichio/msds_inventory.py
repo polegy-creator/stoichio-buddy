@@ -99,12 +99,210 @@ def identity_text(value: str | None) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip()).lower()
 
 
+def company_identity_key(value: str | None) -> str:
+    return re.sub(r"[^a-z0-9]+", "", str(value or "").lower())
+
+
+_COMPANY_PROFILES = [
+    {
+        "official": "Thermo Scientific",
+        "aliases": [
+            "Thermo Scientific",
+            "ThermoScientific",
+            "Thermo Scientifc",
+            "Thermo Scientific Chemicals",
+            "Thermo Fisher Scientific",
+            "Thermo Fisher Scientific Chemicals",
+            "Fisher Scientific",
+        ],
+        "sds_terms": [
+            "Thermo Scientific",
+            "Thermo Scientific Chemicals",
+            "Thermo Fisher Scientific Chemicals",
+            "Thermo Fisher Scientific",
+            "Fisher Scientific",
+        ],
+    },
+    {
+        "official": "Alfa Aesar",
+        "aliases": [
+            "Alfa Aesar",
+            "AlfaAesar",
+            "Alfa Aesar by Thermo Fisher Scientific",
+        ],
+        "sds_terms": [
+            "Alfa Aesar",
+            "Thermo Scientific Chemicals",
+            "Thermo Fisher Scientific Chemicals",
+            "Thermo Fisher Scientific",
+        ],
+    },
+    {
+        "official": "Acros Organics",
+        "aliases": [
+            "Acros Organics",
+            "Acros",
+            "AcrosOrganics",
+        ],
+        "sds_terms": [
+            "Acros Organics",
+            "Thermo Scientific Chemicals",
+            "Thermo Fisher Scientific Chemicals",
+            "Thermo Fisher Scientific",
+        ],
+    },
+    {
+        "official": "Sigma-Aldrich",
+        "aliases": [
+            "Sigma-Aldrich",
+            "Sigma Aldrich",
+            "SigmaAldrich",
+            "MilliporeSigma",
+        ],
+        "sds_terms": [
+            "Sigma-Aldrich",
+            "MilliporeSigma",
+            "Merck",
+            "Merck KGaA",
+        ],
+    },
+    {
+        "official": "Noah Chemicals Corporation",
+        "aliases": [
+            "Noah Chemicals",
+            "NOAH chemicals",
+            "Noah Chemical",
+            "Noah Chemicals Corporation",
+            "Noah Technologies",
+            "Noah Technologies Corporation",
+        ],
+        "sds_terms": [
+            "Noah Chemicals Corporation",
+            "Noah Chemicals",
+            "Noah Technologies Corporation",
+            "Noah Technologies",
+        ],
+    },
+    {
+        "official": "Aaron Chemicals LLC",
+        "aliases": [
+            "Aaron Chemicals",
+            "Aaron Chemicals LLC",
+            "AaronChem",
+        ],
+        "sds_terms": [
+            "Aaron Chemicals LLC",
+            "Aaron Chemicals",
+            "AaronChem",
+        ],
+    },
+    {
+        "official": "AA Blocks, Inc.",
+        "aliases": [
+            "AA Blocks",
+            "AABLOCKS",
+            "AABlocks",
+            "AA Blocks Inc",
+            "AA Blocks, Inc.",
+        ],
+        "sds_terms": [
+            "AA Blocks, Inc.",
+            "AA Blocks",
+            "AABLOCKS",
+        ],
+    },
+    {
+        "official": "Strem Chemicals, Inc.",
+        "aliases": [
+            "Strem",
+            "Strem Chemicals",
+            "Strem Chemicals Inc",
+            "Strem Chemicals, Inc.",
+        ],
+        "sds_terms": [
+            "Strem Chemicals, Inc.",
+            "Strem Chemicals",
+            "Strem",
+            "Ascensus Specialties",
+        ],
+    },
+    {
+        "official": "Ted Pella, Inc.",
+        "aliases": [
+            "Ted Pella",
+            "TedPella",
+            "Ted Pella Inc",
+            "Ted Pella, Inc.",
+        ],
+        "sds_terms": [
+            "Ted Pella, Inc.",
+            "Ted Pella",
+        ],
+    },
+    {
+        "official": "Bio-Lab Ltd.",
+        "aliases": [
+            "Bio-Lab",
+            "Bio Lab",
+            "BioLab",
+            "Bio-Lab Ltd",
+            "Bio-Lab Ltd.",
+            "Bio Lab Ltd",
+        ],
+        "sds_terms": [
+            "Bio-Lab Ltd.",
+            "Bio-Lab",
+            "Bio Lab Ltd",
+            "BioLab",
+        ],
+    },
+]
+
+
+def _unique_texts(values: list[str]) -> list[str]:
+    seen = set()
+    result = []
+    for value in values:
+        text = re.sub(r"\s+", " ", str(value or "").strip())
+        if not text:
+            continue
+        key = company_identity_key(text)
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(text)
+    return result
+
+
+_COMPANY_BY_ALIAS: dict[str, str] = {}
+_COMPANY_SDS_TERMS: dict[str, list[str]] = {}
+for _profile in _COMPANY_PROFILES:
+    _official = _profile["official"]
+    _terms = _unique_texts([_official, *_profile.get("sds_terms", [])])
+    for _alias in [_official, *_profile.get("aliases", [])]:
+        _key = company_identity_key(_alias)
+        if _key:
+            _COMPANY_BY_ALIAS[_key] = _official
+            _COMPANY_SDS_TERMS[_key] = _terms
+    _COMPANY_SDS_TERMS[company_identity_key(_official)] = _terms
+
+
 def canonical_company_name(value: str | None) -> str:
     text = re.sub(r"\s+", " ", str(value or "").strip())
-    key = re.sub(r"[^a-z0-9]+", "", text.lower())
-    if key in {"thermoscientific", "thermoscientifc"}:
-        return "Thermo Scientific"
-    return text
+    if not text:
+        return ""
+    return _COMPANY_BY_ALIAS.get(company_identity_key(text), text)
+
+
+def company_sds_search_terms(value: str | None) -> list[str]:
+    text = re.sub(r"\s+", " ", str(value or "").strip())
+    if not text:
+        return []
+    canonical = canonical_company_name(text)
+    terms = _COMPANY_SDS_TERMS.get(company_identity_key(text)) or _COMPANY_SDS_TERMS.get(company_identity_key(canonical))
+    if not terms:
+        return [canonical]
+    return _unique_texts([canonical, *terms])
 
 
 def identity_slug(value: str | None) -> str:
