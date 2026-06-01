@@ -2159,6 +2159,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:30:00",
             "updatedAt": "2026-06-01T10:34:51"
+        },
+        {
+            "id": "cas:7550-45-0|vendor:thermo-scientific",
+            "casNumber": "7550-45-0",
+            "nameOrFormula": "Cl4Ti",
+            "purity": "",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24193",
+            "pubchemCid": "24193",
+            "pubchemFormula": "Cl4Ti",
+            "pubchemIupacName": "tetrachlorotitanium",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:36:58",
+            "updatedAt": "2026-06-01T10:36:58"
         }
     ],
     "deletedPowderImports": []
