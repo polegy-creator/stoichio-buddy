@@ -2076,8 +2076,8 @@
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "msds_pdfs/dcf61c8033b205531f6d73d47a00ccbb.pdf",
-            "company": "bio labs",
-            "identityStatus": "CAS identity applied",
+            "company": "Bio-Lab Ltd.",
+            "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/180",
@@ -2086,7 +2086,7 @@
             "pubchemIupacName": "propan-2-one",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:22:26",
-            "updatedAt": "2026-06-01T10:22:37"
+            "updatedAt": "2026-06-01T10:22:42"
         }
     ],
     "deletedPowderImports": []
