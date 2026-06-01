@@ -55,8 +55,8 @@
             "purity": "99.999%",
             "closetNumber": 1,
             "msdsFileUrl": "/api/msds-inventory/powder:ZnO/msds-file",
-            "msdsExternalUrl": "https://www.chemblink.com/MSDSFiles/1314-13-2Alfa-Aesar.pdf",
-            "msdsFileName": "ZnO_1314-13-2_Alfa-Aesar_SDS.pdf",
+            "msdsExternalUrl": "https://assets.thermofisher.com/DirectWebViewer/private/document.aspx?prd=ACR31579~~PDF~~MTR~~CLP1~~EE~~2021-11-27%2018:20:39~~Zinc%20oxide~~",
+            "msdsFileName": "Zinc_oxide_MTR_CLP1_EE.pdf",
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "msds_pdfs/9b87328c037d60fd40e7a3880ec8d84d.pdf",
@@ -70,7 +70,7 @@
             "pubchemIupacName": "zinc oxygen(2-)",
             "sourcePowderId": "powder:ZnO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:03"
+            "updatedAt": "2026-06-01T07:20:52"
         },
         {
             "id": "powder:Co3O4",
