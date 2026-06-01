@@ -1943,6 +1943,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:06:56",
             "updatedAt": "2026-06-01T10:07:00"
+        },
+        {
+            "id": "cas:6132-04-3|purity:99%|vendor:thermo-scientific",
+            "casNumber": "6132-04-3",
+            "nameOrFormula": "C6H9Na3O9",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/71474",
+            "pubchemCid": "71474",
+            "pubchemFormula": "C6H9Na3O9",
+            "pubchemIupacName": "trisodium;2-hydroxypropane-1,2,3-tricarboxylate;dihydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:07:41",
+            "updatedAt": "2026-06-01T10:07:41"
         }
     ],
     "deletedPowderImports": []
