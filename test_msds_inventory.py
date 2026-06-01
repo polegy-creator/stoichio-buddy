@@ -7,6 +7,7 @@ import zipfile
 from email.message import Message
 from pathlib import Path
 
+from stoichio import storage as storage_module
 from stoichio.msds_inventory import (
     attach_msds_pdf,
     build_msds_binder_archive,
@@ -170,10 +171,13 @@ class MsdsInventoryTest(unittest.TestCase):
             "aaron chemicals": "Aaron Chemicals LLC",
             "aablocks": "AA Blocks, Inc.",
             "acros organics": "Acros Organics",
+            "arcos organics": "Acros Organics",
             "alfa aesar": "Alfa Aesar",
             "strem chemicals": "Strem Chemicals, Inc.",
             "ted pella": "Ted Pella, Inc.",
             "bio-lab": "Bio-Lab Ltd.",
+            "fisher chemical": "Fisher Chemical",
+            "fisher bioreagents": "Fisher BioReagents",
             "Sigma Aldrich": "Sigma-Aldrich",
         }
 
@@ -349,10 +353,24 @@ class MsdsInventoryTest(unittest.TestCase):
         self.assertNotIn("%PDF-1.4", raw_inventory)
 
         target_id = next(item["id"] for item in inventory["items"] if item.get("nameOrFormula") == "ScaleTest37")
-        filename, content_type, pdf_bytes = get_msds_pdf(target_id)
+        load_calls = 0
+        original_load_binary = storage_module.load_binary
+
+        def counted_load_binary(*args, **kwargs):
+            nonlocal load_calls
+            load_calls += 1
+            return original_load_binary(*args, **kwargs)
+
+        storage_module.load_binary = counted_load_binary
+        try:
+            filename, content_type, pdf_bytes = get_msds_pdf(target_id)
+        finally:
+            storage_module.load_binary = original_load_binary
+
         self.assertEqual(filename, "scale_37.pdf")
         self.assertEqual(content_type, "application/pdf")
         self.assertEqual(pdf_bytes, b"%PDF-1.4\n% scale test 37\n")
+        self.assertEqual(load_calls, 1)
 
 
 if __name__ == "__main__":

@@ -32,6 +32,19 @@ class SdsLookupTests(unittest.TestCase):
         self.assertIn("SDS for Alfa Aesar Fe2O3 1309-37-1", queries)
         self.assertIn("SDS for Thermo Fisher Scientific Chemicals Fe2O3 1309-37-1", queries)
 
+    def test_bio_lab_search_prioritizes_supplier_domains_and_filters_bgu(self):
+        result = build_sds_lookup_candidates("64-19-7", "bio-lab", "acetic acid glacial")
+        queries = [
+            urllib.parse.parse_qs(urllib.parse.urlparse(candidate["url"]).query)["q"][0]
+            for candidate in result["candidates"]
+        ]
+
+        self.assertTrue(queries[0].startswith("site:biolab-chemicals.com SDS Bio-Lab Ltd."))
+        self.assertTrue(queries[1].startswith("site:bio-lab.co.il SDS Bio-Lab Ltd."))
+        self.assertIn("-bgu", queries[2])
+        self.assertIn("-ben-gurion", queries[2])
+        self.assertIn("-nano-fab", queries[2])
+
     def test_missing_company_does_not_block_lookup(self):
         result = build_sds_lookup_candidates("1309-37-1", "", "Fe2O3")
 

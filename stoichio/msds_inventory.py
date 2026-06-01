@@ -144,6 +144,7 @@ _COMPANY_PROFILES = [
             "Acros Organics",
             "Acros",
             "AcrosOrganics",
+            "Arcos Organics",
         ],
         "sds_terms": [
             "Acros Organics",
@@ -255,6 +256,31 @@ _COMPANY_PROFILES = [
             "Bio-Lab",
             "Bio Lab Ltd",
             "BioLab",
+        ],
+    },
+    {
+        "official": "Fisher Chemical",
+        "aliases": [
+            "Fisher Chemical",
+            "Fisher Chemicals",
+        ],
+        "sds_terms": [
+            "Fisher Chemical",
+            "Fisher Scientific",
+            "Thermo Fisher Scientific",
+        ],
+    },
+    {
+        "official": "Fisher BioReagents",
+        "aliases": [
+            "Fisher BioReagents",
+            "Fisher Bioreagents",
+            "Fisher Bio Reagents",
+        ],
+        "sds_terms": [
+            "Fisher BioReagents",
+            "Fisher Scientific",
+            "Thermo Fisher Scientific",
         ],
     },
 ]
@@ -523,6 +549,18 @@ def load_msds_inventory(include_file_data: bool = False) -> list[dict[str, Any]]
             storage.record_shared_storage_error(exc)
 
     return [item_payload(item, include_file_data=include_file_data) for item in store["items"]]
+
+
+def get_msds_inventory_item(item_id: str) -> dict[str, Any]:
+    store = _load_store()
+    for raw_item in store["items"]:
+        try:
+            item = normalize_item(raw_item)
+        except ValueError:
+            continue
+        if item["id"] == item_id:
+            return item
+    raise ValueError("Material inventory item was not found.")
 
 
 def save_msds_inventory_items(items: list[dict[str, Any]]) -> None:
@@ -887,18 +925,15 @@ def _path_like_name(path: str) -> str:
 
 
 def get_msds_pdf(item_id: str) -> tuple[str, str, bytes]:
-    for item in load_msds_inventory(include_file_data=True):
-        if item.get("id") != item_id:
-            continue
-        pdf_bytes = _item_pdf_bytes(item)
-        if not pdf_bytes:
-            raise ValueError("This material does not have an uploaded MSDS PDF.")
-        return (
-            item.get("msdsFileName") or "msds.pdf",
-            item.get("msdsFileContentType") or "application/pdf",
-            pdf_bytes,
-        )
-    raise ValueError("Material inventory item was not found.")
+    item = get_msds_inventory_item(item_id)
+    pdf_bytes = _item_pdf_bytes(item)
+    if not pdf_bytes:
+        raise ValueError("This material does not have an uploaded MSDS PDF.")
+    return (
+        item.get("msdsFileName") or "msds.pdf",
+        item.get("msdsFileContentType") or "application/pdf",
+        pdf_bytes,
+    )
 
 
 def sorted_inventory_items(include_file_data: bool = False) -> list[dict[str, Any]]:
