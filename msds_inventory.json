@@ -1158,12 +1158,12 @@
             "nameOrFormula": "sodium hydroxide pearls",
             "purity": "",
             "closetNumber": 2,
-            "msdsFileUrl": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:1310-73-2|vendor:bio-lab/msds-file",
             "msdsExternalUrl": "https://labequipsupply.co.za/wp-content/uploads/2021/03/SODIUM-HYDROXIDE-PEARLS_MSDS.pdf",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileName": "SODIUM-HYDROXIDE-PEARLS_MSDS.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/399e4986b5fde59d67b06ded5abfa491.pdf",
             "company": "Bio-Lab Ltd.",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -1174,7 +1174,7 @@
             "pubchemIupacName": "sodium hydroxide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:18:55",
-            "updatedAt": "2026-06-01T09:18:55"
+            "updatedAt": "2026-06-01T09:19:01"
         }
     ],
     "deletedPowderImports": []
