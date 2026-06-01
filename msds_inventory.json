@@ -1559,6 +1559,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:45:54",
             "updatedAt": "2026-06-01T09:46:09"
+        },
+        {
+            "id": "cas:7646-85-7|purity:99.95%|vendor:thermo-scientific",
+            "casNumber": "7646-85-7",
+            "nameOrFormula": "Cl2Zn",
+            "purity": "99.95%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/5727",
+            "pubchemCid": "5727",
+            "pubchemFormula": "Cl2Zn",
+            "pubchemIupacName": "dichlorozinc",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:47:16",
+            "updatedAt": "2026-06-01T09:47:16"
         }
     ],
     "deletedPowderImports": []
