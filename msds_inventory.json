@@ -1895,6 +1895,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:04:49",
             "updatedAt": "2026-06-01T10:04:49"
+        },
+        {
+            "id": "cas:10025-77-1|purity:97-102%|vendor:alfa-aesar",
+            "casNumber": "10025-77-1",
+            "nameOrFormula": "Cl3FeH12O6",
+            "purity": "97-102%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Alfa Aesar",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/6093258",
+            "pubchemCid": "6093258",
+            "pubchemFormula": "Cl3FeH12O6",
+            "pubchemIupacName": "iron(3+);trichloride;hexahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:05:38",
+            "updatedAt": "2026-06-01T10:05:38"
         }
     ],
     "deletedPowderImports": []
