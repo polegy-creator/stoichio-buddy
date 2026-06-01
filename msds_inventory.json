@@ -145,7 +145,7 @@
             "purity": "99.7%",
             "closetNumber": 1,
             "msdsFileUrl": "",
-            "msdsExternalUrl": "",
+            "msdsExternalUrl": "https://www.chemblink.com/MSDSFiles/1317-38-0Alfa-Aesar.pdf",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
@@ -159,7 +159,7 @@
             "pubchemIupacName": "copper oxygen(2-)",
             "sourcePowderId": "powder:CuO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:33:24"
+            "updatedAt": "2026-06-01T06:38:14"
         },
         {
             "id": "powder:Ta2O5",
