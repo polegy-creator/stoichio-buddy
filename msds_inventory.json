@@ -2149,7 +2149,7 @@
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "",
             "company": "Sigma-Aldrich",
-            "identityStatus": "CAS identity applied",
+            "identityStatus": "manual identity entry",
             "source": "local saved CAS record",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/784",
@@ -2158,7 +2158,7 @@
             "pubchemIupacName": "hydrogen peroxide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:30:00",
-            "updatedAt": "2026-06-01T10:30:00"
+            "updatedAt": "2026-06-01T10:30:25"
         }
     ],
     "deletedPowderImports": []
