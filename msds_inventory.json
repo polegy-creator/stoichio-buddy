@@ -1380,8 +1380,8 @@
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "",
-            "company": "fisher chemicals",
-            "identityStatus": "CAS identity applied",
+            "company": "fisher chemical",
+            "identityStatus": "manual identity entry",
             "source": "local saved CAS record",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/23668193",
@@ -1390,7 +1390,7 @@
             "pubchemIupacName": "sodium nitrite",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:36:29",
-            "updatedAt": "2026-06-01T09:36:29"
+            "updatedAt": "2026-06-01T09:36:45"
         }
     ],
     "deletedPowderImports": []
