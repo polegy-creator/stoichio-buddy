@@ -1511,6 +1511,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:43:37",
             "updatedAt": "2026-06-01T09:43:37"
+        },
+        {
+            "id": "cas:127-09-3|purity:99%|vendor:sigma-aldrich",
+            "casNumber": "127-09-3",
+            "nameOrFormula": "C2H3NaO2",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Sigma-Aldrich",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/517045",
+            "pubchemCid": "517045",
+            "pubchemFormula": "C2H3NaO2",
+            "pubchemIupacName": "sodium acetate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:44:54",
+            "updatedAt": "2026-06-01T09:44:54"
         }
     ],
     "deletedPowderImports": []
