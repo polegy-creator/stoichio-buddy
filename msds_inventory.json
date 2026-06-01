@@ -1823,6 +1823,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:01:16",
             "updatedAt": "2026-06-01T10:01:16"
+        },
+        {
+            "id": "cas:7646-79-9|purity:97%|vendor:thermo-scientific",
+            "casNumber": "7646-79-9",
+            "nameOrFormula": "Cl2Co",
+            "purity": "97%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/3032536",
+            "pubchemCid": "3032536",
+            "pubchemFormula": "Cl2Co",
+            "pubchemIupacName": "cobalt(2+) dichloride",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:02:37",
+            "updatedAt": "2026-06-01T10:02:37"
         }
     ],
     "deletedPowderImports": []
