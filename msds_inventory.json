@@ -1415,6 +1415,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:37:34",
             "updatedAt": "2026-06-01T09:37:54"
+        },
+        {
+            "id": "cas:10026-12-7|purity:99%|vendor:thermo-scientific",
+            "casNumber": "10026-12-7",
+            "nameOrFormula": "Cl5Nb",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24818",
+            "pubchemCid": "24818",
+            "pubchemFormula": "Cl5Nb",
+            "pubchemIupacName": "pentachloroniobium",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:38:39",
+            "updatedAt": "2026-06-01T09:38:39"
         }
     ],
     "deletedPowderImports": []
