@@ -249,8 +249,11 @@ def sync_powders_from_msds_inventory(items=None):
         items = load_msds_inventory(include_file_data=False)
 
     powders = load_powders()
+    original_powders = dict(powders)
+    target_powders = {}
     created = 0
     updated = 0
+    removed = 0
     skipped = 0
 
     for item in items:
@@ -266,7 +269,7 @@ def sync_powders_from_msds_inventory(items=None):
         company = item.get("company", "")
         key = powder_key_for(formula, purity=purity, company=company)
         composition = parse_formula(powder_formula_from_key(key))
-        existing = dict(powders.get(key, {}))
+        existing = dict(powders.get(key) or powders.get(formula) or {})
         record = {
             **existing,
             "formula": powder_formula_from_key(key),
@@ -279,18 +282,30 @@ def sync_powders_from_msds_inventory(items=None):
             if value:
                 record[field] = value
 
-        if key in powders:
-            if powders[key] != record:
+        target_powders[key] = record
+
+    reconciled = {}
+    for key, record in powders.items():
+        if target_powders and key not in target_powders:
+            removed += 1
+            continue
+        reconciled[key] = record
+
+    for key, record in target_powders.items():
+        if key in original_powders:
+            if original_powders[key] != record:
                 updated += 1
         else:
             created += 1
-        powders[key] = record
+        reconciled[key] = record
 
-    if created or updated:
+    powders = reconciled
+    if created or updated or removed:
         save_powders(powders)
     return {
         "created": created,
         "updated": updated,
+        "removed": removed,
         "skipped": skipped,
         "powders": powders,
     }

@@ -493,6 +493,7 @@ def sync_powder_database_from_msds(x_stoichio_pin: str | None = Header(default=N
     return {
         "created": summary["created"],
         "updated": summary["updated"],
+        "removed": summary["removed"],
         "skipped": summary["skipped"],
         "powders": {
             powder: powder_payload(powder, record)

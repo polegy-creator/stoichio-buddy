@@ -1991,7 +1991,7 @@ async function syncMsdsPowders() {
     state.powders = data.powders || state.powders;
     renderEverything();
     await loadPowderOptions();
-    flash(`Synced MSDS powders: ${data.created || 0} added, ${data.updated || 0} updated, ${data.skipped || 0} skipped.`);
+    flash(`Synced MSDS powders: ${data.created || 0} added, ${data.updated || 0} updated, ${data.removed || 0} duplicate old rows removed, ${data.skipped || 0} skipped.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {
