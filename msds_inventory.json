@@ -2238,12 +2238,12 @@
             "nameOrFormula": "acetic acid glacial",
             "purity": "",
             "closetNumber": 4,
-            "msdsFileUrl": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:64-19-7/msds-file",
             "msdsExternalUrl": "https://www.bgu.ac.il/media/0q5giewx/acetic-acid_biolab.pdf",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileName": "acetic-acid_biolab.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/69cad1ec2528674ec290c6632138bf79.pdf",
             "company": "",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -2254,7 +2254,7 @@
             "pubchemIupacName": "acetic acid",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:42:45",
-            "updatedAt": "2026-06-01T10:42:45"
+            "updatedAt": "2026-06-01T10:42:48"
         }
     ],
     "deletedPowderImports": []
