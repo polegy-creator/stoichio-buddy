@@ -53,7 +53,7 @@
             "purity": "99.999%",
             "closetNumber": 1,
             "msdsFileUrl": "",
-            "msdsExternalUrl": "",
+            "msdsExternalUrl": "https://www.chemblink.com/MSDSFiles/1314-13-2Alfa-Aesar.pdf",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
@@ -67,7 +67,7 @@
             "pubchemIupacName": "zinc oxygen(2-)",
             "sourcePowderId": "powder:ZnO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:34:31"
+            "updatedAt": "2026-06-01T06:38:00"
         },
         {
             "id": "powder:Co3O4",
