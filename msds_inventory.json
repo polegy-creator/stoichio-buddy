@@ -1295,6 +1295,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:29:27",
             "updatedAt": "2026-06-01T09:29:27"
+        },
+        {
+            "id": "cas:7721-01-9|purity:99.8%|vendor:thermo-scientific",
+            "casNumber": "7721-01-9",
+            "nameOrFormula": "Cl5Ta",
+            "purity": "99.8%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24394",
+            "pubchemCid": "24394",
+            "pubchemFormula": "Cl5Ta",
+            "pubchemIupacName": "pentachlorotantalum",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:30:40",
+            "updatedAt": "2026-06-01T09:30:40"
         }
     ],
     "deletedPowderImports": []
