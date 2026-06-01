@@ -20,10 +20,10 @@
             "pubchemCid": "518696",
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Fe2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:32:10",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T06:32:10"
         },
         {
             "id": "powder:TiO2",
@@ -45,10 +45,10 @@
             "pubchemCid": "26042",
             "pubchemFormula": "O2Ti",
             "pubchemIupacName": "dioxotitanium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:TiO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:35:59",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:35:59"
         },
         {
             "id": "powder:ZnO",
@@ -70,10 +70,10 @@
             "pubchemCid": "3007857",
             "pubchemFormula": "OZn",
             "pubchemIupacName": "zinc oxygen(2-)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:ZnO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T07:20:59",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T07:20:59"
         },
         {
             "id": "powder:Co3O4",
@@ -89,16 +89,16 @@
             "msdsFileStoragePath": "",
             "company": "Aaron Chemicals LLC",
             "identityStatus": "CAS identity applied",
-            "source": "PubChem identity metadata",
-            "casSource": "PubChem PUG REST",
+            "source": "powder database",
+            "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/11651651",
             "pubchemCid": "11651651",
             "pubchemFormula": "Co3O4",
             "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt",
+            "pubchemTitle": "Cobalt(II,III)oxide",
             "sourcePowderId": "powder:Co3O4",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Cobalt(II,III)oxide"
+            "updatedAt": "2026-06-01T11:54:15"
         },
         {
             "id": "powder:NiO",
@@ -120,10 +120,10 @@
             "pubchemCid": "179931",
             "pubchemFormula": "NiO",
             "pubchemIupacName": "nickel(2+);oxygen(2-)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:NiO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:10",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T06:38:10"
         },
         {
             "id": "powder:HfO2",
@@ -145,10 +145,10 @@
             "pubchemCid": "292779",
             "pubchemFormula": "HfO2",
             "pubchemIupacName": "dioxohafnium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:HfO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T12:52:04",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T12:52:04"
         },
         {
             "id": "powder:CuO",
@@ -170,10 +170,10 @@
             "pubchemCid": "164827",
             "pubchemFormula": "CuO",
             "pubchemIupacName": "copper oxygen(2-)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:CuO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:17",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T06:38:17"
         },
         {
             "id": "powder:Ta2O5",
@@ -195,10 +195,10 @@
             "pubchemCid": "62157",
             "pubchemFormula": "O5Ta2",
             "pubchemIupacName": "pentakis(oxygen(2-));bis(tantalum(5+))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Ta2O5",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:36:59",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:36:59"
         },
         {
             "id": "powder:BaCO3",
@@ -220,10 +220,10 @@
             "pubchemCid": "10563",
             "pubchemFormula": "CBaO3",
             "pubchemIupacName": "barium(2+) carbonate",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:BaCO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T06:38:24",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T06:38:24"
         },
         {
             "id": "powder:MgO",
@@ -245,10 +245,10 @@
             "pubchemCid": "14792",
             "pubchemFormula": "MgO",
             "pubchemIupacName": "oxomagnesium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:MgO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:08",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:08"
         },
         {
             "id": "powder:MnO2",
@@ -270,10 +270,10 @@
             "pubchemCid": "14801",
             "pubchemFormula": "MnO2",
             "pubchemIupacName": "dioxomanganese",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:MnO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:40:38",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:40:38"
         },
         {
             "id": "powder:Al2O3",
@@ -295,10 +295,10 @@
             "pubchemCid": "9989226",
             "pubchemFormula": "Al2O3",
             "pubchemIupacName": "dialuminum;tris(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Al2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:11",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:11"
         },
         {
             "id": "powder:Nb2O5",
@@ -320,10 +320,10 @@
             "pubchemCid": "9903420",
             "pubchemFormula": "Nb2O5",
             "pubchemIupacName": "bis(niobium(5+));pentakis(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Nb2O5",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:11",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:11"
         },
         {
             "id": "powder:CoO",
@@ -345,10 +345,10 @@
             "pubchemCid": "14786",
             "pubchemFormula": "CoO",
             "pubchemIupacName": "oxocobalt",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:CoO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:35:17",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:35:17"
         },
         {
             "id": "powder:MoO3",
@@ -370,10 +370,10 @@
             "pubchemCid": "14802",
             "pubchemFormula": "MoO3",
             "pubchemIupacName": "trioxomolybdenum",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:MoO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:38:05",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:38:05"
         },
         {
             "id": "powder:Sc2O3",
@@ -395,10 +395,10 @@
             "pubchemCid": "134661",
             "pubchemFormula": "O3Sc2",
             "pubchemIupacName": "tris(oxygen(2-));bis(scandium(3+))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Sc2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:43:03",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:43:03"
         },
         {
             "id": "powder:BaTiO3",
@@ -420,10 +420,10 @@
             "pubchemCid": "159419",
             "pubchemFormula": "BaO3Ti",
             "pubchemIupacName": "barium(2+);tris(oxygen(2-));titanium(4+)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:BaTiO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:51:04",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:51:04"
         },
         {
             "id": "powder:Cr2O3",
@@ -445,10 +445,10 @@
             "pubchemCid": "517277",
             "pubchemFormula": "Cr2O3",
             "pubchemIupacName": "oxo(oxochromiooxy)chromium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Cr2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:12",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:12"
         },
         {
             "id": "powder:Sb2O3",
@@ -470,10 +470,10 @@
             "pubchemCid": "14794",
             "pubchemFormula": "O3Sb2",
             "pubchemIupacName": "bis(antimony(3+));tris(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Sb2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:04:57",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:04:57"
         },
         {
             "id": "powder:Tb4O7",
@@ -495,10 +495,10 @@
             "pubchemCid": "16211492",
             "pubchemFormula": "O7Tb4",
             "pubchemIupacName": "terbium;oxygen(2-)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Tb4O7",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:13",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:13"
         },
         {
             "id": "powder:CaCO3",
@@ -520,10 +520,10 @@
             "pubchemCid": "10112",
             "pubchemFormula": "CCaO3",
             "pubchemIupacName": "calcium carbonate",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:CaCO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:58:36",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:58:36"
         },
         {
             "id": "powder:ZrO2",
@@ -545,10 +545,10 @@
             "pubchemCid": "62395",
             "pubchemFormula": "O2Zr",
             "pubchemIupacName": "dioxozirconium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:ZrO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:06:14",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:06:14"
         },
         {
             "id": "powder:Tm2O3",
@@ -570,10 +570,10 @@
             "pubchemCid": "159411",
             "pubchemFormula": "O3Tm2",
             "pubchemIupacName": "tris(oxygen(2-));bis(thulium(3+))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Tm2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:07:00",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:07:00"
         },
         {
             "id": "powder:SnO2",
@@ -595,10 +595,10 @@
             "pubchemCid": "16747781",
             "pubchemFormula": "O2Sn",
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:SnO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:14",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:14"
         },
         {
             "id": "powder:La2O3",
@@ -620,10 +620,10 @@
             "pubchemCid": "150906",
             "pubchemFormula": "La2O3",
             "pubchemIupacName": "bis(lanthanum(3+));tris(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:La2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:12:19",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:12:19"
         },
         {
             "id": "powder:SrCO3",
@@ -645,10 +645,10 @@
             "pubchemCid": "15407",
             "pubchemFormula": "CO3Sr",
             "pubchemIupacName": "strontium carbonate",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:SrCO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:17:52",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:17:52"
         },
         {
             "id": "powder:RuO2",
@@ -670,10 +670,10 @@
             "pubchemCid": "82848",
             "pubchemFormula": "O2Ru",
             "pubchemIupacName": "dioxoruthenium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:RuO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:09:11",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:09:11"
         },
         {
             "id": "powder:Y2O3",
@@ -695,10 +695,10 @@
             "pubchemCid": "159374",
             "pubchemFormula": "O3Y2",
             "pubchemIupacName": "tris(oxygen(2-));bis(yttrium(3+))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Y2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:22:34",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:22:34"
         },
         {
             "id": "powder:Pr6O11",
@@ -720,10 +720,10 @@
             "pubchemCid": "16211481",
             "pubchemFormula": "O11Pr6",
             "pubchemIupacName": "oxygen(2-);praseodymium(3+)",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Pr6O11",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:15",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:15"
         },
         {
             "id": "powder:BiVO4",
@@ -745,10 +745,10 @@
             "pubchemCid": "20243764",
             "pubchemFormula": "BiO4V",
             "pubchemIupacName": "bismuth trioxido(oxo)vanadium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:BiVO4",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-06-01T09:42:16",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:16"
         },
         {
             "id": "powder:Gd2O3",
@@ -770,10 +770,10 @@
             "pubchemCid": "159427",
             "pubchemFormula": "Gd2O3",
             "pubchemIupacName": "bis(gadolinium(3+));tris(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Gd2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:20:16",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:20:16"
         },
         {
             "id": "powder:Er2O3",
@@ -795,10 +795,10 @@
             "pubchemCid": "159426",
             "pubchemFormula": "Er2O3",
             "pubchemIupacName": "bis(erbium(3+));tris(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Er2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:07:27",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:07:27"
         },
         {
             "id": "powder:CeO2",
@@ -820,10 +820,10 @@
             "pubchemCid": "73963",
             "pubchemFormula": "CeO2",
             "pubchemIupacName": "dioxocerium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:CeO2",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:20:56",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:20:56"
         },
         {
             "id": "powder:V2O3",
@@ -845,10 +845,10 @@
             "pubchemCid": "518710",
             "pubchemFormula": "O3V2",
             "pubchemIupacName": "oxo(oxovanadiooxy)vanadium",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:V2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:19:13",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:19:13"
         },
         {
             "id": "powder:WO3",
@@ -870,10 +870,10 @@
             "pubchemCid": "14811",
             "pubchemFormula": "O3W",
             "pubchemIupacName": "trioxotungsten",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:WO3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:22:07",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:22:07"
         },
         {
             "id": "powder:Yb2O3",
@@ -895,10 +895,10 @@
             "pubchemCid": "159375",
             "pubchemFormula": "O3Yb2",
             "pubchemIupacName": "tris(oxygen(2-));bis(ytterbium(3+))",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Yb2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:09:54",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:09:54"
         },
         {
             "id": "powder:Bi2O3",
@@ -920,10 +920,10 @@
             "pubchemCid": "14776",
             "pubchemFormula": "Bi2O3",
             "pubchemIupacName": "oxo(oxobismuthanyloxy)bismuthane",
+            "pubchemTitle": "",
             "sourcePowderId": "powder:Bi2O3",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T15:29:18",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:29:18"
         },
         {
             "id": "cas:1309-37-1|purity:99.999|vendor:sigma-aldrich",
@@ -945,10 +945,10 @@
             "pubchemCid": "518696",
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T10:57:57",
-            "updatedAt": "2026-05-31T14:31:23",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T14:31:23"
         },
         {
             "id": "cas:1309-37-1|purity:99.999|vendor:acros-organics",
@@ -970,10 +970,10 @@
             "pubchemCid": "518696",
             "pubchemFormula": "Fe2O3",
             "pubchemIupacName": "oxo(oxoferriooxy)iron",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:33:36",
-            "updatedAt": "2026-06-01T09:42:16",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:16"
         },
         {
             "id": "cas:9002-89-5|vendor:alfa-aesar",
@@ -995,10 +995,10 @@
             "pubchemCid": "177",
             "pubchemFormula": "C2H4O",
             "pubchemIupacName": "acetaldehyde",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:46:33",
-            "updatedAt": "2026-06-01T09:42:17",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:17"
         },
         {
             "id": "cas:9002-89-5|purity:89|vendor:thermo-scientifc",
@@ -1020,10 +1020,10 @@
             "pubchemCid": "177",
             "pubchemFormula": "C2H4O",
             "pubchemIupacName": "acetaldehyde",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:53:53",
-            "updatedAt": "2026-06-01T09:42:18",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:18"
         },
         {
             "id": "cas:9003-39-8|vendor:thermo-scientific",
@@ -1045,10 +1045,10 @@
             "pubchemCid": "6917",
             "pubchemFormula": "C6H9NO",
             "pubchemIupacName": "1-ethenylpyrrolidin-2-one",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T14:59:32",
-            "updatedAt": "2026-06-01T09:42:19",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:19"
         },
         {
             "id": "cas:1314-13-2|purity:99.995|vendor:noah-technologies",
@@ -1070,10 +1070,10 @@
             "pubchemCid": "3007857",
             "pubchemFormula": "OZn",
             "pubchemIupacName": "zinc oxygen(2-)",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:01:20",
-            "updatedAt": "2026-05-31T15:01:20",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:01:20"
         },
         {
             "id": "cas:18282-10-5|purity:99.9|vendor:thermo-scientific",
@@ -1095,10 +1095,10 @@
             "pubchemCid": "16747781",
             "pubchemFormula": "O2Sn",
             "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:16:53",
-            "updatedAt": "2026-06-01T09:42:20",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:20"
         },
         {
             "id": "cas:112926-00-8|vendor:ted-pella",
@@ -1120,10 +1120,10 @@
             "pubchemCid": "24261",
             "pubchemFormula": "O2Si",
             "pubchemIupacName": "dioxosilane",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:27:37",
-            "updatedAt": "2026-05-31T15:27:39",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:27:39"
         },
         {
             "id": "cas:57-11-4|purity:97|vendor:thermo-scientific",
@@ -1145,10 +1145,10 @@
             "pubchemCid": "5281",
             "pubchemFormula": "C18H36O2",
             "pubchemIupacName": "octadecanoic acid",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:28:32",
-            "updatedAt": "2026-06-01T09:42:21",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:42:21"
         },
         {
             "id": "cas:1314-13-2|purity:98|vendor:aaron-chemicals",
@@ -1170,10 +1170,10 @@
             "pubchemCid": "3007857",
             "pubchemFormula": "OZn",
             "pubchemIupacName": "zinc oxygen(2-)",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:30:24",
-            "updatedAt": "2026-05-31T15:30:24",
-            "pubchemTitle": ""
+            "updatedAt": "2026-05-31T15:30:24"
         },
         {
             "id": "cas:7647-01-0|purity:32|vendor:bio-lab",
@@ -1195,10 +1195,10 @@
             "pubchemCid": "313",
             "pubchemFormula": "ClH",
             "pubchemIupacName": "chlorane",
+            "pubchemTitle": "Hydrochloric Acid",
             "sourcePowderId": "",
             "createdAt": "2026-05-31T15:37:15",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Hydrochloric Acid"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:1310-73-2|vendor:bio-lab",
@@ -1220,10 +1220,10 @@
             "pubchemCid": "14798",
             "pubchemFormula": "HNaO",
             "pubchemIupacName": "sodium hydroxide",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:18:55",
-            "updatedAt": "2026-06-01T09:19:09",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:19:09"
         },
         {
             "id": "cas:7447-40-7|vendor:sentek",
@@ -1245,10 +1245,10 @@
             "pubchemCid": "4873",
             "pubchemFormula": "ClK",
             "pubchemIupacName": "potassium chloride",
+            "pubchemTitle": "Potassium Chloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:20:03",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Potassium Chloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:10043-35-3|vendor:bio-lab",
@@ -1270,10 +1270,10 @@
             "pubchemCid": "7628",
             "pubchemFormula": "BH3O3",
             "pubchemIupacName": "boric acid",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:23:43",
-            "updatedAt": "2026-06-01T09:23:53",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:23:53"
         },
         {
             "id": "cas:1310-58-3|vendor:fisher-scientific",
@@ -1295,10 +1295,10 @@
             "pubchemCid": "14797",
             "pubchemFormula": "HKO",
             "pubchemIupacName": "potassium hydroxide",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:25:13",
-            "updatedAt": "2026-06-01T09:25:26",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:25:26"
         },
         {
             "id": "cas:12024-21-4|purity:99.99|vendor:thermo-scientific",
@@ -1320,10 +1320,10 @@
             "pubchemCid": "158605",
             "pubchemFormula": "Ga2O3",
             "pubchemIupacName": "digallium;tris(oxygen(2-))",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:26:43",
-            "updatedAt": "2026-06-01T09:27:56",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:27:56"
         },
         {
             "id": "cas:7632-00-0|purity:97%|vendor:thermo-scientific",
@@ -1345,10 +1345,10 @@
             "pubchemCid": "23668193",
             "pubchemFormula": "NNaO2",
             "pubchemIupacName": "sodium nitrite",
+            "pubchemTitle": "Sodium Nitrite",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:29:27",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Nitrite"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7721-01-9|purity:99.8%|vendor:thermo-scientific",
@@ -1370,10 +1370,10 @@
             "pubchemCid": "24394",
             "pubchemFormula": "Cl5Ta",
             "pubchemIupacName": "pentachlorotantalum",
+            "pubchemTitle": "Tantalum pentachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:30:40",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Tantalum pentachloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:1310-53-8|purity:99.999%|vendor:thermo-scientific",
@@ -1395,10 +1395,10 @@
             "pubchemCid": "14796",
             "pubchemFormula": "GeO2",
             "pubchemIupacName": "dioxogermane",
+            "pubchemTitle": "Dioxogermane",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:31:31",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Dioxogermane"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7447-40-7|vendor:fisher-bioreagents",
@@ -1420,10 +1420,10 @@
             "pubchemCid": "",
             "pubchemFormula": "",
             "pubchemIupacName": "",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:35:21",
-            "updatedAt": "2026-06-01T09:35:29",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T09:35:29"
         },
         {
             "id": "cas:7632-00-0|purity:99%|vendor:fisher-chemicals",
@@ -1445,10 +1445,10 @@
             "pubchemCid": "23668193",
             "pubchemFormula": "NNaO2",
             "pubchemIupacName": "sodium nitrite",
+            "pubchemTitle": "Sodium Nitrite",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:36:29",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Nitrite"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:1465-25-4|vendor:thermo-scientific",
@@ -1470,10 +1470,10 @@
             "pubchemCid": "15106",
             "pubchemFormula": "C12H16Cl2N2",
             "pubchemIupacName": "N'-naphthalen-1-ylethane-1,2-diamine;dihydrochloride",
+            "pubchemTitle": "N-1-Naphthylethylenediamine dihydrochloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:37:34",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "N-1-Naphthylethylenediamine dihydrochloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:10026-12-7|purity:99%|vendor:thermo-scientific",
@@ -1495,10 +1495,10 @@
             "pubchemCid": "24818",
             "pubchemFormula": "Cl5Nb",
             "pubchemIupacName": "pentachloroniobium",
+            "pubchemTitle": "Niobium pentachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:38:39",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Niobium pentachloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:13478-00-7|purity:98%|vendor:alfa-aesar",
@@ -1520,10 +1520,10 @@
             "pubchemCid": "61630",
             "pubchemFormula": "H12N2NiO12",
             "pubchemIupacName": "nickel(2+);dinitrate;hexahydrate",
+            "pubchemTitle": "Nickel nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:40:11",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Nickel nitrate hexahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7757-83-7|purity:98.0%|vendor:thermo-scientific",
@@ -1545,10 +1545,10 @@
             "pubchemCid": "24437",
             "pubchemFormula": "Na2O3S",
             "pubchemIupacName": "disodium;sulfite",
+            "pubchemTitle": "Sodium Sulfite",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:42:03",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Sulfite"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:10196-18-6|purity:99%|vendor:alfa-aesar",
@@ -1570,10 +1570,10 @@
             "pubchemCid": "15865313",
             "pubchemFormula": "H12N2O12Zn",
             "pubchemIupacName": "zinc;dinitrate;hexahydrate",
+            "pubchemTitle": "Zinc nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:43:37",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Zinc nitrate hexahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:127-09-3|purity:99%|vendor:sigma-aldrich",
@@ -1595,10 +1595,10 @@
             "pubchemCid": "517045",
             "pubchemFormula": "C2H3NaO2",
             "pubchemIupacName": "sodium acetate",
+            "pubchemTitle": "Sodium Acetate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:44:54",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Acetate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7758-11-4|vendor:thermo-scientific",
@@ -1620,10 +1620,10 @@
             "pubchemCid": "24450",
             "pubchemFormula": "HK2O4P",
             "pubchemIupacName": "dipotassium;hydrogen phosphate",
+            "pubchemTitle": "Potassium Phosphate, Dibasic",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:45:54",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Potassium Phosphate, Dibasic"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7646-85-7|purity:99.95%|vendor:thermo-scientific",
@@ -1645,10 +1645,10 @@
             "pubchemCid": "5727",
             "pubchemFormula": "Cl2Zn",
             "pubchemIupacName": "dichlorozinc",
+            "pubchemTitle": "Zinc Chloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:47:16",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Zinc Chloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:13499-05-3|purity:99%|vendor:thermo-scientifc",
@@ -1670,10 +1670,10 @@
             "pubchemCid": "37715",
             "pubchemFormula": "Cl4Hf",
             "pubchemIupacName": "tetrachlorohafnium",
+            "pubchemTitle": "Hafnium tetrachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:48:19",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Hafnium tetrachloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:6018-89-9|vendor:thermo-scientific",
@@ -1695,10 +1695,10 @@
             "pubchemCid": "62601",
             "pubchemFormula": "C4H14NiO8",
             "pubchemIupacName": "nickel(2+);diacetate;tetrahydrate",
+            "pubchemTitle": "Nickel acetate tetrahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:49:52",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Nickel acetate tetrahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7782-61-8|purity:99|vendor:thermo-scientific",
@@ -1720,10 +1720,10 @@
             "pubchemCid": "16211566",
             "pubchemFormula": "FeH18N3O18",
             "pubchemIupacName": "iron(3+);trinitrate;nonahydrate",
+            "pubchemTitle": "Iron nitrate (Fe(NO3)3) nonahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:52:02",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Iron nitrate (Fe(NO3)3) nonahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7778-77-0|purity:99.0%|vendor:thermo-scientific",
@@ -1745,10 +1745,10 @@
             "pubchemCid": "516951",
             "pubchemFormula": "H2KO4P",
             "pubchemIupacName": "potassium dihydrogen phosphate",
+            "pubchemTitle": "Monobasic potassium phosphate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:53:16",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Monobasic potassium phosphate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:10026-22-9|purity:97.7%|vendor:alfa-aesar",
@@ -1770,10 +1770,10 @@
             "pubchemCid": "24821",
             "pubchemFormula": "CoH12N2O12",
             "pubchemIupacName": "cobalt(2+);dinitrate;hexahydrate",
+            "pubchemTitle": "Cobaltous nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:55:05",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Cobaltous nitrate hexahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:13446-18-9|purity:98-102%|vendor:alfa-aesar",
@@ -1795,10 +1795,10 @@
             "pubchemCid": "202877",
             "pubchemFormula": "H12MgN2O12",
             "pubchemIupacName": "magnesium;dinitrate;hexahydrate",
+            "pubchemTitle": "Magnesium Nitrate Hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:56:11",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Magnesium Nitrate Hexahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:14985-18-3|purity:99.5%|vendor:thermo-scientific",
@@ -1820,10 +1820,10 @@
             "pubchemCid": "16211674",
             "pubchemFormula": "H2N2O8Zr",
             "pubchemIupacName": "oxozirconium(2+);dinitrate;hydrate",
+            "pubchemTitle": "Zirconium dinitrate oxide hydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:57:50",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Zirconium dinitrate oxide hydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:10196-18-6|purity:99%|vendor:thermo-scientific",
@@ -1845,10 +1845,10 @@
             "pubchemCid": "15865313",
             "pubchemFormula": "H12N2O12Zn",
             "pubchemIupacName": "zinc;dinitrate;hexahydrate",
+            "pubchemTitle": "Zinc nitrate hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:59:15",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Zinc nitrate hexahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7631-99-4|purity:98|vendor:thermo-scientific",
@@ -1870,10 +1870,10 @@
             "pubchemCid": "24268",
             "pubchemFormula": "NNaO3",
             "pubchemIupacName": "sodium nitrate",
+            "pubchemTitle": "Sodium Nitrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:00:17",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Nitrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7727-73-3|vendor:thermo-scientifc",
@@ -1895,10 +1895,10 @@
             "pubchemCid": "62649",
             "pubchemFormula": "H20Na2O14S",
             "pubchemIupacName": "disodium;sulfate;decahydrate",
+            "pubchemTitle": "Sodium sulfate decahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:01:16",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium sulfate decahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:7646-79-9|purity:97%|vendor:thermo-scientific",
@@ -1920,10 +1920,10 @@
             "pubchemCid": "3032536",
             "pubchemFormula": "Cl2Co",
             "pubchemIupacName": "cobalt(2+) dichloride",
+            "pubchemTitle": "Cobalt chloride (cocl2)",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:02:37",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Cobalt chloride (cocl2)"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:23838-02-0|purity:99%|vendor:alfa-aesar",
@@ -1945,10 +1945,10 @@
             "pubchemCid": "45051708",
             "pubchemFormula": "Cl2FeH2O",
             "pubchemIupacName": "dichloroiron;hydrate",
+            "pubchemTitle": "Ferrous chloride dihydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:03:36",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Ferrous chloride dihydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:15244-10-7|vendor:thermo-scientific",
@@ -1970,10 +1970,10 @@
             "pubchemCid": "167265",
             "pubchemFormula": "Fe2H2O13S3",
             "pubchemIupacName": "bis(iron(3+));trisulfate;hydrate",
+            "pubchemTitle": "Ferric sulfate hydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:04:49",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Ferric sulfate hydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:10025-77-1|purity:97-102%|vendor:alfa-aesar",
@@ -1995,10 +1995,10 @@
             "pubchemCid": "6093258",
             "pubchemFormula": "Cl3FeH12O6",
             "pubchemIupacName": "iron(3+);trichloride;hexahydrate",
+            "pubchemTitle": "Ferric chloride hexahydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:05:38",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Ferric chloride hexahydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:57-13-6|purity:99%|vendor:arcos-organics",
@@ -2020,10 +2020,10 @@
             "pubchemCid": "1176",
             "pubchemFormula": "CH4N2O",
             "pubchemIupacName": "urea",
+            "pubchemTitle": "Urea",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:06:56",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Urea"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:6132-04-3|purity:99%|vendor:thermo-scientific",
@@ -2045,10 +2045,10 @@
             "pubchemCid": "71474",
             "pubchemFormula": "C6H9Na3O9",
             "pubchemIupacName": "trisodium;2-hydroxypropane-1,2,3-tricarboxylate;dihydrate",
+            "pubchemTitle": "Sodium Citrate Dihydrate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:07:41",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Citrate Dihydrate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:54-21-7|purity:99%|vendor:thermo-scientific",
@@ -2070,10 +2070,10 @@
             "pubchemCid": "16760658",
             "pubchemFormula": "C7H5NaO3",
             "pubchemIupacName": "sodium 2-hydroxybenzoate",
+            "pubchemTitle": "Sodium Salicylate",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:08:50",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Sodium Salicylate"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:13746-66-2|purity:99%|vendor:sigma-aldrich",
@@ -2095,10 +2095,10 @@
             "pubchemCid": "26250",
             "pubchemFormula": "C6FeK3N6",
             "pubchemIupacName": "tripotassium;iron(3+);hexacyanide",
+            "pubchemTitle": "Potassium ferricyanide",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:10:11",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Potassium ferricyanide"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:67-63-0|vendor:bio-lab",
@@ -2120,10 +2120,10 @@
             "pubchemCid": "3776",
             "pubchemFormula": "C3H8O",
             "pubchemIupacName": "propan-2-ol",
+            "pubchemTitle": "Isopropanol",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:12:57",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Isopropanol"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:64-17-5|purity:99.9%|vendor:romichal",
@@ -2145,10 +2145,10 @@
             "pubchemCid": "702",
             "pubchemFormula": "C2H6O",
             "pubchemIupacName": "ethanol",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:18:01",
-            "updatedAt": "2026-06-01T10:19:09",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:19:09"
         },
         {
             "id": "cas:67-64-1|vendor:bio-labs",
@@ -2170,10 +2170,10 @@
             "pubchemCid": "180",
             "pubchemFormula": "C3H6O",
             "pubchemIupacName": "propan-2-one",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:22:26",
-            "updatedAt": "2026-06-01T10:25:29",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:25:29"
         },
         {
             "id": "cas:110-54-3|vendor:bio-lab",
@@ -2195,10 +2195,10 @@
             "pubchemCid": "8058",
             "pubchemFormula": "C6H14",
             "pubchemIupacName": "hexane",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:25:11",
-            "updatedAt": "2026-06-01T10:25:14",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:25:14"
         },
         {
             "id": "cas:7722-84-1|purity:35%|vendor:thermo-scientific",
@@ -2220,10 +2220,10 @@
             "pubchemCid": "784",
             "pubchemFormula": "H2O2",
             "pubchemIupacName": "hydrogen peroxide",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:28:36",
-            "updatedAt": "2026-06-01T10:30:52",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:30:52"
         },
         {
             "id": "cas:7722-84-1|purity:30%|vendor:sigma-aldrich",
@@ -2245,10 +2245,10 @@
             "pubchemCid": "784",
             "pubchemFormula": "H2O2",
             "pubchemIupacName": "hydrogen peroxide",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:30:00",
-            "updatedAt": "2026-06-01T10:34:51",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:34:51"
         },
         {
             "id": "cas:7550-45-0|vendor:thermo-scientific",
@@ -2270,10 +2270,10 @@
             "pubchemCid": "24193",
             "pubchemFormula": "Cl4Ti",
             "pubchemIupacName": "tetrachlorotitanium",
+            "pubchemTitle": "Titanium Tetrachloride",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:36:58",
-            "updatedAt": "2026-06-01T14:51:23",
-            "pubchemTitle": "Titanium Tetrachloride"
+            "updatedAt": "2026-06-01T14:51:23"
         },
         {
             "id": "cas:63-74-1|purity:98%|vendor:thermo-scientific",
@@ -2295,10 +2295,10 @@
             "pubchemCid": "5333",
             "pubchemFormula": "C6H8N2O2S",
             "pubchemIupacName": "4-aminobenzenesulfonamide",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:38:06",
-            "updatedAt": "2026-06-01T10:38:06",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:38:06"
         },
         {
             "id": "cas:1336-21-6|vendor:bio-lab",
@@ -2320,10 +2320,10 @@
             "pubchemCid": "14923",
             "pubchemFormula": "H5NO",
             "pubchemIupacName": "azanium hydroxide",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:40:40",
-            "updatedAt": "2026-06-01T10:40:44",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:40:44"
         },
         {
             "id": "cas:64-19-7",
@@ -2345,10 +2345,10 @@
             "pubchemCid": "176",
             "pubchemFormula": "C2H4O2",
             "pubchemIupacName": "acetic acid",
+            "pubchemTitle": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:42:45",
-            "updatedAt": "2026-06-01T10:42:59",
-            "pubchemTitle": ""
+            "updatedAt": "2026-06-01T10:42:59"
         }
     ],
     "deletedPowderImports": []
