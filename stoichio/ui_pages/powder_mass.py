@@ -3,12 +3,9 @@
 
 def render(ctx):
     DEFAULT_DIE_DIAMETER_MM = ctx.DEFAULT_DIE_DIAMETER_MM
-    LOW_STOCK_THRESHOLD_G = ctx.LOW_STOCK_THRESHOLD_G
     MASS_BASIS_TARGET_FORMULA = ctx.MASS_BASIS_TARGET_FORMULA
-    check_stock = ctx.check_stock
     clear_data_cache = ctx.clear_data_cache
     compute_recipe = ctx.compute_recipe
-    consume_stock = ctx.consume_stock
     csv_bytes = ctx.csv_bytes
     database_dataframe = ctx.database_dataframe
     db = ctx.db
@@ -19,10 +16,8 @@ def render(ctx):
     hashlib = ctx.hashlib
     history = ctx.history
     infer_target_mass_from_recipe = ctx.infer_target_mass_from_recipe
-    inventory = ctx.inventory
     known_recipe_height_check_dataframe = ctx.known_recipe_height_check_dataframe
     load_history = ctx.load_history
-    load_inventory = ctx.load_inventory
     log_synthesis = ctx.log_synthesis
     matching_powder_sets_for_target = ctx.matching_powder_sets_for_target
     material_densities = ctx.material_densities
@@ -44,7 +39,6 @@ def render(ctx):
     safe_filename = ctx.safe_filename
     save_powder_set = ctx.save_powder_set
     st = ctx.st
-    stock_row_class = ctx.stock_row_class
     target_height_from_mass = ctx.target_height_from_mass
     target_mass_from_height = ctx.target_mass_from_height
     theme_mode = ctx.theme_mode
@@ -365,8 +359,6 @@ def render(ctx):
                                 else:
                                     st.warning(check_result["warning"])
 
-        deduct_inventory = st.checkbox("Deduct inventory when saving recipe")
-
         solve = st.button("Calculate Recipe", type="primary", width="stretch")
         current_signature = recipe_input_signature(target, target_mass, selected, amount_mode)
 
@@ -425,9 +417,7 @@ def render(ctx):
                     st.error(result.get("warning", "No valid solution found") if result else "No valid solution found")
                 else:
                     recipe_masses = result["recipe"]
-                    current_inventory = inventory
-                    in_stock, stock_messages = check_stock(current_inventory, recipe_masses)
-                    recipe_df = recipe_dataframe(recipe_masses, current_inventory)
+                    recipe_df = recipe_dataframe(recipe_masses)
                     total_powder = sum(recipe_masses.values())
                     displayed_target_mass = last_recipe["target_mass"]
 
@@ -447,7 +437,6 @@ def render(ctx):
                     display_dataframe(
                         recipe_df,
                         theme_mode,
-                        row_class_func=stock_row_class,
                         width="stretch",
                         hide_index=True,
                     )
@@ -511,26 +500,9 @@ def render(ctx):
                             width="stretch",
                         )
 
-                    low_after_recipe = [
-                        row["Powder"]
-                        for _, row in recipe_df.iterrows()
-                        if "Low after recipe" in str(row.get("Stock status", ""))
-                    ]
-
-                    if stock_messages:
-                        st.error("Inventory shortage: " + "; ".join(stock_messages))
-                    else:
-                        if low_after_recipe:
-                            st.warning(
-                                "Low inventory after this recipe: "
-                                + ", ".join(low_after_recipe)
-                                + f" will be below {LOW_STOCK_THRESHOLD_G:g} g."
-                            )
-
                     validation_warnings = recipe_validation_warnings(
                         result,
                         recipe_masses,
-                        stock_messages=stock_messages,
                         planning_context=last_recipe,
                     )
                     if validation_warnings:
@@ -585,8 +557,6 @@ def render(ctx):
                         target_id=recipe_target_id,
                         notes=recipe_notes,
                         result=result,
-                        stock_messages=stock_messages,
-                        low_after_recipe=low_after_recipe,
                         planning_context=last_recipe,
                     )
                     st.download_button(
@@ -607,32 +577,13 @@ def render(ctx):
                             if recipe_target_owner
                             else None
                         )
-                        latest_inventory = load_inventory()
-                        latest_in_stock, latest_stock_messages = check_stock(latest_inventory, recipe_masses)
-
-                        inventory_deducted = False
-                        if deduct_inventory:
-                            if latest_in_stock:
-                                consume_stock(
-                                    latest_inventory,
-                                    recipe_masses,
-                                    reason=f"Saved recipe for {normalize_formula(last_recipe['target'])}",
-                                )
-                                inventory_deducted = True
-                            else:
-                                st.error(
-                                    "Recipe was not saved because inventory is insufficient: "
-                                    + "; ".join(latest_stock_messages)
-                                )
-                                st.stop()
-
                         saved_history = log_synthesis(
                             normalize_formula(last_recipe["target"]),
                             displayed_target_mass,
                             recipe_masses,
                             selected_powders=last_recipe["selected"],
                             warning=result.get("warning"),
-                            inventory_deducted=inventory_deducted,
+                            inventory_deducted=False,
                             notes=recipe_notes,
                             target_for=recipe_target_owner or None,
                             target_number=assigned_target_number,
@@ -642,10 +593,7 @@ def render(ctx):
                         recipe_id = saved_recipe.get("target_id") or saved_recipe.get("recipe_id", "Recipe")
                         clear_data_cache()
                         st.session_state.last_recipe_saved = True
-                        st.session_state.recipe_save_message = (
-                            f"{recipe_id} saved to history"
-                            + (" and inventory deducted." if inventory_deducted else ".")
-                        )
+                        st.session_state.recipe_save_message = f"{recipe_id} saved to history."
                         st.rerun()
 
                     if st.session_state.get("last_recipe_saved", False):

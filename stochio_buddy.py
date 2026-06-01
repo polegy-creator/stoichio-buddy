@@ -846,7 +846,7 @@ def render_app_brand():
     else:
         st.markdown('<div class="app-title">Stoichio Buddy</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="app-subtitle">Cation-first precursor mass calculator with powder inventory and recipe history.</div>',
+        '<div class="app-subtitle">Cation-first precursor mass calculator with powder database and recipe history.</div>',
         unsafe_allow_html=True,
     )
 
@@ -932,7 +932,7 @@ with st.sidebar:
         [
             "Powder Mass Calculation",
             "Target Density %",
-            "Powders & Inventory",
+            "Powder Database",
             "Theoretical Density",
             "History",
         ],
@@ -941,9 +941,6 @@ with st.sidebar:
 
     st.divider()
     st.metric("Powders", len(db))
-    unknown_stock = unknown_inventory_items(inventory, db)
-    st.metric("Inventory items", len(inventory))
-    st.metric("Inventory log", len(inventory_log))
     st.metric("Theoretical densities", len(material_densities))
     st.metric("Powder sets", len(powder_sets))
     st.metric("Saved recipes", len(recipe_history))
@@ -1008,8 +1005,6 @@ with st.sidebar:
                         st.error(str(exc))
     if storage_problem:
         st.warning("Shared storage is not connected. The app is using local JSON files for now.")
-    if unknown_stock:
-        st.warning("Inventory has entries that are not in the powder database: " + ", ".join(unknown_stock))
 
 apply_theme(theme_mode)
 
@@ -1025,7 +1020,7 @@ if storage_problem:
 PAGE_RENDERERS = {
     "Powder Mass Calculation": powder_mass_page,
     "Target Density %": target_density_page,
-    "Powders & Inventory": powders_inventory_page,
+    "Powder Database": powders_inventory_page,
     "Theoretical Density": material_density_page,
     "History": history_page,
 }

@@ -48,7 +48,6 @@ from stoichio.history import (
     next_target_number,
 )
 from stoichio.inventory import (
-    check_stock,
     consume_stock,
     load_inventory,
     load_inventory_log,
@@ -272,15 +271,13 @@ class MsdsUrlDownloadRequest(BaseModel):
     url: str = ""
 
 
-def powder_payload(powder: str, record: dict, inventory: dict | None = None) -> dict:
-    inventory = inventory or {}
+def powder_payload(powder: str, record: dict) -> dict:
     return {
         "id": powder,
         "display_name": powder_display_name(powder, record),
         "formula": record.get("formula", powder),
         "molar_mass_g_mol": record.get("molar_mass"),
         "elements": record.get("elements", {}),
-        "available_g": inventory.get(powder),
         "purity": record.get("purity", ""),
         "company": record.get("company") or record.get("supplier", ""),
         "casNumber": record.get("casNumber", ""),
@@ -320,9 +317,8 @@ def density_payload(record_key: str, record: dict) -> dict:
 
 def all_powders_payload() -> dict:
     db = load_powders()
-    inventory = load_inventory()
     return {
-        powder: powder_payload(powder, record, inventory)
+        powder: powder_payload(powder, record)
         for powder, record in db.items()
     }
 
@@ -411,16 +407,13 @@ def health():
 def bootstrap():
     records = load_material_densities()
     history = load_history()
-    inventory = load_inventory()
     powders = load_powders()
     return {
         "health": health(),
         "powders": {
-            powder: powder_payload(powder, record, inventory)
+            powder: powder_payload(powder, record)
             for powder, record in powders.items()
         },
-        "inventory": inventory,
-        "inventory_log": load_inventory_log(),
         "msds_inventory": load_msds_inventory(),
         "closets": closet_options(),
         "densities": {
@@ -432,7 +425,6 @@ def bootstrap():
         "powder_sets": load_powder_sets(),
         "defaults": {
             "die_diameter_mm": DEFAULT_DIE_DIAMETER_MM,
-            "low_stock_threshold_g": 10,
         },
     }
 
@@ -440,12 +432,11 @@ def bootstrap():
 @app.get("/api/powders")
 def powders(target: str = Query(default=""), show_all: bool = Query(default=False)):
     db = load_powders()
-    inventory = load_inventory()
     relevant, hidden, target_elements, error = relevant_powders_for_target(target, db)
     options = list(db.keys()) if show_all or error or not target else relevant
     return {
         "powders": {
-            powder: powder_payload(powder, record, inventory)
+            powder: powder_payload(powder, record)
             for powder, record in db.items()
         },
         "options": options,
@@ -464,12 +455,9 @@ def powders(target: str = Query(default=""), show_all: bool = Query(default=Fals
 def create_powder(payload: PowderCreateRequest, x_stoichio_pin: str | None = Header(default=None)):
     require_write_pin(x_stoichio_pin)
     powder, _ = add_powder(payload.formula, purity=payload.purity, company=payload.company)
-    if payload.initial_grams > 0:
-        set_inventory_quantity(powder, payload.initial_grams, reason="Initial stock when powder was added")
     return {
         "powder": powder,
         "powders": all_powders_payload(),
-        "inventory": load_inventory(),
         "msds_inventory": load_msds_inventory(),
     }
 
@@ -776,19 +764,7 @@ def recipe(payload: RecipeRequest):
         selected,
         mass_basis=payload.mass_basis,
     )
-    recipe_masses = result.get("recipe") or {}
-    inventory = load_inventory()
-    stock_ok = True
-    stock_messages: list[str] = []
-    if recipe_masses:
-        stock_ok, stock_messages = check_stock(inventory, recipe_masses)
-
-    return {
-        "result": result,
-        "stock_ok": stock_ok,
-        "stock_messages": stock_messages,
-        "inventory": inventory,
-    }
+    return {"result": result}
 
 
 @app.post("/api/history/recipe")

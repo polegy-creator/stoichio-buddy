@@ -1,6 +1,6 @@
 # Stoichio Buddy
 
-Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe calculations. It uses a user-controlled powder database, cation-first stoichiometry, inventory tracking, and recipe history.
+Stoichio Buddy is a lab app for deterministic solid-state synthesis recipe calculations. It uses a user-controlled powder database, cation-first stoichiometry, SDS/MSDS records, and recipe history.
 
 ## App features
 
@@ -9,8 +9,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Target-aware powder filtering, with optional saved powder sets for common systems
 - Non-negative deterministic stoichiometry solver, with no automatic powder picking
 - Formula parsing for decimals, grouped salts such as `Ba(NO3)2`, and hydrates using `·` or `*`
-- Add a powder and its starting inventory in one workflow
-- Update inventory quantities
+- Add and manage powder records
 - Delete powders added by mistake
 - Save theoretical densities for target materials
 - Store structured density references: source URL, DOI, COD ID, paper title, verification status, reviewer, and notes
@@ -25,7 +24,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Printable HTML reports for recipes and target lifecycle records
 - Search and filter target lifecycle history by owner, formula, target ID, status, powders, and notes
 - Copy-friendly lab notebook summaries for recipe and target-density results, with TXT downloads
-- Full JSON data backup download for powders, saved powder sets, inventory, densities, and history
+- Full JSON data backup download for powders, saved powder sets, SDS/MSDS inventory, densities, and history
 - Safe JSON data backup restore with validation and confirmation
 - Automatic local JSON backup rotation before overwrites, deletes, and restores
 - Stoichiometry audit tables for precursor coefficients and element balance
@@ -34,9 +33,7 @@ Stoichio Buddy is a Streamlit app for deterministic solid-state synthesis recipe
 - Target-density history grouped by person
 - Save notes with recipe and target-density history entries
 - Delete individual history items or clear a whole history group
-- Inventory tables flag recipe shortages and stock below 10 g
-- Inventory ledger records manual edits, recipe deductions, and powder deletion stock changes
-- CSV export for recipes, powders, inventory, target lifecycle, and history
+- CSV export for recipes, powders, target lifecycle, and history
 
 ## Run locally
 
@@ -216,14 +213,14 @@ On first connection, the app will create tabs in the sheet if needed: `powders`,
 - `stochio_buddy.py`: Streamlit app entry point, cache setup, storage setup, theme application, and page routing
 - `stoichio/chemistry/`: formula parsing, stoichiometry solver, and density math
 - `stoichio/ui_components.py`: reusable table renderer and copy-friendly linked table output
-- `stoichio/ui_models.py`: dataframe builders, history grouping, inventory row classes, and display labels
+- `stoichio/ui_models.py`: dataframe builders, history grouping, and display labels
 - `stoichio/density_ui.py`: Streamlit controls for choosing theoretical-density sources and lattice inputs
 - `stoichio/lab_reports.py`: printable recipe and target traceability HTML reports
 - `stoichio/backup_data.py` and `stoichio/backup_export.py`: backup validation, restore, import, and export helpers
 - `stoichio/app_utils.py` and `stoichio/config.py`: small app utilities and shared constants
 - `stoichio/theme.py`: shared light/dark color tokens
 - `stoichio/app_context.py`: explicit page-render dependency container
-- `stoichio/storage.py`, `stoichio/powders.py`, `stoichio/inventory.py`, `stoichio/history.py`, `stoichio/density_records.py`, and `stoichio/powder_sets.py`: focused domain modules for persistence, powders, stock, logs, density records, and saved powder sets
+- `stoichio/storage.py`, `stoichio/powders.py`, `stoichio/msds_inventory.py`, `stoichio/history.py`, `stoichio/density_records.py`, and `stoichio/powder_sets.py`: focused domain modules for persistence, powders, SDS/MSDS records, history, density records, and saved powder sets
 - `stoichio/lab_manager.py`: compatibility facade for older imports
 - `stoichio/ui_pages/`: individual Streamlit page renderers
 - Top-level `formula_parser.py`, `density_engine.py`, `stoich_engine.py`, and `lab_manager.py` are compatibility wrappers for older imports.

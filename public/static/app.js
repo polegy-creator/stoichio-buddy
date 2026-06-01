@@ -32,8 +32,6 @@ const api = {
 
 const state = {
   powders: {},
-  inventory: {},
-  inventoryLog: [],
   densities: {},
   msdsInventory: [],
   closets: { 1: "Powders", 2: "Acids", 3: "Solvents", 4: "Fridge" },
@@ -65,7 +63,7 @@ const state = {
 const pageMeta = {
   "powder-mass": ["Powder Mass Calculation", ""],
   "target-density": ["Target Density %", ""],
-  "powders-inventory": ["Powder & Inventory", ""],
+  "powders-inventory": ["Powder Database", ""],
   "inventory-msds": ["Inventory & MSDS", ""],
   "material-density": ["Theoretical Density", ""],
   "data-health": ["Data Health", ""],
@@ -110,8 +108,6 @@ const els = {
   recipeDetails: $("#recipeDetails"),
   recipeNotes: $("#recipeNotes"),
   saveRecipe: $("#saveRecipe"),
-  saveAndDeductRecipe: $("#saveAndDeductRecipe"),
-  deductInventory: $("#deductInventory"),
   copyRecipeNotebook: $("#copyRecipeNotebook"),
   printRecipeLabel: $("#printRecipeLabel"),
   recipeSummary: $("#recipeSummary"),
@@ -144,22 +140,11 @@ const els = {
   newPowderFormula: $("#newPowderFormula"),
   newPowderPurity: $("#newPowderPurity"),
   newPowderCompany: $("#newPowderCompany"),
-  newPowderGrams: $("#newPowderGrams"),
-  inventoryForm: $("#inventoryForm"),
-  inventoryPowder: $("#inventoryPowder"),
-  inventoryCurrent: $("#inventoryCurrent"),
-  inventoryGrams: $("#inventoryGrams"),
-  inventoryAdd: $("#inventoryAdd"),
-  inventoryRemove: $("#inventoryRemove"),
   deletePowderForm: $("#deletePowderForm"),
   deletePowder: $("#deletePowder"),
-  removeDeletedStock: $("#removeDeletedStock"),
   powderDatabaseTableBody: $("#powderDatabaseTable tbody"),
   dataHealthGrid: $("#dataHealthGrid"),
   msdsPdfHealthList: $("#msdsPdfHealthList"),
-  lowStockDashboard: $("#lowStockDashboard"),
-  inventoryTableBody: $("#inventoryTable tbody"),
-  ledgerTableBody: $("#ledgerTable tbody"),
 
   msdsForm: $("#msdsForm"),
   newMsdsMaterial: $("#newMsdsMaterial"),
@@ -868,8 +853,6 @@ function applyData(data) {
     }
   }
   state.powders = data.powders || state.powders;
-  state.inventory = data.inventory || state.inventory;
-  state.inventoryLog = data.inventory_log || state.inventoryLog;
   state.msdsInventory = data.msds_inventory || data.items || state.msdsInventory;
   state.closets = data.closets || state.closets;
   state.densities = data.densities || state.densities;
@@ -883,9 +866,8 @@ function renderEverything() {
   els.powderCount.textContent = Object.keys(state.powders).length;
   els.densityCount.textContent = Object.keys(state.densities).length;
   els.historyCount.textContent = state.history.length;
-  renderInventorySelectors();
+  renderPowderSelectors();
   renderPowderDatabase();
-  renderInventoryTables();
   renderMsdsInventory();
   renderDataHealth();
   renderDensityChoices();
@@ -949,7 +931,6 @@ function renderPowderList(options, data) {
       </label>
       <span class="pill">${formatNumber(record.molar_mass_g_mol, 3)} g/mol</span>
       ${record.purity ? `<span class="pill">${escapeHtml(formatPurity(record.purity))}</span>` : ""}
-      <span class="pill">${record.available_g === null || record.available_g === undefined ? "no stock" : `${formatNumber(record.available_g, 3)} g`}</span>
       ${favorite ? `<span class="pill comfort">favorite</span>` : isRecent ? `<span class="pill comfort">recent</span>` : ""}
     `;
     const checkbox = row.querySelector("input");
@@ -997,7 +978,7 @@ function renderPowderSets(matchingSets) {
     button.addEventListener("click", async () => {
       const accepted = await confirmDanger(
         "Delete powder set?",
-        "This removes the saved powder combination. Powder database and inventory stay unchanged.",
+        "This removes the saved powder combination. The powder database stays unchanged.",
         "Delete Set",
       );
       if (!accepted) return;
@@ -1165,7 +1146,7 @@ async function calculateRecipe(event) {
       mass_basis: selectedRecipeMassBasis(),
     };
     const data = await api.send("/api/recipe", "POST", payload);
-    state.lastRecipe = { payload, result: data.result, stock_ok: data.stock_ok, stock_messages: data.stock_messages };
+    state.lastRecipe = { payload, result: data.result };
     state.lastRecipeMass = mass;
     rememberRecentPowders(payload.selected_powders);
     persistRecipeSettings();
@@ -1181,7 +1162,7 @@ async function calculateRecipe(event) {
 function renderRecipeEmptyState(text = "No powder masses yet.") {
   els.recipeTableBody.innerHTML = `
     <tr>
-      <td colspan="4" class="empty-table">${escapeHtml(text)}</td>
+      <td colspan="2" class="empty-table">${escapeHtml(text)}</td>
     </tr>
   `;
 }
@@ -1198,8 +1179,8 @@ function renderRecipeResult(data, mass) {
 
   setMessage(
     els.recipeMessage,
-    result.warning || (data.stock_ok ? "Recipe calculated." : data.stock_messages.join("; ")),
-    data.stock_ok && !result.warning ? "good" : "warning",
+    result.warning || "Recipe calculated.",
+    result.warning ? "warning" : "good",
   );
 
   const inputMass = result.input_mass ?? mass;
@@ -1210,20 +1191,15 @@ function renderRecipeResult(data, mass) {
     <div class="metric-card"><strong>${Object.keys(result.recipe || {}).length}</strong><small>powders</small></div>
     <div class="metric-card"><strong>${result.exact ? "Exact" : "Approx"}</strong><small>stoichiometry</small></div>
   `;
-  els.recipeQuickSummary.className = `recipe-summary-card ${data.stock_ok ? "" : "warning"}`.trim();
-  els.recipeQuickSummary.innerHTML = recipeOneLineSummaryHtml(result, mass, data.stock_ok);
+  els.recipeQuickSummary.className = "recipe-summary-card";
+  els.recipeQuickSummary.innerHTML = recipeOneLineSummaryHtml(result, mass);
 
   els.recipeTableBody.innerHTML = "";
   for (const [powder, grams] of Object.entries(result.recipe)) {
-    const available = data.inventory[powder];
-    const after = available === undefined ? null : Number(available) - Number(grams);
     const tr = document.createElement("tr");
-    tr.className = after !== null && after < 0 ? "short" : after !== null && after < 10 ? "low" : "";
     tr.innerHTML = `
       <td>${escapeHtml(powderLabel(powder))}</td>
       <td>${formatNumber(grams, 6)}</td>
-      <td>${available === undefined ? "Not in inventory" : formatNumber(available, 3)}</td>
-      <td>${after === null ? "" : formatNumber(after, 3)}</td>
     `;
     els.recipeTableBody.appendChild(tr);
   }
@@ -1231,14 +1207,13 @@ function renderRecipeResult(data, mass) {
   els.recipeSummary.textContent = recipeSummaryText(result, mass);
 }
 
-function recipeOneLineSummaryHtml(result, mass, stockOk) {
+function recipeOneLineSummaryHtml(result, mass) {
   const powders = Object.entries(result.recipe || {})
     .map(([powder, grams]) => `${powderLabel(powder)} ${formatNumber(grams, 6)} g`)
     .join(" | ");
   const inputMass = result.input_mass ?? mass;
   const badges = [
     `<span class="summary-badge ${result.exact ? "good" : "warning"}">${result.exact ? "Exact" : "Approx"}</span>`,
-    stockOk ? `<span class="summary-badge good">Stock OK</span>` : `<span class="summary-badge warning">Stock warning</span>`,
   ].join("");
   return `
     <div><strong>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</strong> | ${formatNumber(inputMass, 6)} g ${escapeHtml(recipeInputMassLabel())} | ${escapeHtml(powders)}</div>
@@ -1274,12 +1249,7 @@ function recipeNotebookText(result, mass) {
     `Powders:`,
   ];
   for (const [powder, grams] of Object.entries(result.recipe || {})) {
-    const available = state.inventory[powder];
-    const after = available === undefined ? "" : `, after recipe ${formatNumber(Number(available) - Number(grams), 3)} g`;
-    lines.push(`- ${powderLabel(powder)}: ${formatNumber(grams, 6)} g${available === undefined ? " (not tracked in inventory)" : `, available ${formatNumber(available, 3)} g${after}`}`);
-  }
-  if (state.lastRecipe?.stock_messages?.length) {
-    lines.push(`Inventory warning: ${state.lastRecipe.stock_messages.join("; ")}`);
+    lines.push(`- ${powderLabel(powder)}: ${formatNumber(grams, 6)} g`);
   }
   if (els.recipeNotes.value.trim()) lines.push(`Notes: ${els.recipeNotes.value.trim()}`);
   return lines.join("\n");
@@ -1346,70 +1316,6 @@ async function saveRecipe() {
   }
 }
 
-async function saveRecipeAndDeductInventory() {
-  if (!state.lastRecipe?.result?.recipe) {
-    flash("Calculate a recipe before saving and deducting inventory.", "warning");
-    return;
-  }
-  const shortage = (state.lastRecipe.stock_messages || []).join(" ");
-  const message = shortage
-    ? `This will save the recipe and deduct inventory. Stock warning: ${shortage}`
-    : "This will save the recipe and immediately deduct the powder masses from inventory.";
-  const accepted = await confirmDanger("Save recipe and deduct inventory?", message, "Save + Deduct");
-  if (!accepted) return;
-
-  const done = setBusy(els.saveAndDeductRecipe, "Saving...");
-  try {
-    const data = await api.send("/api/history/recipe-and-deduct", "POST", {
-      ...state.lastRecipe.payload,
-      mass_g: state.lastRecipeMass,
-      result: state.lastRecipe.result,
-      notes: els.recipeNotes.value,
-      target_for: els.recipeTargetFor.value,
-      inventory_deducted: true,
-    });
-    state.history = data.history || state.history;
-    state.linkedRecipes = data.linked_recipes || state.linkedRecipes;
-    state.inventory = data.inventory || state.inventory;
-    state.inventoryLog = data.inventory_log || state.inventoryLog;
-    renderEverything();
-    flash(`Saved recipe and deducted inventory ${data.saved_entry?.recipe_id || ""}`.trim());
-  } catch (error) {
-    flash(error.message, "error");
-  } finally {
-    done();
-  }
-}
-
-async function deductInventory() {
-  if (!state.lastRecipe?.result?.recipe) {
-    flash("Calculate a recipe before deducting inventory.", "warning");
-    return;
-  }
-  const accepted = await confirmDanger(
-    "Deduct inventory?",
-    "This will subtract the current recipe powder masses from inventory without saving a new recipe record.",
-    "Deduct Inventory",
-  );
-  if (!accepted) return;
-  const done = setBusy(els.deductInventory, "Deducting...");
-  try {
-    const data = await api.send("/api/inventory/deduct", "POST", {
-      recipe: state.lastRecipe.result.recipe,
-      reason: "Confirmed recipe deduction from Vercel lab website",
-      recipe_id: state.lastRecipe.result.normalized_target || "",
-    });
-    state.inventory = data.inventory || state.inventory;
-    state.inventoryLog = data.inventory_log || state.inventoryLog;
-    renderEverything();
-    flash("Inventory deducted.");
-  } catch (error) {
-    flash(error.message, "error");
-  } finally {
-    done();
-  }
-}
-
 function printRecipeLabel() {
   if (!state.lastRecipe?.result?.recipe) {
     flash("Calculate a recipe before printing.", "warning");
@@ -1419,12 +1325,7 @@ function printRecipeLabel() {
   const owner = normalizeOwner(els.recipeTargetFor.value) || "Quick calculation";
   const date = niceTime(new Date().toISOString());
   const rows = Object.entries(result.recipe || {})
-    .map(([powder, grams]) => {
-      const available = state.inventory[powder];
-      const after = available === undefined ? "" : formatNumber(Number(available) - Number(grams), 3);
-      const warn = available !== undefined && Number(available) < Number(grams) ? "short" : "";
-      return `<tr class="${warn}"><td>${escapeHtml(powder)}</td><td>${formatNumber(grams, 6)} g</td><td>${available === undefined ? "not tracked" : `${formatNumber(available, 3)} g`}</td><td>${after ? `${after} g` : ""}</td></tr>`;
-    })
+    .map(([powder, grams]) => `<tr><td>${escapeHtml(powder)}</td><td>${formatNumber(grams, 6)} g</td></tr>`)
     .join("");
   const notes = els.recipeNotes.value.trim();
   const popup = window.open("", "_blank", "width=780,height=900");
@@ -1444,7 +1345,6 @@ function printRecipeLabel() {
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #bbb; padding: 8px; text-align: left; }
         th { background: #eef3f5; }
-        tr.short td { background: #ffe2df; }
         .box { border: 1px solid #bbb; margin-top: 14px; padding: 10px; white-space: pre-wrap; }
         @media print { button { display: none; } body { margin: 10mm; } }
       </style>
@@ -1454,7 +1354,7 @@ function printRecipeLabel() {
       <h1>${escapeHtml(result.normalized_target || els.targetFormula.value.trim())}</h1>
       <div class="meta">${escapeHtml(owner)} | ${escapeHtml(date)} | ${escapeHtml(recipeInputMassLabel())} ${formatNumber(result.input_mass ?? state.lastRecipeMass, 6)} g</div>
       <table>
-        <thead><tr><th>Powder</th><th>Mass</th><th>Available before</th><th>After recipe</th></tr></thead>
+        <thead><tr><th>Powder</th><th>Mass</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div class="box">Target formula mass: ${formatNumber(result.input_mass ?? state.lastRecipeMass, 6)} g
@@ -1570,31 +1470,14 @@ async function saveDensityHistory() {
   }
 }
 
-function renderInventorySelectors() {
+function renderPowderSelectors() {
   const powderNames = Object.keys(state.powders).sort();
-  for (const select of [els.inventoryPowder, els.deletePowder]) {
-    const previous = select.value;
-    select.innerHTML = `<option value="">Choose powder</option>`;
-    for (const powder of powderNames) {
-      select.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(powder)}">${escapeHtml(powderLabel(powder))}</option>`);
-    }
-    if (powderNames.includes(previous)) select.value = previous;
+  const previous = els.deletePowder.value;
+  els.deletePowder.innerHTML = `<option value="">Choose powder</option>`;
+  for (const powder of powderNames) {
+    els.deletePowder.insertAdjacentHTML("beforeend", `<option value="${escapeHtml(powder)}">${escapeHtml(powderLabel(powder))}</option>`);
   }
-  renderInventoryAdjustment();
-}
-
-function renderInventoryAdjustment() {
-  const powder = els.inventoryPowder.value;
-  if (!powder) {
-    setMessage(els.inventoryCurrent, "Choose a powder to see current stock.");
-    return;
-  }
-  const current = Number(state.inventory[powder] || 0);
-  setMessage(
-    els.inventoryCurrent,
-    `${powderLabel(powder)} current stock: ${formatNumber(current, 4)} g`,
-    current < 10 ? "warning" : "good",
-  );
+  if (powderNames.includes(previous)) els.deletePowder.value = previous;
 }
 
 function renderPowderDatabase() {
@@ -1605,7 +1488,6 @@ function renderPowderDatabase() {
     const elements = Object.entries(record.elements || {})
       .map(([element, amount]) => `${element}:${formatNumber(amount, 3)}`)
       .join(", ");
-    const available = state.inventory[powder] ?? record.available_g;
     tr.innerHTML = `
       <td>${escapeHtml(powderLabel(powder))}</td>
       <td>${escapeHtml(record.formula || powderFormula(powder))}</td>
@@ -1613,59 +1495,8 @@ function renderPowderDatabase() {
       <td>${escapeHtml(record.company || "")}</td>
       <td>${formatNumber(record.molar_mass_g_mol, 5)}</td>
       <td class="wrap">${escapeHtml(elements)}</td>
-      <td>${available === undefined || available === null ? "" : formatNumber(available, 3)}</td>
     `;
     els.powderDatabaseTableBody.appendChild(tr);
-  }
-}
-
-function renderInventoryTables() {
-  const recipe = state.lastRecipe?.result?.recipe || {};
-  const rows = Object.entries(state.inventory)
-    .sort(([a, av], [b, bv]) => {
-      const lowA = Number(av) < 10 ? 0 : 1;
-      const lowB = Number(bv) < 10 ? 0 : 1;
-      return lowA - lowB || a.localeCompare(b);
-    });
-  const low = rows.filter(([, grams]) => Number(grams) < 10).map(([powder]) => powderLabel(powder));
-  els.lowStockDashboard.textContent = low.length ? `Low inventory below 10 g: ${low.join(", ")}` : "No powder below 10 g.";
-  els.lowStockDashboard.className = `message ${low.length ? "warning" : "good"}`;
-
-  els.inventoryTableBody.innerHTML = "";
-  if (!rows.length) {
-    els.inventoryTableBody.innerHTML = `<tr><td colspan="4" class="empty-table">No inventory rows yet. Add stock from the form above.</td></tr>`;
-  }
-  for (const [powder, grams] of rows) {
-    const need = recipe[powder];
-    const after = need === undefined ? null : Number(grams) - Number(need);
-    const tr = document.createElement("tr");
-    tr.className = after !== null && after < 0 ? "short" : Number(grams) < 10 || (after !== null && after < 10) ? "low" : "";
-    tr.innerHTML = `
-      <td>${escapeHtml(powderLabel(powder))}</td>
-      <td>${formatNumber(grams, 3)}</td>
-      <td>${need === undefined ? "" : formatNumber(need, 6)}</td>
-      <td>${after === null ? "" : formatNumber(after, 3)}</td>
-    `;
-    els.inventoryTableBody.appendChild(tr);
-  }
-
-  els.ledgerTableBody.innerHTML = "";
-  const ledgerRows = [...state.inventoryLog].reverse().slice(0, 200);
-  if (!ledgerRows.length) {
-    els.ledgerTableBody.innerHTML = `<tr><td colspan="7" class="empty-table">No inventory changes logged yet.</td></tr>`;
-  }
-  for (const entry of ledgerRows) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${niceTime(entry.time)}</td>
-      <td>${escapeHtml(powderLabel(entry.powder))}</td>
-      <td>${formatNumber(entry.change_g, 6)}</td>
-      <td>${formatNumber(entry.before_g, 6)}</td>
-      <td>${formatNumber(entry.after_g, 6)}</td>
-      <td>${escapeHtml(entry.action)}</td>
-      <td class="wrap">${escapeHtml(entry.reason || entry.notes || "")}</td>
-    `;
-    els.ledgerTableBody.appendChild(tr);
   }
 }
 
@@ -1938,7 +1769,7 @@ async function deleteMsdsItem(itemId) {
   const label = item?.nameOrFormula || item?.casNumber || "material";
   const accepted = await confirmDanger(
     `Delete ${label}?`,
-    "This removes the material from the Inventory & MSDS tab. Powder recipes and powder inventory stay unchanged.",
+    "This removes the material from the Inventory & MSDS tab. Powder recipes and the powder database stay unchanged.",
     "Delete Material",
   );
   if (!accepted) return;
@@ -2025,13 +1856,6 @@ async function lookupMsdsIdentity(source) {
 
 function renderDataHealth() {
   if (!els.dataHealthGrid) return;
-  const powderNames = Object.keys(state.powders);
-  const inventoryNames = Object.keys(state.inventory);
-  const lowStock = inventoryNames
-    .filter((powder) => Number(state.inventory[powder]) < 10)
-    .sort((a, b) => Number(state.inventory[a]) - Number(state.inventory[b]));
-  const missingStock = powderNames.filter((powder) => state.inventory[powder] === undefined).sort();
-  const unknownStock = inventoryNames.filter((powder) => !state.powders[powder]).sort();
   const densityNeedsReview = Object.values(state.densities)
     .filter((record) => {
       const status = densityStatus(record);
@@ -2061,9 +1885,6 @@ function renderDataHealth() {
   `;
   els.dataHealthGrid.innerHTML = [
     card("Materials without MSDS PDF", missingMsdsPdf.length, `${Math.max(0, state.msdsInventory.length - missingMsdsPdf.length)} / ${state.msdsInventory.length} complete`, missingMsdsPdf.length ? "warning" : "good"),
-    card("Low stock below 10 g", lowStock.length, lowStock.slice(0, 6).join(", ") || "All stocked powders are above threshold.", lowStock.length ? "warning" : "good"),
-    card("Powders with no stock row", missingStock.length, missingStock.slice(0, 6).join(", ") || "Every powder has an inventory row.", missingStock.length ? "warning" : "good"),
-    card("Unknown inventory rows", unknownStock.length, unknownStock.slice(0, 6).join(", ") || "Inventory matches the powder database.", unknownStock.length ? "warning" : "good"),
     card("Density records needing review", densityNeedsReview.length, densityNeedsReview.slice(0, 5).map((r) => r.formula).join(", ") || "All density rows are reviewed or intentionally blocked.", densityNeedsReview.length ? "warning" : "good"),
     card("Materials needing identity check", missingIdentity.length, missingIdentity.slice(0, 5).map((item) => msdsMaterialName(item) || item.casNumber || "unnamed").join(", ") || "CAS and name/formula are filled where known.", missingIdentity.length ? "warning" : "good"),
     card("Saved targets needing density", needsDensity.length, needsDensity.slice(0, 5).map((g) => g.targetId).join(", ") || "Saved recipes are linked to density results.", needsDensity.length ? "warning" : "good"),
@@ -2114,56 +1935,12 @@ async function addPowder(event) {
       formula: els.newPowderFormula.value,
       purity: formatPurity(els.newPowderPurity.value),
       company: els.newPowderCompany.value,
-      initial_grams: Number(els.newPowderGrams.value),
     });
     state.powders = data.powders || state.powders;
-    state.inventory = data.inventory || state.inventory;
     state.msdsInventory = data.msds_inventory || state.msdsInventory;
     renderEverything();
     await loadPowderOptions();
     flash(`Added ${powderLabel(data.powder)}.`);
-  } catch (error) {
-    flash(error.message, "error");
-  } finally {
-    done();
-  }
-}
-
-async function adjustInventory(direction, button) {
-  const powder = els.inventoryPowder.value;
-  if (!powder) {
-    flash("Choose a powder.", "warning");
-    return;
-  }
-  const amount = Number(els.inventoryGrams.value);
-  if (!(amount > 0)) {
-    flash("Enter grams greater than 0.", "warning");
-    return;
-  }
-
-  const current = Number(state.inventory[powder] || 0);
-  if (direction === "remove" && amount >= current && current > 0) {
-    const accepted = await confirmDanger(
-      `Remove all ${powder} stock?`,
-      `This will clamp ${powderLabel(powder)} inventory from ${formatNumber(current, 4)} g to 0 g.`,
-      "Remove Stock",
-    );
-    if (!accepted) return;
-  }
-  const next = direction === "add"
-    ? current + amount
-    : Math.max(0, current - amount);
-  const verb = direction === "add" ? "Added" : "Removed";
-  const done = setBusy(button, direction === "add" ? "Adding..." : "Removing...");
-  try {
-    const data = await api.send(`/api/inventory/${encodeURIComponent(powder)}`, "PATCH", {
-      grams: next,
-      reason: `${verb} ${formatNumber(amount, 4)} g from Vercel lab website`,
-    });
-    state.inventory = data.inventory || state.inventory;
-    state.inventoryLog = data.inventory_log || state.inventoryLog;
-    renderEverything();
-    flash(`${verb} ${formatNumber(amount, 4)} g for ${powderLabel(powder)}. New stock: ${formatNumber(next, 4)} g.`);
   } catch (error) {
     flash(error.message, "error");
   } finally {
@@ -2180,18 +1957,14 @@ async function removePowder(event) {
   }
   const accepted = await confirmDanger(
     `Delete ${powderLabel(powder)}?`,
-    els.removeDeletedStock.checked
-      ? "This removes the powder from the database and removes its inventory row. History records stay unchanged."
-      : "This removes the powder from the database but keeps the inventory row.",
+    "This removes the powder from the database. History records stay unchanged.",
     "Delete Powder",
   );
   if (!accepted) return;
   const done = setBusy(event.submitter, "Deleting...");
   try {
-    const params = new URLSearchParams({ remove_inventory: String(els.removeDeletedStock.checked) });
-    const data = await api.send(`/api/powders/${encodeURIComponent(powder)}?${params.toString()}`, "DELETE");
+    const data = await api.send(`/api/powders/${encodeURIComponent(powder)}?remove_inventory=true`, "DELETE");
     state.powders = data.powders || state.powders;
-    state.inventory = data.inventory || state.inventory;
     renderEverything();
     await loadPowderOptions();
     flash(`Deleted ${powderLabel(powder)}.`);
@@ -2796,8 +2569,6 @@ function setupEvents() {
   });
   els.recipeForm.addEventListener("submit", calculateRecipe);
   els.saveRecipe.addEventListener("click", saveRecipe);
-  els.saveAndDeductRecipe.addEventListener("click", saveRecipeAndDeductInventory);
-  els.deductInventory.addEventListener("click", deductInventory);
   els.copyRecipeNotebook.addEventListener("click", copyRecipeToNotebook);
   els.printRecipeLabel.addEventListener("click", printRecipeLabel);
 
@@ -2870,10 +2641,6 @@ function setupEvents() {
       input.value = formatPurity(input.value);
     });
   });
-  els.inventoryForm.addEventListener("submit", (event) => event.preventDefault());
-  els.inventoryPowder.addEventListener("change", renderInventoryAdjustment);
-  els.inventoryAdd.addEventListener("click", () => adjustInventory("add", els.inventoryAdd));
-  els.inventoryRemove.addEventListener("click", () => adjustInventory("remove", els.inventoryRemove));
   els.deletePowderForm.addEventListener("submit", removePowder);
 
   els.msdsForm.addEventListener("submit", (event) => saveMsdsMaterial(event));
