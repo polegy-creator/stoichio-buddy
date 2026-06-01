@@ -1631,6 +1631,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:49:52",
             "updatedAt": "2026-06-01T09:50:33"
+        },
+        {
+            "id": "cas:7782-61-8|purity:99|vendor:thermo-scientific",
+            "casNumber": "7782-61-8",
+            "nameOrFormula": "FeH18N3O18",
+            "purity": "99+",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/16211566",
+            "pubchemCid": "16211566",
+            "pubchemFormula": "FeH18N3O18",
+            "pubchemIupacName": "iron(3+);trinitrate;nonahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:52:02",
+            "updatedAt": "2026-06-01T09:52:02"
         }
     ],
     "deletedPowderImports": []
