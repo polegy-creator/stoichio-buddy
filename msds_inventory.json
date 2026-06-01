@@ -1655,6 +1655,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:52:02",
             "updatedAt": "2026-06-01T09:52:02"
+        },
+        {
+            "id": "cas:7778-77-0|purity:99.0%|vendor:thermo-scientific",
+            "casNumber": "7778-77-0",
+            "nameOrFormula": "H2KO4P",
+            "purity": "99.0%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/516951",
+            "pubchemCid": "516951",
+            "pubchemFormula": "H2KO4P",
+            "pubchemIupacName": "potassium dihydrogen phosphate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:53:16",
+            "updatedAt": "2026-06-01T09:53:16"
         }
     ],
     "deletedPowderImports": []
