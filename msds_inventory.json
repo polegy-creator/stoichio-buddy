@@ -1206,12 +1206,12 @@
             "nameOrFormula": "boric acid",
             "purity": "",
             "closetNumber": 2,
-            "msdsFileUrl": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:10043-35-3|vendor:bio-lab/msds-file",
             "msdsExternalUrl": "https://doc.chem-lab.be/sds?prod=CL00.0216&lang=EN&client=bdl",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileName": "SDS_CL00.0216.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/043a70d6f4a4486a2ab4cbcf50f8dbe1.pdf",
             "company": "Bio-Lab Ltd.",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -1222,7 +1222,7 @@
             "pubchemIupacName": "boric acid",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:23:43",
-            "updatedAt": "2026-06-01T09:23:43"
+            "updatedAt": "2026-06-01T09:23:47"
         }
     ],
     "deletedPowderImports": []
