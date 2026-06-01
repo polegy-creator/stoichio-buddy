@@ -1679,6 +1679,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:53:16",
             "updatedAt": "2026-06-01T09:53:31"
+        },
+        {
+            "id": "cas:10026-22-9|purity:97.7%|vendor:alfa-aesar",
+            "casNumber": "10026-22-9",
+            "nameOrFormula": "CoH12N2O12",
+            "purity": "97.7%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Alfa Aesar",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/24821",
+            "pubchemCid": "24821",
+            "pubchemFormula": "CoH12N2O12",
+            "pubchemIupacName": "cobalt(2+);dinitrate;hexahydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:55:05",
+            "updatedAt": "2026-06-01T09:55:05"
         }
     ],
     "deletedPowderImports": []
