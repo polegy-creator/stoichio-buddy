@@ -19,6 +19,7 @@ from stoichio.msds_inventory import (
     find_known_identity,
     get_msds_pdf,
     load_msds_inventory,
+    material_display_name,
     normalize_purity,
     save_msds_inventory_item,
 )
@@ -219,6 +220,26 @@ class MsdsInventoryTest(unittest.TestCase):
         self.assertEqual(saved["identityStatus"], "CAS identity applied")
         self.assertEqual(saved["company"], "")
         self.assertEqual(saved["purity"], "")
+
+    def test_non_powder_display_name_prefers_clean_material_name(self):
+        acid = {
+            "nameOrFormula": "ClH",
+            "pubchemTitle": "Hydrochloric Acid",
+            "closetNumber": 2,
+        }
+        solvent = {
+            "nameOrFormula": "n-hexane",
+            "closetNumber": 3,
+        }
+        powder = {
+            "nameOrFormula": "Fe2O3",
+            "pubchemTitle": "Ferric Oxide",
+            "closetNumber": 1,
+        }
+
+        self.assertEqual(material_display_name(acid), "Hydrochloric Acid")
+        self.assertEqual(material_display_name(solvent), "N-Hexane")
+        self.assertEqual(material_display_name(powder), "Fe2O3")
 
     def test_msds_binder_generates_pdf_even_without_uploaded_files(self):
         save_msds_inventory_item({

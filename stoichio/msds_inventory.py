@@ -96,6 +96,52 @@ def material_key(value: str | None) -> str:
         return re.sub(r"\s+", " ", text).lower()
 
 
+_SMALL_MATERIAL_NAME_WORDS = {"a", "an", "and", "as", "at", "by", "for", "from", "in", "of", "or", "the", "to", "with"}
+
+
+def material_display_name(item: dict[str, Any]) -> str:
+    raw_name = str(item.get("nameOrFormula") or "").strip()
+    if normalize_closet_number(item.get("closetNumber", 1)) == 1:
+        return raw_name
+
+    name = (
+        str(item.get("pubchemTitle") or "").strip()
+        or raw_name
+        or str(item.get("pubchemIupacName") or "").strip()
+        or str(item.get("pubchemFormula") or "").strip()
+    )
+    return humanize_material_name(name)
+
+
+def humanize_material_name(value: str | None) -> str:
+    text = re.sub(r"\s+", " ", str(value or "").strip())
+    if not text:
+        return ""
+
+    words = text.split(" ")
+    formatted = []
+    for index, word in enumerate(words):
+        lower_word = word.lower()
+        if index and lower_word in _SMALL_MATERIAL_NAME_WORDS:
+            formatted.append(lower_word)
+        else:
+            formatted.append(_capitalize_material_word(word))
+    return " ".join(formatted)
+
+
+def _capitalize_material_word(word: str) -> str:
+    pieces = word.split("-")
+    return "-".join(_capitalize_material_piece(piece) for piece in pieces)
+
+
+def _capitalize_material_piece(piece: str) -> str:
+    if not piece:
+        return piece
+    if any(char.isdigit() for char in piece) and not piece.isalpha():
+        return piece
+    return piece[:1].upper() + piece[1:]
+
+
 def identity_text(value: str | None) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip()).lower()
 
@@ -489,6 +535,7 @@ def item_payload(item: dict[str, Any], include_file_data: bool = False) -> dict[
         "id": item["id"],
         "casNumber": item.get("casNumber", ""),
         "nameOrFormula": item.get("nameOrFormula", ""),
+        "displayName": material_display_name(item),
         "purity": item.get("purity", ""),
         "closetNumber": item.get("closetNumber", 1),
         "closetLabel": closet_label(item.get("closetNumber", 1)),
@@ -1086,7 +1133,7 @@ def _archive_item_row(item: dict[str, Any], link_folder: bool = False) -> str:
     return (
         "<tr>"
         f"<td>{html.escape(item.get('casNumber') or 'needs verification')}</td>"
-        f"<td>{html.escape(item.get('nameOrFormula') or 'needs verification')}</td>"
+        f"<td>{html.escape(material_display_name(item) or 'needs verification')}</td>"
         f"<td>{html.escape(item.get('purity') or '')}</td>"
         f"<td>{html.escape(item.get('company') or '')}</td>"
         f"<td>{html.escape(msds_status(item))}</td>"
@@ -1103,7 +1150,7 @@ def _archive_material_source_html(item: dict[str, Any]) -> str:
         "<h1>MSDS/SDS Source Record</h1>",
         "<dl>",
         _html_definition("CAS number", item.get("casNumber") or "needs verification"),
-        _html_definition("Name / formula", item.get("nameOrFormula") or "needs verification"),
+        _html_definition("Material name", material_display_name(item) or "needs verification"),
         _html_definition("Purity", item.get("purity") or ""),
         _html_definition("Vendor / supplier", item.get("company") or ""),
         _html_definition("Closet", closet_label(item.get("closetNumber", 1))),
@@ -1144,6 +1191,7 @@ def _archive_item_metadata(item: dict[str, Any]) -> dict[str, Any]:
         "id",
         "casNumber",
         "nameOrFormula",
+        "displayName",
         "purity",
         "company",
         "closetNumber",
@@ -1161,6 +1209,7 @@ def _archive_item_metadata(item: dict[str, Any]) -> dict[str, Any]:
         "updatedAt",
     ]
     metadata = {key: item.get(key, "") for key in keys}
+    metadata["displayName"] = material_display_name(item)
     metadata["closetLabel"] = closet_label(item.get("closetNumber", 1))
     metadata["msdsStatus"] = msds_status(item)
     return metadata
@@ -1168,7 +1217,7 @@ def _archive_item_metadata(item: dict[str, Any]) -> dict[str, Any]:
 
 def _archive_material_folder_name(item: dict[str, Any]) -> str:
     label_parts = [
-        item.get("nameOrFormula") or "material",
+        material_display_name(item) or "material",
         item.get("casNumber") or "no-cas",
         item.get("purity") or "",
         item.get("company") or "",
@@ -1219,7 +1268,7 @@ def _binder_text_pages(items: list[dict[str, Any]], append_warning: bool = False
             index_lines.append(
                 "  "
                 f"CAS: {item.get('casNumber') or 'needs verification'} | "
-                f"{item.get('nameOrFormula') or 'needs verification'} | "
+                f"{material_display_name(item) or 'needs verification'} | "
                 f"Purity: {item.get('purity') or ''} | "
                 f"Vendor: {item.get('company') or ''} | "
                 f"MSDS: {msds_status(item)}"
@@ -1232,7 +1281,7 @@ def _binder_text_pages(items: list[dict[str, Any]], append_warning: bool = False
 def _material_page_lines(item: dict[str, Any]) -> list[str]:
     return [
         f"CAS number: {item.get('casNumber') or 'needs verification'}",
-        f"Name / formula: {item.get('nameOrFormula') or 'needs verification'}",
+        f"Material name: {material_display_name(item) or 'needs verification'}",
         f"Purity: {item.get('purity') or ''}",
         f"Vendor / supplier: {item.get('company') or ''}",
         f"Closet: {closet_label(item.get('closetNumber', 1))}",

@@ -295,6 +295,10 @@ function msdsStatus(item) {
   return "missing PDF";
 }
 
+function msdsMaterialName(item) {
+  return item.displayName || item.nameOrFormula || "";
+}
+
 function powderLabel(powder) {
   return state.powders[powder]?.display_name || powder;
 }
@@ -1681,7 +1685,7 @@ function renderMsdsInventory() {
     tr.className = status === "PDF uploaded" ? "" : "low";
     tr.innerHTML = `
       <td>${item.casNumber ? escapeHtml(item.casNumber) : `<span class="needs-verification">needs verification</span>`}</td>
-      <td>${item.nameOrFormula ? escapeHtml(item.nameOrFormula) : `<span class="needs-verification">needs verification</span>`}</td>
+      <td>${msdsMaterialName(item) ? escapeHtml(msdsMaterialName(item)) : `<span class="needs-verification">needs verification</span>`}</td>
       <td>${escapeHtml(formatPurity(item.purity))}</td>
       <td>${escapeHtml(item.company || "")}</td>
       <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
@@ -1729,7 +1733,7 @@ function filteredMsdsItems() {
       if (!search) return true;
       return [
         item.casNumber,
-        item.nameOrFormula,
+        msdsMaterialName(item),
         item.purity,
         closetLabel(item.closetNumber),
         item.msdsStatus,
@@ -1739,7 +1743,7 @@ function filteredMsdsItems() {
     })
     .sort((a, b) => (
       Number(a.closetNumber) - Number(b.closetNumber) ||
-      String(a.nameOrFormula || "").localeCompare(String(b.nameOrFormula || "")) ||
+      String(msdsMaterialName(a) || "").localeCompare(String(msdsMaterialName(b) || "")) ||
       String(a.casNumber || "").localeCompare(String(b.casNumber || ""))
     ));
 }
@@ -2045,7 +2049,7 @@ function renderDataHealth() {
   const missingMsdsPdf = state.msdsInventory
     .filter((item) => msdsStatus(item) !== "PDF uploaded")
     .sort((a, b) => closetLabel(a.closetNumber).localeCompare(closetLabel(b.closetNumber))
-      || String(a.nameOrFormula || a.casNumber || "").localeCompare(String(b.nameOrFormula || b.casNumber || "")));
+      || String(msdsMaterialName(a) || a.casNumber || "").localeCompare(String(msdsMaterialName(b) || b.casNumber || "")));
   const missingIdentity = state.msdsInventory.filter((item) => !item.casNumber || !item.nameOrFormula);
 
   const card = (title, value, note, kind = "") => `
@@ -2061,7 +2065,7 @@ function renderDataHealth() {
     card("Powders with no stock row", missingStock.length, missingStock.slice(0, 6).join(", ") || "Every powder has an inventory row.", missingStock.length ? "warning" : "good"),
     card("Unknown inventory rows", unknownStock.length, unknownStock.slice(0, 6).join(", ") || "Inventory matches the powder database.", unknownStock.length ? "warning" : "good"),
     card("Density records needing review", densityNeedsReview.length, densityNeedsReview.slice(0, 5).map((r) => r.formula).join(", ") || "All density rows are reviewed or intentionally blocked.", densityNeedsReview.length ? "warning" : "good"),
-    card("Materials needing identity check", missingIdentity.length, missingIdentity.slice(0, 5).map((item) => item.nameOrFormula || item.casNumber || "unnamed").join(", ") || "CAS and name/formula are filled where known.", missingIdentity.length ? "warning" : "good"),
+    card("Materials needing identity check", missingIdentity.length, missingIdentity.slice(0, 5).map((item) => msdsMaterialName(item) || item.casNumber || "unnamed").join(", ") || "CAS and name/formula are filled where known.", missingIdentity.length ? "warning" : "good"),
     card("Saved targets needing density", needsDensity.length, needsDensity.slice(0, 5).map((g) => g.targetId).join(", ") || "Saved recipes are linked to density results.", needsDensity.length ? "warning" : "good"),
     card("Density rows needing recipe link", needsRecipe.length, needsRecipe.slice(0, 5).map((g) => g.targetId).join(", ") || "Density records have matching recipes.", needsRecipe.length ? "warning" : "good"),
   ].join("");
@@ -2087,7 +2091,7 @@ function renderDataHealth() {
               ${missingMsdsPdf.map((item) => `
                 <tr class="low">
                   <td>${escapeHtml(item.casNumber || "")}</td>
-                  <td>${escapeHtml(item.nameOrFormula || "")}</td>
+                  <td>${escapeHtml(msdsMaterialName(item) || "")}</td>
                   <td>${escapeHtml(formatPurity(item.purity))}</td>
                   <td>${escapeHtml(item.company || "")}</td>
                   <td>${escapeHtml(closetLabel(item.closetNumber))}</td>
