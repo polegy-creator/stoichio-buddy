@@ -2183,6 +2183,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:36:58",
             "updatedAt": "2026-06-01T10:36:58"
+        },
+        {
+            "id": "cas:63-74-1|purity:98%|vendor:thermo-scientific",
+            "casNumber": "63-74-1",
+            "nameOrFormula": "sulfanilamide",
+            "purity": "98%",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/5333",
+            "pubchemCid": "5333",
+            "pubchemFormula": "C6H8N2O2S",
+            "pubchemIupacName": "4-aminobenzenesulfonamide",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:38:06",
+            "updatedAt": "2026-06-01T10:38:06"
         }
     ],
     "deletedPowderImports": []
