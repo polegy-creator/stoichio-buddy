@@ -2244,8 +2244,8 @@
             "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
             "msdsFileStoragePath": "msds_pdfs/69cad1ec2528674ec290c6632138bf79.pdf",
-            "company": "",
-            "identityStatus": "CAS identity applied",
+            "company": "Bio-Lab Ltd.",
+            "identityStatus": "manual identity entry",
             "source": "PubChem identity metadata",
             "casSource": "PubChem PUG REST",
             "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/176",
@@ -2254,7 +2254,7 @@
             "pubchemIupacName": "acetic acid",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:42:45",
-            "updatedAt": "2026-06-01T10:42:48"
+            "updatedAt": "2026-06-01T10:42:59"
         }
     ],
     "deletedPowderImports": []
