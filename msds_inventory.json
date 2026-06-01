@@ -1871,6 +1871,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:03:36",
             "updatedAt": "2026-06-01T10:03:36"
+        },
+        {
+            "id": "cas:15244-10-7|vendor:thermo-scientific",
+            "casNumber": "15244-10-7",
+            "nameOrFormula": "Fe2H2O13S3",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Thermo Scientific",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/167265",
+            "pubchemCid": "167265",
+            "pubchemFormula": "Fe2H2O13S3",
+            "pubchemIupacName": "bis(iron(3+));trisulfate;hydrate",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:04:49",
+            "updatedAt": "2026-06-01T10:04:49"
         }
     ],
     "deletedPowderImports": []
