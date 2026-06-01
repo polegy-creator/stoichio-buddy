@@ -255,7 +255,10 @@ def sync_powders_from_msds_inventory(items=None):
     updated = 0
     removed = 0
     skipped = 0
+    ignored = 0
 
+    powder_items = []
+    formulas_with_labeled_bottles = set()
     for item in items:
         if int(item.get("closetNumber") or 1) != 1:
             continue
@@ -263,6 +266,15 @@ def sync_powders_from_msds_inventory(items=None):
         formula = _formula_from_msds_item(item)
         if not formula:
             skipped += 1
+            continue
+
+        powder_items.append((item, formula))
+        if item.get("purity") or item.get("company"):
+            formulas_with_labeled_bottles.add(formula)
+
+    for item, formula in powder_items:
+        if formula in formulas_with_labeled_bottles and not (item.get("purity") or item.get("company")):
+            ignored += 1
             continue
 
         purity = item.get("purity", "")
@@ -307,6 +319,7 @@ def sync_powders_from_msds_inventory(items=None):
         "updated": updated,
         "removed": removed,
         "skipped": skipped,
+        "ignored": ignored,
         "powders": powders,
     }
 

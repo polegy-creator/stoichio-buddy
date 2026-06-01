@@ -495,6 +495,7 @@ def sync_powder_database_from_msds(x_stoichio_pin: str | None = Header(default=N
         "updated": summary["updated"],
         "removed": summary["removed"],
         "skipped": summary["skipped"],
+        "ignored": summary["ignored"],
         "powders": {
             powder: powder_payload(powder, record)
             for powder, record in summary["powders"].items()

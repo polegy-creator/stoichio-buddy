@@ -95,7 +95,7 @@ def render(ctx):
                 clear_data_cache()
                 st.success(
                     f"Synced MSDS powders: {summary['created']} added, {summary['updated']} updated, "
-                    f"{summary['removed']} duplicate old rows removed, {summary['skipped']} skipped."
+                    f"{summary['removed']} duplicate old rows removed, {summary['ignored']} old blank MSDS imports ignored."
                 )
                 st.rerun()
             except ValueError as exc:

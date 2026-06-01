@@ -70,6 +70,14 @@ class PowderDatabaseSyncTests(unittest.TestCase):
                 "closetNumber": 1,
             },
             {
+                "id": "old-blank-import",
+                "casNumber": "1309-37-1",
+                "nameOrFormula": "Fe2O3",
+                "purity": "",
+                "company": "",
+                "closetNumber": 1,
+            },
+            {
                 "id": "msds-b",
                 "casNumber": "1309-37-1",
                 "nameOrFormula": "Fe2O3",
@@ -90,6 +98,7 @@ class PowderDatabaseSyncTests(unittest.TestCase):
 
         self.assertEqual(summary["created"], 2)
         self.assertEqual(summary["removed"], 2)
+        self.assertEqual(summary["ignored"], 1)
         self.assertNotIn("Fe2O3", powders)
         self.assertIn("Fe2O3 | purity 99.9% | vendor Vendor A", powders)
         self.assertIn("Fe2O3 | purity 99.5% | vendor Vendor B", powders)
