@@ -1199,6 +1199,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:20:03",
             "updatedAt": "2026-06-01T09:20:03"
+        },
+        {
+            "id": "cas:10043-35-3|vendor:bio-lab",
+            "casNumber": "10043-35-3",
+            "nameOrFormula": "boric acid",
+            "purity": "",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "https://doc.chem-lab.be/sds?prod=CL00.0216&lang=EN&client=bdl",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Bio-Lab Ltd.",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/7628",
+            "pubchemCid": "7628",
+            "pubchemFormula": "BH3O3",
+            "pubchemIupacName": "boric acid",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:23:43",
+            "updatedAt": "2026-06-01T09:23:43"
         }
     ],
     "deletedPowderImports": []
