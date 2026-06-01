@@ -2046,12 +2046,12 @@
             "nameOrFormula": "ethanol",
             "purity": "99.9%",
             "closetNumber": 3,
-            "msdsFileUrl": "",
-            "msdsExternalUrl": "",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:64-17-5|purity:99.9%|vendor:romichal/msds-file",
+            "msdsExternalUrl": "https://www.fishersci.co.uk/store/msds?partNumber=E/0665&countryCode=GB&language=en",
+            "msdsFileName": "E-0665.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/6ba76778bc62f72df0ce3d2db3d7597d.pdf",
             "company": "romichal",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -2062,7 +2062,7 @@
             "pubchemIupacName": "ethanol",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:18:01",
-            "updatedAt": "2026-06-01T10:18:01"
+            "updatedAt": "2026-06-01T10:19:09"
         }
     ],
     "deletedPowderImports": []
