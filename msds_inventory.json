@@ -1367,6 +1367,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:35:21",
             "updatedAt": "2026-06-01T09:35:29"
+        },
+        {
+            "id": "cas:7632-00-0|purity:99%|vendor:fisher-chemicals",
+            "casNumber": "7632-00-0",
+            "nameOrFormula": "NNaO2",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "fisher chemicals",
+            "identityStatus": "CAS identity applied",
+            "source": "local saved CAS record",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/23668193",
+            "pubchemCid": "23668193",
+            "pubchemFormula": "NNaO2",
+            "pubchemIupacName": "sodium nitrite",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T09:36:29",
+            "updatedAt": "2026-06-01T09:36:29"
         }
     ],
     "deletedPowderImports": []
