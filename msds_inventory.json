@@ -1991,6 +1991,30 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:08:50",
             "updatedAt": "2026-06-01T10:08:50"
+        },
+        {
+            "id": "cas:13746-66-2|purity:99%|vendor:sigma-aldrich",
+            "casNumber": "13746-66-2",
+            "nameOrFormula": "C6FeK3N6",
+            "purity": "99%",
+            "closetNumber": 2,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Sigma-Aldrich",
+            "identityStatus": "CAS identity applied",
+            "source": "PubChem identity metadata",
+            "casSource": "PubChem PUG REST",
+            "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/26250",
+            "pubchemCid": "26250",
+            "pubchemFormula": "C6FeK3N6",
+            "pubchemIupacName": "tripotassium;iron(3+);hexacyanide",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-01T10:10:11",
+            "updatedAt": "2026-06-01T10:10:11"
         }
     ],
     "deletedPowderImports": []
