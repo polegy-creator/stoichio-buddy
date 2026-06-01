@@ -50,6 +50,7 @@ class MsdsInventoryTest(unittest.TestCase):
 
     def test_closet_label_is_derived_from_fixed_mapping(self):
         self.assertEqual(closet_label(1), "1 \u2014 Powders")
+        self.assertEqual(closet_label(3), "3 \u2014 Solvents")
         self.assertEqual(closet_label("4"), "4 \u2014 Fridge")
 
     def test_powders_auto_import_once(self):

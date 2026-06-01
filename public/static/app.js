@@ -36,7 +36,7 @@ const state = {
   inventoryLog: [],
   densities: {},
   msdsInventory: [],
-  closets: { 1: "Powders", 2: "Acids", 3: "Flammables", 4: "Fridge" },
+  closets: { 1: "Powders", 2: "Acids", 3: "Solvents", 4: "Fridge" },
   history: [],
   linkedRecipes: [],
   powderSets: {},
@@ -421,10 +421,6 @@ function selectedRelativeDensityMode() {
   return $("input[name='relativeDensityMode']:checked")?.value || "single";
 }
 
-function targetFormulaCations() {
-  return cationFractionsForFormula(targetDensityFormulaForChoices()).map((entry) => entry.element);
-}
-
 function cachedTargetDensityRecords() {
   const targetKey = String(targetDensityFormulaForChoices()).trim().toLowerCase();
   if (state.targetDensityRecords.targetKey !== targetKey) return [];
@@ -438,49 +434,18 @@ function cachedTargetDensityRecords() {
   });
 }
 
-function targetDensityChoicePrefix(record, kind = "related") {
-  if (kind === "exact") {
-    return isPreferredDensity(record) ? "Preferred exact - " : "Exact - ";
-  }
-  if (!isTrustedDensity(record)) return "Related - ";
-  return isPreferredDensity(record) ? "Preferred related - " : "Checked related - ";
+function relativeDensityPickerItems({ expanded = true, includeShowMore = false } = {}) {
+  return densityPickerOptionItems(
+    state.targetDensityRecords.exact || [],
+    state.targetDensityRecords.related || [],
+    { expanded, includeShowMore },
+  );
 }
 
-function currentTargetDensityChoices() {
-  const targetKey = String(targetDensityFormulaForChoices()).trim().toLowerCase();
-  const seen = new Set();
-  const choices = [];
-  const addChoice = (record, prefix = "") => {
-    const key = densityRecordId(record);
-    if (!key || seen.has(key)) return;
-    seen.add(key);
-    choices.push({ record, prefix });
-  };
-
-  if (state.targetDensityRecords.targetKey === targetKey) {
-    state.targetDensityRecords.exact.forEach((record) => addChoice(record, targetDensityChoicePrefix(record, "exact")));
-    state.targetDensityRecords.related.forEach((record) => addChoice(record, targetDensityChoicePrefix(record, "related")));
-  } else {
-    Object.values(state.densities || {}).forEach((record) => addChoice(record, ""));
-  }
-  return choices;
-}
-
-function targetDensityChoiceMatches(choice, element = "") {
-  const targetCations = targetFormulaCations();
-  const targetSet = new Set(targetCations);
-  const record = choice.record || choice;
-  const cations = densityRecordCations(record);
-  if (!targetCations.length) return false;
-  if (!cations.length) return false;
-  if (element && !cations.includes(element)) return false;
-  return cations.some((cation) => targetSet.has(cation));
-}
-
-function densityRecordsForWeightedMode(element = "") {
-  return currentTargetDensityChoices()
-    .filter((choice) => targetDensityChoiceMatches(choice, element))
+function densityRecordsForWeightedMode() {
+  return relativeDensityPickerItems({ expanded: true, includeShowMore: false })
     .map((choice) => choice.record)
+    .filter(Boolean)
     .filter((record) => Number(record.theoretical_density_g_cm3) > 0)
     .sort((a, b) => {
       const aCations = densityRecordCations(a);
@@ -493,18 +458,12 @@ function densityRecordsForWeightedMode(element = "") {
     });
 }
 
-function weightedDensitySelectOptions(selectedKey = "", element = "") {
-  const choices = currentTargetDensityChoices()
-    .filter((choice) => targetDensityChoiceMatches(choice, ""));
-  const options = [
-    `<option value="">Choose density</option>`,
-    `<option value="__manual__" ${selectedKey === "__manual__" ? "selected" : ""}>Manual theoretical density</option>`,
+function weightedDensitySelectOptions(selectedKey = "") {
+  const items = [
+    { value: "", label: "Choose density" },
+    ...relativeDensityPickerItems({ expanded: true, includeShowMore: false }),
   ];
-  for (const { record, prefix } of choices) {
-    const key = densityRecordId(record);
-    options.push(`<option value="${escapeHtml(key)}" ${key === selectedKey ? "selected" : ""}>${escapeHtml(densityRecordLabel(record, prefix))}</option>`);
-  }
-  return options.join("");
+  return densityPickerOptionsHtml(items, selectedKey);
 }
 
 function parseSimpleFormulaComposition(formula) {
@@ -578,7 +537,7 @@ function defaultWeightedDensityComponents() {
 function weightedDensityKeyAvailable(component) {
   const key = component?.densityKey || "";
   if (!key || key === "__manual__") return true;
-  return densityRecordsForWeightedMode(component.element || "")
+  return densityRecordsForWeightedMode()
     .some((record) => densityRecordId(record) === key);
 }
 
@@ -639,7 +598,7 @@ function renderWeightedDensityRows(components = null) {
     <div class="weighted-density-row" data-weighted-element="${escapeHtml(component.element || "")}">
       <label>
         ${component.element ? `${escapeHtml(component.element)} density` : `Density ${index + 1}`}
-        <select data-weighted-density-key>${weightedDensitySelectOptions(component.densityKey, component.element)}</select>
+        <select data-weighted-density-key>${weightedDensitySelectOptions(component.densityKey)}</select>
       </label>
       <label ${component.densityKey === "__manual__" ? "" : "hidden"}>
         Manual g/cm³
@@ -1008,8 +967,46 @@ function renderPowderSets(matchingSets) {
   });
 }
 
-function densityOptionHtml(record, prefix) {
-  return `<option value="${escapeHtml(record.record_key)}">${escapeHtml(densityRecordLabel(record, prefix))}</option>`;
+function densityPickerOptionItems(exact = [], related = [], { expanded = false, includeShowMore = true } = {}) {
+  const visibleRelated = expanded ? related : related.slice(0, 6);
+  const hiddenRelated = Math.max(0, related.length - visibleRelated.length);
+  const items = [{ value: "__manual__", label: "Manual theoretical density" }];
+
+  for (const record of exact) {
+    items.push({
+      value: densityRecordId(record),
+      label: densityRecordLabel(record, isPreferredDensity(record) ? "Preferred exact - " : "Exact - "),
+      record,
+    });
+  }
+
+  for (const record of visibleRelated) {
+    let prefix = "Related - ";
+    if (isTrustedDensity(record)) {
+      prefix = isPreferredDensity(record) ? "Preferred related - " : "Checked related - ";
+    }
+    items.push({
+      value: densityRecordId(record),
+      label: densityRecordLabel(record, prefix),
+      record,
+    });
+  }
+
+  if (includeShowMore && hiddenRelated > 0) {
+    items.push({
+      value: "__show_more__",
+      label: `Show ${hiddenRelated} more related density record(s)`,
+    });
+  }
+
+  return items;
+}
+
+function densityPickerOptionsHtml(items, selectedKey = "") {
+  return items
+    .filter((item) => item.value !== undefined && item.value !== null)
+    .map((item) => `<option value="${escapeHtml(item.value)}" ${item.value === selectedKey ? "selected" : ""}>${escapeHtml(item.label)}</option>`)
+    .join("");
 }
 
 async function updateDensityChoicesForTarget(target, select, manualWrap) {
@@ -1021,8 +1018,6 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
   const expanded = state.densityPickerExpanded[select.id] === true;
   const exact = (data.exact || []).slice().sort((a, b) => Number(isPreferredDensity(b)) - Number(isPreferredDensity(a)));
   const related = data.related || [];
-  const visibleRelated = expanded ? related : related.slice(0, 6);
-  const hiddenRelated = Math.max(0, related.length - visibleRelated.length);
 
   if (select === els.relativeDensityChoice) {
     state.targetDensityRecords = {
@@ -1032,20 +1027,7 @@ async function updateDensityChoicesForTarget(target, select, manualWrap) {
     };
   }
 
-  select.innerHTML = `<option value="__manual__">Manual theoretical density</option>`;
-  for (const record of exact) {
-    select.insertAdjacentHTML("beforeend", densityOptionHtml(record, isPreferredDensity(record) ? "Preferred exact - " : "Exact - "));
-  }
-  for (const record of visibleRelated) {
-    if (!isTrustedDensity(record)) {
-      select.insertAdjacentHTML("beforeend", densityOptionHtml(record, "Related - "));
-      continue;
-    }
-    select.insertAdjacentHTML("beforeend", densityOptionHtml(record, isPreferredDensity(record) ? "Preferred related - " : "Checked related - "));
-  }
-  if (hiddenRelated > 0) {
-    select.insertAdjacentHTML("beforeend", `<option value="__show_more__">Show ${hiddenRelated} more related density record(s)</option>`);
-  }
+  select.innerHTML = densityPickerOptionsHtml(densityPickerOptionItems(exact, related, { expanded }));
   const previousIsSpecificRecord = previous && previous !== "__manual__" && previous !== "__show_more__";
   if (sameTargetAsLastRender && previousIsSpecificRecord && [...select.options].some((option) => option.value === previous)) {
     select.value = previous;

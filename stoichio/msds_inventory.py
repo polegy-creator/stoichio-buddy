@@ -30,7 +30,7 @@ from stoichio.powders import (
 CLOSETS = {
     1: "Powders",
     2: "Acids",
-    3: "Flammables",
+    3: "Solvents",
     4: "Fridge",
 }
 
