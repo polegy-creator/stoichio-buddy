@@ -99,7 +99,7 @@
             "purity": "99%",
             "closetNumber": 1,
             "msdsFileUrl": "",
-            "msdsExternalUrl": "",
+            "msdsExternalUrl": "https://www.chemblink.com/MSDSFiles/1313-99-1Alfa-Aesar.pdf",
             "msdsFileName": "",
             "msdsFileContentType": "",
             "msdsFileDataBase64": "",
@@ -113,7 +113,7 @@
             "pubchemIupacName": "nickel(2+);oxygen(2-)",
             "sourcePowderId": "powder:NiO",
             "createdAt": "2026-05-25T13:43:21",
-            "updatedAt": "2026-05-31T14:43:50"
+            "updatedAt": "2026-06-01T06:38:07"
         },
         {
             "id": "powder:HfO2",
