@@ -2022,12 +2022,12 @@
             "nameOrFormula": "C3H8O",
             "purity": "",
             "closetNumber": 3,
-            "msdsFileUrl": "",
-            "msdsExternalUrl": "",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:67-63-0|vendor:bio-lab/msds-file",
+            "msdsExternalUrl": "https://www.carlroth.com/medias/SDB-9866-IE-EN.pdf?context=bWFzdGVyfHNlY3VyaXR5RGF0YXNoZWV0c3wyOTAwMjl8YXBwbGljYXRpb24vcGRmfGFERTRMMmcxTlM4NU1UYzNOREkzTWpFME16WTJMMU5FUWw4NU9EWTJYMGxGWDBWT0xuQmtaZ3wwYjhiNGUzNTliNDA2NjhiNTFlNmNkODViNTc5YzFlMWY5YWE5MWVlNGQxNzQ1MTRkOTkwZTg3NmExODk5OTc2",
+            "msdsFileName": "SDB-9866-IE-EN.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/18534aa244a5ba048a924bb4f46c9782.pdf",
             "company": "Bio-Lab Ltd.",
             "identityStatus": "CAS identity applied",
             "source": "PubChem identity metadata",
@@ -2038,7 +2038,7 @@
             "pubchemIupacName": "propan-2-ol",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:12:57",
-            "updatedAt": "2026-06-01T10:13:03"
+            "updatedAt": "2026-06-01T10:15:21"
         }
     ],
     "deletedPowderImports": []
