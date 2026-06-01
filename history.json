@@ -205,5 +205,65 @@
         "target_id": "vinoth-T010",
         "target_number": 10,
         "target_for": "vinoth"
+    },
+    {
+        "entry_id": "2314164c3ccf4dc18c3031331062132c",
+        "entry_type": "synthesis",
+        "recipe_id": "R002",
+        "recipe_number": 2,
+        "time": "2026-06-01T13:01:44",
+        "target": "Fe2O3BiVO4",
+        "mass": 13.0,
+        "selected_powders": [
+            "Fe2O3",
+            "BiVO4"
+        ],
+        "recipe": {
+            "Fe2O3": 4.292617,
+            "BiVO4": 8.707383
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "Fe2O3 Thermo Scientific\n700 C\n6 hours",
+        "calculation": {
+            "recipe": {
+                "Fe2O3": 4.292617,
+                "BiVO4": 8.707383
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 3.1401849173675503e-16,
+            "coefficients": {
+                "Fe2O3": 1,
+                "BiVO4": 1
+            },
+            "elements": [
+                "Bi",
+                "Fe",
+                "V"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Fe": 2,
+                "O": 7,
+                "Bi": 1,
+                "V": 1
+            },
+            "normalized_target": "Fe2O3BiVO4",
+            "input_mass": 13,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 13,
+            "target_molar_mass": 483.605,
+            "precursor_formula_mass": 483.605,
+            "formula_units": 0.0268814425,
+            "estimated_target_mass": 13,
+            "stoichiometric_target_mass": 13
+        },
+        "target_id": "Gabi-T001",
+        "target_number": 1,
+        "target_for": "Gabi"
     }
 ]
