@@ -1350,12 +1350,12 @@
             "nameOrFormula": "phosphate buffered saline tablets",
             "purity": "",
             "closetNumber": 2,
-            "msdsFileUrl": "",
+            "msdsFileUrl": "/api/msds-inventory/cas:7447-40-7|vendor:fisher-bioreagents/msds-file",
             "msdsExternalUrl": "https://www.fishersci.com/store/msds?partNumber=BP2944100&productDescription=PBS+TABLETS+100UN&vendorId=VN00033897&countryCode=US&language=en",
-            "msdsFileName": "",
-            "msdsFileContentType": "",
+            "msdsFileName": "PBS-TABLETS-100UN.pdf",
+            "msdsFileContentType": "application/pdf",
             "msdsFileDataBase64": "",
-            "msdsFileStoragePath": "",
+            "msdsFileStoragePath": "msds_pdfs/4a40d4fa3d0d2056b7b8fa3330cb9cfd.pdf",
             "company": "fisher bioreagents",
             "identityStatus": "manual identity entry",
             "source": "",
@@ -1366,7 +1366,7 @@
             "pubchemIupacName": "",
             "sourcePowderId": "",
             "createdAt": "2026-06-01T09:35:21",
-            "updatedAt": "2026-06-01T09:35:21"
+            "updatedAt": "2026-06-01T09:35:24"
         }
     ],
     "deletedPowderImports": []
