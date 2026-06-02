@@ -140,6 +140,24 @@ class PowderDatabaseSyncTests(unittest.TestCase):
                 "closetNumber": 1,
                 "sourcePowderId": "powder:O2Si | vendor Ted Pella, Inc.",
             },
+            {
+                "id": "fridge-known-powder",
+                "casNumber": "13463-67-7",
+                "nameOrFormula": "Titanium dioxide",
+                "purity": "99.8%",
+                "company": "Fridge Supplier",
+                "closetNumber": 4,
+                "sourcePowderId": "powder:TiO2",
+            },
+            {
+                "id": "fridge-new-powder",
+                "casNumber": "1309-48-4",
+                "nameOrFormula": "MgO",
+                "purity": "99.9%",
+                "company": "Fridge Supplier",
+                "closetNumber": 4,
+                "sourcePowderId": "powder:MgO",
+            },
         ])
         powders = load_powders()
 
@@ -148,8 +166,11 @@ class PowderDatabaseSyncTests(unittest.TestCase):
         self.assertIn("Ga2O3", powders)
         self.assertEqual(powders["Ga2O3"]["company"], "Thermo Scientific")
         self.assertEqual(powders["Ga2O3"]["purity"], "99.99+")
+        self.assertEqual(powders["TiO2"]["company"], "Fridge Supplier")
+        self.assertEqual(powders["TiO2"]["purity"], "99.8%")
         self.assertNotIn("C2H4O | purity 98% | vendor Vendor B", powders)
         self.assertNotIn("O2Si | vendor Ted Pella, Inc.", powders)
+        self.assertNotIn("MgO", powders)
         self.assertEqual(len(powders), 3)
 
     def test_powder_notes_can_be_saved_and_cleared(self):

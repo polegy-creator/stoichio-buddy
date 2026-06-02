@@ -278,15 +278,17 @@ def sync_powders_from_msds_inventory(items=None, reference_powders=None):
 
     powder_items_by_formula = {}
     for item in items:
-        if int(item.get("closetNumber") or 1) != 1:
-            continue
-
         formula = _formula_from_msds_item(item)
         if not formula:
             skipped += 1
             continue
 
-        if formula not in allowed_formulas and not _is_relevant_msds_powder_item(item, formula):
+        closet_number = int(item.get("closetNumber") or 1)
+        formula_is_known_powder = formula in allowed_formulas
+        if closet_number != 1 and not formula_is_known_powder:
+            continue
+
+        if closet_number == 1 and not formula_is_known_powder and not _is_relevant_msds_powder_item(item, formula):
             ignored += 1
             continue
 
