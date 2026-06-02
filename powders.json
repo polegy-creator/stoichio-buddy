@@ -64,12 +64,17 @@
         },
         "formula": "Co3O4",
         "casNumber": "1308-06-1",
-        "identityStatus": "CAS imported from reference data - needs lab verification",
+        "identityStatus": "CAS identity applied",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/11651651",
         "pubchemCid": "11651651",
         "pubchemFormula": "Co3O4",
-        "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt"
+        "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt",
+        "purity": "99%",
+        "company": "Aaron Chemicals LLC",
+        "source": "MSDS inventory",
+        "pubchemTitle": "Cobalt(II,III)oxide",
+        "msdsInventoryItemId": "powder:Co3O4"
     },
     "NiO": {
         "molar_mass": 74.692,
@@ -800,15 +805,15 @@
         "msdsInventoryItemId": "cas:18282-10-5|purity:99.9|vendor:thermo-scientific"
     },
     "Ga2O3": {
-        "formula": "Ga2O3",
         "molar_mass": 187.44299999999998,
         "elements": {
             "Ga": 2.0,
             "O": 3.0
         },
+        "formula": "Ga2O3",
+        "casNumber": "12024-21-4",
         "purity": "99.99+",
         "company": "Thermo Scientific",
-        "casNumber": "12024-21-4",
         "identityStatus": "manual identity entry",
         "source": "MSDS inventory",
         "casSource": "PubChem PUG REST",
