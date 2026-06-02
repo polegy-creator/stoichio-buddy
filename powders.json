@@ -720,8 +720,8 @@
         "pubchemCid": "518696",
         "pubchemFormula": "Fe2O3",
         "pubchemIupacName": "oxo(oxoferriooxy)iron",
-        "msdsInventoryItemId": "cas:1309-37-1|purity:99.999|vendor:sigma-aldrich",
-        "notes": "empty 0 stock"
+        "notes": "empty 0 stock",
+        "msdsInventoryItemId": "cas:1309-37-1|purity:99.999|vendor:sigma-aldrich"
     },
     "Fe2O3 | purity 99.999% | vendor Acros Organics": {
         "molar_mass": 159.687,
@@ -798,5 +798,24 @@
         "pubchemFormula": "O2Sn",
         "pubchemIupacName": "bis(oxygen(2-));tin(4+)",
         "msdsInventoryItemId": "cas:18282-10-5|purity:99.9|vendor:thermo-scientific"
+    },
+    "Ga2O3": {
+        "formula": "Ga2O3",
+        "molar_mass": 187.44299999999998,
+        "elements": {
+            "Ga": 2.0,
+            "O": 3.0
+        },
+        "purity": "99.99+",
+        "company": "Thermo Scientific",
+        "casNumber": "12024-21-4",
+        "identityStatus": "manual identity entry",
+        "source": "MSDS inventory",
+        "casSource": "PubChem PUG REST",
+        "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/158605",
+        "pubchemCid": "158605",
+        "pubchemFormula": "Ga2O3",
+        "pubchemIupacName": "digallium;tris(oxygen(2-))",
+        "msdsInventoryItemId": "cas:12024-21-4|purity:99.99|vendor:thermo-scientific"
     }
 }
