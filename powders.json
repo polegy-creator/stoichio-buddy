@@ -16,7 +16,8 @@
         "pubchemCid": "518696",
         "pubchemFormula": "Fe2O3",
         "pubchemIupacName": "oxo(oxoferriooxy)iron",
-        "msdsInventoryItemId": "powder:Fe2O3"
+        "msdsInventoryItemId": "powder:Fe2O3",
+        "notes": "contaminated"
     },
     "TiO2": {
         "molar_mass": 79.865,
@@ -64,15 +65,15 @@
         },
         "formula": "Co3O4",
         "casNumber": "1308-06-1",
+        "purity": "99%",
+        "company": "Aaron Chemicals LLC",
         "identityStatus": "CAS identity applied",
+        "source": "MSDS inventory",
         "casSource": "Reference CAS/formula check; verify against bottle label/SDS before safety use",
         "casSourceUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/11651651",
         "pubchemCid": "11651651",
         "pubchemFormula": "Co3O4",
         "pubchemIupacName": "oxocobalt;oxo(oxocobaltiooxy)cobalt",
-        "purity": "99%",
-        "company": "Aaron Chemicals LLC",
-        "source": "MSDS inventory",
         "pubchemTitle": "Cobalt(II,III)oxide",
         "msdsInventoryItemId": "powder:Co3O4"
     },
