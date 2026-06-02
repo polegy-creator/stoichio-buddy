@@ -9,6 +9,10 @@ from stoichio import storage
 
 POWDER_RELEVANCE_IGNORED_ELEMENTS = {"O", "H", "C", "N"}
 POWDER_VARIANT_SEPARATOR = " | "
+MSDS_NON_PRECURSOR_NAME_TERMS = (
+    "desiccant",
+    "dessicant",
+)
 POWDER_METADATA_FIELDS = (
     "formula",
     "casNumber",
@@ -282,14 +286,15 @@ def sync_powders_from_msds_inventory(items=None, reference_powders=None):
             skipped += 1
             continue
 
-        if formula not in allowed_formulas:
+        if formula not in allowed_formulas and not _is_relevant_msds_powder_item(item, formula):
             ignored += 1
             continue
 
-        if not (item.get("purity") or item.get("company")):
+        if not _has_msds_powder_metadata(item):
             ignored += 1
             continue
 
+        allowed_formulas.add(formula)
         powder_items_by_formula.setdefault(formula, []).append(item)
 
     for formula, formula_items in powder_items_by_formula.items():
@@ -303,6 +308,8 @@ def sync_powders_from_msds_inventory(items=None, reference_powders=None):
 
         for item in formula_items:
             if item is primary_item:
+                continue
+            if not _has_powder_variant_metadata(item):
                 continue
             key = powder_key_for(formula, purity=item.get("purity", ""), company=item.get("company", ""))
             target_powders[key] = _powder_record_from_msds_item(
@@ -362,6 +369,12 @@ def _base_powders_for_sync(powders, reference_powders=None):
 def _primary_msds_powder_item(formula, items):
     source_id = f"powder:{normalize_powder(formula)}"
     for item in items:
+        if (item.get("sourcePowderId") == source_id or item.get("id") == source_id) and _has_powder_variant_metadata(item):
+            return item
+    for item in items:
+        if _has_powder_variant_metadata(item):
+            return item
+    for item in items:
         if item.get("sourcePowderId") == source_id or item.get("id") == source_id:
             return item
     return items[0]
@@ -404,6 +417,35 @@ def _formula_from_msds_item(item):
         except ValueError:
             continue
     return ""
+
+
+def _is_relevant_msds_powder_item(item, formula):
+    name = clean_metadata_text(item.get("nameOrFormula", "")).lower()
+    if any(term in name for term in MSDS_NON_PRECURSOR_NAME_TERMS):
+        return False
+
+    try:
+        composition = parse_formula(formula)
+    except ValueError:
+        return False
+
+    elements = set(composition)
+    return "O" in elements and bool(powder_relevance_elements(composition))
+
+
+def _has_msds_powder_metadata(item):
+    return bool(
+        clean_metadata_text(item.get("purity", ""))
+        or clean_metadata_text(item.get("company", ""))
+        or clean_metadata_text(item.get("casNumber", ""))
+    )
+
+
+def _has_powder_variant_metadata(item):
+    return bool(
+        clean_metadata_text(item.get("purity", ""))
+        or clean_metadata_text(item.get("company", ""))
+    )
 
 
 def _powder_metadata_from_msds_item(item):
