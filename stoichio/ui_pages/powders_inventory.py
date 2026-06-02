@@ -11,6 +11,7 @@ def render(ctx):
     display_dataframe = ctx.display_dataframe
     powder_display_name = ctx.powder_display_name
     st = ctx.st
+    load_reference_powders = ctx.load_reference_powders
     sync_powders_from_msds_inventory = ctx.sync_powders_from_msds_inventory
     theme_mode = ctx.theme_mode
     update_powder_notes = ctx.update_powder_notes
@@ -91,7 +92,7 @@ def render(ctx):
     with sync_col:
         if st.button("Sync Powders from MSDS", width="stretch"):
             try:
-                summary = sync_powders_from_msds_inventory()
+                summary = sync_powders_from_msds_inventory(reference_powders=load_reference_powders())
                 clear_data_cache()
                 st.success(
                     f"Synced MSDS powders: {summary['created']} added, {summary['updated']} updated, "

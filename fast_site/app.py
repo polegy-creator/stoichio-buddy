@@ -77,6 +77,7 @@ from stoichio.powders import (
     add_powder,
     delete_powder,
     load_powders,
+    load_reference_powders,
     normalize_powder,
     powder_display_name,
     relevant_powders_for_target,
@@ -489,7 +490,10 @@ def save_powder_note(payload: PowderNoteRequest, x_stoichio_pin: str | None = He
 @app.post("/api/powders/sync-msds")
 def sync_powder_database_from_msds(x_stoichio_pin: str | None = Header(default=None)):
     require_write_pin(x_stoichio_pin)
-    summary = sync_powders_from_msds_inventory(load_msds_inventory())
+    summary = sync_powders_from_msds_inventory(
+        load_msds_inventory(),
+        reference_powders=load_reference_powders(),
+    )
     return {
         "created": summary["created"],
         "updated": summary["updated"],

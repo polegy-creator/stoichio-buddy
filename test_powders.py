@@ -59,7 +59,7 @@ class PowderDatabaseSyncTests(unittest.TestCase):
         os.chdir(self.previous_cwd)
         self.tempdir.cleanup()
 
-    def test_msds_powder_records_replace_plain_duplicates_with_vendor_and_purity_variants(self):
+    def test_msds_powder_records_update_base_and_add_only_extra_variants(self):
         summary = sync_powders_from_msds_inventory([
             {
                 "id": "msds-a",
@@ -96,17 +96,17 @@ class PowderDatabaseSyncTests(unittest.TestCase):
         ])
         powders = load_powders()
 
-        self.assertEqual(summary["created"], 2)
-        self.assertEqual(summary["removed"], 2)
+        self.assertEqual(summary["created"], 1)
+        self.assertEqual(summary["removed"], 0)
         self.assertEqual(summary["ignored"], 1)
-        self.assertNotIn("Fe2O3", powders)
-        self.assertIn("Fe2O3 | purity 99.9% | vendor Vendor A", powders)
+        self.assertIn("Fe2O3", powders)
         self.assertIn("Fe2O3 | purity 99.5% | vendor Vendor B", powders)
         self.assertNotIn("HCl | purity 37% | vendor Vendor C", powders)
-        self.assertEqual(powders["Fe2O3 | purity 99.9% | vendor Vendor A"]["company"], "Vendor A")
-        self.assertEqual(powders["Fe2O3 | purity 99.9% | vendor Vendor A"]["purity"], "99.9%")
+        self.assertEqual(powders["Fe2O3"]["company"], "Vendor A")
+        self.assertEqual(powders["Fe2O3"]["purity"], "99.9%")
+        self.assertEqual(powders["Fe2O3 | purity 99.5% | vendor Vendor B"]["company"], "Vendor B")
 
-    def test_msds_powder_sync_matches_msds_powder_closet(self):
+    def test_msds_powder_sync_keeps_existing_powders_and_ignores_unrelated_formulas(self):
         sync_powders_from_msds_inventory([
             {
                 "id": "msds-a",
@@ -116,13 +116,21 @@ class PowderDatabaseSyncTests(unittest.TestCase):
                 "company": "Vendor A",
                 "closetNumber": 1,
             },
+            {
+                "id": "unrelated",
+                "casNumber": "9002-89-5",
+                "nameOrFormula": "C2H4O",
+                "purity": "98%",
+                "company": "Vendor B",
+                "closetNumber": 1,
+            },
         ])
         powders = load_powders()
 
-        self.assertNotIn("TiO2", powders)
-        self.assertNotIn("Fe2O3", powders)
-        self.assertIn("Fe2O3 | purity 99.9% | vendor Vendor A", powders)
-        self.assertEqual(len(powders), 1)
+        self.assertIn("TiO2", powders)
+        self.assertIn("Fe2O3", powders)
+        self.assertNotIn("C2H4O | purity 98% | vendor Vendor B", powders)
+        self.assertEqual(len(powders), 2)
 
     def test_powder_notes_can_be_saved_and_cleared(self):
         powder, powders = update_powder_notes("Fe2O3", "Use bottle from upper shelf")

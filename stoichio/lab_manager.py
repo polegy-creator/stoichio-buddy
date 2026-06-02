@@ -83,6 +83,7 @@ from stoichio.powders import (
     delete_powder,
     formula_cation_elements,
     load_powders,
+    load_reference_powders,
     normalize_powder,
     normalize_powder_record,
     powder_relevance_elements,

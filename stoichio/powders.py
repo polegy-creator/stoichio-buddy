@@ -1,6 +1,8 @@
 """Powder database, powder variants, and target-relevance helpers."""
 
+import json
 import re
+from pathlib import Path
 
 from stoichio.chemistry.formula_parser import molar_mass, normalize_formula, parse_formula
 from stoichio import storage
@@ -242,7 +244,18 @@ def update_powder_notes(powder, notes=""):
     return key, powders
 
 
-def sync_powders_from_msds_inventory(items=None):
+def load_reference_powders():
+    path = Path(__file__).resolve().parents[1] / "powders.json"
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text())
+    return {
+        normalize_powder(name): normalize_powder_record(record, fallback_formula=powder_formula_from_key(name))
+        for name, record in data.items()
+    }
+
+
+def sync_powders_from_msds_inventory(items=None, reference_powders=None):
     if items is None:
         from stoichio.msds_inventory import load_msds_inventory
 
@@ -250,15 +263,16 @@ def sync_powders_from_msds_inventory(items=None):
 
     powders = load_powders()
     original_powders = dict(powders)
-    target_powders = {}
+    base_powders = _base_powders_for_sync(powders, reference_powders)
+    allowed_formulas = {record.get("formula") or powder_formula_from_key(key) for key, record in base_powders.items()}
+    target_powders = dict(base_powders)
     created = 0
     updated = 0
     removed = 0
     skipped = 0
     ignored = 0
 
-    powder_items = []
-    formulas_with_labeled_bottles = set()
+    powder_items_by_formula = {}
     for item in items:
         if int(item.get("closetNumber") or 1) != 1:
             continue
@@ -268,40 +282,42 @@ def sync_powders_from_msds_inventory(items=None):
             skipped += 1
             continue
 
-        powder_items.append((item, formula))
-        if item.get("purity") or item.get("company"):
-            formulas_with_labeled_bottles.add(formula)
-
-    for item, formula in powder_items:
-        if formula in formulas_with_labeled_bottles and not (item.get("purity") or item.get("company")):
+        if formula not in allowed_formulas:
             ignored += 1
             continue
 
-        purity = item.get("purity", "")
-        company = item.get("company", "")
-        key = powder_key_for(formula, purity=purity, company=company)
-        composition = parse_formula(powder_formula_from_key(key))
-        existing = dict(powders.get(key) or powders.get(formula) or {})
-        record = {
-            **existing,
-            "formula": powder_formula_from_key(key),
-            "molar_mass": molar_mass(composition),
-            "elements": composition,
-        }
+        if not (item.get("purity") or item.get("company")):
+            ignored += 1
+            continue
 
-        metadata_updates = _powder_metadata_from_msds_item(item)
-        for field, value in metadata_updates.items():
-            if value:
-                record[field] = value
+        powder_items_by_formula.setdefault(formula, []).append(item)
 
-        target_powders[key] = record
+    for formula, formula_items in powder_items_by_formula.items():
+        primary_item = _primary_msds_powder_item(formula, formula_items)
+        base_key = normalize_powder(formula)
+        target_powders[base_key] = _powder_record_from_msds_item(
+            formula,
+            primary_item,
+            powders.get(base_key) or base_powders.get(base_key) or {},
+        )
 
-    reconciled = {}
-    for key, record in powders.items():
-        if target_powders and key not in target_powders:
+        for item in formula_items:
+            if item is primary_item:
+                continue
+            key = powder_key_for(formula, purity=item.get("purity", ""), company=item.get("company", ""))
+            target_powders[key] = _powder_record_from_msds_item(
+                formula,
+                item,
+                powders.get(key) or base_powders.get(base_key) or {},
+            )
+
+    for key, record in list(powders.items()):
+        if key in target_powders:
+            continue
+        if _is_sync_generated_powder(record):
             removed += 1
             continue
-        reconciled[key] = record
+        target_powders[key] = record
 
     for key, record in target_powders.items():
         if key in original_powders:
@@ -309,9 +325,8 @@ def sync_powders_from_msds_inventory(items=None):
                 updated += 1
         else:
             created += 1
-        reconciled[key] = record
 
-    powders = reconciled
+    powders = target_powders
     if created or updated or removed:
         save_powders(powders)
     return {
@@ -322,6 +337,53 @@ def sync_powders_from_msds_inventory(items=None):
         "ignored": ignored,
         "powders": powders,
     }
+
+
+def _base_powders_for_sync(powders, reference_powders=None):
+    reference = reference_powders if reference_powders is not None else {}
+    base = {
+        normalize_powder(key): normalize_powder_record(record, fallback_formula=powder_formula_from_key(key))
+        for key, record in reference.items()
+    }
+
+    for key, record in powders.items():
+        normalized_key = normalize_powder(key)
+        if POWDER_VARIANT_SEPARATOR in normalized_key:
+            continue
+        if _is_sync_generated_powder(record) and normalized_key not in base:
+            continue
+        base[normalized_key] = {
+            **base.get(normalized_key, {}),
+            **record,
+        }
+    return base
+
+
+def _primary_msds_powder_item(formula, items):
+    source_id = f"powder:{normalize_powder(formula)}"
+    for item in items:
+        if item.get("sourcePowderId") == source_id or item.get("id") == source_id:
+            return item
+    return items[0]
+
+
+def _powder_record_from_msds_item(formula, item, existing):
+    composition = parse_formula(formula)
+    record = {
+        **existing,
+        "formula": formula,
+        "molar_mass": molar_mass(composition),
+        "elements": composition,
+    }
+    metadata_updates = _powder_metadata_from_msds_item(item)
+    for field, value in metadata_updates.items():
+        if value:
+            record[field] = value
+    return record
+
+
+def _is_sync_generated_powder(record):
+    return bool(record.get("msdsInventoryItemId") or record.get("source") == "MSDS inventory")
 
 
 def _formula_from_msds_item(item):
