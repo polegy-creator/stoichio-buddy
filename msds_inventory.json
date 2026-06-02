@@ -1321,9 +1321,9 @@
             "pubchemFormula": "Ga2O3",
             "pubchemIupacName": "digallium;tris(oxygen(2-))",
             "pubchemTitle": "",
-            "sourcePowderId": "powder:Ga2O3 | purity 99.99+ | vendor Thermo Scientific",
+            "sourcePowderId": "powder:Ga2O3",
             "createdAt": "2026-06-01T09:26:43",
-            "updatedAt": "2026-06-01T17:45:08"
+            "updatedAt": "2026-06-02T07:54:02"
         },
         {
             "id": "cas:7632-00-0|purity:97%|vendor:thermo-scientific",
