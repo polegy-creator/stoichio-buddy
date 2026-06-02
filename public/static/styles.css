@@ -880,6 +880,20 @@ tr.short td {
   background: var(--bad-bg);
 }
 
+tr.note-empty td {
+  background: color-mix(in srgb, #ff7668 10%, var(--surface));
+}
+
+.powder-note-empty {
+  background: rgba(255, 118, 104, 0.18);
+  border: 1px solid rgba(255, 118, 104, 0.48);
+  border-radius: 5px;
+  color: var(--bad);
+  display: inline-block;
+  font-weight: 850;
+  padding: 0.02rem 0.28rem;
+}
+
 tr.codex td {
   border-left: 3px solid var(--codex);
 }

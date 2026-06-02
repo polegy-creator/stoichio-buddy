@@ -60,6 +60,17 @@ def display_dataframe(
             return "sb-cell-wrap"
         return "sb-cell-compact"
 
+    def is_note_column(column):
+        return "note" in str(column).strip().lower()
+
+    def highlight_empty_note_html(escaped_text):
+        return re.sub(
+            r"\bempty\b",
+            lambda match: f'<span class="sb-note-empty">{match.group(0)}</span>',
+            escaped_text,
+            flags=re.IGNORECASE,
+        )
+
     def linkify_text(text):
         parts = []
         position = 0
@@ -78,11 +89,14 @@ def display_dataframe(
         text = str(value)
         title = html.escape(text, quote=True)
         cell_class = column_class(column)
-        escaped = (
-            linkify_text(text)
-            if column in {"Reference", "Source"} or "http://" in text or "https://" in text
-            else html.escape(text)
-        )
+        if is_note_column(column):
+            escaped = highlight_empty_note_html(html.escape(text))
+        else:
+            escaped = (
+                linkify_text(text)
+                if column in {"Reference", "Source"} or "http://" in text or "https://" in text
+                else html.escape(text)
+            )
 
         return f'<td class="{cell_class}" title="{title}"><span class="sb-cell-content">{escaped}</span></td>'
 
@@ -303,6 +317,16 @@ def display_dataframe(
             .sb-table tr.stock-empty td,
             .sb-table tr.stock-missing td {{
                 background: color-mix(in srgb, #d64a4a 22%, var(--sb-table-bg)) !important;
+            }}
+
+            .sb-note-empty {{
+                display: inline-block;
+                padding: 0.02rem 0.28rem;
+                border: 1px solid color-mix(in srgb, #ff7668 55%, transparent);
+                border-radius: 5px;
+                background: color-mix(in srgb, #ff7668 18%, transparent);
+                color: #ff7668;
+                font-weight: 850;
             }}
 
             .sb-table tr.codex-seeded td {{

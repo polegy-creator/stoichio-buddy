@@ -62,22 +62,30 @@ def recipe_dataframe(recipe_masses, inventory=None):
 
 
 def database_dataframe(db):
-    return pd.DataFrame(
-        [
-            {
-                "Powder": powder_display_name(powder, record),
-                "Formula": record.get("formula", powder),
-                "Purity": record.get("purity", ""),
-                "Vendor": record.get("company") or record.get("supplier", ""),
-                "Molar mass (g/mol)": round(record["molar_mass"], 3),
-                "Composition": ", ".join(
-                    f"{element}{amount:g}" for element, amount in record["elements"].items()
-                ),
-                "Notes": record.get("notes", ""),
-            }
-            for powder, record in db.items()
-        ]
-    )
+    columns = [
+        "Powder",
+        "Formula",
+        "Purity",
+        "Vendor",
+        "Molar mass (g/mol)",
+        "Composition",
+        "Notes",
+    ]
+    rows = [
+        {
+            "Powder": powder_display_name(powder, record),
+            "Formula": record.get("formula", powder),
+            "Purity": record.get("purity", ""),
+            "Vendor": record.get("company") or record.get("supplier", ""),
+            "Molar mass (g/mol)": round(record["molar_mass"], 3),
+            "Composition": ", ".join(
+                f"{element}{amount:g}" for element, amount in record["elements"].items()
+            ),
+            "Notes": record.get("notes", ""),
+        }
+        for powder, record in db.items()
+    ]
+    return pd.DataFrame(rows, columns=columns)
 
 
 def inventory_dataframe(inventory, recipe_masses=None):

@@ -147,6 +147,7 @@ const els = {
   syncMsdsPowders: $("#syncMsdsPowders"),
   deletePowderForm: $("#deletePowderForm"),
   deletePowder: $("#deletePowder"),
+  powderDatabaseSearch: $("#powderDatabaseSearch"),
   powderDatabaseTableBody: $("#powderDatabaseTable tbody"),
   dataHealthGrid: $("#dataHealthGrid"),
   msdsPdfHealthList: $("#msdsPdfHealthList"),
@@ -1495,11 +1496,46 @@ function syncPowderNoteTextarea() {
   els.powderNotes.value = record.notes || "";
 }
 
+function powderSearchText(powder, record) {
+  const elements = Object.entries(record.elements || {})
+    .map(([element, amount]) => `${element} ${amount}`)
+    .join(" ");
+  return [
+    powder,
+    powderLabel(powder),
+    record.formula || powderFormula(powder),
+    record.purity || "",
+    record.company || "",
+    record.supplier || "",
+    elements,
+    record.notes || "",
+  ].join(" ").toLowerCase();
+}
+
+function noteContainsEmpty(text) {
+  return /\bempty\b/i.test(String(text || ""));
+}
+
+function highlightedPowderNoteHtml(text) {
+  return escapeHtml(String(text || "")).replace(
+    /\bempty\b/gi,
+    (match) => `<span class="powder-note-empty">${match}</span>`,
+  );
+}
+
 function renderPowderDatabase() {
-  const rows = Object.entries(state.powders).sort(([a], [b]) => a.localeCompare(b));
+  const search = (els.powderDatabaseSearch?.value || "").trim().toLowerCase();
+  const rows = Object.entries(state.powders)
+    .filter(([powder, record]) => !search || powderSearchText(powder, record).includes(search))
+    .sort(([a], [b]) => a.localeCompare(b));
   els.powderDatabaseTableBody.innerHTML = "";
+  if (!rows.length) {
+    els.powderDatabaseTableBody.innerHTML = `<tr><td colspan="7" class="empty-table">No powders match this search.</td></tr>`;
+    return;
+  }
   for (const [powder, record] of rows) {
     const tr = document.createElement("tr");
+    if (noteContainsEmpty(record.notes)) tr.classList.add("note-empty");
     const elements = Object.entries(record.elements || {})
       .map(([element, amount]) => `${element}:${formatNumber(amount, 3)}`)
       .join(", ");
@@ -1510,7 +1546,7 @@ function renderPowderDatabase() {
       <td>${escapeHtml(record.company || "")}</td>
       <td>${formatNumber(record.molar_mass_g_mol, 5)}</td>
       <td class="wrap">${escapeHtml(elements)}</td>
-      <td class="wrap">${escapeHtml(record.notes || "")}</td>
+      <td class="wrap">${highlightedPowderNoteHtml(record.notes)}</td>
     `;
     els.powderDatabaseTableBody.appendChild(tr);
   }
@@ -2695,6 +2731,7 @@ function setupEvents() {
   els.deletePowderForm.addEventListener("submit", removePowder);
   els.powderNoteForm.addEventListener("submit", savePowderNote);
   els.notePowder.addEventListener("change", syncPowderNoteTextarea);
+  els.powderDatabaseSearch.addEventListener("input", renderPowderDatabase);
   els.syncMsdsPowders.addEventListener("click", syncMsdsPowders);
 
   els.msdsForm.addEventListener("submit", (event) => saveMsdsMaterial(event));

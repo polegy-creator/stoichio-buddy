@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260601-5">
+  <link rel="stylesheet" href="/static/styles.css?v=20260602-1">
 </head>
 <body>
   <aside class="sidebar">
@@ -281,6 +281,9 @@
           <h2>Powder database</h2>
           <button id="syncMsdsPowders" type="button" class="secondary">Sync Powders from MSDS</button>
         </div>
+        <div class="filters">
+          <label>Search <input id="powderDatabaseSearch" placeholder="powder, formula, vendor, purity, elements, notes"></label>
+        </div>
         <div class="table-wrap tall">
           <table id="powderDatabaseTable">
             <thead><tr><th>Powder</th><th>Formula</th><th>Purity</th><th>Vendor</th><th>Molar mass</th><th>Elements</th><th>Notes</th></tr></thead>
@@ -521,6 +524,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260601-5"></script>
+  <script src="/static/app.js?v=20260602-1"></script>
 </body>
 </html>

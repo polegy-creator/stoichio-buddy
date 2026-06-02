@@ -101,7 +101,29 @@ def render(ctx):
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
-    powder_df = database_dataframe(db)
+    powder_search = st.text_input(
+        "Search powder database",
+        placeholder="Powder, formula, vendor, purity, composition, or notes",
+    ).strip().lower()
+    filtered_db = db
+    if powder_search:
+        filtered_db = {
+            powder: record
+            for powder, record in db.items()
+            if powder_search in " ".join(
+                [
+                    powder,
+                    powder_display_name(powder, record),
+                    str(record.get("formula", powder)),
+                    str(record.get("purity", "")),
+                    str(record.get("company") or record.get("supplier", "")),
+                    " ".join(f"{element} {amount}" for element, amount in record.get("elements", {}).items()),
+                    str(record.get("notes", "")),
+                ]
+            ).lower()
+        }
+        st.caption(f"{len(filtered_db)} powder(s) match '{powder_search}'.")
+    powder_df = database_dataframe(filtered_db)
     display_dataframe(powder_df, theme_mode, width="stretch", hide_index=True)
     st.download_button(
         "Download Powder Database CSV",
