@@ -267,24 +267,6 @@
         "target_for": "Gabi"
     },
     {
-        "entry_id": "fb11ca998b804198aaeb6b75df59adb8",
-        "entry_type": "target_density",
-        "time": "2026-06-03T08:06:13",
-        "target": "Fe2O3BiVO4",
-        "measured_density_g_cm3": 4.646703411678063,
-        "theoretical_density_g_cm3": 6.107821916013274,
-        "relative_density_percent": 76.07791247965987,
-        "final_volume_cm3": 2.5594058725829365,
-        "final_mass_g": 11.8928,
-        "final_diameter_mm": 24.08,
-        "final_height_mm": 5.62,
-        "density_source": "Weighted theoretical density: 0.5*Fe2O3 (hematite alpha), hematite alpha: 5.25564 g/cm\u00b3 - Codex seeded - verify before use + 0.5*Manual 6.96 g/cm\u00b3",
-        "notes": "",
-        "target_id": "Gabi-T002",
-        "target_number": 2,
-        "target_for": "Gabi"
-    },
-    {
         "entry_id": "87c6c0392b1845a5a89a03e1d5dd4132",
         "entry_type": "target_density",
         "time": "2026-06-03T08:08:22",
