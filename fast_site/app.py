@@ -46,6 +46,7 @@ from stoichio.history import (
     log_synthesis,
     log_target_density,
     next_target_number,
+    normalize_person_name,
 )
 from stoichio.inventory import (
     consume_stock,
@@ -954,13 +955,13 @@ def save_target_density(payload: TargetDensitySaveRequest, x_stoichio_pin: str |
         payload.final_height_mm,
     )
     relative = relative_density_percent(density, payload.theoretical_density_g_cm3)
-    target_for = payload.target_for.strip()
+    target_for = normalize_person_name(payload.target_for)
     target_number = payload.target_number
     target_id = payload.target_id.strip()
 
     linked_recipe = linked_recipe_snapshot(payload.linked_recipe_entry_id)
     if linked_recipe:
-        target_for = target_for or str(linked_recipe.get("target_for", "")).strip()
+        target_for = target_for or normalize_person_name(linked_recipe.get("target_for", ""))
         target_number = target_number or linked_recipe.get("target_number")
         target_id = target_id or str(linked_recipe.get("target_id", "")).strip()
 
@@ -1028,7 +1029,7 @@ def backup():
 
 @app.get("/api/target-id-preview")
 def target_id_preview(target_for: str = Query(default="")):
-    person = target_for.strip()
+    person = normalize_person_name(target_for)
     number = next_target_number(load_history(), person) if person else 1
     return {
         "target_number": number,

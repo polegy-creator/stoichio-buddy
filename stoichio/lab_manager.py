@@ -52,6 +52,7 @@ from stoichio.history import (
     log_target_density,
     next_recipe_number,
     next_target_number,
+    normalize_person_name,
     save_history,
 )
 from stoichio.inventory import (

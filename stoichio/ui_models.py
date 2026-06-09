@@ -10,6 +10,7 @@ from stoichio.config import LOW_STOCK_THRESHOLD_G
 from stoichio.chemistry.density_engine import DEFAULT_DIE_DIAMETER_MM
 from stoichio.chemistry.formula_parser import normalize_formula, parse_formula
 from stoichio.chemistry.stoich_engine import MASS_BASIS_TARGET_FORMULA, MASS_BASIS_TOTAL_PRECURSOR
+from stoichio.history import normalize_person_name
 from stoichio.powders import normalize_powder, powder_display_name
 
 
@@ -731,7 +732,7 @@ def grouped_history(history):
 def grouped_target_density_history(history):
     groups = defaultdict(list)
     for entry in history:
-        target_for = str(entry.get("target_for", "")).strip() or "Unassigned"
+        target_for = normalize_person_name(entry.get("target_for", "")) or "Unassigned"
         groups[target_for].append(entry)
     return dict(sorted(groups.items(), key=lambda item: item[0].lower()))
 
@@ -744,7 +745,7 @@ def target_lifecycle_groups(history):
             continue
 
         target_id = str(entry.get("target_id") or entry.get("recipe_id") or "Unassigned").strip()
-        target_for = str(entry.get("target_for", "")).strip() or "Unassigned"
+        target_for = normalize_person_name(entry.get("target_for", "")) or "Unassigned"
         target = entry.get("target") or "Unknown target"
         groups[(target_for, target_id, target)].append(entry)
 
@@ -791,13 +792,14 @@ def target_lifecycle_summary(group_key, entries):
 
 
 def next_target_number(history, target_for):
-    person = str(target_for).strip()
+    person = normalize_person_name(target_for)
     if not person:
         return 1
+    person_key = person.casefold()
 
     used_numbers = []
     for entry in history:
-        if str(entry.get("target_for", "")).strip() != person:
+        if normalize_person_name(entry.get("target_for", "")).casefold() != person_key:
             continue
         try:
             used_numbers.append(int(entry.get("target_number")))

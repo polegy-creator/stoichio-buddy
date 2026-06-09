@@ -15,8 +15,25 @@ def _positive_int(value):
     return number if number > 0 else None
 
 
+def normalize_person_name(value):
+    """Normalize target owner names for storage, display, and grouping."""
+    cleaned = re.sub(r"\s+", " ", str(value or "").strip())
+    if not cleaned:
+        return ""
+
+    def normalize_word(match):
+        word = match.group(0)
+        return word[:1].upper() + word[1:].lower()
+
+    return re.sub(r"[A-Za-z][A-Za-z']*", normalize_word, cleaned)
+
+
+def _person_key(value):
+    return normalize_person_name(value).casefold()
+
+
 def _history_name_code(value, fallback):
-    cleaned = "".join(character for character in str(value or "").strip() if character.isalnum())
+    cleaned = "".join(character for character in normalize_person_name(value) if character.isalnum())
     return cleaned[:24] or fallback
 
 
@@ -73,14 +90,15 @@ def next_recipe_number(history):
 
 
 def next_target_number(history, target_for):
-    person = str(target_for).strip()
+    person = normalize_person_name(target_for)
     if not person:
         return 1
+    person_key = _person_key(person)
 
     used_numbers = {
         number
         for entry in history
-        if isinstance(entry, dict) and str(entry.get("target_for", "")).strip() == person
+        if isinstance(entry, dict) and _person_key(entry.get("target_for", "")) == person_key
         for number in [_target_number_from_entry(entry)]
         if number is not None
     }
@@ -105,12 +123,20 @@ def load_history():
     for entry in history:
         if not isinstance(entry, dict):
             continue
-        person = str(entry.get("target_for", "")).strip()
+        raw_person = str(entry.get("target_for", "")).strip()
+        person = normalize_person_name(raw_person)
         if not person:
             continue
+        if raw_person != person:
+            entry["target_for"] = person
+            changed = True
         number = _target_number_from_entry(entry)
         if number is not None:
             used_target_numbers.setdefault(person, set()).add(number)
+            target_id = format_target_id(person, number)
+            if entry.get("target_id") != target_id:
+                entry["target_id"] = target_id
+                changed = True
 
     for entry in history:
         if not isinstance(entry, dict):
@@ -138,8 +164,11 @@ def load_history():
                     entry["recipe_id"] = format_recipe_id(recipe_number)
                     changed = True
 
-            person = str(entry.get("target_for", "")).strip()
+            person = normalize_person_name(entry.get("target_for", ""))
             if person:
+                if entry.get("target_for") != person:
+                    entry["target_for"] = person
+                    changed = True
                 used_for_person = used_target_numbers.setdefault(person, set())
                 target_number = _target_number_from_entry(entry)
 
@@ -154,18 +183,22 @@ def load_history():
                     if entry.get("target_number") != target_number:
                         entry["target_number"] = target_number
                         changed = True
-                    if not entry.get("target_id"):
-                        entry["target_id"] = format_target_id(person, target_number)
+                    target_id = format_target_id(person, target_number)
+                    if entry.get("target_id") != target_id:
+                        entry["target_id"] = target_id
                         changed = True
 
         if entry_type == "target_density":
-            person = str(entry.get("target_for", "")).strip()
+            person = normalize_person_name(entry.get("target_for", ""))
             target_number = _target_number_from_entry(entry)
             if not person:
                 if target_number is not None and entry.get("target_number") != target_number:
                     entry["target_number"] = target_number
                     changed = True
                 continue
+            if entry.get("target_for") != person:
+                entry["target_for"] = person
+                changed = True
 
             used_for_person = used_target_numbers.setdefault(person, set())
 
@@ -180,8 +213,9 @@ def load_history():
                 if entry.get("target_number") != target_number:
                     entry["target_number"] = target_number
                     changed = True
-                if not entry.get("target_id"):
-                    entry["target_id"] = format_target_id(person, target_number)
+                target_id = format_target_id(person, target_number)
+                if entry.get("target_id") != target_id:
+                    entry["target_id"] = target_id
                     changed = True
 
     if changed:
@@ -226,13 +260,13 @@ def delete_history_entry(entry_id):
 
 def clear_target_density_history_for_person(target_for):
     history = load_history()
-    person = str(target_for).strip()
+    person_key = _person_key(target_for)
     remaining = [
         entry
         for entry in history
         if not (
             history_entry_type(entry) == "target_density"
-            and str(entry.get("target_for", "")).strip() == person
+            and _person_key(entry.get("target_for", "")) == person_key
         )
     ]
     removed_count = len(history) - len(remaining)
@@ -269,10 +303,10 @@ def log_synthesis(
 ):
     history = load_history()
     recipe_number = next_recipe_number(history)
-    target_for = str(target_for or "").strip()
+    target_for = normalize_person_name(target_for)
     if target_for:
         target_number = int(target_number or next_target_number(history, target_for))
-        target_id = target_id or format_target_id(target_for, target_number)
+        target_id = format_target_id(target_for, target_number)
 
     entry = {
         "entry_id": uuid.uuid4().hex,
@@ -321,13 +355,15 @@ def log_target_density(
     linked_recipe=None,
 ):
     history = load_history()
-    target_for = str(target_for or "").strip()
+    target_for = normalize_person_name(target_for)
     target_number = _positive_int(target_number)
     target_id = str(target_id or "").strip()
 
     if target_for and target_number is None:
         target_number = next_target_number(history, target_for)
     if target_for and not target_id:
+        target_id = format_target_id(target_for, target_number)
+    if target_for and target_number is not None:
         target_id = format_target_id(target_for, target_number)
 
     entry = {

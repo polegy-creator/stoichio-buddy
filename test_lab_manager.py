@@ -144,6 +144,43 @@ class LabManagerHistoryTests(unittest.TestCase):
         self.assertNotIn("target_number", history[-1])
         self.assertNotIn("target_for", history[-1])
 
+    def test_target_owner_names_are_case_insensitive_and_display_capitalized(self):
+        history = lab_manager.log_synthesis(
+            "Fe1.98Ti0.02O3",
+            15.615,
+            {"Fe2O3": 15.458808, "TiO2": 0.156192},
+            selected_powders=["Fe2O3", "TiO2"],
+            target_for="  vinoth  ",
+        )
+
+        self.assertEqual(history[-1]["target_for"], "Vinoth")
+        self.assertEqual(history[-1]["target_id"], "Vinoth-T001")
+        self.assertEqual(lab_manager.next_target_number(history, "VINOTH"), 2)
+
+    def test_load_history_migrates_old_owner_name_case(self):
+        lab_manager.save_history(
+            [
+                {
+                    "entry_id": "old-entry",
+                    "entry_type": "synthesis",
+                    "recipe_id": "R001",
+                    "recipe_number": 1,
+                    "target": "Fe1.98Ti0.02O3",
+                    "mass": 15.615,
+                    "recipe": {"Fe2O3": 15.458808, "TiO2": 0.156192},
+                    "target_for": "vinoth",
+                    "target_number": 1,
+                    "target_id": "vinoth-T001",
+                }
+            ]
+        )
+
+        history = lab_manager.load_history()
+
+        self.assertEqual(history[0]["target_for"], "Vinoth")
+        self.assertEqual(history[0]["target_id"], "Vinoth-T001")
+        self.assertEqual(lab_manager.next_target_number(history, "vInOtH"), 2)
+
 
 class LabManagerMaterialDensityTests(unittest.TestCase):
     def setUp(self):

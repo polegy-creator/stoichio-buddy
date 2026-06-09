@@ -731,7 +731,10 @@ function linkedRecipeById(entryId) {
 }
 
 function normalizeOwner(value) {
-  return String(value || "").trim();
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[A-Za-z][A-Za-z']*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
 }
 
 function loadJsonSetting(key, fallback) {
