@@ -58,9 +58,9 @@
             "estimated_target_mass": 11.886451,
             "stoichiometric_target_mass": 8.525038
         },
-        "target_id": "vinoth-T001",
+        "target_id": "Vinoth-T001",
         "target_number": 1,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "421d8ec815a04fbb8498eb58190db80b",
@@ -76,9 +76,9 @@
         "final_height_mm": 9.78,
         "density_source": "Fe2O3 (hematite alpha), hematite alpha: 5.25564 g/cm\u00b3 - Codex seeded - verify before use",
         "notes": "",
-        "target_id": "vinoth-T003",
+        "target_id": "Vinoth-T003",
         "target_number": 3,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "f0c72b7f4c0347bd8d35e2ac6949950f",
@@ -94,9 +94,9 @@
         "final_height_mm": 9.65,
         "density_source": "Ti2O3 (tistarite alpha), tistarite alpha: 4.57189 g/cm\u00b3 - Codex seeded - verify before use",
         "notes": "",
-        "target_id": "vinoth-T004",
+        "target_id": "Vinoth-T004",
         "target_number": 4,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "fd6a4e43cf3940a6ab001d9ad25ccd83",
@@ -112,9 +112,9 @@
         "final_height_mm": 9.65,
         "density_source": "Manual theoretical density",
         "notes": "",
-        "target_id": "vinoth-T005",
+        "target_id": "Vinoth-T005",
         "target_number": 5,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "b23f077adbb44af58b8b3b4a846dea26",
@@ -130,9 +130,9 @@
         "final_height_mm": 6.51,
         "density_source": "Manual theoretical density",
         "notes": "",
-        "target_id": "vinoth-T006",
+        "target_id": "Vinoth-T006",
         "target_number": 6,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "f5d14c8a29ea489283ebcbb60fc26558",
@@ -148,9 +148,9 @@
         "final_height_mm": 6.51,
         "density_source": "Manual theoretical density",
         "notes": "",
-        "target_id": "vinoth-T007",
+        "target_id": "Vinoth-T007",
         "target_number": 7,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "d75e6baa0a334eb7a404d3c4b22efd87",
@@ -166,9 +166,9 @@
         "final_height_mm": 6.14,
         "density_source": "Manual theoretical density",
         "notes": "",
-        "target_id": "vinoth-T008",
+        "target_id": "Vinoth-T008",
         "target_number": 8,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "cff8d79c1e3f481b901db47b52a22cc1",
@@ -184,9 +184,9 @@
         "final_height_mm": 6.14,
         "density_source": "Manual theoretical density",
         "notes": "",
-        "target_id": "vinoth-T009",
+        "target_id": "Vinoth-T009",
         "target_number": 9,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "4b68c1c197014604b03bc0788761ffa2",
@@ -202,9 +202,9 @@
         "final_height_mm": 6.08,
         "density_source": "Weighted theoretical density: 0.77*TiO2 (rutile), rutile: 4.24822 g/cm\u00b3 - Codex seeded - verify before use + 0.03*Er2O3 (C-type cubic), C-type cubic: 8.68948 g/cm\u00b3 - Codex seeded - verify before use + 0.2*Yb2O3 (C-type cubic), C-type cubic: 9.02476 g/cm\u00b3 - Codex seeded - verify before use",
         "notes": "",
-        "target_id": "vinoth-T010",
+        "target_id": "Vinoth-T010",
         "target_number": 10,
-        "target_for": "vinoth"
+        "target_for": "Vinoth"
     },
     {
         "entry_id": "2314164c3ccf4dc18c3031331062132c",
