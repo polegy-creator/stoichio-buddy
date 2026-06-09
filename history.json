@@ -358,69 +358,6 @@
         "target_for": "Gabi"
     },
     {
-        "entry_id": "350326c695f64bf786c991c8dd3cf89f",
-        "entry_type": "synthesis",
-        "recipe_id": "R003",
-        "recipe_number": 3,
-        "time": "2026-06-09T11:13:10",
-        "target": "Ti0.81Yb0.15Er0.04",
-        "mass": 11.886451635311923,
-        "selected_powders": [
-            "TiO2",
-            "Er2O3",
-            "Yb2O3"
-        ],
-        "recipe": {
-            "TiO2": 7.546176,
-            "Er2O3": 0.892414,
-            "Yb2O3": 3.447862
-        },
-        "warning": null,
-        "inventory_deducted": false,
-        "notes": "",
-        "calculation": {
-            "recipe": {
-                "TiO2": 7.546176,
-                "Er2O3": 0.892414,
-                "Yb2O3": 3.447862
-            },
-            "warning": null,
-            "exact": true,
-            "residual": 3.469446951953614e-17,
-            "coefficients": {
-                "TiO2": 0.81,
-                "Er2O3": 0.02,
-                "Yb2O3": 0.075
-            },
-            "elements": [
-                "Er",
-                "Ti",
-                "Yb"
-            ],
-            "ignored_elements": [
-                "O"
-            ],
-            "basis": "cation balance",
-            "target": {
-                "Ti": 0.81,
-                "Yb": 0.15,
-                "Er": 0.04
-            },
-            "normalized_target": "Ti0.81Yb0.15Er0.04",
-            "input_mass": 11.886452,
-            "mass_basis": "total_precursor_powder",
-            "powder_basis": 11.886452,
-            "target_molar_mass": 71.42017,
-            "precursor_formula_mass": 101.898265,
-            "formula_units": 0.116650186687,
-            "estimated_target_mass": 11.886452,
-            "stoichiometric_target_mass": 8.331176
-        },
-        "target_id": "Vinoth-T001",
-        "target_number": 1,
-        "target_for": "Vinoth"
-    },
-    {
         "entry_id": "58223beab3b34164bd29c4d94fb61a1b",
         "entry_type": "synthesis",
         "recipe_id": "R004",
