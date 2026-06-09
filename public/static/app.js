@@ -2434,7 +2434,7 @@ function renderHistory() {
   for (const group of groups) {
     const recipes = group.entries.filter((entry) => (entry.entry_type || "synthesis") === "synthesis");
     const densities = group.entries.filter((entry) => entry.entry_type === "target_density");
-    const status = recipes.length && densities.length ? "Complete" : recipes.length ? "Needs density" : "Needs recipe";
+    const status = recipes.length && densities.length ? "Completed" : recipes.length ? "Powder masses" : "Density";
     const text = JSON.stringify(group).toLowerCase();
     if (search && !text.includes(search)) continue;
     if (ownerFilter !== "All" && group.owner !== ownerFilter) continue;

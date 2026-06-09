@@ -45,21 +45,21 @@ def render(ctx):
             ]
             complete_count = sum(
                 1 for summary in lifecycle_summaries
-                if target_lifecycle_status(summary) == "Complete"
+                if target_lifecycle_status(summary) == "Completed"
             )
-            needs_density_count = sum(
+            powder_masses_count = sum(
                 1 for summary in lifecycle_summaries
-                if target_lifecycle_status(summary) == "Needs density"
+                if target_lifecycle_status(summary) == "Powder masses"
             )
-            needs_recipe_count = sum(
+            density_count = sum(
                 1 for summary in lifecycle_summaries
-                if target_lifecycle_status(summary) == "Needs recipe"
+                if target_lifecycle_status(summary) == "Density"
             )
             status_cols = st.columns(4)
             status_cols[0].metric("Target groups", len(lifecycle_groups))
-            status_cols[1].metric("Complete", complete_count)
-            status_cols[2].metric("Need density", needs_density_count)
-            status_cols[3].metric("Need recipe", needs_recipe_count)
+            status_cols[1].metric("Completed", complete_count)
+            status_cols[2].metric("Powder masses", powder_masses_count)
+            status_cols[3].metric("Density", density_count)
 
             search_col, owner_col, status_col = st.columns([1.45, 0.9, 0.85], gap="small")
             lifecycle_search = search_col.text_input(
@@ -70,7 +70,7 @@ def render(ctx):
             owner_filter = owner_col.selectbox("Target for", owner_options)
             status_filter = status_col.selectbox(
                 "Status",
-                ["All", "Complete", "Needs density", "Needs recipe"],
+                ["All", "Completed", "Powder masses", "Density"],
             )
             filtered_lifecycle_groups = filter_target_lifecycle_groups(
                 lifecycle_groups,
@@ -97,9 +97,9 @@ def render(ctx):
                             "</div>",
                             unsafe_allow_html=True,
                         )
-                        if target_lifecycle_status(summary) == "Needs density":
+                        if target_lifecycle_status(summary) == "Powder masses":
                             st.warning("Recipe saved, but no after-sintering density is linked yet.")
-                        elif target_lifecycle_status(summary) == "Needs recipe":
+                        elif target_lifecycle_status(summary) == "Density":
                             st.warning("Density saved, but no before-sintering recipe is linked yet.")
                         st.download_button(
                             "Download Target Report HTML",

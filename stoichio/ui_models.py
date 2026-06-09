@@ -660,11 +660,11 @@ def target_lifecycle_status(summary):
     has_recipe = bool(summary["recipes"])
     has_density = bool(summary["densities"])
     if has_recipe and has_density:
-        return "Complete"
+        return "Completed"
     if has_recipe:
-        return "Needs density"
+        return "Powder masses"
     if has_density:
-        return "Needs recipe"
+        return "Density"
     return "Empty"
 
 
