@@ -760,5 +760,63 @@
         "target_id": "Vinoth-T013",
         "target_number": 13,
         "target_for": "Vinoth"
+    },
+    {
+        "entry_id": "6823c9073a97416e9f87764d1d84ac50",
+        "entry_type": "synthesis",
+        "recipe_id": "R008",
+        "recipe_number": 8,
+        "time": "2026-06-14T11:18:49",
+        "target": "CeTi2O6",
+        "mass": 12.5,
+        "selected_powders": [
+            "TiO2",
+            "CeO2"
+        ],
+        "recipe": {
+            "TiO2": 6.016685,
+            "CeO2": 6.483315
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "",
+        "calculation": {
+            "recipe": {
+                "TiO2": 6.016685,
+                "CeO2": 6.483315
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 0,
+            "coefficients": {
+                "TiO2": 2,
+                "CeO2": 1
+            },
+            "elements": [
+                "Ce",
+                "Ti"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ce": 1,
+                "Ti": 2,
+                "O": 6
+            },
+            "normalized_target": "CeTi2O6",
+            "input_mass": 12.5,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 12.5,
+            "target_molar_mass": 331.848,
+            "precursor_formula_mass": 331.848,
+            "formula_units": 0.03766784793,
+            "estimated_target_mass": 12.5,
+            "stoichiometric_target_mass": 12.5
+        },
+        "target_id": "Tom-T001",
+        "target_number": 1,
+        "target_for": "Tom"
     }
 ]
