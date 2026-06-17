@@ -2349,6 +2349,31 @@
             "sourcePowderId": "",
             "createdAt": "2026-06-01T10:42:45",
             "updatedAt": "2026-06-01T15:20:37"
+        },
+        {
+            "id": "cas:25511-85-7|vendor:sigma-aldrige",
+            "casNumber": "25511-85-7",
+            "nameOrFormula": "Poly propylene CArbonate",
+            "purity": "",
+            "closetNumber": 4,
+            "msdsFileUrl": "",
+            "msdsExternalUrl": "",
+            "msdsFileName": "",
+            "msdsFileContentType": "",
+            "msdsFileDataBase64": "",
+            "msdsFileStoragePath": "",
+            "company": "Sigma-Aldrige",
+            "identityStatus": "manual identity entry",
+            "source": "",
+            "casSource": "",
+            "casSourceUrl": "",
+            "pubchemCid": "",
+            "pubchemFormula": "",
+            "pubchemIupacName": "",
+            "pubchemTitle": "",
+            "sourcePowderId": "",
+            "createdAt": "2026-06-17T08:05:38",
+            "updatedAt": "2026-06-17T08:05:38"
         }
     ],
     "deletedPowderImports": []
