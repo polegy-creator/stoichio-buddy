@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260602-1">
+  <link rel="stylesheet" href="/static/styles.css?v=20260621-1">
 </head>
 <body>
   <aside class="sidebar">
@@ -507,6 +507,7 @@
           <label>Search <input id="historySearch" placeholder="formula, person, powder, date, target number"></label>
           <label>Target for <select id="historyOwnerFilter"></select></label>
           <label>Status <select id="historyStatusFilter"><option>All</option><option>Completed</option><option>Powder masses</option><option>Density</option></select></label>
+          <label>Sort <select id="historySort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="target">Target / person</option></select></label>
         </div>
         <div id="historyLog" class="history-log"></div>
       </section>
@@ -524,6 +525,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260602-1"></script>
+  <script src="/static/app.js?v=20260621-1"></script>
 </body>
 </html>

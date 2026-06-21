@@ -550,7 +550,7 @@ def recipe_validation_warnings(result, recipe_masses, stock_messages=None, plann
     return warnings
 
 
-def recipe_calculation_metadata(result):
+def recipe_calculation_metadata(result, planning_context=None):
     if not result:
         return {}
 
@@ -569,7 +569,40 @@ def recipe_calculation_metadata(result):
         "formula_units",
         "estimated_target_mass",
     )
-    return {key: result[key] for key in keys if key in result}
+    metadata = {key: result[key] for key in keys if key in result}
+
+    planning_context = planning_context or {}
+    if planning_context:
+        amount_mode = planning_context.get("amount_mode", "")
+        height_mode = "height" in str(amount_mode).lower()
+        planning = {
+            "amount_mode": "Target height" if amount_mode == "Pellet height" else amount_mode,
+            "target_mass_g": planning_context.get("target_mass", result.get("input_mass")),
+            "mass_basis": result.get("mass_basis"),
+        }
+        if height_mode:
+            planning.update(
+                {
+                    "target_height_mm": planning_context.get("planning_height"),
+                    "die_diameter_mm": (
+                        DEFAULT_DIE_DIAMETER_MM
+                        if amount_mode == "Pellet height"
+                        else planning_context.get("die_diameter_mm")
+                    ),
+                    "target_porosity_percent": planning_context.get("target_porosity_percent", 0),
+                    "theoretical_density_g_cm3": planning_context.get("theoretical_density"),
+                    "density_source": planning_context.get("density_source", ""),
+                    "density_verified": planning_context.get("density_verified"),
+                    "solid_volume_cm3": planning_context.get("planning_volume"),
+                }
+            )
+        metadata["planning"] = {
+            key: value
+            for key, value in planning.items()
+            if value not in (None, "")
+        }
+
+    return metadata
 
 
 def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
@@ -582,6 +615,7 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
         latest_density = summary["densities"][0] if summary["densities"] else {}
         recipe = latest_recipe.get("recipe", {})
         calculation = latest_recipe.get("calculation", {})
+        planning = calculation.get("planning", {})
         linked_recipe = latest_density.get("linked_recipe", {}) if latest_density else {}
         mass_basis = recipe_mass_basis(latest_recipe) if latest_recipe else ""
 
@@ -604,6 +638,12 @@ def target_lifecycle_dataframe(history=None, lifecycle_groups=None):
                 ) if latest_recipe else "",
                 "Recipe input basis (g)": latest_recipe.get("mass", ""),
                 "Recipe input basis type": mass_basis_label(mass_basis),
+                "Recipe target height (mm)": planning.get("target_height_mm", ""),
+                "Recipe die diameter (mm)": planning.get("die_diameter_mm", ""),
+                "Recipe target porosity (%)": planning.get("target_porosity_percent", ""),
+                "Recipe planning density (g/cm3)": planning.get("theoretical_density_g_cm3", ""),
+                "Recipe planning density source": planning.get("density_source", ""),
+                "Recipe planning solid volume (cm3)": planning.get("solid_volume_cm3", ""),
                 "Recipe powder basis (g)": (
                     round(recipe_powder_basis(latest_recipe), 6)
                     if latest_recipe

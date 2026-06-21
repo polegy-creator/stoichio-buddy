@@ -587,7 +587,7 @@ def render(ctx):
                             notes=recipe_notes,
                             target_for=recipe_target_owner or None,
                             target_number=assigned_target_number,
-                            calculation=recipe_calculation_metadata(result),
+                            calculation=recipe_calculation_metadata(result, planning_context=last_recipe),
                         )
                         saved_recipe = saved_history[-1] if saved_history else {}
                         recipe_id = saved_recipe.get("target_id") or saved_recipe.get("recipe_id", "Recipe")

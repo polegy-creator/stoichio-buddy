@@ -218,6 +218,7 @@ const els = {
   historySearch: $("#historySearch"),
   historyOwnerFilter: $("#historyOwnerFilter"),
   historyStatusFilter: $("#historyStatusFilter"),
+  historySort: $("#historySort"),
   historyLog: $("#historyLog"),
 
   confirmModal: $("#confirmModal"),
@@ -885,7 +886,7 @@ function renderEverything() {
   renderHistory();
 }
 
-async function loadPowderOptions() {
+async function loadPowderOptions({ ensureDefaultPowders = true } = {}) {
   const params = new URLSearchParams({
     target: els.targetFormula.value.trim(),
     show_all: String(els.showAllPowders.checked),
@@ -897,13 +898,16 @@ async function loadPowderOptions() {
   state.selectedPowders = new Set(
     Array.from(state.selectedPowders).filter((powder) => options.includes(powder)),
   );
-  for (const powder of ["Fe2O3", "TiO2"]) {
-    if (options.includes(powder)) state.selectedPowders.add(powder);
+  if (ensureDefaultPowders) {
+    for (const powder of ["Fe2O3", "TiO2"]) {
+      if (options.includes(powder)) state.selectedPowders.add(powder);
+    }
   }
 
   renderPowderList(options, data);
   renderPowderSets(data.matching_powder_sets || []);
   renderPowderDatabase();
+  return { options, data };
 }
 
 function renderPowderList(options, data) {
@@ -1123,9 +1127,14 @@ async function previewHeightMass() {
   }
 }
 
-async function currentTargetMass() {
+async function currentTargetPlanning() {
   if (selectedAmountMode() !== "height") {
-    return Number(els.targetMass.value);
+    const targetMass = Number(els.targetMass.value);
+    return {
+      amount_mode: "Target formula mass",
+      target_mass_g: targetMass,
+      mass_basis: selectedRecipeMassBasis(),
+    };
   }
   const density = theoreticalDensityFromSelect(els.heightDensityChoice, els.heightDensity);
   const data = await api.send("/api/target-mass-from-height", "POST", {
@@ -1134,7 +1143,24 @@ async function currentTargetMass() {
     diameter_mm: Number(els.targetDiameter.value),
     target_porosity_percent: Number(els.targetPorosity.value || 0),
   });
-  return Number(data.target_mass_g);
+  return {
+    amount_mode: "Target height",
+    target_mass_g: Number(data.target_mass_g),
+    target_height_mm: Number(els.targetHeight.value),
+    die_diameter_mm: Number(els.targetDiameter.value),
+    target_porosity_percent: Number(els.targetPorosity.value || 0),
+    theoretical_density_g_cm3: density,
+    density_source: densitySourceFromSelect(els.heightDensityChoice),
+    density_choice: els.heightDensityChoice.value || "__manual__",
+    solid_volume_cm3: data.solid_volume_cm3,
+    cylinder_volume_cm3: data.volume_cm3,
+    mass_basis: selectedRecipeMassBasis(),
+  };
+}
+
+async function currentTargetMass() {
+  const planning = await currentTargetPlanning();
+  return planning.target_mass_g;
 }
 
 async function calculateRecipe(event) {
@@ -1147,7 +1173,8 @@ async function calculateRecipe(event) {
   els.recipeQuickSummary.className = "recipe-summary-card empty";
 
   try {
-    const mass = await currentTargetMass();
+    const planning = await currentTargetPlanning();
+    const mass = planning.target_mass_g;
     const payload = {
       target: els.targetFormula.value.trim(),
       mass_g: mass,
@@ -1155,7 +1182,7 @@ async function calculateRecipe(event) {
       mass_basis: selectedRecipeMassBasis(),
     };
     const data = await api.send("/api/recipe", "POST", payload);
-    state.lastRecipe = { payload, result: data.result };
+    state.lastRecipe = { payload, result: data.result, planning };
     state.lastRecipeMass = mass;
     rememberRecentPowders(payload.selected_powders);
     persistRecipeSettings();
@@ -1306,10 +1333,14 @@ async function saveRecipe() {
   }
   const done = setBusy(els.saveRecipe, "Saving...");
   try {
+    const savedResult = {
+      ...state.lastRecipe.result,
+      planning: state.lastRecipe.planning || {},
+    };
     const data = await api.send("/api/history/recipe", "POST", {
       ...state.lastRecipe.payload,
       mass_g: state.lastRecipeMass,
-      result: state.lastRecipe.result,
+      result: savedResult,
       notes: els.recipeNotes.value,
       target_for: els.recipeTargetFor.value,
       inventory_deducted: false,
@@ -2404,6 +2435,102 @@ async function updateDensityReviewStatus(identifier, verificationStatus, button 
   }
 }
 
+function historyEntryTime(entry) {
+  const time = Date.parse(entry.time || entry.timestamp || "");
+  return Number.isFinite(time) ? time : 0;
+}
+
+function historyGroupTime(group, sortMode) {
+  const times = group.entries.map(historyEntryTime).filter((time) => time > 0);
+  if (!times.length) return 0;
+  return sortMode === "oldest" ? Math.min(...times) : Math.max(...times);
+}
+
+function sortHistoryGroups(groups, sortMode) {
+  const sorted = [...groups];
+  if (sortMode === "target") {
+    return sorted.sort((a, b) => a.owner.localeCompare(b.owner) || a.targetId.localeCompare(b.targetId));
+  }
+  return sorted.sort((a, b) => {
+    const diff = historyGroupTime(a, sortMode) - historyGroupTime(b, sortMode);
+    if (diff !== 0) return sortMode === "oldest" ? diff : -diff;
+    return a.owner.localeCompare(b.owner) || a.targetId.localeCompare(b.targetId);
+  });
+}
+
+function sortHistoryEntries(entries, sortMode) {
+  const sorted = [...entries].sort((a, b) => historyEntryTime(a) - historyEntryTime(b));
+  return sortMode === "oldest" ? sorted : sorted.reverse();
+}
+
+function calculationPlanning(entry) {
+  return entry?.calculation?.planning || entry?.planning || {};
+}
+
+function isHeightPlanning(planning) {
+  const mode = String(planning.amount_mode || "").toLowerCase();
+  return mode.includes("height") || planning.target_height_mm || planning.planning_height;
+}
+
+function historyValue(value, digits = 6) {
+  if (value === undefined || value === null || value === "") return "";
+  if (typeof value === "number" && Number.isFinite(value)) return formatNumber(value, digits);
+  return String(value);
+}
+
+function historyParameterRows(entry) {
+  const rows = [];
+  const type = (entry.entry_type || "synthesis") === "target_density" ? "density" : "recipe";
+  if (type === "recipe") {
+    const calculation = entry.calculation || {};
+    const planning = calculationPlanning(entry);
+    const heightMode = isHeightPlanning(planning);
+    rows.push(["Amount mode", heightMode ? "Target height" : "Target formula mass"]);
+    rows.push(["Target formula mass (g)", historyValue(planning.target_mass_g ?? entry.mass)]);
+    if (heightMode) {
+      rows.push(["Target height (mm)", historyValue(planning.target_height_mm ?? planning.planning_height, 4)]);
+      rows.push(["Die diameter (mm)", historyValue(planning.die_diameter_mm ?? planning.diameter_mm, 4)]);
+      rows.push(["Target porosity (%)", historyValue(planning.target_porosity_percent ?? planning.porosity_percent, 4)]);
+      rows.push(["Theoretical density (g/cm³)", historyValue(planning.theoretical_density_g_cm3 ?? planning.theoretical_density, 6)]);
+      rows.push(["Density source", planning.density_source || ""]);
+      rows.push(["Cylinder volume (cm³)", historyValue(planning.cylinder_volume_cm3, 6)]);
+      rows.push(["Solid volume (cm³)", historyValue(planning.solid_volume_cm3 ?? planning.planning_volume, 6)]);
+    }
+    rows.push(["Selected powders", (entry.selected_powders || Object.keys(entry.recipe || {})).join(", ")]);
+    rows.push(["Mass basis", calculation.mass_basis || planning.mass_basis || ""]);
+    rows.push(["Solve basis", calculation.basis || ""]);
+    rows.push(["Residual", historyValue(calculation.residual, 10)]);
+  } else {
+    rows.push(["Final mass (g)", historyValue(entry.final_mass_g, 6)]);
+    rows.push(["Final diameter (mm)", historyValue(entry.final_diameter_mm, 4)]);
+    rows.push(["Final height (mm)", historyValue(entry.final_height_mm, 4)]);
+    rows.push(["Final volume (cm³)", historyValue(entry.final_volume_cm3, 6)]);
+    rows.push(["Measured density (g/cm³)", historyValue(entry.measured_density_g_cm3, 6)]);
+    rows.push(["Theoretical density (g/cm³)", historyValue(entry.theoretical_density_g_cm3, 6)]);
+    rows.push(["Target density (%)", historyValue(entry.relative_density_percent, 4)]);
+    rows.push(["Density source", entry.density_source || ""]);
+  }
+  return rows.filter(([, value]) => value !== "");
+}
+
+function historyParametersHtml(entry) {
+  const rows = historyParameterRows(entry);
+  if (!rows.length) return "";
+  return `
+    <details class="history-details">
+      <summary>Parameters used</summary>
+      <dl>
+        ${rows.map(([label, value]) => `
+          <div>
+            <dt>${escapeHtml(label)}</dt>
+            <dd>${escapeHtml(value)}</dd>
+          </div>
+        `).join("")}
+      </dl>
+    </details>
+  `;
+}
+
 function targetLifecycleGroups() {
   const map = new Map();
   for (const entry of state.history) {
@@ -2415,11 +2542,12 @@ function targetLifecycleGroups() {
     }
     map.get(key).entries.push(entry);
   }
-  return Array.from(map.values()).sort((a, b) => a.owner.localeCompare(b.owner) || a.targetId.localeCompare(b.targetId));
+  return Array.from(map.values());
 }
 
 function renderHistory() {
-  const groups = targetLifecycleGroups();
+  const sortMode = els.historySort.value || "newest";
+  const groups = sortHistoryGroups(targetLifecycleGroups(), sortMode);
   const owners = ["All", ...new Set(groups.map((group) => group.owner))].sort((a, b) => a === "All" ? -1 : b === "All" ? 1 : a.localeCompare(b));
   const previousOwner = els.historyOwnerFilter.value || "All";
   els.historyOwnerFilter.innerHTML = owners.map((owner) => `<option>${escapeHtml(owner)}</option>`).join("");
@@ -2450,7 +2578,7 @@ function renderHistory() {
         </div>
         <button class="icon" title="Clear this target group" data-clear-target="${escapeHtml(group.targetId)}">&#128465;</button>
       </div>
-      ${group.entries.slice().reverse().map((entry) => historyItemHtml(entry)).join("")}
+      ${sortHistoryEntries(group.entries, sortMode).map((entry) => historyItemHtml(entry)).join("")}
     `;
     els.historyLog.appendChild(node);
     renderedGroups += 1;
@@ -2465,6 +2593,9 @@ function renderHistory() {
   });
   els.historyLog.querySelectorAll("[data-clear-target]").forEach((button) => {
     button.addEventListener("click", () => clearTargetGroup(button.dataset.clearTarget));
+  });
+  els.historyLog.querySelectorAll("[data-repeat-history]").forEach((button) => {
+    button.addEventListener("click", () => repeatHistoryItem(button.dataset.repeatHistory));
   });
 }
 
@@ -2482,10 +2613,105 @@ function historyItemHtml(entry) {
         <div class="history-item-title">${escapeHtml(type)} | ${escapeHtml(title)}</div>
         <div class="history-meta">${escapeHtml(meta)}</div>
         ${entry.notes ? `<div class="history-meta">${escapeHtml(entry.notes)}</div>` : ""}
+        ${historyParametersHtml(entry)}
       </div>
-      <button class="icon" title="Delete this history item" data-delete-history="${escapeHtml(entry.entry_id)}">&#128465;</button>
+      <div class="history-actions">
+        <button class="secondary compact" type="button" title="Repeat this target" data-repeat-history="${escapeHtml(entry.entry_id)}">Repeat</button>
+        <button class="icon" title="Delete this history item" data-delete-history="${escapeHtml(entry.entry_id)}">&#128465;</button>
+      </div>
     </div>
   `;
+}
+
+function setAmountMode(mode) {
+  const input = $(`input[name='amountMode'][value="${mode}"]`);
+  if (input) input.checked = true;
+  toggleAmountMode();
+}
+
+async function repeatRecipeFromHistory(entry) {
+  const planning = calculationPlanning(entry);
+  const savedPowders = (entry.selected_powders || Object.keys(entry.recipe || {})).filter(Boolean);
+  els.targetFormula.value = entry.target || "";
+  els.recipeTargetFor.value = entry.target_for || "";
+  els.recipeNotes.value = entry.notes || "";
+
+  if (isHeightPlanning(planning)) {
+    setAmountMode("height");
+    els.targetMass.value = historyValue(planning.target_mass_g ?? entry.mass);
+    els.targetHeight.value = historyValue(planning.target_height_mm ?? planning.planning_height, 4);
+    els.targetDiameter.value = historyValue(planning.die_diameter_mm ?? planning.diameter_mm, 4) || els.targetDiameter.value;
+    els.targetPorosity.value = historyValue(planning.target_porosity_percent ?? planning.porosity_percent, 4) || "0";
+    els.heightDensity.value = historyValue(planning.theoretical_density_g_cm3 ?? planning.theoretical_density, 6);
+    state.savedDensityChoices.heightDensityChoice = planning.density_choice || "__manual__";
+    els.heightDensityChoice.value = "";
+    await updateDensityChoicesForTarget(els.targetFormula.value, els.heightDensityChoice, els.manualHeightDensityWrap);
+    if (planning.density_choice && [...els.heightDensityChoice.options].some((option) => option.value === planning.density_choice)) {
+      els.heightDensityChoice.value = planning.density_choice;
+      els.manualHeightDensityWrap.hidden = true;
+    } else {
+      els.heightDensityChoice.value = "__manual__";
+      els.manualHeightDensityWrap.hidden = false;
+    }
+    previewHeightMass().catch(() => {});
+  } else {
+    setAmountMode("mass");
+    els.targetMass.value = historyValue(planning.target_mass_g ?? entry.mass);
+  }
+
+  if (savedPowders.length) {
+    state.selectedPowders = new Set(savedPowders);
+  }
+  let powderLoad = await loadPowderOptions({ ensureDefaultPowders: false });
+  const missingPowders = savedPowders.filter((powder) => !powderLoad.options.includes(powder));
+  if (missingPowders.length) {
+    els.showAllPowders.checked = true;
+    state.selectedPowders = new Set(savedPowders);
+    powderLoad = await loadPowderOptions({ ensureDefaultPowders: false });
+  }
+  updateTargetPreview(els.recipeTargetFor, els.recipeTargetPreview);
+  persistRecipeSettings();
+  activatePage("powder-mass");
+  flash(`Loaded ${entry.target_id || entry.recipe_id || "history target"} into Powder Mass Calculation.`);
+}
+
+async function repeatDensityFromHistory(entry) {
+  els.densityTargetFormula.value = entry.target || "";
+  els.densityTargetFor.value = entry.target_for || "";
+  els.finalMass.value = historyValue(entry.final_mass_g, 6);
+  els.finalDiameter.value = historyValue(entry.final_diameter_mm, 4);
+  els.finalHeight.value = historyValue(entry.final_height_mm, 4);
+  els.relativeTheoreticalDensity.value = historyValue(entry.theoretical_density_g_cm3, 6);
+  els.densityNotes.value = entry.notes || "";
+  state.densityTargetAutoSynced = false;
+  state.savedDensityChoices.relativeDensityChoice = "__manual__";
+  await updateDensityChoicesForTarget(els.densityTargetFormula.value, els.relativeDensityChoice, els.manualRelativeDensityWrap);
+  els.relativeDensityChoice.value = "__manual__";
+  els.manualRelativeDensityWrap.hidden = false;
+  toggleRelativeDensityMode();
+  if (entry.linked_recipe?.entry_id) {
+    els.linkedRecipe.value = entry.linked_recipe.entry_id;
+  }
+  persistRecipeSettings();
+  activatePage("target-density");
+  flash(`Loaded ${entry.target_id || "density record"} into Target Density %.`);
+}
+
+async function repeatHistoryItem(entryId) {
+  const entry = state.history.find((record) => record.entry_id === entryId);
+  if (!entry) {
+    flash("Could not find that history item.", "error");
+    return;
+  }
+  try {
+    if ((entry.entry_type || "synthesis") === "target_density") {
+      await repeatDensityFromHistory(entry);
+    } else {
+      await repeatRecipeFromHistory(entry);
+    }
+  } catch (error) {
+    flash(error.message, "error");
+  }
 }
 
 async function deleteHistoryItem(entryId) {
@@ -2558,26 +2784,33 @@ function toggleAmountMode() {
   previewHeightMass().catch(() => {});
 }
 
+function activatePage(page) {
+  const button = document.querySelector(`.nav-item[data-page="${page}"]`);
+  const targetPage = $(`#page-${page}`);
+  if (!button || !targetPage) return;
+  $$(".nav-item").forEach((item) => item.classList.remove("active"));
+  $$(".page").forEach((pageNode) => pageNode.classList.remove("active"));
+  button.classList.add("active");
+  targetPage.classList.add("active");
+  const [title, subtitle] = pageMeta[page];
+  els.pageTitle.textContent = title;
+  els.pageSubtitle.textContent = subtitle;
+  els.pageSubtitle.hidden = !subtitle;
+  if (page === "target-density") {
+    state.densityPickerExpanded.relativeDensityChoice = false;
+    updateDensityChoicesForTarget(
+      syncTargetDensityFormulaFromRecipeTarget(),
+      els.relativeDensityChoice,
+      els.manualRelativeDensityWrap,
+    ).catch(() => {});
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function setupNavigation() {
   $$(".nav-item").forEach((button) => {
     button.addEventListener("click", () => {
-      $$(".nav-item").forEach((item) => item.classList.remove("active"));
-      $$(".page").forEach((page) => page.classList.remove("active"));
-      button.classList.add("active");
-      $(`#page-${button.dataset.page}`).classList.add("active");
-      const [title, subtitle] = pageMeta[button.dataset.page];
-      els.pageTitle.textContent = title;
-      els.pageSubtitle.textContent = subtitle;
-      els.pageSubtitle.hidden = !subtitle;
-      if (button.dataset.page === "target-density") {
-        state.densityPickerExpanded.relativeDensityChoice = false;
-        updateDensityChoicesForTarget(
-          syncTargetDensityFormulaFromRecipeTarget(),
-          els.relativeDensityChoice,
-          els.manualRelativeDensityWrap,
-        ).catch(() => {});
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      activatePage(button.dataset.page);
     });
   });
 }
@@ -2789,6 +3022,7 @@ function setupEvents() {
   els.historySearch.addEventListener("input", renderHistory);
   els.historyOwnerFilter.addEventListener("change", renderHistory);
   els.historyStatusFilter.addEventListener("change", renderHistory);
+  els.historySort.addEventListener("change", renderHistory);
 }
 
 function debounce(fn, wait) {
