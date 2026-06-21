@@ -181,6 +181,36 @@ class LabManagerHistoryTests(unittest.TestCase):
         self.assertEqual(history[0]["target_id"], "Vinoth-T001")
         self.assertEqual(lab_manager.next_target_number(history, "vInOtH"), 2)
 
+    def test_update_recipe_planning_backfills_target_height_details(self):
+        history = lab_manager.log_synthesis(
+            "Ti0.82Yb0.15Er0.03",
+            9.724402961875791,
+            {"Er2O3": 0.55362, "Yb2O3": 2.8519, "TiO2": 6.318883},
+            selected_powders=["Er2O3", "Yb2O3", "TiO2"],
+            target_for="Vinoth",
+            calculation={"mass_basis": "total_precursor_powder"},
+        )
+
+        entry, updated_history = lab_manager.update_recipe_planning(
+            history[-1]["entry_id"],
+            target_height_mm=3.9,
+            die_diameter_mm=25.05,
+            theoretical_density_g_cm3=5.24,
+            target_porosity_percent=5,
+            density_source="Manual lab note",
+        )
+        planning = entry["calculation"]["planning"]
+
+        self.assertEqual(updated_history[-1]["entry_id"], entry["entry_id"])
+        self.assertEqual(planning["amount_mode"], "Target height")
+        self.assertEqual(planning["target_height_mm"], 3.9)
+        self.assertEqual(planning["die_diameter_mm"], 25.05)
+        self.assertEqual(planning["target_porosity_percent"], 5)
+        self.assertEqual(planning["theoretical_density_g_cm3"], 5.24)
+        self.assertEqual(planning["density_source"], "Manual lab note")
+        self.assertIn("solid_volume_cm3", planning)
+        self.assertIn("calculated_target_mass_g", planning)
+
 
 class LabManagerMaterialDensityTests(unittest.TestCase):
     def setUp(self):

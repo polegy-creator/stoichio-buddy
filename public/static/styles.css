@@ -966,6 +966,10 @@ body.light .copy-box {
   margin-top: 0.18rem;
 }
 
+.history-missing-planning {
+  color: var(--warn);
+}
+
 .history-item {
   border-top: 1px solid var(--line-soft);
 }

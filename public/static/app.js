@@ -2495,6 +2495,11 @@ function historyParameterRows(entry) {
       rows.push(["Density source", planning.density_source || ""]);
       rows.push(["Cylinder volume (cm³)", historyValue(planning.cylinder_volume_cm3, 6)]);
       rows.push(["Solid volume (cm³)", historyValue(planning.solid_volume_cm3 ?? planning.planning_volume, 6)]);
+      if (Number.isFinite(Number(planning.mass_mismatch_g)) && Math.abs(Number(planning.mass_mismatch_g)) > 0.000001) {
+        rows.push(["Height mass mismatch (g)", historyValue(planning.mass_mismatch_g, 8)]);
+      }
+    } else if (calculation && Object.keys(calculation).length) {
+      rows.push(["Height details", "not stored for this legacy record"]);
     }
     rows.push(["Selected powders", (entry.selected_powders || Object.keys(entry.recipe || {})).join(", ")]);
     rows.push(["Mass basis", calculation.mass_basis || planning.mass_basis || ""]);
@@ -2597,26 +2602,36 @@ function renderHistory() {
   els.historyLog.querySelectorAll("[data-repeat-history]").forEach((button) => {
     button.addEventListener("click", () => repeatHistoryItem(button.dataset.repeatHistory));
   });
+  els.historyLog.querySelectorAll("[data-edit-history-planning]").forEach((button) => {
+    button.addEventListener("click", () => editHistoryPlanning(button.dataset.editHistoryPlanning, button));
+  });
 }
 
 function historyItemHtml(entry) {
   const type = (entry.entry_type || "synthesis") === "target_density" ? "After sintering" : "Before sintering";
+  const planning = calculationPlanning(entry);
+  const heightMode = isHeightPlanning(planning);
   const title = type === "Before sintering"
-    ? `${entry.recipe_id || "Recipe"} - ${formatNumber(entry.mass, 6)} g target formula mass`
+    ? `${entry.recipe_id || "Recipe"} - ${formatNumber(entry.mass, 6)} g ${heightMode ? "from target height" : "target formula mass"}`
     : `Density ${formatNumber(entry.relative_density_percent, 2)}%`;
   const meta = type === "Before sintering"
     ? `${niceTime(entry.time)} | powders: ${Object.entries(entry.recipe || {}).map(([p, g]) => `${p} ${formatNumber(g, 6)} g`).join(", ")}`
     : `${niceTime(entry.time)} | measured ${formatNumber(entry.measured_density_g_cm3, 5)} g/cm³, theoretical ${formatNumber(entry.theoretical_density_g_cm3, 5)} g/cm³`;
+  const legacyPlanningNote = type === "Before sintering" && !heightMode
+    ? `<div class="history-meta history-missing-planning">If this used target-height mode, add the height details once so it repeats correctly.</div>`
+    : "";
   return `
     <div class="history-item">
       <div>
         <div class="history-item-title">${escapeHtml(type)} | ${escapeHtml(title)}</div>
         <div class="history-meta">${escapeHtml(meta)}</div>
         ${entry.notes ? `<div class="history-meta">${escapeHtml(entry.notes)}</div>` : ""}
+        ${legacyPlanningNote}
         ${historyParametersHtml(entry)}
       </div>
       <div class="history-actions">
         <button class="secondary compact" type="button" title="Repeat this target" data-repeat-history="${escapeHtml(entry.entry_id)}">Repeat</button>
+        ${type === "Before sintering" ? `<button class="secondary compact" type="button" title="Add or edit target-height parameters" data-edit-history-planning="${escapeHtml(entry.entry_id)}">Height details</button>` : ""}
         <button class="icon" title="Delete this history item" data-delete-history="${escapeHtml(entry.entry_id)}">&#128465;</button>
       </div>
     </div>
@@ -2708,6 +2723,73 @@ async function repeatHistoryItem(entryId) {
       await repeatDensityFromHistory(entry);
     } else {
       await repeatRecipeFromHistory(entry);
+    }
+  } catch (error) {
+    flash(error.message, "error");
+  }
+}
+
+function promptPositiveNumber(label, fallback = "") {
+  const raw = window.prompt(label, fallback === undefined || fallback === null ? "" : String(fallback));
+  if (raw === null) return null;
+  const value = Number(String(raw).trim());
+  if (!(value > 0)) {
+    throw new Error(`${label} must be a positive number.`);
+  }
+  return value;
+}
+
+function promptPercent(label, fallback = "5") {
+  const raw = window.prompt(label, fallback === undefined || fallback === null ? "5" : String(fallback));
+  if (raw === null) return null;
+  const value = Number(String(raw).trim());
+  if (!(value >= 0 && value < 100)) {
+    throw new Error(`${label} must be between 0 and 100.`);
+  }
+  return value;
+}
+
+async function editHistoryPlanning(entryId, button = null) {
+  const entry = state.history.find((record) => record.entry_id === entryId);
+  if (!entry) {
+    flash("Could not find that history item.", "error");
+    return;
+  }
+  const planning = calculationPlanning(entry);
+  try {
+    const targetHeight = promptPositiveNumber("Target height used for this recipe (mm)", historyValue(planning.target_height_mm, 4));
+    if (targetHeight === null) return;
+    const dieDiameter = promptPositiveNumber("Die diameter used (mm)", historyValue(planning.die_diameter_mm, 4) || "25.05");
+    if (dieDiameter === null) return;
+    const density = promptPositiveNumber("Theoretical density used (g/cm³)", historyValue(planning.theoretical_density_g_cm3, 6));
+    if (density === null) return;
+    const porosity = promptPercent("Target porosity used (%)", historyValue(planning.target_porosity_percent, 4) || "5");
+    if (porosity === null) return;
+    const source = window.prompt("Density source or short note", planning.density_source || "Manual backfill");
+    if (source === null) return;
+
+    const done = button ? setBusy(button, "Saving...") : () => {};
+    try {
+      const data = await api.send(`/api/history/${encodeURIComponent(entryId)}/planning`, "PATCH", {
+        target_height_mm: targetHeight,
+        die_diameter_mm: dieDiameter,
+        theoretical_density_g_cm3: density,
+        target_porosity_percent: porosity,
+        density_source: source,
+        density_choice: planning.density_choice || "__manual__",
+      });
+      state.history = data.history || state.history;
+      state.linkedRecipes = data.linked_recipes || state.linkedRecipes;
+      renderEverything();
+      const saved = data.saved_entry?.calculation?.planning || {};
+      const mismatch = Number(saved.mass_mismatch_g || 0);
+      if (Math.abs(mismatch) > 0.000001) {
+        flash(`Height details saved. Check mismatch: ${formatNumber(mismatch, 8)} g.`, "warning");
+      } else {
+        flash("Height details saved.");
+      }
+    } finally {
+      done();
     }
   } catch (error) {
     flash(error.message, "error");

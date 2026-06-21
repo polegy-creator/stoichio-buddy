@@ -54,6 +54,7 @@ from stoichio.history import (
     next_target_number,
     normalize_person_name,
     save_history,
+    update_recipe_planning,
 )
 from stoichio.inventory import (
     add_to_inventory,

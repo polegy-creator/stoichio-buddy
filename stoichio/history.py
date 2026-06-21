@@ -5,6 +5,7 @@ import re
 import uuid
 
 from stoichio import storage
+from stoichio.chemistry.density_engine import cylinder_volume_cm3, target_mass_from_height
 
 
 def _positive_int(value):
@@ -256,6 +257,60 @@ def delete_history_entry(entry_id):
     if removed_count:
         save_history(remaining)
     return removed_count, remaining
+
+
+def update_recipe_planning(
+    entry_id,
+    *,
+    target_height_mm,
+    die_diameter_mm,
+    theoretical_density_g_cm3,
+    target_porosity_percent=5.0,
+    density_source="Manual backfill",
+    density_choice="__manual__",
+):
+    history = load_history()
+    entry_key = str(entry_id)
+    if not entry_key:
+        raise ValueError("History item is required")
+
+    for entry in history:
+        if str(entry.get("entry_id", "")) != entry_key:
+            continue
+        if history_entry_type(entry) != "synthesis":
+            raise ValueError("Target-height planning can only be added to recipe history items")
+
+        calculated_mass, solid_volume = target_mass_from_height(
+            theoretical_density_g_cm3,
+            target_height_mm,
+            die_diameter_mm,
+            target_porosity_percent,
+        )
+        cylinder_volume = cylinder_volume_cm3(die_diameter_mm, target_height_mm)
+        saved_mass = float(entry.get("mass") or calculated_mass)
+        calculation = entry.get("calculation")
+        if not isinstance(calculation, dict):
+            calculation = {}
+
+        calculation["planning"] = {
+            "amount_mode": "Target height",
+            "target_mass_g": saved_mass,
+            "target_height_mm": float(target_height_mm),
+            "die_diameter_mm": float(die_diameter_mm),
+            "target_porosity_percent": float(target_porosity_percent or 0.0),
+            "theoretical_density_g_cm3": float(theoretical_density_g_cm3),
+            "density_source": str(density_source or "Manual backfill").strip() or "Manual backfill",
+            "density_choice": str(density_choice or "__manual__").strip() or "__manual__",
+            "solid_volume_cm3": solid_volume,
+            "cylinder_volume_cm3": cylinder_volume,
+            "calculated_target_mass_g": calculated_mass,
+            "mass_mismatch_g": calculated_mass - saved_mass,
+        }
+        entry["calculation"] = calculation
+        save_history(history)
+        return entry, history
+
+    raise ValueError("History item was not found")
 
 
 def clear_target_density_history_for_person(target_for):

@@ -47,6 +47,7 @@ from stoichio.history import (
     log_target_density,
     next_target_number,
     normalize_person_name,
+    update_recipe_planning,
 )
 from stoichio.inventory import (
     consume_stock,
@@ -174,6 +175,15 @@ class HeightRequest(BaseModel):
     height_mm: float = Field(..., gt=0)
     diameter_mm: float = Field(DEFAULT_DIE_DIAMETER_MM, gt=0)
     target_porosity_percent: float = Field(5.0, ge=0, lt=100)
+
+
+class HistoryPlanningRequest(BaseModel):
+    target_height_mm: float = Field(..., gt=0)
+    die_diameter_mm: float = Field(DEFAULT_DIE_DIAMETER_MM, gt=0)
+    theoretical_density_g_cm3: float = Field(..., gt=0)
+    target_porosity_percent: float = Field(5.0, ge=0, lt=100)
+    density_source: str = "Manual backfill"
+    density_choice: str = "__manual__"
 
 
 class RelativeDensityRequest(BaseModel):
@@ -882,6 +892,29 @@ def save_recipe_and_deduct(payload: RecipeSaveRequest, x_stoichio_pin: str | Non
 def history():
     records = load_history()
     return {"history": records, "linked_recipes": linked_recipe_options(records)}
+
+
+@app.patch("/api/history/{entry_id}/planning")
+def update_history_planning(
+    entry_id: str,
+    payload: HistoryPlanningRequest,
+    x_stoichio_pin: str | None = Header(default=None),
+):
+    require_write_pin(x_stoichio_pin)
+    entry, records = update_recipe_planning(
+        entry_id,
+        target_height_mm=payload.target_height_mm,
+        die_diameter_mm=payload.die_diameter_mm,
+        theoretical_density_g_cm3=payload.theoretical_density_g_cm3,
+        target_porosity_percent=payload.target_porosity_percent,
+        density_source=payload.density_source,
+        density_choice=payload.density_choice,
+    )
+    return {
+        "history": records,
+        "linked_recipes": linked_recipe_options(records),
+        "saved_entry": entry,
+    }
 
 
 @app.delete("/api/history/{entry_id}")
