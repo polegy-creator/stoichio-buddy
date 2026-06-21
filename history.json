@@ -755,7 +755,21 @@
             "precursor_formula_mass": 99.670395,
             "formula_units": 0.096648940388,
             "estimated_target_mass": 9.633038,
-            "stoichiometric_target_mass": 6.6719
+            "stoichiometric_target_mass": 6.6719,
+            "planning": {
+                "amount_mode": "Target height",
+                "target_mass_g": 9.633038064766666,
+                "target_height_mm": 5.282,
+                "die_diameter_mm": 22.0,
+                "target_porosity_percent": 5.0,
+                "theoretical_density_g_cm3": 5.05,
+                "density_source": "Manual backfill",
+                "density_choice": "__manual__",
+                "solid_volume_cm3": 1.907467930950235,
+                "cylinder_volume_cm3": 2.007860979947616,
+                "calculated_target_mass_g": 9.632713051298685,
+                "mass_mismatch_g": -0.00032501346798063935
+            }
         },
         "target_id": "Vinoth-T013",
         "target_number": 13,
