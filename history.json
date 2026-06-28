@@ -1151,5 +1151,94 @@
         "target_id": "Vinoth-T015",
         "target_number": 15,
         "target_for": "Vinoth"
+    },
+    {
+        "entry_id": "437a015e95da4aa39a8abd66a6183880",
+        "entry_type": "target_density",
+        "time": "2026-06-28T09:38:07",
+        "target": "Ti0.80Yb0.15Er0.05",
+        "measured_density_g_cm3": 4.662853485481385,
+        "theoretical_density_g_cm3": 5.1867673465262545,
+        "relative_density_percent": 89.89902908608863,
+        "final_volume_cm3": 1.9886277852975909,
+        "final_mass_g": 9.27268,
+        "final_diameter_mm": 21.34,
+        "final_height_mm": 5.56,
+        "density_source": "Weighted theoretical density: 0.8*TiO2 (rutile), rutile: 4.24822 g/cm\u00b3 - Codex seeded - verify before use + 0.15*Yb2O3 (C-type cubic), C-type cubic: 9.02476 g/cm\u00b3 - Codex seeded - verify before use + 0.05*Er2O3 (C-type cubic), C-type cubic: 8.68948 g/cm\u00b3 - Codex seeded - verify before use",
+        "notes": "",
+        "linked_recipe": {
+            "entry_id": "f200c1917ef94c4ebe9f71e35686f74f",
+            "recipe_id": "R010",
+            "target": "Ti0.80Yb0.15Er0.05",
+            "target_for": "Vinoth",
+            "target_id": "Vinoth-T015",
+            "target_number": 15,
+            "input_basis_g": 9.88990848679556,
+            "selected_powders": [
+                "Er2O3",
+                "Yb2O3",
+                "TiO2"
+            ],
+            "recipe": {
+                "Er2O3": 0.918109,
+                "Yb2O3": 2.83771,
+                "TiO2": 6.134089
+            },
+            "notes": "3 tons, big furnace",
+            "calculation": {
+                "recipe": {
+                    "Er2O3": 0.918109,
+                    "Yb2O3": 2.83771,
+                    "TiO2": 6.134089
+                },
+                "warning": null,
+                "exact": true,
+                "residual": 2.7755575615628914e-17,
+                "coefficients": {
+                    "Er2O3": 0.025,
+                    "Yb2O3": 0.075,
+                    "TiO2": 0.8
+                },
+                "elements": [
+                    "Er",
+                    "Ti",
+                    "Yb"
+                ],
+                "ignored_elements": [
+                    "O"
+                ],
+                "basis": "cation balance",
+                "target": {
+                    "Ti": 0.8,
+                    "Yb": 0.15,
+                    "Er": 0.05
+                },
+                "normalized_target": "Ti0.80Yb0.15Er0.05",
+                "input_mass": 9.889908,
+                "mass_basis": "total_precursor_powder",
+                "powder_basis": 9.889908,
+                "target_molar_mass": 72.6141,
+                "precursor_formula_mass": 103.0122,
+                "formula_units": 0.096007157276,
+                "estimated_target_mass": 9.889908,
+                "stoichiometric_target_mass": 6.971473,
+                "planning": {
+                    "amount_mode": "Target height",
+                    "target_mass_g": 9.88990848679556,
+                    "target_height_mm": 5.28,
+                    "die_diameter_mm": 22,
+                    "target_porosity_percent": 5,
+                    "theoretical_density_g_cm3": 5.1868,
+                    "density_source": "Manual theoretical density",
+                    "density_choice": "__manual__",
+                    "solid_volume_cm3": 1.906745678799175,
+                    "cylinder_volume_cm3": 2.0071007145254476,
+                    "mass_basis": "total_precursor_powder"
+                }
+            }
+        },
+        "target_id": "Vinoth-T015",
+        "target_number": 15,
+        "target_for": "Vinoth"
     }
 ]
