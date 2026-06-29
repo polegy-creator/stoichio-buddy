@@ -1405,5 +1405,81 @@
         "target_id": "Vinoth-T016",
         "target_number": 16,
         "target_for": "Vinoth"
+    },
+    {
+        "entry_id": "0b37c3ded81b49bd8330bcf5b3d25c87",
+        "entry_type": "synthesis",
+        "recipe_id": "R012",
+        "recipe_number": 12,
+        "time": "2026-06-29T08:52:52",
+        "target": "Ti0.81Yb0.15Er0.04",
+        "mass": 9.805058304088996,
+        "selected_powders": [
+            "TiO2",
+            "Er2O3",
+            "Yb2O3"
+        ],
+        "recipe": {
+            "TiO2": 6.224793,
+            "Er2O3": 0.736146,
+            "Yb2O3": 2.844119
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "3 ton 1%",
+        "calculation": {
+            "recipe": {
+                "TiO2": 6.224793,
+                "Er2O3": 0.736146,
+                "Yb2O3": 2.844119
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 3.469446951953614e-17,
+            "coefficients": {
+                "TiO2": 0.81,
+                "Er2O3": 0.02,
+                "Yb2O3": 0.075
+            },
+            "elements": [
+                "Er",
+                "Ti",
+                "Yb"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ti": 0.81,
+                "Yb": 0.15,
+                "Er": 0.04
+            },
+            "normalized_target": "Ti0.81Yb0.15Er0.04",
+            "input_mass": 9.805058,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 9.805058,
+            "target_molar_mass": 71.42017,
+            "precursor_formula_mass": 101.898265,
+            "formula_units": 0.096223996592,
+            "estimated_target_mass": 9.805058,
+            "stoichiometric_target_mass": 6.872334,
+            "planning": {
+                "amount_mode": "Target height",
+                "target_mass_g": 9.805058304088996,
+                "target_height_mm": 5.28,
+                "die_diameter_mm": 22,
+                "target_porosity_percent": 5,
+                "theoretical_density_g_cm3": 5.1423,
+                "density_source": "Manual theoretical density",
+                "density_choice": "__manual__",
+                "solid_volume_cm3": 1.906745678799175,
+                "cylinder_volume_cm3": 2.0071007145254476,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Vinoth-T017",
+        "target_number": 17,
+        "target_for": "Vinoth"
     }
 ]
