@@ -1717,5 +1717,81 @@
         "target_id": "Vinoth-T023",
         "target_number": 23,
         "target_for": "Vinoth"
+    },
+    {
+        "entry_id": "50a2a5df43ef4758bbdf9d8c6254e674",
+        "entry_type": "synthesis",
+        "recipe_id": "R019",
+        "recipe_number": 19,
+        "time": "2026-07-15T13:04:42",
+        "target": "Ti0.79Yb0.2Er0.01",
+        "mass": 11.886451635311923,
+        "selected_powders": [
+            "TiO2",
+            "Er2O3",
+            "Yb2O3"
+        ],
+        "recipe": {
+            "TiO2": 7.182411,
+            "Er2O3": 0.217725,
+            "Yb2O3": 4.486316
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "3 tons previous broke",
+        "calculation": {
+            "recipe": {
+                "TiO2": 7.182411,
+                "Er2O3": 0.217725,
+                "Yb2O3": 4.486316
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 8.673617379884035e-18,
+            "coefficients": {
+                "TiO2": 0.79,
+                "Er2O3": 0.005,
+                "Yb2O3": 0.1
+            },
+            "elements": [
+                "Er",
+                "Ti",
+                "Yb"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ti": 0.79,
+                "Yb": 0.2,
+                "Er": 0.01
+            },
+            "normalized_target": "Ti0.79Yb0.2Er0.01",
+            "input_mass": 11.886452,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 11.886452,
+            "target_molar_mass": 74.09753,
+            "precursor_formula_mass": 104.415635,
+            "formula_units": 0.113837852304,
+            "estimated_target_mass": 11.886452,
+            "stoichiometric_target_mass": 8.435104,
+            "planning": {
+                "amount_mode": "Target height",
+                "target_mass_g": 11.886451635311923,
+                "target_height_mm": 6,
+                "die_diameter_mm": 25,
+                "target_porosity_percent": 5,
+                "theoretical_density_g_cm3": 4.248224636817146,
+                "density_source": "TiO2 (rutile), rutile: 4.24822 g/cm\u00b3 - Codex seeded - verify before use",
+                "density_choice": "TiO2__rutile",
+                "solid_volume_cm3": 2.7979809571034098,
+                "cylinder_volume_cm3": 2.9452431127404313,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Vinoth-T024",
+        "target_number": 24,
+        "target_for": "Vinoth"
     }
 ]
