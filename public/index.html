@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stoichio Buddy</title>
   <link rel="icon" href="/assets/stoichio_icon_app.png">
-  <link rel="stylesheet" href="/static/styles.css?v=20260621-2">
+  <link rel="stylesheet" href="/static/styles.css?v=20260726-1">
 </head>
 <body>
   <aside class="sidebar">
@@ -57,7 +57,7 @@
 
     <section id="page-powder-mass" class="page active">
       <div class="two-col">
-        <form id="recipeForm" class="panel">
+        <form id="recipeForm" class="panel" novalidate>
           <div class="section-head">
             <div>
               <h2>Powder mass setup</h2>
@@ -96,7 +96,7 @@
             <div id="massModeFields">
               <label>
                 <span id="targetMassLabel">Target formula mass (g)</span>
-                <input id="targetMass" type="number" min="0" step="0.0001" value="15.6">
+                <input id="targetMass" type="number" min="0" step="any" value="15.6">
               </label>
             </div>
 
@@ -104,15 +104,15 @@
               <div class="row">
                 <label>
                   Desired target height (mm)
-                  <input id="targetHeight" type="number" min="0" step="0.0001" value="1">
+                  <input id="targetHeight" type="number" min="0" step="any" value="1">
                 </label>
                 <label>
                   Die diameter (mm)
-                  <input id="targetDiameter" type="number" min="0" step="0.0001" value="25.05">
+                  <input id="targetDiameter" type="number" min="0" step="any" value="25.05">
                 </label>
                 <label>
                   Target porosity (%)
-                  <input id="targetPorosity" type="number" min="0" max="99.999" step="0.01" value="5">
+                  <input id="targetPorosity" type="number" min="0" max="99.999" step="any" value="5">
                 </label>
               </div>
               <label>
@@ -121,7 +121,7 @@
               </label>
               <label id="manualHeightDensityWrap">
                 Manual theoretical density (g/cm³)
-                <input id="heightDensity" type="number" min="0" step="0.0001" value="5.26">
+                <input id="heightDensity" type="number" min="0" step="any" value="5.26">
               </label>
               <div id="heightMassPreview" class="hint"></div>
             </div>
@@ -178,7 +178,7 @@
 
     <section id="page-target-density" class="page">
       <div class="two-col">
-        <form id="densityForm" class="panel">
+        <form id="densityForm" class="panel" novalidate>
           <h2>Target density after sintering</h2>
 
           <label class="advanced-only">
@@ -200,16 +200,16 @@
           <div class="row">
             <label>
               Measured final diameter (mm)
-              <input id="finalDiameter" type="number" min="0" step="0.0001">
+              <input id="finalDiameter" type="number" min="0" step="any">
             </label>
             <label>
               Measured final height (mm)
-              <input id="finalHeight" type="number" min="0" step="0.0001">
+              <input id="finalHeight" type="number" min="0" step="any">
             </label>
           </div>
           <label>
             Measured final mass (g)
-            <input id="finalMass" type="number" min="0" step="0.000001">
+            <input id="finalMass" type="number" min="0" step="any">
           </label>
           <fieldset class="segmented">
             <legend>Theoretical density mode</legend>
@@ -223,7 +223,7 @@
             </label>
             <label id="manualRelativeDensityWrap">
               Manual theoretical density (g/cm³)
-              <input id="relativeTheoreticalDensity" type="number" min="0" step="0.0001">
+              <input id="relativeTheoreticalDensity" type="number" min="0" step="any">
             </label>
           </div>
           <div id="weightedRelativeDensityWrap" hidden>
@@ -295,7 +295,7 @@
 
     <section id="page-material-density" class="page">
       <div class="two-col">
-        <form id="materialDensityForm" class="panel">
+        <form id="materialDensityForm" class="panel" novalidate>
           <h2>Add or update theoretical density</h2>
           <label>Target formula <input id="materialFormula" placeholder="Fe1.98Ti0.02O3"></label>
           <label>Phase / polymorph optional <input id="materialPhase" placeholder="rutile, anatase, hematite"></label>
@@ -321,9 +321,9 @@
               <label id="latticeCWrap">c (Å) <input id="latticeC" type="number" min="0" step="0.000001"></label>
             </div>
             <div class="row lattice-row">
-              <label id="latticeAlphaWrap">α (°) <input id="latticeAlpha" type="number" min="0" max="180" step="0.0001"></label>
-              <label id="latticeBetaWrap">β (°) <input id="latticeBeta" type="number" min="0" max="180" step="0.0001"></label>
-              <label id="latticeGammaWrap">γ (°) <input id="latticeGamma" type="number" min="0" max="180" step="0.0001"></label>
+              <label id="latticeAlphaWrap">α (°) <input id="latticeAlpha" type="number" min="0" max="180" step="any"></label>
+              <label id="latticeBetaWrap">β (°) <input id="latticeBeta" type="number" min="0" max="180" step="any"></label>
+              <label id="latticeGammaWrap">γ (°) <input id="latticeGamma" type="number" min="0" max="180" step="any"></label>
             </div>
             <div id="latticeSystemHint" class="constraint-card"></div>
           </div>
@@ -525,6 +525,6 @@
     </section>
   </div>
 
-  <script src="/static/app.js?v=20260621-2"></script>
+  <script src="/static/app.js?v=20260726-1"></script>
 </body>
 </html>
