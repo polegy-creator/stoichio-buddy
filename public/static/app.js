@@ -101,6 +101,8 @@ const els = {
   powderSetBox: $("#powderSetBox"),
   powderList: $("#powderList"),
   recipeForm: $("#recipeForm"),
+  calculateRecipeButton: $("#calculateRecipeButton"),
+  recipeActionMessage: $("#recipeActionMessage"),
   recipeMessage: $("#recipeMessage"),
   recipeQuickSummary: $("#recipeQuickSummary"),
   recipeMetrics: $("#recipeMetrics"),
@@ -1164,7 +1166,9 @@ async function currentTargetMass() {
 }
 
 async function calculateRecipe(event) {
-  event.preventDefault();
+  if (event) event.preventDefault();
+  const done = setBusy(els.calculateRecipeButton, "Calculating...");
+  setMessage(els.recipeActionMessage, "Calculating...");
   setMessage(els.recipeMessage, "Calculating...");
   renderRecipeEmptyState("Calculating...");
   els.recipeMetrics.innerHTML = "";
@@ -1187,11 +1191,19 @@ async function calculateRecipe(event) {
     rememberRecentPowders(payload.selected_powders);
     persistRecipeSettings();
     renderRecipeResult(data, mass);
+    setMessage(
+      els.recipeActionMessage,
+      data.result?.recipe ? "Recipe calculated." : (data.result?.warning || "No recipe generated."),
+      data.result?.recipe ? "good" : "error",
+    );
   } catch (error) {
+    setMessage(els.recipeActionMessage, error.message, "error");
     setMessage(els.recipeMessage, error.message, "error");
     renderRecipeEmptyState("No recipe.");
     els.recipeQuickSummary.textContent = "Recipe calculation failed.";
     els.recipeQuickSummary.className = "recipe-summary-card empty";
+  } finally {
+    done();
   }
 }
 
@@ -2972,6 +2984,7 @@ function setupEvents() {
       previewHeightMass().catch(() => {});
     });
   });
+  els.calculateRecipeButton.addEventListener("click", calculateRecipe);
   els.recipeForm.addEventListener("submit", calculateRecipe);
   els.saveRecipe.addEventListener("click", saveRecipe);
   els.copyRecipeNotebook.addEventListener("click", copyRecipeToNotebook);
