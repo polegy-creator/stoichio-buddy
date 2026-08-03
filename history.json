@@ -2112,5 +2112,70 @@
         "target_id": "Gabi-T003",
         "target_number": 3,
         "target_for": "Gabi"
+    },
+    {
+        "entry_id": "329d923edf10446784682028b85aac91",
+        "entry_type": "synthesis",
+        "recipe_id": "R022",
+        "recipe_number": 22,
+        "time": "2026-08-03T08:38:47",
+        "target": "(BiVO4)0.75(Fe2O3)0.25",
+        "mass": 13.0,
+        "selected_powders": [
+            "Fe2O3",
+            "BiVO4"
+        ],
+        "recipe": {
+            "Fe2O3": 1.834767,
+            "BiVO4": 11.165233
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "3 tons previous broke",
+        "calculation": {
+            "recipe": {
+                "Fe2O3": 1.834767,
+                "BiVO4": 11.165233
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 1.5700924586837752e-16,
+            "coefficients": {
+                "Fe2O3": 0.25,
+                "BiVO4": 0.75
+            },
+            "elements": [
+                "Bi",
+                "Fe",
+                "V"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Bi": 0.75,
+                "V": 0.75,
+                "O": 3.75,
+                "Fe": 0.5
+            },
+            "normalized_target": "(BiVO4)0.75(Fe2O3)0.25",
+            "input_mass": 13,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 13,
+            "target_molar_mass": 282.86025,
+            "precursor_formula_mass": 282.86025,
+            "formula_units": 0.045959091106,
+            "estimated_target_mass": 13,
+            "stoichiometric_target_mass": 13,
+            "planning": {
+                "amount_mode": "Target formula mass",
+                "target_mass_g": 13,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Gabi-T004",
+        "target_number": 4,
+        "target_for": "Gabi"
     }
 ]
