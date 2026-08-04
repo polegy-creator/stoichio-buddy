@@ -2112,5 +2112,74 @@
         "target_id": "Gabi-T004",
         "target_number": 4,
         "target_for": "Gabi"
+    },
+    {
+        "entry_id": "75f12215e795432593f4cf566e304f60",
+        "entry_type": "synthesis",
+        "recipe_id": "R023",
+        "recipe_number": 23,
+        "time": "2026-08-04T07:23:13",
+        "target": "Zn(Ga0.2Fe1.8)O4",
+        "mass": 12.5,
+        "selected_powders": [
+            "Fe2O3",
+            "ZnO | purity 99.995% | vendor Noah Chemicals Corporation",
+            "Ga2O3"
+        ],
+        "recipe": {
+            "Fe2O3": 7.367401,
+            "ZnO | purity 99.995% | vendor Noah Chemicals Corporation": 4.171714,
+            "Ga2O3": 0.960885
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "",
+        "calculation": {
+            "recipe": {
+                "Fe2O3": 7.367401,
+                "ZnO | purity 99.995% | vendor Noah Chemicals Corporation": 4.171714,
+                "Ga2O3": 0.960885
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 5.551115123125783e-17,
+            "coefficients": {
+                "Fe2O3": 0.9,
+                "ZnO | purity 99.995% | vendor Noah Chemicals Corporation": 1,
+                "Ga2O3": 0.1
+            },
+            "elements": [
+                "Fe",
+                "Ga",
+                "Zn"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Zn": 1,
+                "Ga": 0.2,
+                "Fe": 1.8,
+                "O": 4
+            },
+            "normalized_target": "Zn(Ga0.2Fe1.8)O4",
+            "input_mass": 12.5,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 12.5,
+            "target_molar_mass": 243.8416,
+            "precursor_formula_mass": 243.8416,
+            "formula_units": 0.05126278699,
+            "estimated_target_mass": 12.5,
+            "stoichiometric_target_mass": 12.5,
+            "planning": {
+                "amount_mode": "Target formula mass",
+                "target_mass_g": 12.5,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Tom-T002",
+        "target_number": 2,
+        "target_for": "Tom"
     }
 ]
