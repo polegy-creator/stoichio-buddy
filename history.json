@@ -2335,5 +2335,68 @@
         "target_id": "Vinoth-T026",
         "target_number": 26,
         "target_for": "Vinoth"
+    },
+    {
+        "entry_id": "4d85fc11b29e49b695aad20321230e93",
+        "entry_type": "synthesis",
+        "recipe_id": "R025",
+        "recipe_number": 25,
+        "time": "2026-08-09T08:54:21",
+        "target": "Ti0.99Co0.01O2",
+        "mass": 12.5,
+        "selected_powders": [
+            "TiO2",
+            "Co3O4"
+        ],
+        "recipe": {
+            "TiO2": 12.37438,
+            "Co3O4": 0.12562
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "3 tons",
+        "calculation": {
+            "recipe": {
+                "TiO2": 12.37438,
+                "Co3O4": 0.12562
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 1.113606002252634e-16,
+            "coefficients": {
+                "TiO2": 0.99,
+                "Co3O4": 0.003333333333
+            },
+            "elements": [
+                "Co",
+                "Ti"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ti": 0.99,
+                "Co": 0.01,
+                "O": 2
+            },
+            "normalized_target": "Ti0.99Co0.01O2",
+            "input_mass": 12.5,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 12.5,
+            "target_molar_mass": 79.97566,
+            "precursor_formula_mass": 79.869,
+            "formula_units": 0.156506279032,
+            "estimated_target_mass": 12.5,
+            "stoichiometric_target_mass": 12.516693,
+            "planning": {
+                "amount_mode": "Target formula mass",
+                "target_mass_g": 12.5,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Adi-T001",
+        "target_number": 1,
+        "target_for": "Adi"
     }
 ]
