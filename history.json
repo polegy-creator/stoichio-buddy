@@ -2563,5 +2563,81 @@
         "target_id": "Adi-T001",
         "target_number": 1,
         "target_for": "Adi"
+    },
+    {
+        "entry_id": "5d18271e21c74593a9ccd2c45fcfaab1",
+        "entry_type": "synthesis",
+        "recipe_id": "R026",
+        "recipe_number": 26,
+        "time": "2026-08-11T09:26:08",
+        "target": "Ti0.83Yb0.15Er0.02",
+        "mass": 9.632713051298685,
+        "selected_powders": [
+            "TiO2",
+            "Er2O3",
+            "Yb2O3"
+        ],
+        "recipe": {
+            "TiO2": 6.406444,
+            "Er2O3": 0.369686,
+            "Yb2O3": 2.856583
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "repeat (red coloring instead of green)",
+        "calculation": {
+            "recipe": {
+                "TiO2": 6.406444,
+                "Er2O3": 0.369686,
+                "Yb2O3": 2.856583
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 1.734723475976807e-17,
+            "coefficients": {
+                "TiO2": 0.83,
+                "Er2O3": 0.01,
+                "Yb2O3": 0.075
+            },
+            "elements": [
+                "Er",
+                "Ti",
+                "Yb"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ti": 0.83,
+                "Yb": 0.15,
+                "Er": 0.02
+            },
+            "normalized_target": "Ti0.83Yb0.15Er0.02",
+            "input_mass": 9.632713,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 9.632713,
+            "target_molar_mass": 69.03231,
+            "precursor_formula_mass": 99.670395,
+            "formula_units": 0.096645679505,
+            "estimated_target_mass": 9.632713,
+            "stoichiometric_target_mass": 6.671675,
+            "planning": {
+                "amount_mode": "Target height",
+                "target_mass_g": 9.632713051298685,
+                "target_height_mm": 5.282,
+                "die_diameter_mm": 22,
+                "target_porosity_percent": 5,
+                "theoretical_density_g_cm3": 5.05,
+                "density_source": "Manual theoretical density",
+                "density_choice": "__manual__",
+                "solid_volume_cm3": 1.907467930950235,
+                "cylinder_volume_cm3": 2.007860979947616,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Vinoth-T027",
+        "target_number": 27,
+        "target_for": "Vinoth"
     }
 ]
