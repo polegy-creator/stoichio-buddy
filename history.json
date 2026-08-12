@@ -2639,5 +2639,68 @@
         "target_id": "Vinoth-T027",
         "target_number": 27,
         "target_for": "Vinoth"
+    },
+    {
+        "entry_id": "98c92ae377e44ffbb636c7bce240f25e",
+        "entry_type": "synthesis",
+        "recipe_id": "R027",
+        "recipe_number": 27,
+        "time": "2026-08-12T07:17:11",
+        "target": "Ti0.99Cu0.01O2",
+        "mass": 12.5,
+        "selected_powders": [
+            "TiO2",
+            "CuO"
+        ],
+        "recipe": {
+            "TiO2": 12.375496,
+            "CuO": 0.124504
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "repeat (red coloring instead of green)",
+        "calculation": {
+            "recipe": {
+                "TiO2": 12.375496,
+                "CuO": 0.124504
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 8.673617379884035e-18,
+            "coefficients": {
+                "TiO2": 0.99,
+                "CuO": 0.01
+            },
+            "elements": [
+                "Cu",
+                "Ti"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ti": 0.99,
+                "Cu": 0.01,
+                "O": 2
+            },
+            "normalized_target": "Ti0.99Cu0.01O2",
+            "input_mass": 12.5,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 12.5,
+            "target_molar_mass": 80.02179,
+            "precursor_formula_mass": 79.8618,
+            "formula_units": 0.156520388972,
+            "estimated_target_mass": 12.5,
+            "stoichiometric_target_mass": 12.525042,
+            "planning": {
+                "amount_mode": "Target formula mass",
+                "target_mass_g": 12.5,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Adi-T002",
+        "target_number": 2,
+        "target_for": "Adi"
     }
 ]
