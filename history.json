@@ -2828,5 +2828,68 @@
         "target_id": "Adi-T004",
         "target_number": 4,
         "target_for": "Adi"
+    },
+    {
+        "entry_id": "884ef3c6d7d14f96bf519635bae27d5a",
+        "entry_type": "synthesis",
+        "recipe_id": "R030",
+        "recipe_number": 30,
+        "time": "2026-08-17T06:32:09",
+        "target": "Zn0.99Fe0.01O1",
+        "mass": 12.5,
+        "selected_powders": [
+            "Fe2O3",
+            "ZnO | purity 99.995% | vendor Noah Chemicals Corporation"
+        ],
+        "recipe": {
+            "Fe2O3": 0.122665,
+            "ZnO | purity 99.995% | vendor Noah Chemicals Corporation": 12.377335
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "repeat (red coloring instead of green)",
+        "calculation": {
+            "recipe": {
+                "Fe2O3": 0.122665,
+                "ZnO | purity 99.995% | vendor Noah Chemicals Corporation": 12.377335
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 0,
+            "coefficients": {
+                "Fe2O3": 0.005,
+                "ZnO | purity 99.995% | vendor Noah Chemicals Corporation": 0.99
+            },
+            "elements": [
+                "Fe",
+                "Zn"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Zn": 0.99,
+                "Fe": 0.01,
+                "O": 1
+            },
+            "normalized_target": "Zn0.99Fe0.01O1",
+            "input_mass": 12.5,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 12.5,
+            "target_molar_mass": 81.28365,
+            "precursor_formula_mass": 81.363645,
+            "formula_units": 0.153631268609,
+            "estimated_target_mass": 12.5,
+            "stoichiometric_target_mass": 12.48771,
+            "planning": {
+                "amount_mode": "Target formula mass",
+                "target_mass_g": 12.5,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Adi-T005",
+        "target_number": 5,
+        "target_for": "Adi"
     }
 ]
