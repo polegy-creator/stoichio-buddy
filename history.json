@@ -3074,5 +3074,81 @@
         "target_id": "Adi-T005",
         "target_number": 5,
         "target_for": "Adi"
+    },
+    {
+        "entry_id": "df118e8655f84abba4ba9c6fab2f8643",
+        "entry_type": "target_density",
+        "time": "2026-08-19T07:07:54",
+        "target": "Ti0.99Fe0.01O2",
+        "measured_density_g_cm3": 3.4842016828543048,
+        "theoretical_density_g_cm3": 4.248224636817146,
+        "relative_density_percent": 82.01547659835468,
+        "final_volume_cm3": 2.9569757832043435,
+        "final_mass_g": 10.3027,
+        "final_diameter_mm": 21.9,
+        "final_height_mm": 7.85,
+        "density_source": "Weighted theoretical density: 1*TiO2 (rutile), rutile: 4.24822 g/cm\u00b3 - Codex seeded - verify before use",
+        "notes": "",
+        "linked_recipe": {
+            "entry_id": "94a95ff4e62a4760a81e4ca025a9aa88",
+            "recipe_id": "R029",
+            "target": "Ti0.99Fe0.01O2",
+            "target_for": "Adi",
+            "target_id": "Adi-T004",
+            "target_number": 4,
+            "input_basis_g": 12.5,
+            "selected_powders": [
+                "TiO2",
+                "Fe2O3"
+            ],
+            "recipe": {
+                "TiO2": 12.375033,
+                "Fe2O3": 0.124967
+            },
+            "notes": "repeat (red coloring instead of green)",
+            "calculation": {
+                "recipe": {
+                    "TiO2": 12.375033,
+                    "Fe2O3": 0.124967
+                },
+                "warning": null,
+                "exact": true,
+                "residual": 8.673617379884035e-18,
+                "coefficients": {
+                    "TiO2": 0.99,
+                    "Fe2O3": 0.005
+                },
+                "elements": [
+                    "Fe",
+                    "Ti"
+                ],
+                "ignored_elements": [
+                    "O"
+                ],
+                "basis": "cation balance",
+                "target": {
+                    "Ti": 0.99,
+                    "Fe": 0.01,
+                    "O": 2
+                },
+                "normalized_target": "Ti0.99Fe0.01O2",
+                "input_mass": 12.5,
+                "mass_basis": "total_precursor_powder",
+                "powder_basis": 12.5,
+                "target_molar_mass": 79.94478,
+                "precursor_formula_mass": 79.864785,
+                "formula_units": 0.156514538917,
+                "estimated_target_mass": 12.5,
+                "stoichiometric_target_mass": 12.51252,
+                "planning": {
+                    "amount_mode": "Target formula mass",
+                    "target_mass_g": 12.5,
+                    "mass_basis": "total_precursor_powder"
+                }
+            }
+        },
+        "target_id": "Adi-T004",
+        "target_number": 4,
+        "target_for": "Adi"
     }
 ]
