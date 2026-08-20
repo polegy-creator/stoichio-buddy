@@ -3213,5 +3213,68 @@
         "target_id": "Adi-T006",
         "target_number": 6,
         "target_for": "Adi"
+    },
+    {
+        "entry_id": "aa5f739b55a1468eb281f7601a5bdeee",
+        "entry_type": "synthesis",
+        "recipe_id": "R032",
+        "recipe_number": 32,
+        "time": "2026-08-20T08:18:07",
+        "target": "Ti0.99Ni0.01O2",
+        "mass": 12.0,
+        "selected_powders": [
+            "TiO2",
+            "NiO"
+        ],
+        "recipe": {
+            "TiO2": 11.8877,
+            "NiO": 0.1123
+        },
+        "warning": null,
+        "inventory_deducted": false,
+        "notes": "3 tons",
+        "calculation": {
+            "recipe": {
+                "TiO2": 11.8877,
+                "NiO": 0.1123
+            },
+            "warning": null,
+            "exact": true,
+            "residual": 8.673617379884035e-18,
+            "coefficients": {
+                "TiO2": 0.99,
+                "NiO": 0.01
+            },
+            "elements": [
+                "Ni",
+                "Ti"
+            ],
+            "ignored_elements": [
+                "O"
+            ],
+            "basis": "cation balance",
+            "target": {
+                "Ti": 0.99,
+                "Ni": 0.01,
+                "O": 2
+            },
+            "normalized_target": "Ti0.99Ni0.01O2",
+            "input_mass": 12,
+            "mass_basis": "total_precursor_powder",
+            "powder_basis": 12,
+            "target_molar_mass": 79.97326,
+            "precursor_formula_mass": 79.81327,
+            "formula_units": 0.150350937883,
+            "estimated_target_mass": 12,
+            "stoichiometric_target_mass": 12.024055,
+            "planning": {
+                "amount_mode": "Target formula mass",
+                "target_mass_g": 12,
+                "mass_basis": "total_precursor_powder"
+            }
+        },
+        "target_id": "Adi-T007",
+        "target_number": 7,
+        "target_for": "Adi"
     }
 ]
