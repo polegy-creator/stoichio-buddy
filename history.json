@@ -3276,5 +3276,81 @@
         "target_id": "Adi-T007",
         "target_number": 7,
         "target_for": "Adi"
+    },
+    {
+        "entry_id": "b2be96d1802b4940a384bf0ea66a9d16",
+        "entry_type": "target_density",
+        "time": "2026-08-23T06:16:38",
+        "target": "Ti0.99Ni0.01O2",
+        "measured_density_g_cm3": 3.888755884203081,
+        "theoretical_density_g_cm3": 4.248224636817146,
+        "relative_density_percent": 91.53837700815684,
+        "final_volume_cm3": 2.618935285028075,
+        "final_mass_g": 10.1844,
+        "final_diameter_mm": 20.81,
+        "final_height_mm": 7.7,
+        "density_source": "Weighted theoretical density: 1*TiO2 (rutile), rutile: 4.24822 g/cm\u00b3 - Codex seeded - verify before use",
+        "notes": "",
+        "linked_recipe": {
+            "entry_id": "aa5f739b55a1468eb281f7601a5bdeee",
+            "recipe_id": "R032",
+            "target": "Ti0.99Ni0.01O2",
+            "target_for": "Adi",
+            "target_id": "Adi-T007",
+            "target_number": 7,
+            "input_basis_g": 12.0,
+            "selected_powders": [
+                "TiO2",
+                "NiO"
+            ],
+            "recipe": {
+                "TiO2": 11.8877,
+                "NiO": 0.1123
+            },
+            "notes": "3 tons",
+            "calculation": {
+                "recipe": {
+                    "TiO2": 11.8877,
+                    "NiO": 0.1123
+                },
+                "warning": null,
+                "exact": true,
+                "residual": 8.673617379884035e-18,
+                "coefficients": {
+                    "TiO2": 0.99,
+                    "NiO": 0.01
+                },
+                "elements": [
+                    "Ni",
+                    "Ti"
+                ],
+                "ignored_elements": [
+                    "O"
+                ],
+                "basis": "cation balance",
+                "target": {
+                    "Ti": 0.99,
+                    "Ni": 0.01,
+                    "O": 2
+                },
+                "normalized_target": "Ti0.99Ni0.01O2",
+                "input_mass": 12,
+                "mass_basis": "total_precursor_powder",
+                "powder_basis": 12,
+                "target_molar_mass": 79.97326,
+                "precursor_formula_mass": 79.81327,
+                "formula_units": 0.150350937883,
+                "estimated_target_mass": 12,
+                "stoichiometric_target_mass": 12.024055,
+                "planning": {
+                    "amount_mode": "Target formula mass",
+                    "target_mass_g": 12,
+                    "mass_basis": "total_precursor_powder"
+                }
+            }
+        },
+        "target_id": "Adi-T007",
+        "target_number": 7,
+        "target_for": "Adi"
     }
 ]
