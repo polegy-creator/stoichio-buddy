@@ -3352,5 +3352,20 @@
         "target_id": "Adi-T007",
         "target_number": 7,
         "target_for": "Adi"
+    },
+    {
+        "entry_id": "5cc53f2c4ad14b80acdf5eb6908084b3",
+        "entry_type": "target_density",
+        "time": "2026-11-23T11:25:01",
+        "target": "Ti0.995Mg0.005O2",
+        "measured_density_g_cm3": 4.27523409035075,
+        "theoretical_density_g_cm3": 3.8917520398347705,
+        "relative_density_percent": 109.8537123277839,
+        "final_volume_cm3": 3.7424851275658035,
+        "final_mass_g": 16.0,
+        "final_diameter_mm": 24.18,
+        "final_height_mm": 8.15,
+        "density_source": "Weighted theoretical density: 0.995*TiO2 (anatase), anatase: 3.89337 g/cm\u00b3 - Codex seeded - verify before use + 0.005*MgO (periclase rocksalt), periclase rocksalt: 3.56941 g/cm\u00b3 - Codex seeded - verify before use",
+        "notes": ""
     }
 ]
